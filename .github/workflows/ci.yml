@@ -26,8 +26,6 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run lint
-      - name: Temporary T-0.06 lint rejection probe
-        run: printf 'const probe = 1;\n' | npx eslint --stdin --stdin-filename scripts/ci-probe.mjs
       - run: npm run format:check
       - run: npm run typecheck
       # T-2.03 adds check:i18n when the translation scanner exists.

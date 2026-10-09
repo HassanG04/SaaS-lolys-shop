@@ -14,16 +14,17 @@ Completed:
 Files changed:
   - Complete foundation inventory in .agent-state/changed-files.md and handover.
 Tests executed:
-  - Full local verify passed before the concurrent theme edits.
+  - Full local verify passed again after checkpointing concurrent theme edits.
   - Coverage command and 109-task roadmap validation passed.
   - Source Markdown, Word and split SQL integrity checked.
 Problems found:
   - Anti-Gravity marked T-0.01 to T-0.06 done before PR checks; reconciled to doing pending evidence.
-  - T-0.06 deliberate lint-failure probe and final green CI remain pending.
+  - CI run 37929038785 passed build, unit and roadmap; static rejected unused probe as expected.
+  - Probe removed; final green CI remains pending.
   - Security-sensitive workflow requires owner review (SEC-16, SEC-24).
   - Docker absent (H-08); database work cannot be verified locally yet.
   - Logo and separate style reference absent; documented placeholders retained.
-Next action: Verify foundation snapshot, publish draft PR, prove CI catches bad lint, remove probe and confirm four green jobs; then restore T-0.07 work.
+Next action: Verify and publish probe removal to PR 1, confirm four green jobs; then restore T-0.07 work.
 ```
 
 ## Continuation

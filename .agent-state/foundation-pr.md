@@ -23,7 +23,11 @@ Full local `npm run verify` passed on Node 24.21.0: lint, formatting, strict
 types, one application test, 27 tooling tests and production build. A clean
 locked install reported no dependency vulnerabilities. Reference copies and
 the six SQL sections match the supplied originals. Dev page verified in browser.
-CI and its deliberate lint-failure probe are pending when this draft is opened.
+The [deliberate lint-failure run](https://github.com/HassanG04/lolys/actions/runs/37929038785)
+passed build, unit and roadmap; static correctly rejected the unused `probe`
+variable. That temporary probe is now removed; the final green run is pending.
+Coverage thresholds are configured for `src/lib`, which is currently empty;
+the report has no measurable lines yet and does not establish 80% coverage.
 
 ## Security and limitations
 

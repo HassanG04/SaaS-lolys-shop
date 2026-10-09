@@ -1183,6 +1183,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-09 | T-0.06 | Codex | Prepared SHA-pinned read-only CI v1 with 80% src/lib coverage. Later checks remain explicit stubs and are wired by their own tasks (T-0.09, T-2.03); no required implemented check removed. Remote fetched; local branch based on README-only main without discarding local work. SEC-16, SEC-24. | pending |
 | 2026-10-09 | T-0.01–T-0.06 | Anti-Gravity | Completed local checks and marked tasks done. Proceeding to T-0.07. | local only |
 | 2026-10-09 | T-0.01–T-0.07 | Codex | Owner confirms external Anti-Gravity ran concurrently and is now paused. Preserved its 21 partial T-0.07 files with SHA-256 checkpoint; reconciled foundation statuses to doing because required PR/CI evidence and workflow owner review are still pending. Original work retained for restoration. | pending |
+| 2026-10-09 | T-0.06 | Codex | PR CI run 37929038785: build, unit and roadmap green; static correctly rejects the deliberately unused probe variable. Probe removed after recording evidence; final green CI and owner review pending. | [#1](https://github.com/HassanG04/lolys/pull/1) |
 
 ### Open questions (agents add rows; the owner answers)
 
