@@ -416,19 +416,19 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08h: Bilingual interface and production dictionaries
-`status: doing` `owner: agent` `needs: T-0.08d` `size: M`
+`status: done` `owner: agent` `needs: T-0.08d` `size: M`
 - **Do:** Review the owner-requested Arabic/English implementation recorded in OD-003; document ADR-0002, use the existing accessible Button for the language switch, and keep preview copy out of production. Language changes must not alter catalogue error/authentication rules. Persistence and detailed verification are split into T-0.08i under the review-size rule.
 - **Done when:** shipped controls and previews switch language/direction; labels identify the destination language; tokens/focus/44px requirements hold; production excludes preview code/copy/assets; both themes/directions pass at 360/1280. Incoming source and history preserved.
 - **Verify:** `npm run verify`
 
 #### T-0.08i: Language preference behavior and verification
-`status: doing` `owner: agent` `needs: T-0.08h` `size: S`
+`status: done` `owner: agent` `needs: T-0.08h` `size: S`
 - **Do:** Complete ADR-0002 behavior checks for device selection, valid/invalid saved choices, blocked storage, keyboard switching, translated labels and document direction before paint. Verify dictionary key parity and unchanged Arabic catalogue-error previews. Retain the existing theme preference independently.
 - **Done when:** behavior tests and full verification pass; UI language/direction and focus match both themes at 360/1280, including reduced motion; production preview exclusion still passes.
 - **Verify:** `npm run verify`
 
 #### T-0.08j: Compact authentication form preview
-`status: doing` `owner: agent` `needs: T-0.08i` `size: S`
+`status: done` `owner: agent` `needs: T-0.08i` `size: S`
 - **Do:** Polish the development UI-kit login/register preview with centered panels capped at the documented readable form width. Keep fields full width inside their panel, stack them on narrow screens, and place the two panels side by side only when the viewport allows. Use existing tokens, labels, focus behavior and both language directions.
 - **Done when:** login and registration previews no longer stretch across the page; fields remain readable and full width within each panel; mobile layout remains usable; tests and production preview exclusion pass.
 - **Verify:** `npm run verify`
