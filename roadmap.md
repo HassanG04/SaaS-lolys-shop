@@ -398,7 +398,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08g: Accessible dialogs
-`status: todo` `owner: agent` `needs: T-0.08c` `size: M`
+`status: doing` `owner: agent` `needs: T-0.08c` `size: M`
 - **Do:** Complete the dialog split from T-0.08c per `docs/spec/design-system.md`; add an Arabic `/__kit` example in both themes and directions.
 - **Done when:** dialog naming, focus containment/restoration, controlled open/close and Escape work; behavior tests pass; controls have 44px targets and focus outlines; tokens and reduced motion are preserved.
 - **Verify:** `npm run verify`
@@ -1256,6 +1256,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08c, T-0.08g | Codex | Prepared tabs/notifications while earlier visual gates remain open; no dependency marked complete. Dialog is split into T-0.08g under the review-size rule, with all original criteria retained; its draft is preserved locally. Full verify passes (34 app + 66 tooling tests), build and 116-task roadmap pass. Browser verification remains blocked by prior URL policy denial; status stays doing. | pending |
 
 | 2026-10-10 | T-0.08c | Codex | Draft PR 6 published at 68e506e; all four remote jobs pass in run 38071233956. Local verify passes (100 tests), production kit exclusion and 116-task roadmap pass. Task remains doing pending upstream/browser visual gates. Dialog draft is split and preserved; installed jsdom lacks native dialog methods, so mocked focus tests are not acceptance evidence. | [#6](https://github.com/HassanG04/lolys/pull/6) |
+
+| 2026-10-10 | T-0.08g | Codex | Replaced the preserved dialog draft with native showModal, controlled close/cancel, lifecycle cleanup and focus restoration. Arabic previews and two closed-markup/event tests added; full verify passes (36 app + 66 tooling tests), production build and 116-task roadmap pass. jsdom lacks native modal methods, so focus/inert/Escape and visual acceptance remain unverified due to browser policy; no gate waived or mocks substituted for proof. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

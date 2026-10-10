@@ -2,12 +2,16 @@
 
 ## Current Objective
 
-Continue with T-0.08g dialogs; T-0.08c tabs/notifications are published.
-Working branch: agent/T-0.08c-feedback-tabs, based on PR 5 at 5e0ba81.
+Publish T-0.08g dialogs, then prepare T-0.08d labels/ornaments.
+Working branch: agent/T-0.08g-dialog, based on PR 6 at 22effa5.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Completed
 
+- Native Dialog replaces the unsafe draft. Uses showModal, controlled dismissal,
+  focus restoration on closure/unmount, stable title/description links and Arabic
+  close controls. Verify passes (102 tests and build); 116-task roadmap valid.
+  The two dialog tests exercise closed markup and React event contracts only.
 - Tabs/Toast and Arabic previews implemented; eight behavior tests added.
   Verify passes (100 tests and build); production kit exclusion and 116-task
   roadmap pass. All four PR 6 jobs pass at 68e506e in run 38071233956.
@@ -55,11 +59,12 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Remaining
 
-- T-0.08g: repair the dialog draft saved in .tools/feedback-dialog-draft.
-  Remove its non-modal fallback and unreliable custom focus traversal; use
-  native modal behavior. Installed jsdom has no showModal/close implementation.
-  Do not treat mocked methods as browser proof or claim native focus/Escape
-  checks passed. Its old tests/draft are preserved, not verified active code.
+- T-0.08g: browser acceptance remains open; installed jsdom lacks showModal/close.
+  Verify native focus containment/restoration, background inactivity, Escape,
+  repeated opens, controlled closure/unmount and theme/direction sizing when the
+  browser permits access. No method mocks/polyfills or claimed browser pass.
+  The old .tools/feedback-dialog-draft is provenance; do not restore over new code.
+- T-0.08d labels/ornaments is the next implementation slice.
 - T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
   and directions, keyboard focus, 44px targets and reduced motion. Browser policy
   blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
@@ -74,6 +79,10 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 All current changes from b4faa49 (generated font CSS/assets included):
 
+- `.agent-state/ui-dialog-pr.md`
+- `src/components/ui/Dialog.tsx`
+- `src/components/ui/dialog.test.tsx`
+- `src/dev/DialogExample.tsx`
 - `.agent-state/ui-feedback-pr.md`
 - `src/components/ui/Tabs.tsx`
 - `src/components/ui/Toast.tsx`
@@ -152,7 +161,7 @@ permanent production/token gate remains T-0.08e; no success stub was introduced.
 
 Error: browser tool rejected http://127.0.0.1:5175/ under its URL policy.
 Expected: inspect icons and UI kit in both themes/directions at 360/1280.
-Actual: no fresh visual check; 100 tests and production build pass. Do not claim
+Actual: no fresh visual check; 102 tests and production build pass. Do not claim
 the old text-toggle screenshots verify the icon change.
 Possible cause: browser tool policy/state mismatch; no workaround attempted.
 
@@ -174,13 +183,12 @@ Get-Content .agent-state/project-progress.md -Raw
 git status --short --untracked-files=all
 git diff
 Get-Content .agent-state/anti-gravity-review.md
-Get-Content .tools/feedback-dialog-draft/Dialog.tsx
-Get-Content src/components/ui/Tabs.tsx
-Get-Content src/components/ui/Toast.tsx
+Get-Content src/components/ui/Dialog.tsx
+Get-Content .agent-state/ui-dialog-pr.md
 npm run verify
 npm run roadmap:check
 npm run roadmap:next
-git switch -c agent/T-0.08g-dialog
+git switch -c agent/T-0.08d-labels-ornaments
 ```
 
 Use .nvmrc Node 24.21.0. Never read or print .env values. HANDOVER_TO_CODEX.md is

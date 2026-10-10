@@ -5,6 +5,7 @@ import ar from '../i18n/ar.json'
 import placeholder from './card-placeholder.svg'
 import { FeedbackExamples } from './FeedbackExamples'
 import { FormExamples } from './FormExamples'
+import { DialogExample } from './DialogExample'
 
 export default function KitPage() {
   return (
@@ -48,6 +49,7 @@ export default function KitPage() {
             </Card>
             <FormExamples />
             <FeedbackExamples />
+            <DialogExample />
           </section>
         )),
       )}

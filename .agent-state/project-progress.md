@@ -3,7 +3,7 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08c tabs and notifications published with green CI; next T-0.08g dialogs; visual gates open
+Current task: T-0.08g native dialogs implemented; local checks pass; browser gates open; publication pending
 Completed:
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
@@ -26,9 +26,11 @@ Completed:
   - Choice handover commit 5e0ba81 also passes all four jobs in run 38028772831.
   - Added tabs and notifications with Arabic previews; dialog draft preserved for T-0.08g in .tools/feedback-dialog-draft.
   - Feedback draft PR 6 published at 68e506e; all four jobs green in run 38071233956.
+  - Replaced the dialog draft with a controlled native modal, Arabic labels, lifecycle cleanup and four preview instances. No non-modal fallback or custom focus traversal remains.
 Files changed:
-  - Branch agent/T-0.08c-feedback-tabs is based on choice PR 5 at 5e0ba81.
+  - Branch agent/T-0.08g-dialog is based on feedback PR 6 at 22effa5.
   - This slice adds Tabs, Toast, feedback.test.tsx and FeedbackExamples; updates kit, Arabic copy, CSS, roadmap and continuation/PR docs.
+  - Dialog slice adds Dialog, dialog.test.tsx and DialogExample; updates kit, Arabic copy, CSS, roadmap and continuation/PR docs.
   - Theme components, tokens, fonts/licenses, tests, dependency pins, roadmap and review notes.
   - Icon follow-up changes ThemeToggle.tsx, theme.test.tsx, ar.json and continuation/PR documentation.
   - UI actions add three components, actions.test.tsx, src/dev/KitPage.tsx and its local SVG fixture, src/styles/ui.css; update App, Arabic copy, tokens and handover/PR/roadmap docs.
@@ -46,6 +48,7 @@ Tests executed:
   - Five choice behavior tests pass, including both directions, native reset, controlled/disabled states and isolated groups.
   - Full choice verify passes: 26 app + 66 tooling tests (92 total), production build/exclusion and 115-task roadmap pass.
   - Feedback verify passes: 34 app + 66 tooling tests (100 total), production build and 116-task roadmap pass. Browser verification remains open.
+  - Dialog verify passes: 36 app + 66 tooling tests (102 total), production build and 116-task roadmap pass. Dialog tests cover closed markup/event contracts only; native modality, focus and Escape are unverified.
 Problems found:
   - Earlier approval-service usage limit interrupted verification; subsequent local checks ran successfully.
   - Later UI kit/guards/security drafts did not meet all criteria; statuses corrected to todo with review notes.
@@ -53,7 +56,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: Repair the preserved dialog draft in T-0.08g using native modal behavior. Complete browser visual checks when permitted before marking UI tasks done; no acceptance gate waived.
+Next action: Publish T-0.08g and check CI, then prepare T-0.08d labels and ornaments. Complete browser visual/native-dialog checks when permitted before marking UI tasks done; no acceptance gate waived.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
