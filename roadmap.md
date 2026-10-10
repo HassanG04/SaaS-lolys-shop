@@ -1259,6 +1259,8 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-10 | T-0.08g | Codex | Replaced the preserved dialog draft with native showModal, controlled close/cancel, lifecycle cleanup and focus restoration. Arabic previews and two closed-markup/event tests added; full verify passes (36 app + 66 tooling tests), production build and 116-task roadmap pass. jsdom lacks native modal methods, so focus/inert/Escape and visual acceptance remain unverified due to browser policy; no gate waived or mocks substituted for proof. | pending |
 
+| 2026-10-10 | T-0.08g | Codex | Draft PR 7 published; all four remote jobs pass at a49d87c in run 38071645439. Local verify passes (102 tests), production kit exclusion and 116-task roadmap pass. Native-dialog and visual acceptance remain open. Feedback documentation 22effa5 also has four green jobs in run 38071382759. | [#7](https://github.com/HassanG04/lolys/pull/7) |
+
 ### Open questions (agents add rows; the owner answers)
 
 

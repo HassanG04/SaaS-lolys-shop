@@ -2,7 +2,7 @@
 
 ## Current Objective
 
-Publish T-0.08g dialogs, then prepare T-0.08d labels/ornaments.
+Prepare T-0.08d labels/ornaments; T-0.08g dialogs are published with green CI.
 Working branch: agent/T-0.08g-dialog, based on PR 6 at 22effa5.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
@@ -12,10 +12,13 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
   focus restoration on closure/unmount, stable title/description links and Arabic
   close controls. Verify passes (102 tests and build); 116-task roadmap valid.
   The two dialog tests exercise closed markup and React event contracts only.
+  All four remote jobs pass at a49d87c in run 38071645439.
+  PR: https://github.com/HassanG04/lolys/pull/7.
 - Tabs/Toast and Arabic previews implemented; eight behavior tests added.
   Verify passes (100 tests and build); production kit exclusion and 116-task
   roadmap pass. All four PR 6 jobs pass at 68e506e in run 38071233956.
   PR: https://github.com/HassanG04/lolys/pull/6.
+  Its documentation follow-up 22effa5 also passes all four jobs in run 38071382759.
   Choice documentation 5e0ba81 has four green
   checks in run 38028772831. No browser gate has been waived.
 - T-0.08f native Checkbox/Radio with 44px minimum dimensions, non-color marks,
@@ -65,6 +68,9 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
   browser permits access. No method mocks/polyfills or claimed browser pass.
   The old .tools/feedback-dialog-draft is provenance; do not restore over new code.
 - T-0.08d labels/ornaments is the next implementation slice.
+  Read Badge.tsx, Skeleton.tsx and ornaments.tsx in the preserved checkpoint;
+  imports depend on absent utils, Chip is missing, and motion/arch styles need
+  repair. Keep direct imports and existing tokens; do not restore shared files.
 - T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
   and directions, keyboard focus, 44px targets and reduced motion. Browser policy
   blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
@@ -185,6 +191,9 @@ git diff
 Get-Content .agent-state/anti-gravity-review.md
 Get-Content src/components/ui/Dialog.tsx
 Get-Content .agent-state/ui-dialog-pr.md
+Get-Content .tools/anti-gravity-20261010/src/components/ui/Badge.tsx
+Get-Content .tools/anti-gravity-20261010/src/components/ui/Skeleton.tsx
+Get-Content .tools/anti-gravity-20261010/src/components/ui/ornaments.tsx
 npm run verify
 npm run roadmap:check
 npm run roadmap:next

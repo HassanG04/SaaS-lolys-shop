@@ -13,7 +13,9 @@ No new dependencies, design values or business behavior.
 ## Validation
 
 - `npm run verify` passes: 36 app + 66 tooling tests, lint, format, types and
-  production build. Roadmap validates 116 tasks. Remote checks pending.
+  production build. Production kit exclusion passes; roadmap validates 116 tasks.
+- [All four remote jobs pass](https://github.com/HassanG04/lolys/actions/runs/38071645439)
+  at `a49d87cecba8ca7c3ffbe159b8cc847a2ed8b646`.
 - The two dialog unit tests cover closed markup and React event
   contracts only. Installed jsdom lacks native dialog methods; no polyfill or
   mock pretends to verify browser behavior.
