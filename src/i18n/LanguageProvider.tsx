@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  type ReactNode,
+} from 'react'
 import { translations } from './translations'
 
 type Language = 'ar' | 'en'
@@ -14,25 +21,27 @@ const LanguageContext = createContext<LanguageContextValue | null>(null)
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Language>(() => {
     try {
-      const saved = localStorage.getItem('app-lang') as Language | null
+      const saved = localStorage.getItem('app-lang')
       if (saved === 'ar' || saved === 'en') return saved
     } catch {
-      // ignore
+      // Storage may be disabled; device selection still works.
     }
 
-    // Check device language
-    if (typeof navigator !== 'undefined' && !navigator.language.startsWith('ar')) {
+    if (typeof navigator !== 'undefined' && !/^ar(?:-|$)/i.test(navigator.language)) {
       return 'en'
     }
-    return 'ar' // Default to Arabic if Arabic or undefined
+    return 'ar'
   })
 
   useEffect(() => {
     try {
       localStorage.setItem('app-lang', lang)
     } catch {
-      // ignore
+      // Keep the in-memory choice usable when persistence is unavailable.
     }
+  }, [lang])
+
+  useLayoutEffect(() => {
     document.documentElement.lang = lang
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
   }, [lang])

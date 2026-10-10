@@ -69,7 +69,7 @@ This file is the single source of truth for scope, order and status. Do not rely
 - Feature folders: `src/features/<name>/{api,components,hooks}`. Shared UI in `src/components/ui`. **No Supabase calls inside components**: only in `features/*/api.ts` or `src/lib`.
 - Server state through TanStack Query (one `keys.ts` per feature). Global client state is only auth, cart, theme and language (ADR-0002).
 - Forms: React Hook Form + Zod. Allow-list fields: a form sends only the fields its entity allows (`docs/spec/security-model.md` section 6).
-- **Arabic first:** every string through i18n (`src/i18n/ar.json`), `<html lang="ar" dir="rtl">`, fonts self-hosted, Western digits. Phone numbers, emails, order numbers and codes render in `dir="ltr"` spans.
+- **Arabic first:** every string through i18n (`src/i18n/ar.json` and `en.json`, ADR-0002), language-dependent HTML lang/dir (Arabic RTL, English LTR), fonts self-hosted, Western digits. Phone numbers, emails, order numbers and codes render in `dir="ltr"` spans.
 - **Errors:** only through `AppError` (`src/lib/errors.ts`). Show the Arabic message and its code. Never render `error.message`.
 - **No HTML injection:** no `dangerouslySetInnerHTML`, `innerHTML`, `eval` or `new Function`. Descriptions are plain text. Image URLs come only from storage paths.
 - Styling: Tailwind v4 utilities and tokens from `src/styles/tokens.css`. No hard-coded colors, radii or shadows. **Logical properties only** (`ms-`, `me-`, `ps-`, `pe-`, `text-start`).
@@ -422,7 +422,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08i: Language preference behavior and verification
-`status: todo` `owner: agent` `needs: T-0.08h` `size: S`
+`status: doing` `owner: agent` `needs: T-0.08h` `size: S`
 - **Do:** Complete ADR-0002 behavior checks for device selection, valid/invalid saved choices, blocked storage, keyboard switching, translated labels and document direction before paint. Verify dictionary key parity and unchanged Arabic catalogue-error previews. Retain the existing theme preference independently.
 - **Done when:** behavior tests and full verification pass; UI language/direction and focus match both themes at 360/1280, including reduced motion; production preview exclusion still passes.
 - **Verify:** `npm run verify`
@@ -606,7 +606,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify` and manual check
 
 #### T-2.03: Arabic i18n scaffold
-`status: todo` `owner: agent` `needs: T-2.02` `size: M`
+`status: todo` `owner: agent` `needs: T-2.02, T-0.08i` `size: M`
 - **Do:** Set up i18next with `src/i18n/ar.json` and `en.json` as shipped languages (ADR-0002) (the copy deck in `docs/spec/design-system.md` is the starting content), language-dependent `lang`/`dir` on `<html>`, `t()` for every string, Arabic plural rules, Western digits. Add `src/lib/format.ts` (`formatEGP` with `Intl.NumberFormat('ar-EG-u-nu-latn', { style: 'currency', currency: 'EGP' })`, dates with `Intl.DateTimeFormat('ar-EG-u-nu-latn')`). Phone numbers, emails and order numbers render inside `dir="ltr"` spans. Add `scripts/check-i18n.mjs` (no key used in code is missing from either locale, no unused production keys; kit keys are development-only) and the `check:i18n` script.
 - **Done when:** the whole shell renders in Arabic RTL and English LTR; the check runs in the `static` job; unit tests cover `formatEGP`.
 - **Verify:** `npm run check:i18n && npm run test:unit`
@@ -1279,6 +1279,9 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08e | Codex | Reopened acceptance gate after review: original regex missed CSS/arbitrary/unknown styles; bilingual commit 96ad75f leaks preview copy into production. Repaired token/production guards with negative fixtures and CI enforcement (SEC-16/SEC-24). 42 app + 97 tooling tests and all verification stages pass. Full visual matrix evidence remains outstanding; Anti-Gravity browser report preserved as reported evidence. | pending |
 
 | 2026-10-10 | T-0.08h, T-0.08i | Codex | Preserved incoming bilingual work and recorded ADR-0002 for OD-003; split detailed preference tests into T-0.08i to keep reviews small. Fixed preview-copy boundary and reused accessible Button; Arabic error contract retained. Preparing this slice while T-0.08e visual matrix remains open; no gate waived. | pending |
+
+| 2026-10-10 | T-0.08d, T-0.08e, T-0.08h | Codex | Draft PRs 8/9/10 each have all four jobs green at 6c18be3 / 4ac7126 / 8a6786d in runs 38081096113 / 38081098408 / 38081350854. Bilingual build excludes preview copy after repair. Human review and final visual matrix remain open. | [#10](https://github.com/HassanG04/lolys/pull/10) |
+| 2026-10-10 | T-0.08i | Codex | Added 12 language behavior/parity/error-preview tests; corrected Arabic language-tag matching and updates document direction before paint. npm run verify passes (54 app + 97 tooling tests), production guards pass, 118-task roadmap validates. Preparing while upstream visual gate remains open; no acceptance criteria waived. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 
