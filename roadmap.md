@@ -373,10 +373,34 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** the toggle works with pointer and keyboard, persists, restores without a wrong-theme flash, and respects the documented 44px target/focus/contrast requirements; both themes pass at 360px and 1280px in RTL and LTR. Tests cover stored, system and unavailable-storage cases.
 - **Verify:** `npm run test:unit`
 
-#### T-0.08: UI kit and brand ornaments
-`status: todo` `owner: agent` `needs: T-0.07b` `size: L`
-- **Do:** Build `src/components/ui` per the spec, RTL first: Button (cocoa primary pill, blush secondary pill, ghost, danger), Pill/Chip, IconButton, Card (28px radius, soft shadow, 20px inner image radius), Input and SearchInput (pill with round submit), Select, Textarea, Checkbox, Radio, Badge, Skeleton, Toast, Dialog, Tabs. Add the ornaments as SVG components using `currentColor` (ribbon bow, ribbon divider, sparkle, pearl loader, arch frame). Add a dev-only route `/__kit` showing everything in both themes (and one LTR sample), excluded from production builds.
-- **Done when:** no hard-coded colors, radii or shadows outside tokens (a grep check is part of `verify`); every control has a visible focus outline and a 44px touch target; direction icons mirror in RTL; each component has a test; animations stop under `prefers-reduced-motion`.
+#### T-0.08: UI actions and cards
+`status: doing` `owner: agent` `needs: T-0.07b` `size: M`
+- **Do:** Build RTL-first Button (cocoa primary pill, blush secondary pill, ghost, danger), IconButton and Card (28px radius, soft shadow, 20px inner image radius and 8px frame) per `docs/spec/design-system.md`. Start the dev-only `/__kit` route with both themes and LTR/RTL samples, excluded from production builds. Split the original UI kit across T-0.08b through T-0.08e under the 400-line review rule; retain every original requirement.
+- **Done when:** buttons support keyboard activation and native disabled/form behavior; icon actions have accessible names and mirror only directional artwork; 44px targets and focus outlines are retained; every component has a test; cards respect reduced motion; no hard-coded colors, radii or shadows outside tokens. Both themes checked at 360/1280 in RTL/LTR.
+- **Verify:** `npm run verify`
+
+#### T-0.08b: UI form controls
+`status: todo` `owner: agent` `needs: T-0.08` `size: M`
+- **Do:** Continue the UI kit per `docs/spec/design-system.md`: Input and SearchInput (pill with round submit), Select, Textarea, Checkbox and Radio. Extend `/__kit` with labelled Arabic examples, error/disabled states and both directions/themes.
+- **Done when:** every component has behavior tests; labels never rely on placeholders; errors are accessible; selected states include a non-color indicator; controls have 44px targets and visible focus; tokens/logical styling and reduced motion are preserved.
+- **Verify:** `npm run verify`
+
+#### T-0.08c: UI feedback and navigation
+`status: todo` `owner: agent` `needs: T-0.08b` `size: M`
+- **Do:** Continue the UI kit: Toast, Dialog and Tabs per `docs/spec/design-system.md`. Extend `/__kit` with Arabic examples in both themes and directions.
+- **Done when:** every component has behavior tests; dialog naming, focus containment/restoration and Escape work; tabs have unique relationships and keyboard navigation in both directions; feedback is accessible; controls have 44px targets and focus outlines; tokens and reduced motion are preserved.
+- **Verify:** `npm run verify`
+
+#### T-0.08d: UI labels and brand ornaments
+`status: todo` `owner: agent` `needs: T-0.08c` `size: M`
+- **Do:** Finish the component inventory with Pill/Chip, Badge, Skeleton and SVG ornaments using `currentColor`: ribbon bow, ribbon divider, sparkle, pearl loader and arch frame. Follow `docs/spec/design-system.md` and add every example to `/__kit`.
+- **Done when:** each component has a test; states include text or icons, not color alone; ornaments follow themes; animations stop under reduced motion; arch/card/image shapes use the documented tokens.
+- **Verify:** `npm run verify`
+
+#### T-0.08e: UI kit token guard and final verification
+`status: todo` `owner: agent` `needs: T-0.08d` `size: M`
+- **Do:** Complete the original UI-kit acceptance gate: add a grep-based token check to `verify`, test rejection of hard-coded colors/radii/shadows, and verify `/__kit` contains the full inventory in both themes and an LTR sample while remaining excluded from production builds.
+- **Done when:** token guard fails on negative fixtures and passes the repo; all components have tests; the full kit passes keyboard, 44px target, focus, direction icon and reduced-motion checks at 360/1280 in RTL/LTR and both themes; production artifacts exclude kit code/assets/copy.
 - **Verify:** `npm run verify`
 
 #### T-0.09: Repo guards
@@ -552,7 +576,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-2.02: Routing and layout
-`status: todo` `owner: agent` `needs: T-0.08, T-2.01` `size: L`
+`status: todo` `owner: agent` `needs: T-0.08e, T-2.01` `size: L`
 - **Do:** React Router with lazy routes. `Layout` with Navbar (Lolys' logo, search pill, links المتجر / تصفّح / عن المتجر, cart pill with count, account menu, theme toggle) and Footer (cocoa band with policy links). 404 page, scroll restoration, skip link, mobile navigation. Routes: `/`, `/category/:slug`, `/product/:id`, `/cart`, `/login`, `/checkout`, `/pay/:orderId`, `/account/orders`, `/account/security`, `/admin/*`, and the policy pages.
 - **Done when:** every route renders a placeholder, is keyboard navigable, fits a 360px viewport, and looks right in RTL in both themes.
 - **Verify:** `npm run verify` and manual check
@@ -608,7 +632,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-3.02: Product image, card and category tile
-`status: todo` `owner: agent` `needs: T-0.08, T-3.01` `size: M`
+`status: todo` `owner: agent` `needs: T-0.08e, T-3.01` `size: M`
 - **Do:** `ProductImage` (aspect-ratio box, lazy loading, fallback), `ProductCard` (image-first: 28px card, 20px inner image, discount tag, sold-out badge, price with struck-through original, add button disabled when sold out) and `CategoryTile` (full-bleed image with label chip).
 - **Done when:** no layout shift while images load; sold-out items are clearly marked and cannot be added.
 - **Verify:** `npm run verify`
@@ -632,7 +656,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-3.06: Cart
-`status: todo` `owner: agent` `needs: T-3.01, T-0.08` `size: L`
+`status: todo` `owner: agent` `needs: T-3.01, T-0.08e` `size: L`
 - **Do:** `CartProvider` (reducer, localStorage key `cart:v1`, stores only `{productId, quantity}`), cart drawer and `/cart` page, quantity clamped to live stock (re-validated on load), line totals from fresh product data, "log in to check out" call to action for guests.
 - **Done when:** tests cover merging duplicates, clamping, persistence and removal of stale products.
 - **Verify:** `npm run test:unit`
@@ -1200,6 +1224,9 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.07, T-0.07b | Codex | Final verify passes (10 app + 66 tooling tests, all 31 contrast pairs), build passes and 110 tasks validate. Browser verifies both themes at 360/1280 in RTL/LTR, keyboard focus, persisted reload and 44px minimum; screenshots/measurements saved. Theme PR CI pending. | pending |
 | 2026-10-10 | T-0.07, T-0.07b | Codex | All four theme CI jobs green in run 38021668187 at 7d7fcbf; both tasks done. Theme PR stacked on foundation PR 1; no merge/deploy. T-0.08 is next, using preserved drafts plus the concrete review findings. | [#2](https://github.com/HassanG04/lolys/pull/2) |
 | 2026-10-10 | T-0.07b | Codex | Owner requested crescent/sun icons instead of visible theme text. Implemented SVGs with currentColor, Arabic accessible name and action tooltip, retaining 44px minimum and keyboard behavior. Local verify passes (76 tests), build and roadmap pass; browser URL policy blocked fresh visual review. Prior screenshots predate this follow-up. | [#2](https://github.com/HassanG04/lolys/pull/2) |
+
+| 2026-10-10 | T-0.07b | Codex | Crescent/sun follow-up e34b6c2 passes all four remote checks in run 38022228681. | [#2](https://github.com/HassanG04/lolys/pull/2) |
+| 2026-10-10 | T-0.08 | Codex | Split original UI kit into actions/cards, forms, feedback/navigation, labels/ornaments and final token/preview guard tasks (T-0.08b–T-0.08e); downstream tasks require the full kit. Implemented first component set and dev preview; 82 tests, build, production kit exclusion and 114-task roadmap check pass. Browser policy prevents fresh visual checks; status remains doing. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

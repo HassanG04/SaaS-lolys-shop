@@ -2,8 +2,8 @@
 
 ## Current Objective
 
-Finish the owner-requested crescent/sun icon follow-up on PR 2, then resume T-0.08.
-Working branch: agent/T-0.07-themes, based on foundation PR 1 at b4faa49.
+Finish visual verification of T-0.08 UI actions/cards, then resume T-0.08b forms.
+Working branch: agent/T-0.08-ui-actions, based on theme PR 2 at e34b6c2.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Completed
@@ -24,13 +24,18 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 - Owner requested crescent/sun icons instead of visible theme text. Implemented
   in ThemeToggle.tsx with Arabic label/tooltip and the existing 44px minimum.
   Local verify, all 76 tests, build and roadmap checks pass.
+- Icon follow-up e34b6c2 passes all four remote jobs in run 38022228681.
+- T-0.08 split through T-0.08e to preserve small reviews and all original criteria.
+  Buttons, required icon labels/mirroring, cards and four theme/direction previews
+  implemented without new dependencies. 82 local tests pass; final PR checks pending.
 
 ## Remaining
 
-- Read the final icon follow-up CI on PR 2. Browser URL policy blocked the fresh
-  icon visual check; older screenshots show the previous text toggle.
-- T-0.08: restore its files selectively from the newer checkpoint and fix the
-  documented accessibility, production-kit exclusion and testing defects.
+- T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
+  and directions, keyboard focus, 44px targets and reduced motion. Browser policy
+  blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
+- Read final UI action PR CI; then T-0.08b form controls from the checkpoint.
+  The later feedback/ornament/guard work is split into T-0.08c/T-0.08d/T-0.08e.
 - T-0.09/T-0.12: restore only when reached; repair guards and run required
   negative CI tests. Their incoming completion claims were not valid evidence.
 - T-0.06 needs owner workflow review. Never merge or push main.
@@ -40,6 +45,14 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 All current changes from b4faa49 (generated font CSS/assets included):
 
+- `.agent-state/ui-actions-pr.md`
+- `src/components/ui/Button.tsx`
+- `src/components/ui/IconButton.tsx`
+- `src/components/ui/Card.tsx`
+- `src/components/ui/actions.test.tsx`
+- `src/dev/KitPage.tsx`
+- `src/dev/card-placeholder.svg`
+- `src/styles/ui.css`
 - `.agent-state/anti-gravity-review.md`
 - `.agent-state/changed-files.md`
 - `.agent-state/foundation-pr.md`
@@ -85,9 +98,13 @@ All current changes from b4faa49 (generated font CSS/assets included):
 
 ## Current Error
 
+Ignored local helpers also changed: `.tools/github.mjs` adds draft PR creation;
+`.tools/verify-ui-build.mjs` checks current production artifact exclusion. The
+permanent production/token gate remains T-0.08e; no success stub was introduced.
+
 Error: browser tool rejected http://127.0.0.1:5175/ under its URL policy.
-Expected: inspect crescent and sun icons in the local preview.
-Actual: no fresh visual check; tests and production build pass. Do not claim
+Expected: inspect icons and UI kit in both themes/directions at 360/1280.
+Actual: no fresh visual check; 82 tests and production build pass. Do not claim
 the old text-toggle screenshots verify the icon change.
 Possible cause: browser tool policy/state mismatch; no workaround attempted.
 

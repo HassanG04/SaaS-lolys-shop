@@ -30,6 +30,7 @@ separate review; the supplied design values and product requirements are unchang
 - Owner-requested icon follow-up: local verify and all 76 tests pass; accessible
   name, pressed state and action tooltip are retained. Browser URL policy blocked
   a fresh local visual check; screenshots below predate the icon change.
+  All four remote jobs passed at `e34b6c2` ([run](https://github.com/HassanG04/lolys/actions/runs/38022228681)).
 
 Screenshots and the eight browser measurements are in `.agent-state/theme-*.jpg`
 and `.agent-state/theme-browser-checks.json`.

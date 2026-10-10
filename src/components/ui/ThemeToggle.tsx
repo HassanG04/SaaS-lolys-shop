@@ -1,5 +1,5 @@
 import { useTheme } from './ThemeProvider'
-import ar from '../../i18n/ar.json'
+import { theme } from '../../i18n/ar.json'
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -10,8 +10,8 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       aria-pressed={isDark}
-      aria-label={ar.theme.dark}
-      title={isDark ? ar.theme.switchToLight : ar.theme.switchToDark}
+      aria-label={theme.dark}
+      title={isDark ? theme.switchToLight : theme.switchToDark}
       className="theme-toggle inline-flex items-center justify-center rounded-pill border border-border-input bg-surface p-2 text-brand"
     >
       <svg

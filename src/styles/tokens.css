@@ -85,6 +85,11 @@
     --shadow-card-val: 0 8px 24px rgba(90, 51, 34, 0.1);
     --shadow-pill-val: 0 2px 8px rgba(90, 51, 34, 0.08);
     --shadow-popover-val: 0 12px 32px rgba(90, 51, 34, 0.16);
+    --button-secondary-bg: var(--color-pink-val);
+    --button-secondary-border: var(--color-pink-val);
+    --button-danger-bg: var(--color-danger-val);
+    --button-danger-text: var(--color-surface-val);
+    --card-depth: var(--shadow-card-val);
   }
 
   [data-theme='dark'] {
@@ -112,5 +117,10 @@
     --shadow-card-val: 0 0 24px rgba(240, 169, 186, 0.12);
     --shadow-pill-val: 0 0 24px rgba(240, 169, 186, 0.12);
     --shadow-popover-val: 0 0 24px rgba(240, 169, 186, 0.12);
+    --button-secondary-bg: var(--color-surface-2-val);
+    --button-secondary-border: var(--color-brand-val);
+    --button-danger-bg: transparent;
+    --button-danger-text: var(--color-danger-val);
+    --card-depth: none;
   }
 }
