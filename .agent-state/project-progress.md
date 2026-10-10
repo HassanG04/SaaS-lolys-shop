@@ -3,7 +3,7 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08g native dialogs published with green CI; browser gates open; next T-0.08d labels/ornaments
+Current task: T-0.08d labels and ornaments implemented; verification in progress; browser gates open
 Completed:
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
@@ -29,8 +29,10 @@ Completed:
   - Feedback documentation 22effa5 also passes all four jobs in run 38071382759.
   - Replaced the dialog draft with a controlled native modal, Arabic labels, lifecycle cleanup and four preview instances. No non-modal fallback or custom focus traversal remains.
   - Dialog draft PR 7 published at a49d87c; all four jobs green in run 38071645439.
+  - Dialog handover e5d498b also passes all four jobs in run 38071760275.
+  - Owner resolved OD-002: pearls bounce only while loading, static for reduced motion; design spec updated.
 Files changed:
-  - Branch agent/T-0.08g-dialog is based on feedback PR 6 at 22effa5.
+  - Branch agent/T-0.08d-labels-ornaments is based on dialog PR 7 at e5d498b.
   - This slice adds Tabs, Toast, feedback.test.tsx and FeedbackExamples; updates kit, Arabic copy, CSS, roadmap and continuation/PR docs.
   - Dialog slice adds Dialog, dialog.test.tsx and DialogExample; updates kit, Arabic copy, CSS, roadmap and continuation/PR docs.
   - Theme components, tokens, fonts/licenses, tests, dependency pins, roadmap and review notes.

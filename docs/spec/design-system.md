@@ -113,11 +113,11 @@ Ornaments are SVG components in the UI kit (T-0.08), drawn with `currentColor` s
 - **Ribbon bow:** brand mark, gift and favorites icon, "you're so pretty" style tag for the sale banner.
 - **Ribbon divider:** thin curved line with a small bow, used between home sections.
 - **Sparkle:** four-point star on the sale badge; gentle twinkle on hover (CSS only, off with reduced motion).
-- **Pearl loader:** three pearls bouncing, replaces spinners.
+- **Pearl loader:** three pearls bouncing only while loading is active, replaces spinners; static with reduced motion (owner clarification OD-002, 2026-10-10).
 - **Arch frames:** hero photo and category tiles use the arch mask.
 - **Backdrops:** product images sit on cream or blush backgrounds; hero uses a blush circle with a string of pearls.
 - **Photography:** warm soft light, props such as ribbons, pearls, shells and flowers, consistent crops (1:1 main image, 4:5 optional gallery). Mugs are shown styled as gifts.
-- **Motion:** 150 to 250 ms ease-out; cards lift 2px on hover; nothing moves automatically except the sparkle.
+- **Motion:** 150 to 250 ms ease-out; cards lift 2px on hover; nothing moves automatically except the sparkle and active loading pearls (OD-002). Reduced motion disables both animations.
 
 ## 7. RTL and Arabic rules
 

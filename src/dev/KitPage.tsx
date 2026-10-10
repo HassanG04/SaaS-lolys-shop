@@ -6,6 +6,7 @@ import placeholder from './card-placeholder.svg'
 import { FeedbackExamples } from './FeedbackExamples'
 import { FormExamples } from './FormExamples'
 import { DialogExample } from './DialogExample'
+import { OrnamentExamples } from './OrnamentExamples'
 
 export default function KitPage() {
   return (
@@ -50,6 +51,7 @@ export default function KitPage() {
             <FormExamples />
             <FeedbackExamples />
             <DialogExample />
+            <OrnamentExamples />
           </section>
         )),
       )}

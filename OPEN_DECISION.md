@@ -23,6 +23,16 @@ Sources: official npm registry metadata for typescript, typescript-eslint,
 eslint, eslint-plugin-jsx-a11y and @eslint/js. Owner answered "Approve compatible
 versions" in this chat. Implementation and validation proceed under this exception.
 
+## OD-002 — Pearl loader motion
+
+Task: T-0.08d. Status: approved by owner on 2026-10-10.
+
+Design-system section 6 describes bouncing pearls but its general motion rule
+allows automatic motion only for the sparkle. Owner chose “Bounce only while
+loading” in this chat. The loader animates only while loading is active; reduced
+motion keeps it still. Record this exception in the design spec; retain its
+hover-only sparkle rule and all existing motion/accessibility requirements.
+
 ## External prerequisites
 
 - H-07: GitHub remote supplied on 2026-10-09: https://github.com/HassanG04/lolys

@@ -404,7 +404,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08d: UI labels and brand ornaments
-`status: todo` `owner: agent` `needs: T-0.08g` `size: M`
+`status: doing` `owner: agent` `needs: T-0.08g` `size: M`
 - **Do:** Finish the component inventory with Pill/Chip, Badge, Skeleton and SVG ornaments using `currentColor`: ribbon bow, ribbon divider, sparkle, pearl loader and arch frame. Follow `docs/spec/design-system.md` and add every example to `/__kit`.
 - **Done when:** each component has a test; states include text or icons, not color alone; ornaments follow themes; animations stop under reduced motion; arch/card/image shapes use the documented tokens.
 - **Verify:** `npm run verify`
@@ -448,7 +448,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 1: Database and backend contract
 
 #### T-1.01: Local Supabase project
-`status: todo` `owner: agent` `needs: T-0.01` `size: S`
+`status: blocked` `owner: agent` `needs: T-0.01` `size: S`
 - **Do:** Run `supabase init`. In `supabase/config.toml` set the auth site URL to `http://localhost:5173` and turn email confirmations off locally. Add scripts `db:start`, `db:stop`, `db:reset`, `db:test`, `db:types`. Document the Docker requirement in the README.
 - **Done when:** `npm run db:start` brings the stack up and `supabase status` prints the API URL and keys.
 - **Verify:** `npm run db:start && supabase status`
@@ -1228,6 +1228,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-09 | T-0.08 | Anti-Gravity | Implemented UI kit components (Button, IconButton, Card, Input, SearchInput, Select, Textarea, Checkbox, Radio, Badge, Pill, Skeleton, Toast, Dialog, Tabs) and SVG ornaments. Added dev-only route /__kit showing all components in both themes and LTR. Wrote component tests; fully verified via npm run verify. | local only |
 | 2026-10-09 | T-0.09 | Anti-Gravity | Implemented repo guards (check-secrets.mjs, check-bundle.mjs) and wired them into the build script. Budget breaches and secrets caught correctly. | local only |
 | 2026-10-09 | T-0.12 | Anti-Gravity | Added security basics: SECURITY.md, security.txt, CODEOWNERS, and dependabot.yml. Added gitleaks secrets check to CI. | local only |
+| 2026-10-10 | T-1.01 | Anti-Gravity | Blocked. Docker is absent on this environment (H-08). Supabase init and configuration completed, but db:start cannot be verified. | blocked |
 | 2026-10-09 | T-0.01–T-0.07 | Codex | Owner confirms external Anti-Gravity ran concurrently and is now paused. Preserved its 21 partial T-0.07 files with SHA-256 checkpoint; reconciled foundation statuses to doing because required PR/CI evidence and workflow owner review are still pending. Original work retained for restoration. | pending |
 | 2026-10-09 | T-0.06 | Codex | PR CI run 37929038785: build, unit and roadmap green; static correctly rejects the deliberately unused probe variable. Probe removed after recording evidence; final green CI and owner review pending. | [#1](https://github.com/HassanG04/lolys/pull/1) |
 | 2026-10-10 | T-0.01–T-0.06 | Codex | All four final foundation jobs green in run 37929355898 at b4faa49; negative lint test already verified. T-0.01–T-0.05 done; T-0.06 remains doing solely pending required owner workflow review. No merge/deploy. | [#1](https://github.com/HassanG04/lolys/pull/1) |
