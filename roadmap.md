@@ -1199,6 +1199,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.07, T-0.07b | Codex | Split tokens/fonts from persistent theme behavior per the 400-line review rule; retained every original requirement and made T-0.08 depend on both. Implementing on agent/T-0.07-themes. | pending |
 | 2026-10-10 | T-0.07, T-0.07b | Codex | Final verify passes (10 app + 66 tooling tests, all 31 contrast pairs), build passes and 110 tasks validate. Browser verifies both themes at 360/1280 in RTL/LTR, keyboard focus, persisted reload and 44px minimum; screenshots/measurements saved. Theme PR CI pending. | pending |
 | 2026-10-10 | T-0.07, T-0.07b | Codex | All four theme CI jobs green in run 38021668187 at 7d7fcbf; both tasks done. Theme PR stacked on foundation PR 1; no merge/deploy. T-0.08 is next, using preserved drafts plus the concrete review findings. | [#2](https://github.com/HassanG04/lolys/pull/2) |
+| 2026-10-10 | T-0.07b | Codex | Owner requested crescent/sun icons instead of visible theme text. Implemented SVGs with currentColor, Arabic accessible name and action tooltip, retaining 44px minimum and keyboard behavior. Local verify passes (76 tests), build and roadmap pass; browser URL policy blocked fresh visual review. Prior screenshots predate this follow-up. | [#2](https://github.com/HassanG04/lolys/pull/2) |
 
 ### Open questions (agents add rows; the owner answers)
 

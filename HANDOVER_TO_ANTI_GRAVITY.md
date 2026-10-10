@@ -2,7 +2,7 @@
 
 ## Current Objective
 
-Resume T-0.08 UI kit repair in roadmap order after the theme PR documentation follow-up.
+Finish the owner-requested crescent/sun icon follow-up on PR 2, then resume T-0.08.
 Working branch: agent/T-0.07-themes, based on foundation PR 1 at b4faa49.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
@@ -20,10 +20,15 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
   keyboard toggling and reload persistence. Screenshots and measurements saved.
 - Theme PR 2 has four green checks at 7d7fcbf (run 38021668187).
   T-0.07 and T-0.07b are done. No merge or deployment was performed.
+- Documentation follow-up 4b56b05 also passes all four CI jobs (run 38021821418).
+- Owner requested crescent/sun icons instead of visible theme text. Implemented
+  in ThemeToggle.tsx with Arabic label/tooltip and the existing 44px minimum.
+  Local verify, all 76 tests, build and roadmap checks pass.
 
 ## Remaining
 
-- Local verify and implementation CI pass. Check the documentation-only follow-up commit before handing back the PR.
+- Read the final icon follow-up CI on PR 2. Browser URL policy blocked the fresh
+  icon visual check; older screenshots show the previous text toggle.
 - T-0.08: restore its files selectively from the newer checkpoint and fix the
   documented accessibility, production-kit exclusion and testing defects.
 - T-0.09/T-0.12: restore only when reached; repair guards and run required
@@ -80,11 +85,11 @@ All current changes from b4faa49 (generated font CSS/assets included):
 
 ## Current Error
 
-Error: no unresolved application error at this checkpoint.
-Expected: local and remote checks pass before continuing to T-0.08.
-Actual: all theme implementation checks pass; only the final documentation/evidence
-follow-up needs its latest CI result recorded in chat/PR. No application defect.
-Possible cause: none.
+Error: browser tool rejected http://127.0.0.1:5175/ under its URL policy.
+Expected: inspect crescent and sun icons in the local preview.
+Actual: no fresh visual check; tests and production build pass. Do not claim
+the old text-toggle screenshots verify the icon change.
+Possible cause: browser tool policy/state mismatch; no workaround attempted.
 
 The incoming UI-kit/guard/security bugs are documented in the review, not active
 in this theme branch. Do not restore shared package.json, roadmap, App or workflow

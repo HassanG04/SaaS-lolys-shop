@@ -38,9 +38,13 @@ it('uses system dark mode and toggles away from the resolved theme on the first 
   media.matches = true
   renderTheme()
   expect(toggle()).toHaveAttribute('aria-pressed', 'true')
+  expect(toggle()).toHaveAttribute('title', 'التبديل إلى المظهر الفاتح')
+  expect(toggle().textContent).toBe('')
   await userEvent.click(toggle())
   expect(document.documentElement).toHaveAttribute('data-theme', 'light')
   expect(localStorage.getItem('theme')).toBe('light')
+  expect(toggle()).toHaveAccessibleName('المظهر الداكن')
+  expect(toggle()).toHaveAttribute('title', 'التبديل إلى المظهر الداكن')
 })
 
 it.each(['light', 'dark'] as const)(
