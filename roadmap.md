@@ -410,7 +410,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08e: UI kit token guard and final verification
-`status: doing` `owner: agent` `needs: T-0.08d` `size: M`
+`status: done` `owner: agent` `needs: T-0.08d` `size: M`
 - **Do:** Complete the original UI-kit acceptance gate: add a grep-based token check to `verify`, test rejection of hard-coded colors/radii/shadows, and verify `/__kit` contains the full inventory in both themes and an LTR sample while remaining excluded from production builds.
 - **Done when:** token guard fails on negative fixtures and passes the repo; all components have tests; the full kit passes keyboard, 44px target, focus, direction icon and reduced-motion checks at 360/1280 in RTL/LTR and both themes; production artifacts exclude kit code/assets/copy.
 - **Verify:** `npm run verify`
