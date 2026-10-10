@@ -410,7 +410,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08e: UI kit token guard and final verification
-`status: todo` `owner: agent` `needs: T-0.08d` `size: M`
+`status: doing` `owner: agent` `needs: T-0.08d` `size: M`
 - **Do:** Complete the original UI-kit acceptance gate: add a grep-based token check to `verify`, test rejection of hard-coded colors/radii/shadows, and verify `/__kit` contains the full inventory in both themes and an LTR sample while remaining excluded from production builds.
 - **Done when:** token guard fails on negative fixtures and passes the repo; all components have tests; the full kit passes keyboard, 44px target, focus, direction icon and reduced-motion checks at 360/1280 in RTL/LTR and both themes; production artifacts exclude kit code/assets/copy.
 - **Verify:** `npm run verify`
@@ -1261,6 +1261,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08g | Codex | Replaced the preserved dialog draft with native showModal, controlled close/cancel, lifecycle cleanup and focus restoration. Arabic previews and two closed-markup/event tests added; full verify passes (36 app + 66 tooling tests), production build and 116-task roadmap pass. jsdom lacks native modal methods, so focus/inert/Escape and visual acceptance remain unverified due to browser policy; no gate waived or mocks substituted for proof. | pending |
 
 | 2026-10-10 | T-0.08g | Codex | Draft PR 7 published; all four remote jobs pass at a49d87c in run 38071645439. Local verify passes (102 tests), production kit exclusion and 116-task roadmap pass. Native-dialog and visual acceptance remain open. Feedback documentation 22effa5 also has four green jobs in run 38071382759. | [#7](https://github.com/HassanG04/lolys/pull/7) |
+
+| 2026-10-10 | T-0.08e | Codex | Reopened acceptance gate after review: original regex missed CSS/arbitrary/unknown styles; bilingual commit 96ad75f leaks preview copy into production. Repaired token/production guards with negative fixtures and CI enforcement (SEC-16/SEC-24). 42 app + 97 tooling tests and all verification stages pass. Full visual matrix evidence remains outstanding; Anti-Gravity browser report preserved as reported evidence. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

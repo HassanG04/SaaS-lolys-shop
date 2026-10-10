@@ -1,57 +1,107 @@
-import fs from 'node:fs/promises'
+import { readFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
-export const BAD_REGEX =
-  /\b(bg-white|bg-black|text-white|text-black|rounded-(sm|md|lg|xl|2xl|3xl|full)|shadow-(sm|md|lg|xl|2xl|inner|none)|border-(white|black))\b|\b(bg|text|border|shadow|rounded|ring)-\[[^\]]*#[0-9a-fA-F]+[^\]]*\]/g
+const tokenPath = 'src/styles/tokens.css'
+const utility =
+  /\b(bg|text|border(?:-[xysetbrl])?|divide|ring(?:-offset)?|outline|fill|stroke|accent|decoration|caret|rounded(?:-[setbrl]{1,2})?|(?:inset-)?shadow)-(\[[^\]]+\]|\([^)]+\)|[\w./-]+)/g
+const property =
+  '(?:color|background(?:-color)?|border(?:-[a-z]+)*|outline(?:-color)?|box-shadow|text-shadow|fill|stroke)'
+const declaration = new RegExp(`(?<![\\w-])(${property})\\s*:\\s*([^;{}]+)`, 'gi')
+const inline =
+  /\b(color|backgroundColor|background|border(?:Block|Inline|Top|Right|Bottom|Left)?(?:Color|Radius)?|boxShadow|textShadow|outline(?:Color)?|fill|stroke)\s*[:=]\s*(?:['"]([^'"]+)['"]|(\d+(?:\.\d+)?))/g
+const neutral = /^(?:transparent|currentColor|inherit|none|initial|unset)$/i
 
-export async function checkFile(filePath) {
-  const content = await fs.readFile(filePath, 'utf8')
-  const matches = content.match(BAD_REGEX)
-  if (matches) {
-    return matches
+export function createChecker(tokens) {
+  const variables = new Set([...tokens.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]))
+  const theme = tokens.match(/@theme\s+inline\s*\{([^}]+)\}/)?.[1] ?? ''
+  const names = (kind) =>
+    new Set([...theme.matchAll(new RegExp(`--${kind}-([\\w-]+):`, 'g'))].map((m) => m[1]))
+  const colors = names('color'),
+    radii = names('radius'),
+    shadows = names('shadow'),
+    sizes = names('text')
+  function variable(value) {
+    return value.replace(/var\((--[\w-]+)\)/g, (match, name) => (variables.has(name) ? '' : match))
   }
-  return null
-}
-
-async function walk(dir, out = []) {
-  const entries = await fs.readdir(dir, { withFileTypes: true })
-  for (const entry of entries) {
-    if (entry.name === 'node_modules' || entry.name === 'dist' || entry.name === '.git') continue
-    const full = path.join(dir, entry.name)
-    if (entry.isDirectory()) {
-      await walk(full, out)
-    } else if (full.endsWith('.tsx') || full.endsWith('.ts')) {
-      out.push(full)
+  function validValue(prop, value) {
+    if (neutral.test(value.trim())) return true
+    // Semantic class maps (for example Toast's `color: 'text-success'`).
+    if (/^text-/.test(value) && colors.has(value.slice(5))) return true
+    const rest = variable(value)
+      .replace(/!important/g, '')
+      .trim()
+    if (!rest) return true
+    // Border/outline widths and styles are not color, radius or shadow values.
+    if (/^(?:border(?!.*(?:color|radius))|outline$)/i.test(prop)) {
+      return rest
+        .split(/\s+/)
+        .every((part) =>
+          /^(?:0|\d+(?:\.\d+)?(?:px|rem)|solid|dashed|dotted|double|transparent|currentColor|none)$/i.test(
+            part,
+          ),
+        )
     }
+    return false
   }
-  return out
+  return (source, css = false) => {
+    const failures = []
+    if (!css) {
+      for (const match of source.matchAll(/(?<![\w-])(?:rounded|shadow)(?=[\s'"`}]|$)/g))
+        failures.push(match[0])
+      for (const [match, kind, raw] of source.matchAll(utility)) {
+        const value = raw.split('/')[0]
+        const radius = kind.startsWith('rounded'),
+          shadow = kind.endsWith('shadow')
+        const allowed = radius ? radii : shadow ? shadows : colors
+        const reference = value.match(/^\[(?:color:)?var\((--[\w-]+)\)\]$|^\((--[\w-]+)\)$/)
+        if (reference && variables.has(reference[1] ?? reference[2])) continue
+        if (allowed.has(value) || neutral.test(value) || value === 'current') continue
+        if (kind === 'stroke' && value === 'width') continue // SVG attribute, not a utility.
+        if (
+          kind === 'text' &&
+          (sizes.has(value) ||
+            /^(?:start|end|center|justify|wrap|nowrap|balance|pretty|ellipsis|clip)$/.test(value))
+        )
+          continue
+        if (
+          /^(?:border|divide|ring|outline|stroke)/.test(kind) &&
+          /^(?:\d+|solid|dashed|dotted|double|hidden|offset-\d+)$/.test(value)
+        )
+          continue
+        if (kind === 'bg' && /^(?:cover|contain|center|clip-text|no-repeat)$/.test(value)) continue
+        failures.push(match)
+      }
+    }
+    const pattern = css ? declaration : inline
+    for (const [match, prop, quoted, numeric] of source.matchAll(pattern)) {
+      if (/^border-.*(?:width|style)$/.test(prop)) continue
+      if (!validValue(prop, quoted ?? numeric)) failures.push(match)
+    }
+    return [...new Set(failures)]
+  }
 }
 
-async function run() {
-  const files = await walk(path.join(process.cwd(), 'src'))
-  let failed = false
+export async function checkTokens(root = process.cwd()) {
+  const check = createChecker(await readFile(path.join(root, tokenPath), 'utf8'))
+  const files = await readdir(path.join(root, 'src'), { recursive: true })
+  const failures = []
   for (const file of files) {
-    const matches = await checkFile(file)
-    if (matches) {
-      console.error(
-        `[TOKENS] Violation in ${file}: Found hard-coded classes: ${matches.join(', ')}`,
-      )
-      failed = true
-    }
+    const relative = `src/${file.replaceAll(path.sep, '/')}`
+    if (relative === tokenPath || !/\.(?:[jt]sx?|css|svg)$/.test(file)) continue
+    const matches = check(await readFile(path.join(root, relative), 'utf8'), file.endsWith('.css'))
+    if (matches.length) failures.push(`${relative}: ${matches.join(', ')}`)
   }
-  if (failed) {
-    process.exit(1)
-  }
-  console.log('[TOKENS] All files use design-system tokens.')
+  return failures
 }
 
-// Only run if executed directly
-if (
-  import.meta.url === `file://${process.argv[1]}` ||
-  process.argv[1]?.endsWith('check-tokens.mjs')
-) {
-  run().catch((e) => {
-    console.error(e)
-    process.exit(1)
-  })
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  try {
+    const failures = await checkTokens()
+    if (failures.length) throw new Error(failures.join('\n'))
+    console.log('[TOKENS] Source uses documented colors, radii and shadows.')
+  } catch (error) {
+    console.error(`[TOKENS] ${error.message}`)
+    process.exitCode = 1
+  }
 }

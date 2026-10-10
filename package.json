@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run check:ui-build",
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false",
     "roadmap": "node scripts/roadmap.mjs",
@@ -17,6 +17,7 @@
     "format:check": "prettier --check .",
     "test:unit": "vitest run && npm run test:tooling",
     "check:tokens": "node scripts/check-tokens.mjs",
+    "check:ui-build": "node scripts/check-ui-build.mjs",
     "verify": "npm run check:tokens && npm run lint && npm run format:check && npm run typecheck && npm run test:unit && npm run build",
     "test:e2e": "node scripts/pending.mjs test:e2e",
     "db:start": "node scripts/pending.mjs db:start",
