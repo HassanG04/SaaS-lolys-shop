@@ -60,6 +60,12 @@
     inset-block: 0;
     inset-inline: 0;
   }
+  .ui-tab {
+    border-block-end: 2px solid transparent;
+  }
+  .ui-tab[aria-selected='true'] {
+    border-block-end-color: var(--color-brand-val);
+  }
   @media (forced-colors: active) {
     .ui-choice {
       appearance: auto;

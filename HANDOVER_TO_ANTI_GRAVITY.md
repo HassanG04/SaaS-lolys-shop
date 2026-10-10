@@ -2,12 +2,15 @@
 
 ## Current Objective
 
-Prepare T-0.08c feedback/navigation; the text/choice implementations are published.
-Working branch: agent/T-0.08f-choice-controls, based on PR 4 at 3aab682.
+Verify and publish T-0.08c tabs/notifications; dialogs are split into T-0.08g.
+Working branch: agent/T-0.08c-feedback-tabs, based on PR 5 at 5e0ba81.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Completed
 
+- Tabs/Toast and Arabic previews implemented; eight behavior tests added.
+  Verify passes (100 tests and build); 116-task roadmap valid. Choice documentation 5e0ba81 has four green
+  checks in run 38028772831. No browser gate has been waived.
 - T-0.08f native Checkbox/Radio with 44px minimum dimensions, non-color marks,
   labelled/ref/controlled behavior and forced-colors fallback. Five behavior
   tests pass. Full verify passes (26 app + 66 tooling tests), production exclusion
@@ -49,10 +52,9 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Remaining
 
-- T-0.08c feedback/navigation: inspect checkpoint Dialog/Toast/Tabs and the
-  review before selectively restoring. Repair focus containment/restoration,
-  Escape and accessible naming; tabs need unique IDs and RTL/LTR keyboard
-  behavior. Split again if review grows beyond the roadmap's size rule.
+- T-0.08g: repair the dialog draft saved in .tools/feedback-dialog-draft.
+  Remove its non-modal fallback and unreliable custom focus traversal; use
+  native modal behavior. Do not treat mocked native methods as browser proof.
 - T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
   and directions, keyboard focus, 44px targets and reduced motion. Browser policy
   blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
@@ -67,6 +69,11 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 All current changes from b4faa49 (generated font CSS/assets included):
 
+- `.agent-state/ui-feedback-pr.md`
+- `src/components/ui/Tabs.tsx`
+- `src/components/ui/Toast.tsx`
+- `src/components/ui/feedback.test.tsx`
+- `src/dev/FeedbackExamples.tsx`
 - `.agent-state/ui-choices-pr.md`
 - `src/components/ui/Choice.tsx`
 - `src/components/ui/Checkbox.tsx`
@@ -140,7 +147,7 @@ permanent production/token gate remains T-0.08e; no success stub was introduced.
 
 Error: browser tool rejected http://127.0.0.1:5175/ under its URL policy.
 Expected: inspect icons and UI kit in both themes/directions at 360/1280.
-Actual: no fresh visual check; 92 tests and production build pass. Do not claim
+Actual: no fresh visual check; 100 tests and production build pass. Do not claim
 the old text-toggle screenshots verify the icon change.
 Possible cause: browser tool policy/state mismatch; no workaround attempted.
 
@@ -162,9 +169,9 @@ Get-Content .agent-state/project-progress.md -Raw
 git status --short --untracked-files=all
 git diff
 Get-Content .agent-state/anti-gravity-review.md
-Get-Content .tools/anti-gravity-20261010/src/components/ui/Dialog.tsx
-Get-Content .tools/anti-gravity-20261010/src/components/ui/Tabs.tsx
-Get-Content .tools/anti-gravity-20261010/src/components/ui/Toast.tsx
+Get-Content .tools/feedback-dialog-draft/Dialog.tsx
+Get-Content src/components/ui/Tabs.tsx
+Get-Content src/components/ui/Toast.tsx
 npm run verify
 npm run roadmap:check
 npm run roadmap:next

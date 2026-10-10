@@ -392,13 +392,19 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08c: UI feedback and navigation
-`status: todo` `owner: agent` `needs: T-0.08f` `size: M`
-- **Do:** Continue the UI kit: Toast, Dialog and Tabs per `docs/spec/design-system.md`. Extend `/__kit` with Arabic examples in both themes and directions.
-- **Done when:** every component has behavior tests; dialog naming, focus containment/restoration and Escape work; tabs have unique relationships and keyboard navigation in both directions; feedback is accessible; controls have 44px targets and focus outlines; tokens and reduced motion are preserved.
+`status: doing` `owner: agent` `needs: T-0.08f` `size: M`
+- **Do:** Continue the UI kit: Toast and Tabs per `docs/spec/design-system.md`. Extend `/__kit` with Arabic examples in both themes and directions. Dialog is split into T-0.08g to keep reviews small.
+- **Done when:** every component has behavior tests; tabs have unique relationships and keyboard navigation in both directions; feedback is accessible; controls have 44px targets and focus outlines; tokens and reduced motion are preserved.
+- **Verify:** `npm run verify`
+
+#### T-0.08g: Accessible dialogs
+`status: todo` `owner: agent` `needs: T-0.08c` `size: M`
+- **Do:** Complete the dialog split from T-0.08c per `docs/spec/design-system.md`; add an Arabic `/__kit` example in both themes and directions.
+- **Done when:** dialog naming, focus containment/restoration, controlled open/close and Escape work; behavior tests pass; controls have 44px targets and focus outlines; tokens and reduced motion are preserved.
 - **Verify:** `npm run verify`
 
 #### T-0.08d: UI labels and brand ornaments
-`status: todo` `owner: agent` `needs: T-0.08c` `size: M`
+`status: todo` `owner: agent` `needs: T-0.08g` `size: M`
 - **Do:** Finish the component inventory with Pill/Chip, Badge, Skeleton and SVG ornaments using `currentColor`: ribbon bow, ribbon divider, sparkle, pearl loader and arch frame. Follow `docs/spec/design-system.md` and add every example to `/__kit`.
 - **Done when:** each component has a test; states include text or icons, not color alone; ornaments follow themes; animations stop under reduced motion; arch/card/image shapes use the documented tokens.
 - **Verify:** `npm run verify`
@@ -1246,6 +1252,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08f | Codex | Full verify passes (26 app + 66 tooling tests), production build/exclusion and 115-task roadmap pass. Native reset test now invokes an actual reset button, rather than merely dispatching a reset event. Browser visual gate and PR checks pending. | pending |
 
 | 2026-10-10 | T-0.08f | Codex | All four remote checks pass at a0708bc in run 38028693736. Text and choice controls are published for review; T-0.08/T-0.08b/T-0.08f retain their pending browser visual/dependency gates. | [#5](https://github.com/HassanG04/lolys/pull/5) |
+
+| 2026-10-10 | T-0.08c, T-0.08g | Codex | Prepared tabs/notifications while earlier visual gates remain open; no dependency marked complete. Dialog is split into T-0.08g under the review-size rule, with all original criteria retained; its draft is preserved locally. Full verify passes (34 app + 66 tooling tests), build and 116-task roadmap pass. Browser verification remains blocked by prior URL policy denial; status stays doing. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

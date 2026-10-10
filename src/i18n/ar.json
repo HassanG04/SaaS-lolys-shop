@@ -4,7 +4,7 @@
     "switchToLight": "التبديل إلى المظهر الفاتح",
     "switchToDark": "التبديل إلى المظهر الداكن"
   },
-  "ui": { "search": "بحث" },
+  "ui": { "search": "بحث", "dismissNotification": "إغلاق التنبيه" },
   "field": { "name": "الاسم الكامل", "notes": "ملاحظات للتوصيل", "governorate": "المحافظة" },
   "search": { "placeholder": "ابحث عن إكسسوار أو كوب…" },
   "kit": {
@@ -31,6 +31,19 @@
     "invalid": "معاينة الحقل غير الصالح",
     "invalidMessage": "البيانات غير صالحة. راجع الحقول المظلّلة.",
     "errorCode": "رمز الخطأ:",
-    "searchResult": "عبارة البحث التجريبية:"
+    "searchResult": "عبارة البحث التجريبية:",
+    "feedback": {
+      "title": "التنبيهات والتنقل",
+      "toastTitle": "تم الحفظ",
+      "toastMessage": "حُفظت التغييرات بنجاح.",
+      "toggleNotification": "عرض أو إخفاء التنبيه التجريبي",
+      "tabsLabel": "أقسام المعاينة",
+      "firstTab": "الأول",
+      "secondTab": "الثاني",
+      "thirdTab": "الثالث",
+      "firstPanel": "محتوى القسم الأول.",
+      "secondPanel": "محتوى القسم الثاني.",
+      "thirdPanel": "محتوى القسم الثالث."
+    }
   }
 }

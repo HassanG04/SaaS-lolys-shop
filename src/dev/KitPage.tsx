@@ -3,6 +3,7 @@ import { IconButton } from '../components/ui/IconButton'
 import { Card, CardImage } from '../components/ui/Card'
 import ar from '../i18n/ar.json'
 import placeholder from './card-placeholder.svg'
+import { FeedbackExamples } from './FeedbackExamples'
 import { FormExamples } from './FormExamples'
 
 export default function KitPage() {
@@ -46,6 +47,7 @@ export default function KitPage() {
               <h3 className="p-3 text-h3">{ar.kit.card}</h3>
             </Card>
             <FormExamples />
+            <FeedbackExamples />
           </section>
         )),
       )}
