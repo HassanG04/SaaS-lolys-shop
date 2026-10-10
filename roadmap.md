@@ -1255,7 +1255,10 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-10 | T-0.08c, T-0.08g | Codex | Prepared tabs/notifications while earlier visual gates remain open; no dependency marked complete. Dialog is split into T-0.08g under the review-size rule, with all original criteria retained; its draft is preserved locally. Full verify passes (34 app + 66 tooling tests), build and 116-task roadmap pass. Browser verification remains blocked by prior URL policy denial; status stays doing. | pending |
 
+| 2026-10-10 | T-0.08c | Codex | Draft PR 6 published at 68e506e; all four remote jobs pass in run 38071233956. Local verify passes (100 tests), production kit exclusion and 116-task roadmap pass. Task remains doing pending upstream/browser visual gates. Dialog draft is split and preserved; installed jsdom lacks native dialog methods, so mocked focus tests are not acceptance evidence. | [#6](https://github.com/HassanG04/lolys/pull/6) |
+
 ### Open questions (agents add rows; the owner answers)
+
 
 | ID | Question | Task | Needed from | Status |
 |---|---|---|---|---|

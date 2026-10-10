@@ -2,14 +2,17 @@
 
 ## Current Objective
 
-Verify and publish T-0.08c tabs/notifications; dialogs are split into T-0.08g.
+Continue with T-0.08g dialogs; T-0.08c tabs/notifications are published.
 Working branch: agent/T-0.08c-feedback-tabs, based on PR 5 at 5e0ba81.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Completed
 
 - Tabs/Toast and Arabic previews implemented; eight behavior tests added.
-  Verify passes (100 tests and build); 116-task roadmap valid. Choice documentation 5e0ba81 has four green
+  Verify passes (100 tests and build); production kit exclusion and 116-task
+  roadmap pass. All four PR 6 jobs pass at 68e506e in run 38071233956.
+  PR: https://github.com/HassanG04/lolys/pull/6.
+  Choice documentation 5e0ba81 has four green
   checks in run 38028772831. No browser gate has been waived.
 - T-0.08f native Checkbox/Radio with 44px minimum dimensions, non-color marks,
   labelled/ref/controlled behavior and forced-colors fallback. Five behavior
@@ -54,7 +57,9 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 - T-0.08g: repair the dialog draft saved in .tools/feedback-dialog-draft.
   Remove its non-modal fallback and unreliable custom focus traversal; use
-  native modal behavior. Do not treat mocked native methods as browser proof.
+  native modal behavior. Installed jsdom has no showModal/close implementation.
+  Do not treat mocked methods as browser proof or claim native focus/Escape
+  checks passed. Its old tests/draft are preserved, not verified active code.
 - T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
   and directions, keyboard focus, 44px targets and reduced motion. Browser policy
   blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
@@ -175,6 +180,7 @@ Get-Content src/components/ui/Toast.tsx
 npm run verify
 npm run roadmap:check
 npm run roadmap:next
+git switch -c agent/T-0.08g-dialog
 ```
 
 Use .nvmrc Node 24.21.0. Never read or print .env values. HANDOVER_TO_CODEX.md is

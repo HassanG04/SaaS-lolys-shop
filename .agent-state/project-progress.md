@@ -3,7 +3,7 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08c tabs and notifications verified locally; publication pending; next T-0.08g dialogs
+Current task: T-0.08c tabs and notifications published with green CI; next T-0.08g dialogs; visual gates open
 Completed:
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
@@ -25,6 +25,7 @@ Completed:
   - Choice draft PR 5 published at a0708bc; all four jobs green in run 38028693736.
   - Choice handover commit 5e0ba81 also passes all four jobs in run 38028772831.
   - Added tabs and notifications with Arabic previews; dialog draft preserved for T-0.08g in .tools/feedback-dialog-draft.
+  - Feedback draft PR 6 published at 68e506e; all four jobs green in run 38071233956.
 Files changed:
   - Branch agent/T-0.08c-feedback-tabs is based on choice PR 5 at 5e0ba81.
   - This slice adds Tabs, Toast, feedback.test.tsx and FeedbackExamples; updates kit, Arabic copy, CSS, roadmap and continuation/PR docs.
@@ -51,7 +52,8 @@ Problems found:
   - Owner workflow review and human-owned infrastructure setup remain pending.
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
-Next action: Publish T-0.08c and check its CI; then repair the preserved dialog draft in T-0.08g. Complete browser visual checks when permitted before marking UI tasks done; no acceptance gate waived.
+  - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
+Next action: Repair the preserved dialog draft in T-0.08g using native modal behavior. Complete browser visual checks when permitted before marking UI tasks done; no acceptance gate waived.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
@@ -60,6 +62,7 @@ Theme PR: https://github.com/HassanG04/lolys/pull/2 (stacked on PR 1).
 UI actions PR: https://github.com/HassanG04/lolys/pull/3 (stacked on PR 2).
 Text fields PR: https://github.com/HassanG04/lolys/pull/4 (stacked on PR 3).
 Choice controls PR: https://github.com/HassanG04/lolys/pull/5 (stacked on PR 4).
+Feedback PR: https://github.com/HassanG04/lolys/pull/6 (stacked on PR 5).
 
 Use Node 24.21.0 from `.nvmrc`; local runtime is
 `.tools/node-v24.21.0-win-x64`. Install with `npm ci --ignore-scripts`.
