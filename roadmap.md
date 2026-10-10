@@ -379,14 +379,20 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** buttons support keyboard activation and native disabled/form behavior; icon actions have accessible names and mirror only directional artwork; 44px targets and focus outlines are retained; every component has a test; cards respect reduced motion; no hard-coded colors, radii or shadows outside tokens. Both themes checked at 360/1280 in RTL/LTR.
 - **Verify:** `npm run verify`
 
-#### T-0.08b: UI form controls
-`status: todo` `owner: agent` `needs: T-0.08` `size: M`
-- **Do:** Continue the UI kit per `docs/spec/design-system.md`: Input and SearchInput (pill with round submit), Select, Textarea, Checkbox and Radio. Extend `/__kit` with labelled Arabic examples, error/disabled states and both directions/themes.
-- **Done when:** every component has behavior tests; labels never rely on placeholders; errors are accessible; selected states include a non-color indicator; controls have 44px targets and visible focus; tokens/logical styling and reduced motion are preserved.
+#### T-0.08b: UI text and search fields
+`status: doing` `owner: agent` `needs: T-0.08` `size: M`
+- **Do:** Continue the UI kit per `docs/spec/design-system.md`: Input and SearchInput (pill with round submit), Select and Textarea. Extend `/__kit` with labelled Arabic examples, error/disabled states and both directions/themes. Checkbox/Radio are split into T-0.08f under the review-size rule; no requirements removed.
+- **Done when:** every component has behavior tests; labels never rely on placeholders; errors are accessible; controls have 44px targets and visible focus; tokens/logical styling and reduced motion are preserved.
+- **Verify:** `npm run verify`
+
+#### T-0.08f: UI choice controls
+`status: todo` `owner: agent` `needs: T-0.08b` `size: S`
+- **Do:** Complete the form-control inventory split from T-0.08b: labelled Checkbox and Radio, Arabic examples in `/__kit`, disabled and checked states, unique radio groups in repeated previews. Follow `docs/spec/design-system.md`.
+- **Done when:** label activation, Space/arrow navigation, disabled behavior and group isolation have tests; selection includes a non-color mark; controls have 44px targets and visible focus in both directions/themes, with documented tokens only.
 - **Verify:** `npm run verify`
 
 #### T-0.08c: UI feedback and navigation
-`status: todo` `owner: agent` `needs: T-0.08b` `size: M`
+`status: todo` `owner: agent` `needs: T-0.08f` `size: M`
 - **Do:** Continue the UI kit: Toast, Dialog and Tabs per `docs/spec/design-system.md`. Extend `/__kit` with Arabic examples in both themes and directions.
 - **Done when:** every component has behavior tests; dialog naming, focus containment/restoration and Escape work; tabs have unique relationships and keyboard navigation in both directions; feedback is accessible; controls have 44px targets and focus outlines; tokens and reduced motion are preserved.
 - **Verify:** `npm run verify`
@@ -1229,6 +1235,10 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08 | Codex | Split original UI kit into actions/cards, forms, feedback/navigation, labels/ornaments and final token/preview guard tasks (T-0.08b–T-0.08e); downstream tasks require the full kit. Implemented first component set and dev preview; 82 tests, build, production kit exclusion and 114-task roadmap check pass. Browser policy prevents fresh visual checks; status remains doing. | pending |
 
 | 2026-10-10 | T-0.08 | Codex | All four PR jobs pass at 0ba979e in run 38023041519; 82 local tests, build and production kit exclusion verified. UI visual gate is still pending due to browser policy; task remains doing. | [#3](https://github.com/HassanG04/lolys/pull/3) |
+
+| 2026-10-10 | T-0.08b, T-0.08f | Codex | Continuing implementation preparation while T-0.08 visual gate remains open; no dependency marked complete or acceptance check waived. Split checkbox/radio into T-0.08f to retain small reviews. Added labelled text/search fields and static catalogue-error preview; behavior tests pass, full verification pending. | pending |
+
+| 2026-10-10 | T-0.08b | Codex | Full verify passes (21 app + 66 tooling tests), build passes and 115 tasks validate. React review retained native behavior, direct imports and development-only loading; no new dependencies. Visual gate remains open. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

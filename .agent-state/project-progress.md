@@ -3,7 +3,7 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08 UI actions/cards; code and CI verified, visual review pending
+Current task: T-0.08b text/search fields; implementation verified, visual gate still open
 Completed:
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
@@ -17,11 +17,15 @@ Completed:
   - Added Button, IconButton, Card/CardImage and development-only previews; native form/keyboard behavior, required icon labels and directional mirroring tested.
   - Draft UI actions PR 3 published at 0ba979e, stacked on theme PR 2.
   - All four UI actions jobs passed at 0ba979e (run 38023041519).
+  - Published the previously local handover commit afd97fe to PR 3; GitHub DNS recovered.
+  - Added labelled Input, SearchInput, Select and Textarea; native values/ref/disabled behavior and description IDs tested.
+  - Split Checkbox/Radio into T-0.08f; their prepared source is in .tools/form-choice-draft, not discarded.
 Files changed:
-  - Branch agent/T-0.08-ui-actions is based on theme PR 2 at e34b6c2.
+  - Branch agent/T-0.08b-form-controls is based on UI actions PR 3 at afd97fe.
   - Theme components, tokens, fonts/licenses, tests, dependency pins, roadmap and review notes.
   - Icon follow-up changes ThemeToggle.tsx, theme.test.tsx, ar.json and continuation/PR documentation.
   - UI actions add three components, actions.test.tsx, src/dev/KitPage.tsx and its local SVG fixture, src/styles/ui.css; update App, Arabic copy, tokens and handover/PR/roadmap docs.
+  - Text fields add Field, Input, Select, Textarea, SearchInput, forms.test.tsx and FormExamples; update kit, CSS, Arabic copy and continuation/PR/roadmap docs.
 Tests executed:
   - Incoming Anti-Gravity verify passed (13 app tests, 27 tooling tests); review found requirements not covered by those tests.
   - Exact theme dependency installation passed, zero vulnerabilities reported.
@@ -30,13 +34,14 @@ Tests executed:
   - Final local verify and 110-task roadmap validation pass after the browser-driven CSS fix.
   - Icon follow-up verify passes (76 tests), build, roadmap and remote CI pass.
   - UI actions verify passes (16 app + 66 tooling tests); production route/copy/fixture exclusion, 114-task roadmap and all four PR checks pass.
+  - Text fields verify passes (21 app + 66 tooling tests); 115-task roadmap valid. Final PR checks pending.
 Problems found:
-  - Implementation 0ba979e is published and green; final documentation follow-up is local because GitHub DNS timed out again. Retry git push, then refresh PR 3 body from .agent-state/ui-actions-pr.md.
+  - Earlier approval-service usage limit interrupted verification; subsequent local checks ran successfully.
   - Later UI kit/guards/security drafts did not meet all criteria; statuses corrected to todo with review notes.
   - Owner workflow review and human-owned infrastructure setup remain pending.
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
-Next action: Push the local documentation follow-up when DNS recovers; complete T-0.08 visual checks when browser policy permits. Then T-0.08b forms. Keep T-0.08 doing until actual browser checks pass.
+Next action: Publish text-field draft and read CI, then T-0.08f choice controls. Keep UI tasks open until their visual checks and dependencies are complete; no acceptance gate waived.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:

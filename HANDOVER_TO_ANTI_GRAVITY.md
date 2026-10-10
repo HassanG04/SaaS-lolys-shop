@@ -2,11 +2,18 @@
 
 ## Current Objective
 
-Finish visual verification of T-0.08 UI actions/cards, then resume T-0.08b forms.
-Working branch: agent/T-0.08-ui-actions, based on theme PR 2 at e34b6c2.
+Publish verified T-0.08b text/search fields, then prepare T-0.08f choice controls.
+Working branch: agent/T-0.08b-form-controls, based on PR 3 at afd97fe.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Completed
+
+- T-0.08b Input/SearchInput/Select/Textarea and Field helper implemented with
+  Arabic labels, stable descriptions, refs, disabled/native form behavior.
+  87 tests pass (21 app + 66 tooling), production build and 115-task roadmap pass.
+- Prior local documentation afd97fe is now published to PR 3; its body refreshed.
+- Checkbox/Radio are split to T-0.08f; prepared files retained in
+  .tools/form-choice-draft. Do not overwrite shared files wholesale on restore.
 
 - Foundation PR 1: all four jobs pass in run 37929355898; negative lint probe
   previously verified in run 37929038785. Owner workflow review remains pending.
@@ -34,13 +41,11 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Remaining
 
-- Push the local documentation follow-up when GitHub DNS recovers, then update
-  PR 3 from .agent-state/ui-actions-pr.md. Implementation 0ba979e is already
-  published and green; only later continuation documentation is unpublished.
+- Publish T-0.08b and read its final PR checks; then T-0.08f choice controls.
 - T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
   and directions, keyboard focus, 44px targets and reduced motion. Browser policy
   blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
-- After visual review, mark T-0.08 done and resume T-0.08b forms from the checkpoint.
+- After visual review, complete T-0.08/T-0.08b in dependency order.
   The later feedback/ornament/guard work is split into T-0.08c/T-0.08d/T-0.08e.
 - T-0.09/T-0.12: restore only when reached; repair guards and run required
   negative CI tests. Their incoming completion claims were not valid evidence.
@@ -51,6 +56,14 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 All current changes from b4faa49 (generated font CSS/assets included):
 
+- `.agent-state/ui-forms-pr.md`
+- `src/components/ui/Field.tsx`
+- `src/components/ui/Input.tsx`
+- `src/components/ui/Select.tsx`
+- `src/components/ui/Textarea.tsx`
+- `src/components/ui/SearchInput.tsx`
+- `src/components/ui/forms.test.tsx`
+- `src/dev/FormExamples.tsx`
 - `.agent-state/ui-actions-pr.md`
 - `src/components/ui/Button.tsx`
 - `src/components/ui/IconButton.tsx`
@@ -110,14 +123,13 @@ permanent production/token gate remains T-0.08e; no success stub was introduced.
 
 Error: browser tool rejected http://127.0.0.1:5175/ under its URL policy.
 Expected: inspect icons and UI kit in both themes/directions at 360/1280.
-Actual: no fresh visual check; 82 tests and production build pass. Do not claim
+Actual: no fresh visual check; 87 tests and production build pass. Do not claim
 the old text-toggle screenshots verify the icon change.
 Possible cause: browser tool policy/state mismatch; no workaround attempted.
 
-Publication error: `Could not resolve host: github.com`; a fresh Resolve-DnsName
-also timed out. Expected: push final documentation and refresh the PR body.
-Actual: implementation PR is green, latest documentation commit stays local.
-Possible cause: intermittent DNS/network availability; no settings changed.
+Previous publication DNS failure recovered; afd97fe was pushed successfully.
+An approval-service usage limit interrupted a verification attempt, but the
+subsequent full verify succeeded. No approval or browser policy was bypassed.
 
 The incoming UI-kit/guard/security bugs are documented in the review, not active
 in this theme branch. Do not restore shared package.json, roadmap, App or workflow
@@ -134,7 +146,7 @@ git status --short --untracked-files=all
 git diff
 git push
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-node .tools/github.mjs update-ui-actions 3
+node .tools/github.mjs create-forms
 npm run verify
 npm run roadmap:check
 npm run roadmap:next

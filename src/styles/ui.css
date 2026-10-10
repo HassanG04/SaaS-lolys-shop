@@ -28,6 +28,19 @@
   .ui-card {
     box-shadow: var(--card-depth);
   }
+  .ui-field:disabled {
+    border-style: dashed;
+  }
+  .ui-search {
+    min-block-size: calc(var(--spacing-touch) + 0.5rem);
+    padding-inline-end: calc(var(--spacing-touch) + 0.75rem);
+  }
+  .ui-search-submit {
+    inset-block-start: 0.25rem;
+  }
+  .ui-field[aria-invalid='true'] {
+    border-color: var(--color-danger-val);
+  }
   @media (prefers-reduced-motion: no-preference) and (hover: hover) {
     .ui-card {
       transition: transform 200ms ease-out;
