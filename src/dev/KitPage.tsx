@@ -8,12 +8,13 @@ import { FeedbackExamples } from './FeedbackExamples'
 import { FormExamples } from './FormExamples'
 import { DialogExample } from './DialogExample'
 import { OrnamentExamples } from './OrnamentExamples'
+import { AuthFormExamples } from './AuthFormExamples'
 
 export default function KitPage() {
   const ar = useKitCopy()
   return (
-    <main className="space-y-8 p-4">
-      <div className="flex items-center justify-between">
+    <main className="mx-auto max-w-layout space-y-8 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-h1">{ar.kit.title}</h1>
         <LanguageToggle />
       </div>
@@ -53,6 +54,7 @@ export default function KitPage() {
               <CardImage src={placeholder} alt={ar.kit.image} width="256" height="256" />
               <h3 className="p-3 text-h3">{ar.kit.card}</h3>
             </Card>
+            <AuthFormExamples />
             <FormExamples />
             <FeedbackExamples />
             <DialogExample />

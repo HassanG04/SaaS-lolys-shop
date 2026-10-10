@@ -427,6 +427,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** behavior tests and full verification pass; UI language/direction and focus match both themes at 360/1280, including reduced motion; production preview exclusion still passes.
 - **Verify:** `npm run verify`
 
+#### T-0.08j: Compact authentication form preview
+`status: doing` `owner: agent` `needs: T-0.08i` `size: S`
+- **Do:** Polish the development UI-kit login/register preview with centered panels capped at the documented readable form width. Keep fields full width inside their panel, stack them on narrow screens, and place the two panels side by side only when the viewport allows. Use existing tokens, labels, focus behavior and both language directions.
+- **Done when:** login and registration previews no longer stretch across the page; fields remain readable and full width within each panel; mobile layout remains usable; tests and production preview exclusion pass.
+- **Verify:** `npm run verify`
+
 #### T-0.09: Repo guards
 `status: todo` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Write `scripts/check-secrets.mjs`: scan tracked files and `dist/`; fail on any JWT whose decoded payload has `role: service_role`, on `sb_secret_` keys, and on `service_role` strings outside an allowlist of docs and tests (the public anon key may appear in `dist/`). Write `scripts/check-bundle.mjs`: gzip budget for initial route JS of 200 KB or less, admin chunk separate. Wire both into the `build` job.
@@ -1284,6 +1290,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08i | Codex | Added 12 language behavior/parity/error-preview tests; corrected Arabic language-tag matching and updates document direction before paint. npm run verify passes (54 app + 97 tooling tests), production guards pass, 118-task roadmap validates. Preparing while upstream visual gate remains open; no acceptance criteria waived. | pending |
 
 | 2026-10-10 | T-0.08i | Codex | All four remote jobs pass at e8774dd in run 38081581119. Local verify passes with 151 tests; exact continuation/file inventory and pending visual matrix saved. T-0.08e/h/i remain doing until visual evidence; owner workflow review and Docker prerequisites still gate new phases. | [#11](https://github.com/HassanG04/lolys/pull/11) |
+
+| 2026-10-10 | T-0.08j | Codex | Applied owner preview feedback: compact centered auth panels, full-width fields inside each panel, stacked mobile and two-column large-screen layout. Added auth preview copy, test and production marker guard. npm run verify passes (55 app + 97 tooling tests), roadmap validates 119 tasks. Task remains doing because T-0.08i visual dependency is open. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

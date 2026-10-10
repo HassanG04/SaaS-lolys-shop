@@ -1,4 +1,10 @@
 @layer components {
+  .ui-form-panel {
+    inline-size: 100%;
+    max-inline-size: 28rem;
+    margin-inline: auto;
+  }
+
   .ui-control {
     min-block-size: var(--spacing-touch);
     min-inline-size: var(--spacing-touch);

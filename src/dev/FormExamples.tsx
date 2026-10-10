@@ -11,7 +11,7 @@ export function FormExamples() {
   const ar = useKitCopy()
   const [query, setQuery] = useState('')
   return (
-    <div className="grid gap-4">
+    <div className="ui-form-panel grid gap-4">
       <h3 className="text-h3">{ar.kit.forms}</h3>
       <Input label={ar.field.name} hint={ar.kit.hint} autoComplete="name" />
       <Input label={ar.kit.disabled} disabled />

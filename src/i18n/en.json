@@ -14,6 +14,16 @@
   "field": { "name": "Full Name", "notes": "Delivery notes", "governorate": "Governorate" },
   "search": { "placeholder": "Search for an accessory or mug…" },
   "kit": {
+    "auth": {
+      "title": "Login and registration",
+      "previewNote": "Layout preview only. Data entry and sign-in are not available yet.",
+      "login": "Log in",
+      "register": "Create account",
+      "email": "Email address",
+      "password": "Password",
+      "emailExample": "name@example.com",
+      "passwordExample": "••••••••"
+    },
     "title": "UI Kit Preview",
     "light": "Light Theme",
     "dark": "Dark Theme",
