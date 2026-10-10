@@ -16,4 +16,9 @@ Object.defineProperty(window, 'matchMedia', {
   }),
 })
 
+Object.defineProperty(window.navigator, 'language', {
+  value: 'ar',
+  configurable: true,
+})
+
 afterEach(cleanup)

@@ -1,9 +1,11 @@
 import { useId } from 'react'
 import { Checkbox } from '../components/ui/Checkbox'
 import { Radio } from '../components/ui/Radio'
-import ar from '../i18n/ar.json'
+
+import { useLanguage } from '../i18n/LanguageProvider'
 
 export function ChoiceExamples() {
+  const { t: ar } = useLanguage()
   const group = useId()
   return (
     <div className="grid gap-3">

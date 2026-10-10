@@ -1,6 +1,5 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { IconButton } from './IconButton'
-import { ui } from '../../i18n/ar.json'
 
 export type DialogProps = {
   open: boolean
@@ -10,7 +9,11 @@ export type DialogProps = {
   onClose: () => void
 }
 
+import { useLanguage } from '../../i18n/LanguageProvider'
+
 export function Dialog({ open, title, description, children, onClose }: DialogProps) {
+  const { t } = useLanguage()
+  const ui = t.ui
   const dialogRef = useRef<HTMLDialogElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const id = useId()

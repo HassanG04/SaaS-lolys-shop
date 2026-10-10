@@ -1,11 +1,12 @@
 import type { InputProps } from './Input'
 import { Field, fieldClass, useField } from './Field'
 import { IconButton } from './IconButton'
-import { ui } from '../../i18n/ar.json'
 
 type SearchInputProps = Omit<InputProps, 'type' | 'form' | 'onSubmit'> & {
   onSearch: (value: string) => void
 }
+
+import { useLanguage } from '../../i18n/LanguageProvider'
 
 export function SearchInput({
   label,
@@ -15,6 +16,8 @@ export function SearchInput({
   className = '',
   ...props
 }: SearchInputProps) {
+  const { t } = useLanguage()
+  const ui = t.ui
   const field = useField(props.id, hint, props['aria-describedby'])
   return (
     <form

@@ -1,0 +1,71 @@
+{
+  "theme": {
+    "dark": "Dark Theme",
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
+  "ui": {
+    "search": "Search",
+    "dismissNotification": "Dismiss notification",
+    "closeDialog": "Close dialog",
+    "loading": "Loading"
+  },
+  "field": { "name": "Full Name", "notes": "Delivery notes", "governorate": "Governorate" },
+  "search": { "placeholder": "Search for an accessory or mug…" },
+  "kit": {
+    "title": "UI Kit Preview",
+    "light": "Light Theme",
+    "dark": "Dark Theme",
+    "rtl": "Right to Left",
+    "ltr": "Left to Right",
+    "primary": "Primary Button",
+    "secondary": "Secondary Button",
+    "ghost": "Ghost Button",
+    "danger": "Delete",
+    "disabled": "Disabled",
+    "back": "Back",
+    "card": "Sample Card",
+    "image": "Sample preview image",
+    "forms": "Form Fields",
+    "checkbox": "Sample checkbox",
+    "radio": "Sample radio group",
+    "reset": "Reset",
+    "hint": "Sample input field",
+    "first": "First Option",
+    "second": "Second Option",
+    "invalid": "Invalid Field Preview",
+    "invalidMessage": "Invalid data. Check the highlighted fields.",
+    "errorCode": "Error Code:",
+    "searchResult": "Search term:",
+    "ornaments": {
+      "title": "Badges & Ornaments",
+      "pill": "Pill Badge",
+      "chip": "Small Chip",
+      "sale": "Sample Sale",
+      "soldOut": "Sold Out",
+      "awaiting": "Awaiting Payment",
+      "image": "Sample image in arch frame",
+      "skeleton": "Content placeholder loading preview",
+      "loadingToggle": "Toggle test loading state"
+    },
+    "dialog": {
+      "open": "Open Details",
+      "title": "Preview Details",
+      "description": "Sample dialog. Press Close or Escape to return to the page.",
+      "field": "Field inside dialog"
+    },
+    "feedback": {
+      "title": "Feedback & Navigation",
+      "toastTitle": "Saved",
+      "toastMessage": "Changes saved successfully.",
+      "toggleNotification": "Show or hide sample notification",
+      "tabsLabel": "Preview Sections",
+      "firstTab": "First",
+      "secondTab": "Second",
+      "thirdTab": "Third",
+      "firstPanel": "Content for the first section.",
+      "secondPanel": "Content for the second section.",
+      "thirdPanel": "Content for the third section."
+    }
+  }
+}

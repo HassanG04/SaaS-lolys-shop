@@ -1,7 +1,8 @@
+import { useLanguage } from '../i18n/LanguageProvider'
+import { LanguageToggle } from '../components/ui/LanguageToggle'
 import { Button } from '../components/ui/Button'
 import { IconButton } from '../components/ui/IconButton'
 import { Card, CardImage } from '../components/ui/Card'
-import ar from '../i18n/ar.json'
 import placeholder from './card-placeholder.svg'
 import { FeedbackExamples } from './FeedbackExamples'
 import { FormExamples } from './FormExamples'
@@ -9,9 +10,13 @@ import { DialogExample } from './DialogExample'
 import { OrnamentExamples } from './OrnamentExamples'
 
 export default function KitPage() {
+  const { t: ar } = useLanguage()
   return (
     <main className="space-y-8 p-4">
-      <h1 className="text-h1">{ar.kit.title}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-h1">{ar.kit.title}</h1>
+        <LanguageToggle />
+      </div>
       {(['light', 'dark'] as const).flatMap((theme) =>
         (['rtl', 'ltr'] as const).map((direction) => (
           <section

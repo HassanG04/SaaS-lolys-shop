@@ -1,5 +1,5 @@
 import { createRef } from 'react'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within } from '../../test-utils'
 import userEvent from '@testing-library/user-event'
 import { expect, test } from 'vitest'
 import { Badge } from './Badge'

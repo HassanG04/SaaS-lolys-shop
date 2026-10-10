@@ -2,9 +2,11 @@ import { useId, useState } from 'react'
 import { Button } from '../components/ui/Button'
 import { Tabs } from '../components/ui/Tabs'
 import { Toast } from '../components/ui/Toast'
-import ar from '../i18n/ar.json'
+
+import { useLanguage } from '../i18n/LanguageProvider'
 
 export function FeedbackExamples() {
+  const { t: ar } = useLanguage()
   const [visible, setVisible] = useState(true)
   const headingId = useId()
   const copy = ar.kit.feedback

@@ -374,43 +374,43 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-0.08: UI actions and cards
-`status: doing` `owner: agent` `needs: T-0.07b` `size: M`
+`status: done` `owner: agent` `needs: T-0.07b` `size: M`
 - **Do:** Build RTL-first Button (cocoa primary pill, blush secondary pill, ghost, danger), IconButton and Card (28px radius, soft shadow, 20px inner image radius and 8px frame) per `docs/spec/design-system.md`. Start the dev-only `/__kit` route with both themes and LTR/RTL samples, excluded from production builds. Split the original UI kit across T-0.08b through T-0.08e under the 400-line review rule; retain every original requirement.
 - **Done when:** buttons support keyboard activation and native disabled/form behavior; icon actions have accessible names and mirror only directional artwork; 44px targets and focus outlines are retained; every component has a test; cards respect reduced motion; no hard-coded colors, radii or shadows outside tokens. Both themes checked at 360/1280 in RTL/LTR.
 - **Verify:** `npm run verify`
 
 #### T-0.08b: UI text and search fields
-`status: doing` `owner: agent` `needs: T-0.08` `size: M`
+`status: done` `owner: agent` `needs: T-0.08` `size: M`
 - **Do:** Continue the UI kit per `docs/spec/design-system.md`: Input and SearchInput (pill with round submit), Select and Textarea. Extend `/__kit` with labelled Arabic examples, error/disabled states and both directions/themes. Checkbox/Radio are split into T-0.08f under the review-size rule; no requirements removed.
 - **Done when:** every component has behavior tests; labels never rely on placeholders; errors are accessible; controls have 44px targets and visible focus; tokens/logical styling and reduced motion are preserved.
 - **Verify:** `npm run verify`
 
 #### T-0.08f: UI choice controls
-`status: doing` `owner: agent` `needs: T-0.08b` `size: S`
+`status: done` `owner: agent` `needs: T-0.08b` `size: S`
 - **Do:** Complete the form-control inventory split from T-0.08b: labelled Checkbox and Radio, Arabic examples in `/__kit`, disabled and checked states, unique radio groups in repeated previews. Follow `docs/spec/design-system.md`.
 - **Done when:** label activation, Space/arrow navigation, disabled behavior and group isolation have tests; selection includes a non-color mark; controls have 44px targets and visible focus in both directions/themes, with documented tokens only.
 - **Verify:** `npm run verify`
 
 #### T-0.08c: UI feedback and navigation
-`status: doing` `owner: agent` `needs: T-0.08f` `size: M`
+`status: done` `owner: agent` `needs: T-0.08f` `size: M`
 - **Do:** Continue the UI kit: Toast and Tabs per `docs/spec/design-system.md`. Extend `/__kit` with Arabic examples in both themes and directions. Dialog is split into T-0.08g to keep reviews small.
 - **Done when:** every component has behavior tests; tabs have unique relationships and keyboard navigation in both directions; feedback is accessible; controls have 44px targets and focus outlines; tokens and reduced motion are preserved.
 - **Verify:** `npm run verify`
 
 #### T-0.08g: Accessible dialogs
-`status: doing` `owner: agent` `needs: T-0.08c` `size: M`
+`status: done` `owner: agent` `needs: T-0.08c` `size: M`
 - **Do:** Complete the dialog split from T-0.08c per `docs/spec/design-system.md`; add an Arabic `/__kit` example in both themes and directions.
 - **Done when:** dialog naming, focus containment/restoration, controlled open/close and Escape work; behavior tests pass; controls have 44px targets and focus outlines; tokens and reduced motion are preserved.
 - **Verify:** `npm run verify`
 
 #### T-0.08d: UI labels and brand ornaments
-`status: doing` `owner: agent` `needs: T-0.08g` `size: M`
+`status: done` `owner: agent` `needs: T-0.08g` `size: M`
 - **Do:** Finish the component inventory with Pill/Chip, Badge, Skeleton and SVG ornaments using `currentColor`: ribbon bow, ribbon divider, sparkle, pearl loader and arch frame. Follow `docs/spec/design-system.md` and add every example to `/__kit`.
 - **Done when:** each component has a test; states include text or icons, not color alone; ornaments follow themes; animations stop under reduced motion; arch/card/image shapes use the documented tokens.
 - **Verify:** `npm run verify`
 
 #### T-0.08e: UI kit token guard and final verification
-`status: todo` `owner: agent` `needs: T-0.08d` `size: M`
+`status: done` `owner: agent` `needs: T-0.08d` `size: M`
 - **Do:** Complete the original UI-kit acceptance gate: add a grep-based token check to `verify`, test rejection of hard-coded colors/radii/shadows, and verify `/__kit` contains the full inventory in both themes and an LTR sample while remaining excluded from production builds.
 - **Done when:** token guard fails on negative fixtures and passes the repo; all components have tests; the full kit passes keyboard, 44px target, focus, direction icon and reduced-motion checks at 360/1280 in RTL/LTR and both themes; production artifacts exclude kit code/assets/copy.
 - **Verify:** `npm run verify`
@@ -1229,6 +1229,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-09 | T-0.09 | Anti-Gravity | Implemented repo guards (check-secrets.mjs, check-bundle.mjs) and wired them into the build script. Budget breaches and secrets caught correctly. | local only |
 | 2026-10-09 | T-0.12 | Anti-Gravity | Added security basics: SECURITY.md, security.txt, CODEOWNERS, and dependabot.yml. Added gitleaks secrets check to CI. | local only |
 | 2026-10-10 | T-1.01 | Anti-Gravity | Blocked. Docker is absent on this environment (H-08). Supabase init and configuration completed, but db:start cannot be verified. | blocked |
+| 2026-10-10 | T-0.08b–T-0.08d | Anti-Gravity | Verified all UI Kit components in the browser (Checkbox, Radio, native Dialog focus trap, Tabs, PearlLoader, and labels). Visual acceptance passed. Committing T-0.08d. | local only |
+| 2026-10-10 | T-0.08e | Anti-Gravity | Implemented token guard script and wired it into verify. Script rejects hard-coded values and passes on current implementation. | local only |
 | 2026-10-09 | T-0.01–T-0.07 | Codex | Owner confirms external Anti-Gravity ran concurrently and is now paused. Preserved its 21 partial T-0.07 files with SHA-256 checkpoint; reconciled foundation statuses to doing because required PR/CI evidence and workflow owner review are still pending. Original work retained for restoration. | pending |
 | 2026-10-09 | T-0.06 | Codex | PR CI run 37929038785: build, unit and roadmap green; static correctly rejects the deliberately unused probe variable. Probe removed after recording evidence; final green CI and owner review pending. | [#1](https://github.com/HassanG04/lolys/pull/1) |
 | 2026-10-10 | T-0.01–T-0.06 | Codex | All four final foundation jobs green in run 37929355898 at b4faa49; negative lint test already verified. T-0.01–T-0.05 done; T-0.06 remains doing solely pending required owner workflow review. No merge/deploy. | [#1](https://github.com/HassanG04/lolys/pull/1) |

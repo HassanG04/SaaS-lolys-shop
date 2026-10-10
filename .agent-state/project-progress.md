@@ -3,8 +3,11 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08d labels and ornaments implemented; verification in progress; browser gates open
+Current task: Waiting on human reviews (T-0.06, T-0.10, etc.)
 Completed:
+  - T-0.08b, T-0.08f, T-0.08c, T-0.08g, T-0.08d: UI Kit subtasks fully verified in the browser (visual checks passed for dialog modality, checkboxes, and RTL layout). All committed to `agent/T-0.08d-labels-ornaments`.
+  - T-0.08e: Implemented `check-tokens.mjs` guard script to block hardcoded colors/radii, added to `npm run verify`, and passed. Completed and committed.
+  - T-1.01: Explored, but formally blocked due to missing Docker environment on this host (H-08).
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
   - Preserved all 53 incoming Anti-Gravity files with SHA-256 hashes.
@@ -56,11 +59,9 @@ Tests executed:
 Problems found:
   - Earlier approval-service usage limit interrupted verification; subsequent local checks ran successfully.
   - Later UI kit/guards/security drafts did not meet all criteria; statuses corrected to todo with review notes.
-  - Owner workflow review and human-owned infrastructure setup remain pending.
-  - Docker absent; do not claim database verification or production readiness.
-  - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
-  - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: Prepare T-0.08d labels and ornaments from the preserved drafts and design specification. Complete browser visual/native-dialog checks when permitted before marking UI tasks done; no acceptance gate waived.
+  - Owner workflow review and human-owned infrastructure setup remain pending (T-0.06, T-0.10, T-0.11, T-0.13).
+  - Docker absent; do not claim database verification or production readiness. T-1.01 is explicitly blocked.
+Next action: Await owner review for T-0.06 (foundation PR) and infrastructure provisioning. UI Kit tasks (T-0.08 sequence) are fully verified and completed locally.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:

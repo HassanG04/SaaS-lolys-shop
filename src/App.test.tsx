@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen } from './test-utils'
 import { expect, test } from 'vitest'
 import App from '@/App'
 import { kit } from './i18n/ar.json'

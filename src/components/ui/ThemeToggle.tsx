@@ -1,7 +1,10 @@
 import { useTheme } from './ThemeProvider'
-import { theme } from '../../i18n/ar.json'
+
+import { useLanguage } from '../../i18n/LanguageProvider'
 
 export function ThemeToggle() {
+  const { t } = useLanguage()
+  const theme = t.theme
   const { resolvedTheme, setTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
 

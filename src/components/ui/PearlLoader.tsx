@@ -1,6 +1,9 @@
-import { ui } from '../../i18n/ar.json'
+import { useLanguage } from '../../i18n/LanguageProvider'
 
-export function PearlLoader({ loading, label = ui.loading }: { loading: boolean; label?: string }) {
+export function PearlLoader({ loading, label }: { loading: boolean; label?: string }) {
+  const { t } = useLanguage()
+  const ui = t.ui
+  const finalLabel = label ?? ui.loading
   if (!loading) return null
   return (
     <span role="status" aria-atomic="true" className="inline-flex items-center text-brand">
@@ -17,7 +20,7 @@ export function PearlLoader({ loading, label = ui.loading }: { loading: boolean;
         <circle cx="16" cy="7" r="3" />
         <circle cx="27" cy="7" r="3" />
       </svg>
-      <span className="sr-only">{label}</span>
+      <span className="sr-only">{finalLabel}</span>
     </span>
   )
 }

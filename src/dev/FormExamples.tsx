@@ -3,10 +3,12 @@ import { Input } from '../components/ui/Input'
 import { SearchInput } from '../components/ui/SearchInput'
 import { Select } from '../components/ui/Select'
 import { Textarea } from '../components/ui/Textarea'
-import ar from '../i18n/ar.json'
 import { ChoiceExamples } from './ChoiceExamples'
 
+import { useLanguage } from '../i18n/LanguageProvider'
+
 export function FormExamples() {
+  const { t: ar } = useLanguage()
   const [query, setQuery] = useState('')
   return (
     <div className="grid gap-4">

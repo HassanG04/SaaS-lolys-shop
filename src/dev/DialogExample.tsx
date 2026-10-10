@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { Button } from '../components/ui/Button'
 import { Dialog } from '../components/ui/Dialog'
 import { Input } from '../components/ui/Input'
-import ar from '../i18n/ar.json'
+
+import { useLanguage } from '../i18n/LanguageProvider'
 
 export function DialogExample() {
+  const { t: ar } = useLanguage()
   const [open, setOpen] = useState(false)
   const copy = ar.kit.dialog
   return (

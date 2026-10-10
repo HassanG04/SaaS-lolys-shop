@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import { IconButton } from './IconButton'
-import { ui } from '../../i18n/ar.json'
 
 const states = {
   success: { color: 'text-success', path: 'm5 12 4 4L19 6' },
@@ -16,7 +15,11 @@ export type ToastProps = {
   onDismiss?: () => void
 }
 
+import { useLanguage } from '../../i18n/LanguageProvider'
+
 export function Toast({ title, message, severity = 'info', onDismiss }: ToastProps) {
+  const { t } = useLanguage()
+  const ui = t.ui
   const state = states[severity]
   return (
     <div className="flex items-start gap-3 rounded-chip border border-border bg-surface p-3 text-text">

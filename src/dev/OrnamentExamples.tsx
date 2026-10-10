@@ -5,10 +5,12 @@ import { Pill, Chip } from '../components/ui/Label'
 import { Skeleton } from '../components/ui/Skeleton'
 import { PearlLoader } from '../components/ui/PearlLoader'
 import { ArchFrame, RibbonBow, RibbonDivider, Sparkle } from '../components/ui/ornaments'
-import ar from '../i18n/ar.json'
 import placeholder from './card-placeholder.svg'
 
+import { useLanguage } from '../i18n/LanguageProvider'
+
 export function OrnamentExamples() {
+  const { t: ar } = useLanguage()
   const [loading, setLoading] = useState(false)
   const id = useId()
   const copy = ar.kit.ornaments

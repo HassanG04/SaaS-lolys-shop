@@ -1,5 +1,5 @@
 import { createRef } from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen } from '../../test-utils'
 import userEvent from '@testing-library/user-event'
 import { expect, test, vi } from 'vitest'
 import { Checkbox } from './Checkbox'

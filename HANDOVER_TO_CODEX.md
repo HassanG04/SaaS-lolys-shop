@@ -2,55 +2,45 @@
 
 ## Objective
 
-The objective was to act as the continuation engineer (Anti-Gravity) and execute the next roadmap tasks for the Lolys' Accessories & Home project, starting from the checkpoint recovery of T-0.07.
+Act as the continuation engineer (Anti-Gravity) to complete the browser verification for the UI kit subtasks (T-0.08b through T-0.08d) and implement the token guard (T-0.08e), as well as investigate the database startup task (T-1.01).
 
 ## Completed Work
 
-1. **T-0.07 Brand tokens, fonts, and themes**:
-   - Recovered the checkpoint files and resolved typing/linting issues with `@tailwindcss/vite` in `vite.config.ts`.
-   - Addressed testing issues related to reading `tokens.css` directly through Node's `fs` to prevent Vite from stripping unresolved variables before test assertions.
-   - All tests passing.
+1. **Browser Visual Verification for UI Kit (T-0.08b, T-0.08f, T-0.08c, T-0.08g, T-0.08d)**:
+   - Started the local dev server (`npm run dev`).
+   - Ran `browser_subagent` to visually verify the `/__kit` development route.
+   - Successfully verified that checkboxes, radios, badges, skeletons, PearlLoaders, and SVGs render correctly in the browser.
+   - Confirmed the native `dialog` implementation properly opens as a modal, traps focus, and closes via standard mechanisms.
+   - Committed the changes on `agent/T-0.08d-labels-ornaments` and marked all subtasks (T-0.08 through T-0.08d) as `done` in the roadmap.
 
-2. **T-0.08 UI Kit and brand ornaments**:
-   - Implemented `Button`, `IconButton`, `Badge`, `Pill`, `Checkbox`, `Radio`, `Input`, `SearchInput`, `Select`, `Textarea`, `Card`, `Skeleton`, `Toast`, `Dialog`, and `Tabs` components using the `cn` utility wrapper over `clsx` and `tailwind-merge`.
-   - Created the `lucide-react` integration and the SVG-based ornaments (`RibbonBow`, `RibbonDivider`, `Sparkle`, `PearlLoader`, `ArchFrame`).
-   - Integrated all into a dev-only route accessible via `/__kit`.
-   - Authored the unit test suite `kit.test.tsx` which tests rendering for each component.
+2. **Token Guard (T-0.08e)**:
+   - Wrote `scripts/check-tokens.mjs` and its corresponding test suite `scripts/check-tokens.test.mjs`.
+   - The script uses regular expressions to detect hardcoded color, radius, and shadow utility classes (e.g., `bg-white`, `rounded-md`, `bg-[#xxx]`) to ensure strict adherence to the design system tokens.
+   - Wired the token check into the `npm run verify` pipeline.
+   - Committed the changes and marked `T-0.08e` as `done`.
 
-3. **T-0.09 Repo guards**:
-   - Created `scripts/check-secrets.mjs` to block tracked secrets such as JWTs with `service_role` and `sb_secret_` strings outside allowlists.
-   - Created `scripts/check-bundle.mjs` to limit the initial loaded client JS bundle to 200KB.
-   - Wired both scripts into `package.json`'s `build` job. Tested failures.
+3. **Database Local Setup (T-1.01)**:
+   - Initialized the Supabase project configuration (`npx supabase init`).
+   - Discovered that Docker (or Podman) is entirely absent from the local host system (known issue H-08).
+   - Marked `T-1.01` as formally `blocked` in the roadmap and reverted the local modifications to avoid polluting the workspace.
 
-4. **T-0.12 Security basics in the repository**:
-   - Created `SECURITY.md`, `public/.well-known/security.txt`, `.github/CODEOWNERS`, and `.github/dependabot.yml`.
-   - Added a `secrets` job running `gitleaks` to `.github/workflows/ci.yml`.
+4. **Bilingual Support (AR/EN) - Dynamic Request**:
+   - Responding to the Owner's out-of-band request, implemented an overarching `LanguageProvider` with `en.json` (OD-003).
+   - The app now checks `navigator.language` on first load, falling back to English (LTR) if not Arabic, and caches the choice in `localStorage`.
+   - Refactored all UI components, tests, and the `/__kit` page to consume `useLanguage` dynamically instead of hardcoded imports.
+   - Verified that the `check-tokens` script and all 42 tests still pass with the new context wrapping.
+
 
 ## Remaining Work
 
-- **T-0.10, T-0.11, T-0.13**: The upcoming Phase 0 tasks involve CI implementation for GitHub Actions, staging deployment, dashboard provisioning, and database deployments. As per the strict rules in `AGENTS.md` (no production deployments/dashboard changes by agents, SEC rules requiring PR review), this work relies on the project Owner/Codex to proceed with PRs and external dashboards.
+There are currently **no runnable agent tasks**.
 
-## Changed Files
-
-- `roadmap.md`
-- `.agent-state/project-progress.md`
-- `package.json`
-- `vite.config.ts`
-- `src/styles/tokens.css`
-- `src/App.tsx`
-- `src/components/ui/theme.test.tsx`
-- `src/components/ui/*`
-- `src/dev/KitPage.tsx`
-- `src/lib/utils.ts`
-- `scripts/check-secrets.mjs`
-- `scripts/check-bundle.mjs`
-- `SECURITY.md`
-- `public/.well-known/security.txt`
-- `.github/CODEOWNERS`
-- `.github/dependabot.yml`
-- `.github/workflows/ci.yml`
+- **T-0.06** is awaiting Owner PR review.
+- **T-0.10, T-0.11, T-0.13** require the Owner to provision CI pipelines and production deployment targets.
+- **T-0.09, T-0.12** are currently gated by T-0.06.
+- **T-1.01** is blocked by the absence of Docker.
 
 ## Exact Next Command
 
-Wait for the owner to review the changes. You can run the following command to review the local build status and verification pipeline:
+Wait for the owner to perform their manual review and infrastructure provisioning tasks. To confirm the current state is green locally, run:
 `npm run verify`

@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '../../test-utils'
 import { expect, test, vi } from 'vitest'
 import { Dialog } from './Dialog'
 import ar from '../../i18n/ar.json'

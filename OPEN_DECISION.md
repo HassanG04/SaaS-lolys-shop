@@ -33,6 +33,12 @@ loading” in this chat. The loader animates only while loading is active; reduc
 motion keeps it still. Record this exception in the design spec; retain its
 hover-only sparkle rule and all existing motion/accessibility requirements.
 
+## OD-003 — Bilingual Support (AR/EN)
+
+Task: Dynamic requirement. Status: approved by owner on 2026-10-10.
+
+The original specification outlined an "Arabic-first RTL storefront". The owner requested dynamic English/Arabic language support based on device language, with manual user override in the navbar and settings. A `LanguageProvider` context has been introduced with English translations (`en.json`), switching the `lang` and `dir` attributes accordingly.
+
 ## External prerequisites
 
 - H-07: GitHub remote supplied on 2026-10-09: https://github.com/HassanG04/lolys
