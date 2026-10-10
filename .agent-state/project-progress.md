@@ -3,7 +3,7 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08d labels and ornaments implemented; verification in progress; browser gates open
+Current task: T-0.08e guard repairs verified; bilingual repair is next
 Completed:
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
@@ -61,7 +61,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: Prepare T-0.08d labels and ornaments from the preserved drafts and design specification. Complete browser visual/native-dialog checks when permitted before marking UI tasks done; no acceptance gate waived.
+Next action: Publish guard PR; repair preserved bilingual commit 96ad75f on a separate branch. Final visual matrix and owner infrastructure gates remain open.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
