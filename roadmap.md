@@ -362,13 +362,13 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** open the PR and read the checks
 
 #### T-0.07: Brand tokens and self-hosted fonts
-`status: doing` `owner: agent` `needs: T-0.02` `size: M`
+`status: done` `owner: agent` `needs: T-0.02` `size: M`
 - **Do:** Implement `docs/spec/design-system.md` in `src/styles/tokens.css` (Tailwind v4 `@theme`): the Lolys' light theme (cream, blush pink, cocoa brown, gold) and the "cocoa night" dark theme keyed on `[data-theme=dark]`. Self-host the fonts (woff2, no third-party font requests) with their licenses. Set `<html lang="ar" dir="rtl">`. Theme behavior is split into T-0.07b to keep each review near 400 authored lines; the original requirements are preserved across both tasks.
 - **Done when:** a unit test recomputes every published contrast pair from the tokens and meets the ratios in the spec; typography, shape and focus tokens match the spec; no external font or script requests.
 - **Verify:** `npm run test:unit`
 
 #### T-0.07b: Persistent and accessible theme switching
-`status: doing` `owner: agent` `needs: T-0.07` `size: M`
+`status: done` `owner: agent` `needs: T-0.07` `size: M`
 - **Do:** Complete the behavior split from T-0.07: add `ThemeProvider`, `useTheme` and an accessible Arabic theme toggle. Use localStorage key `theme`, default to `prefers-color-scheme`, and initialize the theme inline before first paint. Preserve operation if browser storage is unavailable and keep the selected theme consistent with system changes.
 - **Done when:** the toggle works with pointer and keyboard, persists, restores without a wrong-theme flash, and respects the documented 44px target/focus/contrast requirements; both themes pass at 360px and 1280px in RTL and LTR. Tests cover stored, system and unavailable-storage cases.
 - **Verify:** `npm run test:unit`
@@ -1198,6 +1198,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.07, T-0.08, T-0.09, T-0.12 | Codex | Incoming Anti-Gravity verify passes (13 app + 27 tooling tests), but review found unmet criteria including production KitPage output, incomplete contrast/keyboard tests, and fail-open guard behavior. Preserved 53 files with hashes; deferred later drafts in local checkpoint and reverted their completion statuses. Review details in .agent-state/anti-gravity-review.md. | local review |
 | 2026-10-10 | T-0.07, T-0.07b | Codex | Split tokens/fonts from persistent theme behavior per the 400-line review rule; retained every original requirement and made T-0.08 depend on both. Implementing on agent/T-0.07-themes. | pending |
 | 2026-10-10 | T-0.07, T-0.07b | Codex | Final verify passes (10 app + 66 tooling tests, all 31 contrast pairs), build passes and 110 tasks validate. Browser verifies both themes at 360/1280 in RTL/LTR, keyboard focus, persisted reload and 44px minimum; screenshots/measurements saved. Theme PR CI pending. | pending |
+| 2026-10-10 | T-0.07, T-0.07b | Codex | All four theme CI jobs green in run 38021668187 at 7d7fcbf; both tasks done. Theme PR stacked on foundation PR 1; no merge/deploy. T-0.08 is next, using preserved drafts plus the concrete review findings. | [#2](https://github.com/HassanG04/lolys/pull/2) |
 
 ### Open questions (agents add rows; the owner answers)
 

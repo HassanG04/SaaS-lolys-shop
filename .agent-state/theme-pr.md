@@ -22,7 +22,8 @@ separate review; the supplied design values and product requirements are unchang
 - Tests cover saved/system preferences, system updates, invalid/blocked storage,
   cross-tab updates and the pre-paint script. Browser console has no warnings/errors.
 - Production output contains the theme app only; no development UI-kit chunk.
-- Remote checks are pending for this branch at PR creation.
+- [All four remote checks passed](https://github.com/HassanG04/lolys/actions/runs/38021668187)
+  on theme implementation commit `7d7fcbf12693874eb53a8c86cf8786eb274f5902`.
 
 Screenshots and the eight browser measurements are in `.agent-state/theme-*.jpg`
 and `.agent-state/theme-browser-checks.json`.

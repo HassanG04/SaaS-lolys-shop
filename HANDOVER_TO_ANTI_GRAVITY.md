@@ -2,7 +2,7 @@
 
 ## Current Objective
 
-Finish T-0.07 and T-0.07b theme PR checks, then resume T-0.08 in roadmap order.
+Resume T-0.08 UI kit repair in roadmap order after the theme PR documentation follow-up.
 Working branch: agent/T-0.07-themes, based on foundation PR 1 at b4faa49.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
@@ -18,10 +18,12 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 - 76 tests pass: 10 app + 66 tooling, including all 31 contrast pairs.
 - Browser checked both themes at 360/1280 in RTL/LTR, focus, 44px minimum,
   keyboard toggling and reload persistence. Screenshots and measurements saved.
+- Theme PR 2 has four green checks at 7d7fcbf (run 38021668187).
+  T-0.07 and T-0.07b are done. No merge or deployment was performed.
 
 ## Remaining
 
-- Local verify and roadmap validation pass; remote theme PR CI remains before marking both tasks done.
+- Local verify and implementation CI pass. Check the documentation-only follow-up commit before handing back the PR.
 - T-0.08: restore its files selectively from the newer checkpoint and fix the
   documented accessibility, production-kit exclusion and testing defects.
 - T-0.09/T-0.12: restore only when reached; repair guards and run required
@@ -79,9 +81,10 @@ All current changes from b4faa49 (generated font CSS/assets included):
 ## Current Error
 
 Error: no unresolved application error at this checkpoint.
-Expected: all task criteria, local verify and theme PR CI pass.
-Actual: final local verify and all eight browser cases pass. Remote theme CI pending.
-Possible cause: none; these are remaining release checks, not a known defect.
+Expected: local and remote checks pass before continuing to T-0.08.
+Actual: all theme implementation checks pass; only the final documentation/evidence
+follow-up needs its latest CI result recorded in chat/PR. No application defect.
+Possible cause: none.
 
 The incoming UI-kit/guard/security bugs are documented in the review, not active
 in this theme branch. Do not restore shared package.json, roadmap, App or workflow
@@ -98,6 +101,7 @@ git status --short --untracked-files=all
 git diff
 npm run verify
 npm run roadmap:check
+npm run roadmap:next
 ```
 
 Use .nvmrc Node 24.21.0. Never read or print .env values. HANDOVER_TO_CODEX.md is

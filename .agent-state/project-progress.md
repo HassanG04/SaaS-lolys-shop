@@ -3,12 +3,13 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.07 / T-0.07b tokens, fonts and persistent theme switching
+Current task: T-0.07 / T-0.07b completed; next T-0.08 UI kit repair
 Completed:
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
   - Preserved all 53 incoming Anti-Gravity files with SHA-256 hashes.
   - Repaired theme behavior and expanded tests to every documented contrast pair and storage/system cases.
+  - Theme PR 2 published; all four jobs green at 7d7fcbf in run 38021668187. Both theme tasks set done.
 Files changed:
   - Branch agent/T-0.07-themes is based on the foundation PR branch.
   - Theme components, tokens, fonts/licenses, tests, dependency pins, roadmap and review notes.
@@ -22,11 +23,12 @@ Problems found:
   - Later UI kit/guards/security drafts did not meet all criteria; statuses corrected to todo with review notes.
   - Owner workflow review and human-owned infrastructure setup remain pending.
   - Docker absent; do not claim database verification or production readiness.
-Next action: Publish stacked theme PR and read checks; then restore and repair deferred tasks in roadmap order.
+Next action: Finish the documentation-only PR follow-up checks, then create the T-0.08 task branch and selectively restore/repair its checkpointed files.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
 https://github.com/HassanG04/lolys/pull/1. No main push, merge or deployment.
+Theme PR: https://github.com/HassanG04/lolys/pull/2 (stacked on PR 1).
 
 Use Node 24.21.0 from `.nvmrc`; local runtime is
 `.tools/node-v24.21.0-win-x64`. Install with `npm ci --ignore-scripts`.
