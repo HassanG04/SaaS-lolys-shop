@@ -3,10 +3,10 @@ import { Button } from '../components/ui/Button'
 import { Tabs } from '../components/ui/Tabs'
 import { Toast } from '../components/ui/Toast'
 
-import { useLanguage } from '../i18n/LanguageProvider'
+import { useKitCopy } from './useKitCopy'
 
 export function FeedbackExamples() {
-  const { t: ar } = useLanguage()
+  const ar = useKitCopy()
   const [visible, setVisible] = useState(true)
   const headingId = useId()
   const copy = ar.kit.feedback

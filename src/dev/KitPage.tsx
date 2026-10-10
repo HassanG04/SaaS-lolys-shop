@@ -1,4 +1,4 @@
-import { useLanguage } from '../i18n/LanguageProvider'
+import { useKitCopy } from './useKitCopy'
 import { LanguageToggle } from '../components/ui/LanguageToggle'
 import { Button } from '../components/ui/Button'
 import { IconButton } from '../components/ui/IconButton'
@@ -10,7 +10,7 @@ import { DialogExample } from './DialogExample'
 import { OrnamentExamples } from './OrnamentExamples'
 
 export default function KitPage() {
-  const { t: ar } = useLanguage()
+  const ar = useKitCopy()
   return (
     <main className="space-y-8 p-4">
       <div className="flex items-center justify-between">

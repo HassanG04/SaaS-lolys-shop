@@ -2,10 +2,10 @@ import { useId } from 'react'
 import { Checkbox } from '../components/ui/Checkbox'
 import { Radio } from '../components/ui/Radio'
 
-import { useLanguage } from '../i18n/LanguageProvider'
+import { useKitCopy } from './useKitCopy'
 
 export function ChoiceExamples() {
-  const { t: ar } = useLanguage()
+  const ar = useKitCopy()
   const group = useId()
   return (
     <div className="grid gap-3">

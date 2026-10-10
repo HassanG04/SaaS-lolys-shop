@@ -1,13 +1,12 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import ar from './ar.json'
-import en from './en.json'
+import { translations } from './translations'
 
 type Language = 'ar' | 'en'
 
 interface LanguageContextValue {
   lang: Language
   setLang: (lang: Language) => void
-  t: typeof ar
+  t: (typeof translations)['ar']
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null)
@@ -38,7 +37,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
   }, [lang])
 
-  const t = lang === 'ar' ? ar : en
+  const t = translations[lang]
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t }}>{children}</LanguageContext.Provider>

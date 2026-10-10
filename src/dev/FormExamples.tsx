@@ -5,10 +5,10 @@ import { Select } from '../components/ui/Select'
 import { Textarea } from '../components/ui/Textarea'
 import { ChoiceExamples } from './ChoiceExamples'
 
-import { useLanguage } from '../i18n/LanguageProvider'
+import { useKitCopy } from './useKitCopy'
 
 export function FormExamples() {
-  const { t: ar } = useLanguage()
+  const ar = useKitCopy()
   const [query, setQuery] = useState('')
   return (
     <div className="grid gap-4">
@@ -19,9 +19,12 @@ export function FormExamples() {
         label={ar.kit.invalid}
         aria-invalid="true"
         hint={
-          <span className="text-danger">
+          <span className="text-danger" lang="ar" dir="rtl">
             <span aria-hidden="true">⚠︎ </span>
-            {ar.kit.invalidMessage} {ar.kit.errorCode} <bdi dir="ltr">ADM-007</bdi>
+            <bdi lang="ar" dir="rtl">
+              {ar.kit.invalidMessage}
+            </bdi>{' '}
+            {ar.kit.errorCode} <bdi dir="ltr">ADM-007</bdi>
           </span>
         }
       />

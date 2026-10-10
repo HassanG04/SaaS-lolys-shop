@@ -67,7 +67,7 @@ This file is the single source of truth for scope, order and status. Do not rely
 
 - TypeScript strict. No `any` (use `unknown` and narrow). No non-null `!` outside tests.
 - Feature folders: `src/features/<name>/{api,components,hooks}`. Shared UI in `src/components/ui`. **No Supabase calls inside components**: only in `features/*/api.ts` or `src/lib`.
-- Server state through TanStack Query (one `keys.ts` per feature). Global client state is only auth, cart and theme.
+- Server state through TanStack Query (one `keys.ts` per feature). Global client state is only auth, cart, theme and language (ADR-0002).
 - Forms: React Hook Form + Zod. Allow-list fields: a form sends only the fields its entity allows (`docs/spec/security-model.md` section 6).
 - **Arabic first:** every string through i18n (`src/i18n/ar.json`), `<html lang="ar" dir="rtl">`, fonts self-hosted, Western digits. Phone numbers, emails, order numbers and codes render in `dir="ltr"` spans.
 - **Errors:** only through `AppError` (`src/lib/errors.ts`). Show the Arabic message and its code. Never render `error.message`.
@@ -127,7 +127,7 @@ Visitors browse accessories by category, see stock status and fill a cart. Logge
 | D-07 | Revenue = delivered orders. Booked = non-cancelled orders. Reporting days use `Africa/Cairo`. |
 | D-08 | Environments: local (Supabase CLI), staging (second Supabase project), production. |
 | D-09 | Design: the Lolys' brand (pink, cocoa brown, cream, gold) from the logo, with Shop-style pill controls and rounded image-first cards; light theme and "cocoa night" dark theme (`docs/spec/design-system.md`). |
-| D-10 | The whole interface is Arabic (RTL). English is not shipped; the i18n structure stays so it can be added. |
+| D-10 | Arabic-first interface with English support (ADR-0002 / OD-003). Saved language overrides device language; Arabic uses RTL, English LTR. Catalogue errors remain Arabic. |
 | D-11 | Currency EGP; money is `numeric(10,2)`; Western digits. |
 | D-12 | No raw SQL reachable by users: no SQL box in any UI, no dynamic SQL built by string joins. Admin edits use typed forms with allow-lists. |
 | D-13 | Auth messages are generic and identical for known and unknown accounts. Cloudflare Turnstile protects sign-in, sign-up and reset. |
@@ -178,7 +178,7 @@ Visitors browse accessories by category, see stock status and fill a cart. Logge
 
 ### 2.5 Non-goals before launch
 
-Online card payments, coupons or loyalty, product variants (sizes, colors), customer reviews, order e-mail notifications, native apps, staff roles, multi-currency, an English interface, personalised recommendations, price optimisation.
+Online card payments, coupons or loyalty, product variants (sizes, colors), customer reviews, order e-mail notifications, native apps, staff roles, multi-currency, personalised recommendations, price optimisation.
 
 ---
 
@@ -410,9 +410,21 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08e: UI kit token guard and final verification
-`status: done` `owner: agent` `needs: T-0.08d` `size: M`
+`status: doing` `owner: agent` `needs: T-0.08d` `size: M`
 - **Do:** Complete the original UI-kit acceptance gate: add a grep-based token check to `verify`, test rejection of hard-coded colors/radii/shadows, and verify `/__kit` contains the full inventory in both themes and an LTR sample while remaining excluded from production builds.
 - **Done when:** token guard fails on negative fixtures and passes the repo; all components have tests; the full kit passes keyboard, 44px target, focus, direction icon and reduced-motion checks at 360/1280 in RTL/LTR and both themes; production artifacts exclude kit code/assets/copy.
+- **Verify:** `npm run verify`
+
+#### T-0.08h: Bilingual interface and production dictionaries
+`status: doing` `owner: agent` `needs: T-0.08d` `size: M`
+- **Do:** Review the owner-requested Arabic/English implementation recorded in OD-003; document ADR-0002, use the existing accessible Button for the language switch, and keep preview copy out of production. Language changes must not alter catalogue error/authentication rules. Persistence and detailed verification are split into T-0.08i under the review-size rule.
+- **Done when:** shipped controls and previews switch language/direction; labels identify the destination language; tokens/focus/44px requirements hold; production excludes preview code/copy/assets; both themes/directions pass at 360/1280. Incoming source and history preserved.
+- **Verify:** `npm run verify`
+
+#### T-0.08i: Language preference behavior and verification
+`status: todo` `owner: agent` `needs: T-0.08h` `size: S`
+- **Do:** Complete ADR-0002 behavior checks for device selection, valid/invalid saved choices, blocked storage, keyboard switching, translated labels and document direction before paint. Verify dictionary key parity and unchanged Arabic catalogue-error previews. Retain the existing theme preference independently.
+- **Done when:** behavior tests and full verification pass; UI language/direction and focus match both themes at 360/1280, including reduced motion; production preview exclusion still passes.
 - **Verify:** `npm run verify`
 
 #### T-0.09: Repo guards
@@ -589,14 +601,14 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 
 #### T-2.02: Routing and layout
 `status: todo` `owner: agent` `needs: T-0.08e, T-2.01` `size: L`
-- **Do:** React Router with lazy routes. `Layout` with Navbar (Lolys' logo, search pill, links المتجر / تصفّح / عن المتجر, cart pill with count, account menu, theme toggle) and Footer (cocoa band with policy links). 404 page, scroll restoration, skip link, mobile navigation. Routes: `/`, `/category/:slug`, `/product/:id`, `/cart`, `/login`, `/checkout`, `/pay/:orderId`, `/account/orders`, `/account/security`, `/admin/*`, and the policy pages.
+- **Do:** React Router with lazy routes. `Layout` with Navbar (Lolys' logo, search pill, links المتجر / تصفّح / عن المتجر, cart pill with count, account menu, theme and language toggles) and Footer (cocoa band with policy links). 404 page, scroll restoration, skip link, mobile navigation. Routes: `/`, `/category/:slug`, `/product/:id`, `/cart`, `/login`, `/checkout`, `/pay/:orderId`, `/account/orders`, `/account/security`, `/admin/*`, and the policy pages.
 - **Done when:** every route renders a placeholder, is keyboard navigable, fits a 360px viewport, and looks right in RTL in both themes.
 - **Verify:** `npm run verify` and manual check
 
 #### T-2.03: Arabic i18n scaffold
 `status: todo` `owner: agent` `needs: T-2.02` `size: M`
-- **Do:** Set up i18next with `src/i18n/ar.json` as the only shipped language (the copy deck in `docs/spec/design-system.md` is the starting content), `lang="ar"` and `dir="rtl"` on `<html>`, `t()` for every string, Arabic plural rules, Western digits. Add `src/lib/format.ts` (`formatEGP` with `Intl.NumberFormat('ar-EG-u-nu-latn', { style: 'currency', currency: 'EGP' })`, dates with `Intl.DateTimeFormat('ar-EG-u-nu-latn')`). Phone numbers, emails and order numbers render inside `dir="ltr"` spans. Add `scripts/check-i18n.mjs` (no key used in code is missing from `ar.json`, no unused keys) and the `check:i18n` script.
-- **Done when:** the whole shell renders in Arabic RTL; the check runs in the `static` job; unit tests cover `formatEGP`.
+- **Do:** Set up i18next with `src/i18n/ar.json` and `en.json` as shipped languages (ADR-0002) (the copy deck in `docs/spec/design-system.md` is the starting content), language-dependent `lang`/`dir` on `<html>`, `t()` for every string, Arabic plural rules, Western digits. Add `src/lib/format.ts` (`formatEGP` with `Intl.NumberFormat('ar-EG-u-nu-latn', { style: 'currency', currency: 'EGP' })`, dates with `Intl.DateTimeFormat('ar-EG-u-nu-latn')`). Phone numbers, emails and order numbers render inside `dir="ltr"` spans. Add `scripts/check-i18n.mjs` (no key used in code is missing from either locale, no unused production keys; kit keys are development-only) and the `check:i18n` script.
+- **Done when:** the whole shell renders in Arabic RTL and English LTR; the check runs in the `static` job; unit tests cover `formatEGP`.
 - **Verify:** `npm run check:i18n && npm run test:unit`
 
 #### T-2.04: Authentication (generic and bot-resistant)
@@ -1264,6 +1276,10 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-10 | T-0.08g | Codex | Draft PR 7 published; all four remote jobs pass at a49d87c in run 38071645439. Local verify passes (102 tests), production kit exclusion and 116-task roadmap pass. Native-dialog and visual acceptance remain open. Feedback documentation 22effa5 also has four green jobs in run 38071382759. | [#7](https://github.com/HassanG04/lolys/pull/7) |
 
+| 2026-10-10 | T-0.08e | Codex | Reopened acceptance gate after review: original regex missed CSS/arbitrary/unknown styles; bilingual commit 96ad75f leaks preview copy into production. Repaired token/production guards with negative fixtures and CI enforcement (SEC-16/SEC-24). 42 app + 97 tooling tests and all verification stages pass. Full visual matrix evidence remains outstanding; Anti-Gravity browser report preserved as reported evidence. | pending |
+
+| 2026-10-10 | T-0.08h, T-0.08i | Codex | Preserved incoming bilingual work and recorded ADR-0002 for OD-003; split detailed preference tests into T-0.08i to keep reviews small. Fixed preview-copy boundary and reused accessible Button; Arabic error contract retained. Preparing this slice while T-0.08e visual matrix remains open; no gate waived. | pending |
+
 ### Open questions (agents add rows; the owner answers)
 
 
@@ -1277,3 +1293,4 @@ What gets easier, what gets harder, what to watch.
 | ADR | Title | Status |
 |---|---|---|
 | 0001 | Stack and versions | accepted; OD-001 approved by owner |
+| 0002 | Bilingual interface | accepted under OD-003, recorded in Anti-Gravity handover |

@@ -5,6 +5,7 @@
     "switchToDark": "التبديل إلى المظهر الداكن"
   },
   "ui": {
+    "switchLanguage": "English",
     "search": "بحث",
     "dismissNotification": "إغلاق التنبيه",
     "closeDialog": "إغلاق النافذة",

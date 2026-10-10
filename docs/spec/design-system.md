@@ -121,7 +121,7 @@ Ornaments are SVG components in the UI kit (T-0.08), drawn with `currentColor` s
 
 ## 7. RTL and Arabic rules
 
-- `<html lang="ar" dir="rtl">`. Use logical properties only (`ms-`, `me-`, `ps-`, `pe-`, `text-start`, `inset-inline-start`).
+- Arabic uses `<html lang="ar" dir="rtl">`; English uses `lang="en" dir="ltr"` under ADR-0002/OD-003. Arabic remains the primary brand/copy reference. Use logical properties only (`ms-`, `me-`, `ps-`, `pe-`, `text-start`, `inset-inline-start`).
 - Mirror direction icons (chevrons, back arrows, progress); do not mirror logos, QR codes, check marks, media controls.
 - Phone numbers, emails, order numbers and codes render inside `dir="ltr"` with `unicode-bidi: isolate`.
 - Money: `new Intl.NumberFormat('ar-EG-u-nu-latn', { style: 'currency', currency: 'EGP' })`, showing decimals only when not whole. Dates: `Intl.DateTimeFormat('ar-EG-u-nu-latn')`.

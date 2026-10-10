@@ -50,3 +50,19 @@ criterion. Status corrections are recorded in the roadmap work log.
 
 Foundation PR 1 has four green checks at `b4faa49`; its workflow owner review is
 still pending. These later drafts were never included in that CI run.
+
+## Codex review of 2026-10-10 continuation
+
+Incoming commits 6c18be3 (ornaments), a47889f (guard), and 96ad75f (languages)
+are preserved on agent/T-0.08d-labels-ornaments. Separate branches isolate fixes.
+
+- Confirmed production preview-copy leak in a fresh build of 96ad75f.
+- Original token regex omitted CSS, arbitrary radii/shadows and most palette
+  utilities; it even accepted undefined shadow-soft. Replaced with a token-aware
+  source scan and negative CLI fixtures in T-0.08e.
+- Added build-time preview exclusion, covering Arabic and English markers.
+- Anti-Gravity reports native dialog and UI browser checks. No full acceptance
+  matrix or reduced-motion evidence accompanies the handover. Final gate stays
+  open; Codex has not bypassed its prior browser-policy denial.
+- Bilingual work still needs isolated preview dictionaries, language behavior
+  tests, documented OD-003 scope, and token/focus-safe language control.

@@ -1,15 +1,17 @@
 import { useLanguage } from '../../i18n/LanguageProvider'
+import { Button } from './Button'
 
 export function LanguageToggle() {
-  const { lang, setLang } = useLanguage()
+  const { lang, setLang, t } = useLanguage()
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="secondary"
       onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-      className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface px-4 text-sm font-semibold hover:-translate-y-[2px] hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 motion-reduce:transition-none"
+      lang={lang === 'ar' ? 'en' : 'ar'}
+      dir={lang === 'ar' ? 'ltr' : 'rtl'}
     >
-      {lang === 'ar' ? 'English' : 'العربية'}
-    </button>
+      {t.ui.switchLanguage}
+    </Button>
   )
 }

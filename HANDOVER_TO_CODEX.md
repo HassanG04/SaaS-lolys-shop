@@ -30,7 +30,6 @@ Act as the continuation engineer (Anti-Gravity) to complete the browser verifica
    - Refactored all UI components, tests, and the `/__kit` page to consume `useLanguage` dynamically instead of hardcoded imports.
    - Verified that the `check-tokens` script and all 42 tests still pass with the new context wrapping.
 
-
 ## Remaining Work
 
 There are currently **no runnable agent tasks**.

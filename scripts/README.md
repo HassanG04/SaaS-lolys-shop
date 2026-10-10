@@ -18,3 +18,13 @@ of level 1–4. No runnable task is a successful query, not a CLI failure.
 `pending.mjs` is an explicit nonzero stub for later roadmap work. Replace the
 corresponding npm script when its real implementation is ready. Do not treat
 stub output as a passed check or wire it into a gate that must already pass.
+
+`check:tokens` scans literal utilities, inline values and CSS/SVG under `src/`.
+Only `src/styles/tokens.css` may define palette, radius and shadow values.
+Names come from that file; unknown tokens fail. This grep-based guard cannot
+prove computed styles safe: review dynamic expressions and avoid constructed
+class names. The static CI job runs it; tests plant invalid JSX/CSS fixtures.
+
+`check:ui-build` checks production artifacts for development route, asset and
+Arabic/English preview markers. It runs after every production build, including
+CI. Keep preview translations in development-only imports when adding locales.

@@ -3,10 +3,10 @@ import { Button } from '../components/ui/Button'
 import { Dialog } from '../components/ui/Dialog'
 import { Input } from '../components/ui/Input'
 
-import { useLanguage } from '../i18n/LanguageProvider'
+import { useKitCopy } from './useKitCopy'
 
 export function DialogExample() {
-  const { t: ar } = useLanguage()
+  const ar = useKitCopy()
   const [open, setOpen] = useState(false)
   const copy = ar.kit.dialog
   return (

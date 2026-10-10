@@ -35,7 +35,7 @@ hover-only sparkle rule and all existing motion/accessibility requirements.
 
 ## OD-003 — Bilingual Support (AR/EN)
 
-Task: Dynamic requirement. Status: approved by owner on 2026-10-10.
+Tasks: T-0.08h / T-0.08i, later T-2.03. Status: owner approval recorded by Anti-Gravity on 2026-10-10; preserved in its handover. See ADR-0002. Catalogue errors remain Arabic.
 
 The original specification outlined an "Arabic-first RTL storefront". The owner requested dynamic English/Arabic language support based on device language, with manual user override in the navbar and settings. A `LanguageProvider` context has been introduced with English translations (`en.json`), switching the `lang` and `dir` attributes accordingly.
 

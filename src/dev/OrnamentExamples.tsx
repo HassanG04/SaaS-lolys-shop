@@ -7,10 +7,10 @@ import { PearlLoader } from '../components/ui/PearlLoader'
 import { ArchFrame, RibbonBow, RibbonDivider, Sparkle } from '../components/ui/ornaments'
 import placeholder from './card-placeholder.svg'
 
-import { useLanguage } from '../i18n/LanguageProvider'
+import { useKitCopy } from './useKitCopy'
 
 export function OrnamentExamples() {
-  const { t: ar } = useLanguage()
+  const ar = useKitCopy()
   const [loading, setLoading] = useState(false)
   const id = useId()
   const copy = ar.kit.ornaments

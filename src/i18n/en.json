@@ -5,6 +5,7 @@
     "switchToDark": "Switch to dark theme"
   },
   "ui": {
+    "switchLanguage": "العربية",
     "search": "Search",
     "dismissNotification": "Dismiss notification",
     "closeDialog": "Close dialog",
@@ -34,8 +35,8 @@
     "first": "First Option",
     "second": "Second Option",
     "invalid": "Invalid Field Preview",
-    "invalidMessage": "Invalid data. Check the highlighted fields.",
-    "errorCode": "Error Code:",
+    "invalidMessage": "البيانات غير صالحة. راجع الحقول المظلّلة.",
+    "errorCode": "رمز الخطأ:",
     "searchResult": "Search term:",
     "ornaments": {
       "title": "Badges & Ornaments",
