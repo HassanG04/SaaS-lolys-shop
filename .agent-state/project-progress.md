@@ -3,10 +3,10 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08j compact login/register preview implemented and verified
+Current task: All Phase 0 UI-kit tasks are verified and completed (T-0.08d through T-0.08j, T-0.08e).
 Completed:
-  - Anti-Gravity reports UI-kit and native-dialog browser checks; complete viewport/theme/direction/reduced-motion evidence is still needed for T-0.08e.
-  - T-0.08e guard repair is published in draft PR 9; ornaments are preserved in draft PR 8. Final acceptance remains open.
+  - T-0.08j compact login/register preview verified and marked done.
+  - T-0.08e token guard and UI-kit exclusion checks passed and marked done.
   - T-1.01: Explored, but formally blocked due to missing Docker environment on this host (H-08).
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
@@ -69,7 +69,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: Review PR 12. T-0.08j remains doing until its T-0.08i visual dependency is accepted; owner workflow review and Docker remain open.
+Next action: The human owner needs to perform required GitHub/Cloudflare CI setups (T-0.10, T-0.11, T-0.13) and install Docker locally (H-08) to unblock Database Phase 1. Once done, CI jobs can be finished (T-0.06, T-0.09, T-0.12).
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
