@@ -1228,6 +1228,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.07b | Codex | Crescent/sun follow-up e34b6c2 passes all four remote checks in run 38022228681. | [#2](https://github.com/HassanG04/lolys/pull/2) |
 | 2026-10-10 | T-0.08 | Codex | Split original UI kit into actions/cards, forms, feedback/navigation, labels/ornaments and final token/preview guard tasks (T-0.08b–T-0.08e); downstream tasks require the full kit. Implemented first component set and dev preview; 82 tests, build, production kit exclusion and 114-task roadmap check pass. Browser policy prevents fresh visual checks; status remains doing. | pending |
 
+| 2026-10-10 | T-0.08 | Codex | All four PR jobs pass at 0ba979e in run 38023041519; 82 local tests, build and production kit exclusion verified. UI visual gate is still pending due to browser policy; task remains doing. | [#3](https://github.com/HassanG04/lolys/pull/3) |
+
 ### Open questions (agents add rows; the owner answers)
 
 | ID | Question | Task | Needed from | Status |

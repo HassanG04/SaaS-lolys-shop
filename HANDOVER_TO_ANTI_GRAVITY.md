@@ -27,14 +27,20 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 - Icon follow-up e34b6c2 passes all four remote jobs in run 38022228681.
 - T-0.08 split through T-0.08e to preserve small reviews and all original criteria.
   Buttons, required icon labels/mirroring, cards and four theme/direction previews
-  implemented without new dependencies. 82 local tests pass; final PR checks pending.
+  implemented without new dependencies. 82 local tests pass; all four remote jobs
+  pass in run 38023041519 at 0ba979e. Production kit exclusion and 114 tasks verified.
+- UI actions published in draft PR 3: https://github.com/HassanG04/lolys/pull/3,
+  implementation commit 0ba979ea16caaa66ef22410366823fc2224e7b9d.
 
 ## Remaining
 
+- Push the local documentation follow-up when GitHub DNS recovers, then update
+  PR 3 from .agent-state/ui-actions-pr.md. Implementation 0ba979e is already
+  published and green; only later continuation documentation is unpublished.
 - T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
   and directions, keyboard focus, 44px targets and reduced motion. Browser policy
   blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
-- Read final UI action PR CI; then T-0.08b form controls from the checkpoint.
+- After visual review, mark T-0.08 done and resume T-0.08b forms from the checkpoint.
   The later feedback/ornament/guard work is split into T-0.08c/T-0.08d/T-0.08e.
 - T-0.09/T-0.12: restore only when reached; repair guards and run required
   negative CI tests. Their incoming completion claims were not valid evidence.
@@ -108,6 +114,11 @@ Actual: no fresh visual check; 82 tests and production build pass. Do not claim
 the old text-toggle screenshots verify the icon change.
 Possible cause: browser tool policy/state mismatch; no workaround attempted.
 
+Publication error: `Could not resolve host: github.com`; a fresh Resolve-DnsName
+also timed out. Expected: push final documentation and refresh the PR body.
+Actual: implementation PR is green, latest documentation commit stays local.
+Possible cause: intermittent DNS/network availability; no settings changed.
+
 The incoming UI-kit/guard/security bugs are documented in the review, not active
 in this theme branch. Do not restore shared package.json, roadmap, App or workflow
 files wholesale; merge only the next task's changes from the checkpoint.
@@ -121,6 +132,9 @@ $env:Path = (Join-Path (Get-Location) '.tools/node-v24.21.0-win-x64') + ';' + $e
 Get-Content .agent-state/project-progress.md -Raw
 git status --short --untracked-files=all
 git diff
+git push
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+node .tools/github.mjs update-ui-actions 3
 npm run verify
 npm run roadmap:check
 npm run roadmap:next

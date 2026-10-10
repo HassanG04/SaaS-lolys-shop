@@ -3,7 +3,7 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08 UI actions/cards; implementation complete, visual review and PR checks pending
+Current task: T-0.08 UI actions/cards; code and CI verified, visual review pending
 Completed:
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
@@ -15,6 +15,8 @@ Completed:
   - Icon follow-up e34b6c2 passes all four CI jobs (run 38022228681).
   - Split UI kit into T-0.08 through T-0.08e, preserving its requirements and downstream dependencies.
   - Added Button, IconButton, Card/CardImage and development-only previews; native form/keyboard behavior, required icon labels and directional mirroring tested.
+  - Draft UI actions PR 3 published at 0ba979e, stacked on theme PR 2.
+  - All four UI actions jobs passed at 0ba979e (run 38023041519).
 Files changed:
   - Branch agent/T-0.08-ui-actions is based on theme PR 2 at e34b6c2.
   - Theme components, tokens, fonts/licenses, tests, dependency pins, roadmap and review notes.
@@ -27,18 +29,20 @@ Tests executed:
   - Both themes passed at 360/1280 in RTL/LTR; keyboard focus, 44px minimum and saved reload checked.
   - Final local verify and 110-task roadmap validation pass after the browser-driven CSS fix.
   - Icon follow-up verify passes (76 tests), build, roadmap and remote CI pass.
-  - UI actions verify passes (16 app + 66 tooling tests); production route/copy/fixture exclusion and 114-task roadmap pass; PR checks pending.
+  - UI actions verify passes (16 app + 66 tooling tests); production route/copy/fixture exclusion, 114-task roadmap and all four PR checks pass.
 Problems found:
+  - Implementation 0ba979e is published and green; final documentation follow-up is local because GitHub DNS timed out again. Retry git push, then refresh PR 3 body from .agent-state/ui-actions-pr.md.
   - Later UI kit/guards/security drafts did not meet all criteria; statuses corrected to todo with review notes.
   - Owner workflow review and human-owned infrastructure setup remain pending.
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
-Next action: Finish T-0.08 PR and read CI; keep doing until actual browser checks pass. Then T-0.08b form controls, using the preserved drafts and review findings.
+Next action: Push the local documentation follow-up when DNS recovers; complete T-0.08 visual checks when browser policy permits. Then T-0.08b forms. Keep T-0.08 doing until actual browser checks pass.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
 https://github.com/HassanG04/lolys/pull/1. No main push, merge or deployment.
 Theme PR: https://github.com/HassanG04/lolys/pull/2 (stacked on PR 1).
+UI actions PR: https://github.com/HassanG04/lolys/pull/3 (stacked on PR 2).
 
 Use Node 24.21.0 from `.nvmrc`; local runtime is
 `.tools/node-v24.21.0-win-x64`. Install with `npm ci --ignore-scripts`.
