@@ -1283,6 +1283,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08d, T-0.08e, T-0.08h | Codex | Draft PRs 8/9/10 each have all four jobs green at 6c18be3 / 4ac7126 / 8a6786d in runs 38081096113 / 38081098408 / 38081350854. Bilingual build excludes preview copy after repair. Human review and final visual matrix remain open. | [#10](https://github.com/HassanG04/lolys/pull/10) |
 | 2026-10-10 | T-0.08i | Codex | Added 12 language behavior/parity/error-preview tests; corrected Arabic language-tag matching and updates document direction before paint. npm run verify passes (54 app + 97 tooling tests), production guards pass, 118-task roadmap validates. Preparing while upstream visual gate remains open; no acceptance criteria waived. | pending |
 
+| 2026-10-10 | T-0.08i | Codex | All four remote jobs pass at e8774dd in run 38081581119. Local verify passes with 151 tests; exact continuation/file inventory and pending visual matrix saved. T-0.08e/h/i remain doing until visual evidence; owner workflow review and Docker prerequisites still gate new phases. | [#11](https://github.com/HassanG04/lolys/pull/11) |
+
 ### Open questions (agents add rows; the owner answers)
 
 

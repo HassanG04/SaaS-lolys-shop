@@ -2,203 +2,100 @@
 
 ## Current Objective
 
-Prepare T-0.08d labels/ornaments; T-0.08g dialogs are published with green CI.
-Working branch: agent/T-0.08g-dialog, based on PR 6 at 22effa5.
-User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
+Continue from `agent/T-0.08i-language-verification`. Codex reviewed the incoming
+commits, preserved them, repaired guards/language support and opened draft PRs
+8–11. T-0.08e/h/i are implemented but retain the visual acceptance gate.
+
+Read this file, `.agent-state/project-progress.md`, `git status`, `git diff`
+(including untracked files), roadmap sections 0/1 and the current task first.
+Do not restart the theme/UI implementation or restore old drafts wholesale.
 
 ## Completed
 
-- Native Dialog replaces the unsafe draft. Uses showModal, controlled dismissal,
-  focus restoration on closure/unmount, stable title/description links and Arabic
-  close controls. Verify passes (102 tests and build); 116-task roadmap valid.
-  The two dialog tests exercise closed markup and React event contracts only.
-  All four remote jobs pass at a49d87c in run 38071645439.
-  PR: https://github.com/HassanG04/lolys/pull/7.
-- Tabs/Toast and Arabic previews implemented; eight behavior tests added.
-  Verify passes (100 tests and build); production kit exclusion and 116-task
-  roadmap pass. All four PR 6 jobs pass at 68e506e in run 38071233956.
-  PR: https://github.com/HassanG04/lolys/pull/6.
-  Its documentation follow-up 22effa5 also passes all four jobs in run 38071382759.
-  Choice documentation 5e0ba81 has four green
-  checks in run 38028772831. No browser gate has been waived.
-- T-0.08f native Checkbox/Radio with 44px minimum dimensions, non-color marks,
-  labelled/ref/controlled behavior and forced-colors fallback. Five behavior
-  tests pass. Full verify passes (26 app + 66 tooling tests), production exclusion
-  and 115-task roadmap pass. All four choice PR jobs pass at a0708bc in
-  run 38028693736. PR 5: https://github.com/HassanG04/lolys/pull/5.
-- Text-field PR 4: https://github.com/HassanG04/lolys/pull/4; all four jobs pass
-  at 3aab6820f15a1650246ad6fe315f4e4363e2288b in run 38028479207.
-
-- T-0.08b Input/SearchInput/Select/Textarea and Field helper implemented with
-  Arabic labels, stable descriptions, refs, disabled/native form behavior.
-  87 tests pass (21 app + 66 tooling), production build and 115-task roadmap pass.
-- Prior local documentation afd97fe is now published to PR 3; its body refreshed.
-- Checkbox/Radio are split to T-0.08f; prepared files retained in
-  .tools/form-choice-draft. Do not overwrite shared files wholesale on restore.
-
-- Foundation PR 1: all four jobs pass in run 37929355898; negative lint probe
-  previously verified in run 37929038785. Owner workflow review remains pending.
-- Preserved all incoming Anti-Gravity work in .tools/anti-gravity-20261010,
-  including a hash manifest and list of the 27 deferred files.
-- Reviewed all four later drafts; findings in .agent-state/anti-gravity-review.md.
-- Repaired themes, full tokens/typography, self-hosted fonts and licenses.
-- Arabic accessible toggle; saved/system/blocked-storage handling; pre-paint script.
-- 76 tests pass: 10 app + 66 tooling, including all 31 contrast pairs.
-- Browser checked both themes at 360/1280 in RTL/LTR, focus, 44px minimum,
-  keyboard toggling and reload persistence. Screenshots and measurements saved.
-- Theme PR 2 has four green checks at 7d7fcbf (run 38021668187).
-  T-0.07 and T-0.07b are done. No merge or deployment was performed.
-- Documentation follow-up 4b56b05 also passes all four CI jobs (run 38021821418).
-- Owner requested crescent/sun icons instead of visible theme text. Implemented
-  in ThemeToggle.tsx with Arabic label/tooltip and the existing 44px minimum.
-  Local verify, all 76 tests, build and roadmap checks pass.
-- Icon follow-up e34b6c2 passes all four remote jobs in run 38022228681.
-- T-0.08 split through T-0.08e to preserve small reviews and all original criteria.
-  Buttons, required icon labels/mirroring, cards and four theme/direction previews
-  implemented without new dependencies. 82 local tests pass; all four remote jobs
-  pass in run 38023041519 at 0ba979e. Production kit exclusion and 114 tasks verified.
-- UI actions published in draft PR 3: https://github.com/HassanG04/lolys/pull/3,
-  implementation commit 0ba979ea16caaa66ef22410366823fc2224e7b9d.
+- Original commits 6c18be3, a47889f and 96ad75f remain on the original
+  `agent/T-0.08d-labels-ornaments` branch; no reset or discarded work.
+- PR 8: labels/ornaments at 6c18be3; four green jobs, run 38081096113.
+- PR 9: token guard now scans CSS/SVG/literal utilities with negative CLI tests;
+  build guard excludes development copy/assets. Four green jobs at 4ac7126,
+  run 38081098408. CI change retains SEC-16/SEC-24 and needs owner review.
+- PR 10: repaired bilingual dictionaries exclude kit copy in production;
+  language switch uses Button and Arabic catalogue errors are retained.
+  ADR-0002 records the OD-003 decision inherited from your handover.
+  Four green jobs at 8a6786d, run 38081350854.
+- PR 11: Arabic locale detection, direction before paint, 12 language tests.
+  All four remote jobs pass at e8774dd in run 38081581119.
+  Latest local npm run verify passes: 54 app + 97 tooling tests (151 total),
+  lint, format, types, token negatives, production build/preview exclusion.
+- Roadmap validates 118 tasks. No new dependency or lockfile change.
+- OD-001 compatible versions and OD-002 loading-only pearl bounce remain approved.
 
 ## Remaining
 
-- T-0.08g: browser acceptance remains open; installed jsdom lacks showModal/close.
-  Verify native focus containment/restoration, background inactivity, Escape,
-  repeated opens, controlled closure/unmount and theme/direction sizing when the
-  browser permits access. No method mocks/polyfills or claimed browser pass.
-  The old .tools/feedback-dialog-draft is provenance; do not restore over new code.
-- T-0.08d labels/ornaments is the next implementation slice.
-  Read Badge.tsx, Skeleton.tsx and ornaments.tsx in the preserved checkpoint;
-  imports depend on absent utils, Chip is missing, and motion/arch styles need
-  repair. Keep direct imports and existing tokens; do not restore shared files.
-- T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
-  and directions, keyboard focus, 44px targets and reduced motion. Browser policy
-  blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
-- After visual review, complete T-0.08/T-0.08b in dependency order.
-  The later feedback/ornament/guard work is split into T-0.08c/T-0.08d/T-0.08e.
-- T-0.09/T-0.12: restore only when reached; repair guards and run required
-  negative CI tests. Their incoming completion claims were not valid evidence.
-- T-0.06 needs owner workflow review. Never merge or push main.
-- Docker is absent; no local database verification or production deployment.
-
-## Current Files
-
-All current changes from b4faa49 (generated font CSS/assets included):
-
-- `.agent-state/ui-dialog-pr.md`
-- `src/components/ui/Dialog.tsx`
-- `src/components/ui/dialog.test.tsx`
-- `src/dev/DialogExample.tsx`
-- `.agent-state/ui-feedback-pr.md`
-- `src/components/ui/Tabs.tsx`
-- `src/components/ui/Toast.tsx`
-- `src/components/ui/feedback.test.tsx`
-- `src/dev/FeedbackExamples.tsx`
-- `.agent-state/ui-choices-pr.md`
-- `src/components/ui/Choice.tsx`
-- `src/components/ui/Checkbox.tsx`
-- `src/components/ui/Radio.tsx`
-- `src/components/ui/choices.test.tsx`
-- `src/dev/ChoiceExamples.tsx`
-- `.agent-state/ui-forms-pr.md`
-- `src/components/ui/Field.tsx`
-- `src/components/ui/Input.tsx`
-- `src/components/ui/Select.tsx`
-- `src/components/ui/Textarea.tsx`
-- `src/components/ui/SearchInput.tsx`
-- `src/components/ui/forms.test.tsx`
-- `src/dev/FormExamples.tsx`
-- `.agent-state/ui-actions-pr.md`
-- `src/components/ui/Button.tsx`
-- `src/components/ui/IconButton.tsx`
-- `src/components/ui/Card.tsx`
-- `src/components/ui/actions.test.tsx`
-- `src/dev/KitPage.tsx`
-- `src/dev/card-placeholder.svg`
-- `src/styles/ui.css`
-- `.agent-state/anti-gravity-review.md`
-- `.agent-state/changed-files.md`
-- `.agent-state/foundation-pr.md`
-- `.agent-state/project-progress.md`
-- `.agent-state/theme-browser-checks.json`
-- `.agent-state/theme-dark.jpg`
-- `.agent-state/theme-light.jpg`
-- `.agent-state/theme-pr.md`
-- `.gitattributes`
-- `HANDOVER_TO_ANTI_GRAVITY.md`
-- `HANDOVER_TO_CODEX.md`
-- `README.md`
-- `docs/adr/0001-stack.md`
-- `index.html`
-- `package-lock.json`
-- `package.json`
-- `public/fonts/OFL-Aref-Ruqaa.txt`
-- `public/fonts/OFL-Cairo.txt`
-- `public/fonts/README.md`
-- `public/fonts/aref-ruqaa-0.woff2`
-- `public/fonts/aref-ruqaa-1.woff2`
-- `public/fonts/aref-ruqaa-2.woff2`
-- `public/fonts/aref-ruqaa-3.woff2`
-- `public/fonts/aref-ruqaa-4.woff2`
-- `public/fonts/aref-ruqaa-5.woff2`
-- `public/fonts/aref-ruqaa.css`
-- `public/fonts/cairo-0.woff2`
-- `public/fonts/cairo-1.woff2`
-- `public/fonts/cairo-2.woff2`
-- `public/fonts/cairo.css`
-- `roadmap.md`
-- `scripts/theme.test.mjs`
-- `src/App.test.tsx`
-- `src/App.tsx`
-- `src/components/ui/ThemeProvider.tsx`
-- `src/components/ui/ThemeToggle.tsx`
-- `src/components/ui/theme.test.tsx`
-- `src/i18n/ar.json`
-- `src/styles/index.css`
-- `src/styles/tokens.css`
-- `src/test-setup.ts`
-- `vite.config.ts`
+- Read `.agent-state/ui-acceptance.md`; the incoming browser report does not
+  provide the full matrix. Record actual results in a permitted session before
+  marking T-0.08e/h/i done. Do not bypass the prior Codex browser URL denial.
+- Owner reviews PR 1 (T-0.06) and PR 9's read-only CI addition. No agent merges.
+  T-0.09/T-0.12 stay gated; do not copy the old unreviewed guards into production.
+- H-08 Docker remains absent according to the incoming inspection. T-1.01 stays
+  blocked; no database check or launch readiness is claimed.
+- T-2.03 still owns i18next, pluralization, formatting and the full i18n scanner.
+- No catalog, checkout, admin or production backend is ready. This is Phase 0.
 
 ## Current Error
 
-Ignored local helpers also changed: `.tools/github.mjs` adds draft PR creation;
-`.tools/verify-ui-build.mjs` checks current production artifact exclusion. The
-permanent production/token gate remains T-0.08e; no success stub was introduced.
-
-Error: browser tool rejected http://127.0.0.1:5175/ under its URL policy.
-Expected: inspect icons and UI kit in both themes/directions at 360/1280.
-Actual: no fresh visual check; 102 tests and production build pass. Do not claim
-the old text-toggle screenshots verify the icon change.
-Possible cause: browser tool policy/state mismatch; no workaround attempted.
-
-Previous publication DNS failure recovered; afd97fe was pushed successfully.
-An approval-service usage limit interrupted a verification attempt, but the
-subsequent full verify succeeded. No approval or browser policy was bypassed.
-
-The incoming UI-kit/guard/security bugs are documented in the review, not active
-in this theme branch. Do not restore shared package.json, roadmap, App or workflow
-files wholesale; merge only the next task's changes from the checkpoint.
+Error: No failing code check; visual evidence and human prerequisites remain.
+Expected: Full acceptance matrix, owner workflow review, Docker for local DB work.
+Actual: Automated checks pass; those remaining prerequisites are not evidenced.
+Possible cause: Incoming report lacked detailed results; host/session limits.
 
 ## Next Exact Command
 
-From D:\Projects\Programming\الاء:
-
 ```powershell
-$env:Path = (Join-Path (Get-Location) '.tools/node-v24.21.0-win-x64') + ';' + $env:Path
-Get-Content .agent-state/project-progress.md -Raw
-git status --short --untracked-files=all
-git diff
-Get-Content .agent-state/anti-gravity-review.md
-Get-Content src/components/ui/Dialog.tsx
-Get-Content .agent-state/ui-dialog-pr.md
-Get-Content .tools/anti-gravity-20261010/src/components/ui/Badge.tsx
-Get-Content .tools/anti-gravity-20261010/src/components/ui/Skeleton.tsx
-Get-Content .tools/anti-gravity-20261010/src/components/ui/ornaments.tsx
-npm run verify
-npm run roadmap:check
+$env:Path=(Join-Path (Get-Location) '.tools/node-v24.21.0-win-x64')+';'+$env:Path
+$env:npm_config_script_shell='C:\Windows\System32\cmd.exe'
 npm run roadmap:next
-git switch -c agent/T-0.08d-labels-ornaments
+npm run verify
 ```
 
-Use .nvmrc Node 24.21.0. Never read or print .env values. HANDOVER_TO_CODEX.md is
-retained as the incoming report, superseded by current progress and review.
+Use the command-shell override only in this shell: the configured PowerShell
+profile caused stalled npm children and a Conda encoding error. No user-level
+shell settings were changed. Do not read/print environment-file values.
+
+## Current Files
+
+Net session changes relative to incoming 96ad75f (including this handover and
+acceptance checklist). Full diff: `git diff 96ad75f`.
+
+- `.agent-state/anti-gravity-review.md`
+- `.agent-state/language-pr.md`
+- `.agent-state/language-verification-pr.md`
+- `.agent-state/project-progress.md`
+- `.agent-state/ui-acceptance.md`
+- `.agent-state/ui-guard-pr.md`
+- `.agent-state/ui-ornaments-pr.md`
+- `.github/workflows/ci.yml`
+- `docs/adr/0002-bilingual-interface.md`
+- `docs/spec/design-system.md`
+- `HANDOVER_TO_ANTI_GRAVITY.md`
+- `HANDOVER_TO_CODEX.md`
+- `OPEN_DECISION.md`
+- `package.json`
+- `roadmap.md`
+- `scripts/check-tokens.mjs`
+- `scripts/check-tokens.test.mjs`
+- `scripts/check-ui-build.mjs`
+- `scripts/check-ui-build.test.mjs`
+- `scripts/README.md`
+- `src/components/ui/LanguageToggle.tsx`
+- `src/dev/ChoiceExamples.tsx`
+- `src/dev/DialogExample.tsx`
+- `src/dev/FeedbackExamples.tsx`
+- `src/dev/FormExamples.tsx`
+- `src/dev/KitPage.tsx`
+- `src/dev/OrnamentExamples.tsx`
+- `src/dev/useKitCopy.ts`
+- `src/i18n/ar.json`
+- `src/i18n/en.json`
+- `src/i18n/language.test.tsx`
+- `src/i18n/LanguageProvider.tsx`
+- `src/i18n/translations.ts`

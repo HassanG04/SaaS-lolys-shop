@@ -3,7 +3,7 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08i implementation verified; publishing review and continuation record
+Current task: T-0.08i verified and published; T-0.08e/h/i await visual acceptance evidence
 Completed:
   - Anti-Gravity reports UI-kit and native-dialog browser checks; complete viewport/theme/direction/reduced-motion evidence is still needed for T-0.08e.
   - T-0.08e guard repair is published in draft PR 9; ornaments are preserved in draft PR 8. Final acceptance remains open.
@@ -44,6 +44,7 @@ Files changed:
   - Text fields add Field, Input, Select, Textarea, SearchInput, forms.test.tsx and FormExamples; update kit, CSS, Arabic copy and continuation/PR/roadmap docs.
   - Choice controls add Choice, Checkbox, Radio, choices.test.tsx and ChoiceExamples; update form preview, CSS, Arabic copy and continuation/PR/roadmap docs.
 Tests executed:
+  - PR 11 at e8774dd passes all four GitHub jobs in run 38081581119; no merge or deployment.
   - Latest npm run verify passes with 54 app + 97 tooling tests (151 total); 12 language cases include saved/device/blocked-storage choices, keyboard persistence, theme independence, key parity and Arabic errors.
   - PR 8 at 6c18be3, PR 9 at 4ac7126 and PR 10 at 8a6786d each have all four GitHub jobs green (runs 38081096113, 38081098408, 38081350854).
   - Review repair: npm run verify passes with 42 app + 97 tooling tests; build preview guard and token negative fixtures pass. Use npm_config_script_shell=C:\Windows\System32\cmd.exe on this host to bypass profile startup issues.
@@ -77,16 +78,20 @@ Text fields PR: https://github.com/HassanG04/lolys/pull/4 (stacked on PR 3).
 Choice controls PR: https://github.com/HassanG04/lolys/pull/5 (stacked on PR 4).
 Feedback PR: https://github.com/HassanG04/lolys/pull/6 (stacked on PR 5).
 Dialog PR: https://github.com/HassanG04/lolys/pull/7 (stacked on PR 6).
+Ornaments, guard, bilingual and language-test draft PRs: #8, #9, #10, #11 (stacked in that order).
+Current branch: agent/T-0.08i-language-verification. See HANDOVER_TO_ANTI_GRAVITY.md for exact commands and the complete changed-file inventory.
 
 Use Node 24.21.0 from `.nvmrc`; local runtime is
 `.tools/node-v24.21.0-win-x64`. Install with `npm ci --ignore-scripts`.
 
-The latest incoming snapshot is `.tools/anti-gravity-20261010/` with
+The older October 9 snapshot is `.tools/anti-gravity-20261010/` with
 `checkpoint-manifest.json` and `deferred-files.json`. The 27 deferred files were
 removed from this task's working tree only after hash verification. Their
 original contents are recoverable there. Shared-file changes also remain in
 that snapshot. Restore selectively for T-0.08, T-0.09 and T-0.12, never copy old
 package.json, roadmap, App or workflow over newer verified work wholesale.
+
+The latest October 10 incoming work is preserved as commits 6c18be3 / a47889f / 96ad75f on agent/T-0.08d-labels-ornaments.
 
 Read `.agent-state/anti-gravity-review.md` for concrete findings before resuming
 those tasks. `HANDOVER_TO_CODEX.md` is the preserved incoming report, not current
