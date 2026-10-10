@@ -6,7 +6,7 @@ Arabic-first RTL storefront for accessories and home items in Egypt. The product
 
 1. Install Node.js 24 LTS (the version in `.nvmrc`) and npm.
 2. Copy `.env.example` to `.env.local` and fill in the local public Supabase values when the local stack is available. Never put a service-role key in this project.
-3. Install dependencies with `npm ci`.
+3. Install dependencies with `npm ci --ignore-scripts`.
 4. Start the app with `npm run dev` and open the printed local URL.
 
 The local database workflow uses the Supabase CLI and Docker. Run `npm run db:start`, `npm run db:reset` and `npm run db:test` after the database foundation tasks are installed. Do not run linked or production database commands from an agent session.
@@ -21,10 +21,13 @@ The source-of-truth product requirements are in `roadmap.md` and `docs/spec/`.
 
 ## Current foundation status
 
-The blank React application builds and serves. Application tests and the
+The React foundation now includes the documented light/dark themes, local fonts
+and an accessible Arabic theme toggle. Application tests and the
 dependency-free roadmap tool are implemented. The full local `verify` gate
 passes with the owner-approved compatible toolchain in [ADR-0001](docs/adr/0001-stack.md).
-No storefront, backend, payments or admin behavior is implemented yet.
+No storefront, backend, payments or admin behavior is implemented yet. The UI kit
+and security guard drafts are under review; see shared progress before restoring
+them. Foundation PR #1 has passing CI; workflow owner review remains pending.
 
 Later-task commands explicitly fail with their required task ID. CI starts with
 static, unit (80% shared-library coverage), build and roadmap jobs; subsequent

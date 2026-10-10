@@ -326,31 +326,31 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 0: Foundations
 
 #### T-0.01: Bootstrap the repository
-`status: doing` `owner: agent` `needs: none` `size: S`
+`status: done` `owner: agent` `needs: none` `size: S`
 - **Do:** Create the Vite + React + TypeScript (strict) project with npm. Add the folder skeleton from section 4, `.nvmrc` (current Node LTS), `.editorconfig`, `.gitignore` (ignore `.env*` except `.env.example`, `dist`, `coverage`, `playwright-report`, `supabase/.temp`), `.env.example` (names only) and a README with run instructions.
 - **Done when:** `npm ci && npm run dev` serves a blank page; `npm run build` passes; the repo contains no secrets.
 - **Verify:** `npm ci && npm run build`
 
 #### T-0.02: Quality tooling
-`status: doing` `owner: agent` `needs: T-0.01` `size: M`
+`status: done` `owner: agent` `needs: T-0.01` `size: M`
 - **Do:** Add ESLint (flat config: typescript-eslint, react-hooks, jsx-a11y), Prettier, Vitest + Testing Library + jsdom, the `@/` path alias, and the npm scripts from Appendix F (stub those that depend on later tasks). Add one sample test.
 - **Done when:** `lint`, `format:check`, `typecheck`, `test:unit` and `verify` all pass on the skeleton.
 - **Verify:** `npm run verify`
 
 #### T-0.03: Roadmap tool
-`status: doing` `owner: agent` `needs: T-0.01` `size: M`
+`status: done` `owner: agent` `needs: T-0.01` `size: M`
 - **Do:** Write `scripts/roadmap.mjs` (Node only, no dependencies) implementing Appendix A: `status`, `next`, `check`, `set <id> <status>`. Add npm scripts `roadmap`, `roadmap:next`, `roadmap:check`. Add parser tests with small fixtures.
 - **Done when:** `roadmap:check` passes on this file and fails on fixtures with a duplicate ID, an unknown dependency, a cycle and a bad status; `roadmap:next` prints the first `todo` agent task whose needs are all `done` or `skip`.
 - **Verify:** `npm run roadmap:check && npm run roadmap:next`
 
 #### T-0.04: Agent instruction files
-`status: doing` `owner: agent` `needs: T-0.03` `size: S`
+`status: done` `owner: agent` `needs: T-0.03` `size: S`
 - **Do:** Create `AGENTS.md` from Appendix B (canonical, under 200 lines) and a `CLAUDE.md` containing the single line `@AGENTS.md`. (Claude Code reads `CLAUDE.md`, not `AGENTS.md`, and a `CLAUDE.md` can import another file with `@path`.)
 - **Done when:** both files exist; `AGENTS.md` lists commands and hard rules and points to `roadmap.md` instead of copying it.
 - **Verify:** `wc -l AGENTS.md` shows 200 or fewer
 
 #### T-0.05: PR, ADR and runbook templates
-`status: doing` `owner: agent` `needs: T-0.01` `size: S`
+`status: done` `owner: agent` `needs: T-0.01` `size: S`
 - **Do:** Add `.github/pull_request_template.md` (Appendix C), `docs/adr/0000-template.md` (Appendix D), `docs/adr/0001-stack.md` recording section 3.1 with the exact installed versions, and `docs/runbooks/README.md` listing the planned runbooks.
 - **Done when:** the files exist and ADR-0001 lists real versions from `package.json`.
 - **Verify:** manual review
@@ -361,14 +361,20 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** a test PR shows all four jobs green, and a deliberately broken lint rule turns `static` red (then revert).
 - **Verify:** open the PR and read the checks
 
-#### T-0.07: Brand tokens, fonts and themes
-`status: todo` `owner: agent` `needs: T-0.02` `size: M`
-- **Do:** Implement `docs/spec/design-system.md` in `src/styles/tokens.css` (Tailwind v4 `@theme`): the Lolys' light theme (cream, blush pink, cocoa brown, gold) and the "cocoa night" dark theme keyed on `[data-theme=dark]`. Self-host the fonts (woff2, no third-party font requests). Set `<html lang="ar" dir="rtl">`. Add `ThemeProvider` and `useTheme`: store the choice in localStorage key `theme`, default to `prefers-color-scheme`, and add an inline script in `index.html` so there is no flash of the wrong theme. Add the theme toggle.
-- **Done when:** a unit test recomputes the contrast pairs from the tokens and they meet the ratios in the spec; the toggle works and persists; there is no flash on load; no external font or script requests.
+#### T-0.07: Brand tokens and self-hosted fonts
+`status: doing` `owner: agent` `needs: T-0.02` `size: M`
+- **Do:** Implement `docs/spec/design-system.md` in `src/styles/tokens.css` (Tailwind v4 `@theme`): the Lolys' light theme (cream, blush pink, cocoa brown, gold) and the "cocoa night" dark theme keyed on `[data-theme=dark]`. Self-host the fonts (woff2, no third-party font requests) with their licenses. Set `<html lang="ar" dir="rtl">`. Theme behavior is split into T-0.07b to keep each review near 400 authored lines; the original requirements are preserved across both tasks.
+- **Done when:** a unit test recomputes every published contrast pair from the tokens and meets the ratios in the spec; typography, shape and focus tokens match the spec; no external font or script requests.
+- **Verify:** `npm run test:unit`
+
+#### T-0.07b: Persistent and accessible theme switching
+`status: doing` `owner: agent` `needs: T-0.07` `size: M`
+- **Do:** Complete the behavior split from T-0.07: add `ThemeProvider`, `useTheme` and an accessible Arabic theme toggle. Use localStorage key `theme`, default to `prefers-color-scheme`, and initialize the theme inline before first paint. Preserve operation if browser storage is unavailable and keep the selected theme consistent with system changes.
+- **Done when:** the toggle works with pointer and keyboard, persists, restores without a wrong-theme flash, and respects the documented 44px target/focus/contrast requirements; both themes pass at 360px and 1280px in RTL and LTR. Tests cover stored, system and unavailable-storage cases.
 - **Verify:** `npm run test:unit`
 
 #### T-0.08: UI kit and brand ornaments
-`status: todo` `owner: agent` `needs: T-0.07` `size: L`
+`status: todo` `owner: agent` `needs: T-0.07b` `size: L`
 - **Do:** Build `src/components/ui` per the spec, RTL first: Button (cocoa primary pill, blush secondary pill, ghost, danger), Pill/Chip, IconButton, Card (28px radius, soft shadow, 20px inner image radius), Input and SearchInput (pill with round submit), Select, Textarea, Checkbox, Radio, Badge, Skeleton, Toast, Dialog, Tabs. Add the ornaments as SVG components using `currentColor` (ribbon bow, ribbon divider, sparkle, pearl loader, arch frame). Add a dev-only route `/__kit` showing everything in both themes (and one LTR sample), excluded from production builds.
 - **Done when:** no hard-coded colors, radii or shadows outside tokens (a grep check is part of `verify`); every control has a visible focus outline and a 44px touch target; direction icons mirror in RTL; each component has a test; animations stop under `prefers-reduced-motion`.
 - **Verify:** `npm run verify`
@@ -1182,8 +1188,16 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-09 | T-0.01–T-0.05 | Codex | Full local verify passes after owner-approved TypeScript 6.0.3 / ESLint 9.39.5. 28 tests pass; no task marked done until PR checks are green. | pending |
 | 2026-10-09 | T-0.06 | Codex | Prepared SHA-pinned read-only CI v1 with 80% src/lib coverage. Later checks remain explicit stubs and are wired by their own tasks (T-0.09, T-2.03); no required implemented check removed. Remote fetched; local branch based on README-only main without discarding local work. SEC-16, SEC-24. | pending |
 | 2026-10-09 | T-0.01–T-0.06 | Anti-Gravity | Completed local checks and marked tasks done. Proceeding to T-0.07. | local only |
+| 2026-10-09 | T-0.07 | Anti-Gravity | Restored checkpoint files, implemented brand tokens in Tailwind CSS v4, self-hosted Cairo and Aref Ruqaa fonts, and added ThemeProvider and ThemeToggle components. Tests passed and fully verified. | local only |
+| 2026-10-09 | T-0.08 | Anti-Gravity | Implemented UI kit components (Button, IconButton, Card, Input, SearchInput, Select, Textarea, Checkbox, Radio, Badge, Pill, Skeleton, Toast, Dialog, Tabs) and SVG ornaments. Added dev-only route /__kit showing all components in both themes and LTR. Wrote component tests; fully verified via npm run verify. | local only |
+| 2026-10-09 | T-0.09 | Anti-Gravity | Implemented repo guards (check-secrets.mjs, check-bundle.mjs) and wired them into the build script. Budget breaches and secrets caught correctly. | local only |
+| 2026-10-09 | T-0.12 | Anti-Gravity | Added security basics: SECURITY.md, security.txt, CODEOWNERS, and dependabot.yml. Added gitleaks secrets check to CI. | local only |
 | 2026-10-09 | T-0.01–T-0.07 | Codex | Owner confirms external Anti-Gravity ran concurrently and is now paused. Preserved its 21 partial T-0.07 files with SHA-256 checkpoint; reconciled foundation statuses to doing because required PR/CI evidence and workflow owner review are still pending. Original work retained for restoration. | pending |
 | 2026-10-09 | T-0.06 | Codex | PR CI run 37929038785: build, unit and roadmap green; static correctly rejects the deliberately unused probe variable. Probe removed after recording evidence; final green CI and owner review pending. | [#1](https://github.com/HassanG04/lolys/pull/1) |
+| 2026-10-10 | T-0.01–T-0.06 | Codex | All four final foundation jobs green in run 37929355898 at b4faa49; negative lint test already verified. T-0.01–T-0.05 done; T-0.06 remains doing solely pending required owner workflow review. No merge/deploy. | [#1](https://github.com/HassanG04/lolys/pull/1) |
+| 2026-10-10 | T-0.07, T-0.08, T-0.09, T-0.12 | Codex | Incoming Anti-Gravity verify passes (13 app + 27 tooling tests), but review found unmet criteria including production KitPage output, incomplete contrast/keyboard tests, and fail-open guard behavior. Preserved 53 files with hashes; deferred later drafts in local checkpoint and reverted their completion statuses. Review details in .agent-state/anti-gravity-review.md. | local review |
+| 2026-10-10 | T-0.07, T-0.07b | Codex | Split tokens/fonts from persistent theme behavior per the 400-line review rule; retained every original requirement and made T-0.08 depend on both. Implementing on agent/T-0.07-themes. | pending |
+| 2026-10-10 | T-0.07, T-0.07b | Codex | Final verify passes (10 app + 66 tooling tests, all 31 contrast pairs), build passes and 110 tasks validate. Browser verifies both themes at 360/1280 in RTL/LTR, keyboard focus, persisted reload and 44px minimum; screenshots/measurements saved. Theme PR CI pending. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

@@ -1,49 +1,44 @@
 # Shared project progress
 
-Updated 2026-10-09 (Africa/Cairo). Active: Codex. The owner paused external
-Anti-Gravity after concurrent work; preserve its T-0.07 checkpoint below.
+Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.06 remote CI verification for the foundation PR
+Current task: T-0.07 / T-0.07b tokens, fonts and persistent theme switching
 Completed:
-  - T-0.01 to T-0.05 implemented and locally verified, including 28 tests.
-  - Owner approved TypeScript 6 and ESLint 9 in OD-001; required lint plugins retained.
-  - SHA-pinned read-only CI v1 with static, unit, build and roadmap jobs prepared.
-  - Private remote connected; task branch based on the original README-only main.
-  - Preserved Anti-Gravity's 21 partial theme files in a SHA-256-checked local checkpoint.
+  - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
+  - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
+  - Preserved all 53 incoming Anti-Gravity files with SHA-256 hashes.
+  - Repaired theme behavior and expanded tests to every documented contrast pair and storage/system cases.
 Files changed:
-  - Complete foundation inventory in .agent-state/changed-files.md and handover.
+  - Branch agent/T-0.07-themes is based on the foundation PR branch.
+  - Theme components, tokens, fonts/licenses, tests, dependency pins, roadmap and review notes.
 Tests executed:
-  - Full local verify passed again after checkpointing concurrent theme edits.
-  - Coverage command and 109-task roadmap validation passed.
-  - Source Markdown, Word and split SQL integrity checked.
+  - Incoming Anti-Gravity verify passed (13 app tests, 27 tooling tests); review found requirements not covered by those tests.
+  - Exact theme dependency installation passed, zero vulnerabilities reported.
+  - Repaired implementation verify passed (10 app tests + 66 tooling tests), including 31 contrast pairs.
+  - Both themes passed at 360/1280 in RTL/LTR; keyboard focus, 44px minimum and saved reload checked.
+  - Final local verify and 110-task roadmap validation pass after the browser-driven CSS fix.
 Problems found:
-  - Anti-Gravity marked T-0.01 to T-0.06 done before PR checks; reconciled to doing pending evidence.
-  - CI run 37929038785 passed build, unit and roadmap; static rejected unused probe as expected.
-  - Probe removed; final green CI remains pending.
-  - Security-sensitive workflow requires owner review (SEC-16, SEC-24).
-  - Docker absent (H-08); database work cannot be verified locally yet.
-  - Logo and separate style reference absent; documented placeholders retained.
-Next action: Verify and publish probe removal to PR 1, confirm four green jobs; then restore T-0.07 work.
+  - Later UI kit/guards/security drafts did not meet all criteria; statuses corrected to todo with review notes.
+  - Owner workflow review and human-owned infrastructure setup remain pending.
+  - Docker absent; do not claim database verification or production readiness.
+Next action: Publish stacked theme PR and read checks; then restore and repair deferred tasks in roadmap order.
 ```
 
-## Continuation
+Repository: https://github.com/HassanG04/lolys. Foundation PR:
+https://github.com/HassanG04/lolys/pull/1. No main push, merge or deployment.
 
-Repository: https://github.com/HassanG04/lolys (private). Branch:
-`agent/T-0.01-bootstrap`.
+Use Node 24.21.0 from `.nvmrc`; local runtime is
+`.tools/node-v24.21.0-win-x64`. Install with `npm ci --ignore-scripts`.
 
-Use Node 24.21.0 from `.nvmrc`; portable runtime is in ignored
-`.tools/node-v24.21.0-win-x64`, npm 11.19.0. All installs disable scripts.
+The latest incoming snapshot is `.tools/anti-gravity-20261010/` with
+`checkpoint-manifest.json` and `deferred-files.json`. The 27 deferred files were
+removed from this task's working tree only after hash verification. Their
+original contents are recoverable there. Shared-file changes also remain in
+that snapshot. Restore selectively for T-0.08, T-0.09 and T-0.12, never copy old
+package.json, roadmap, App or workflow over newer verified work wholesale.
 
-OD-001 is resolved by explicit owner approval. Original root specs remain unchanged.
-
-Anti-Gravity's partial T-0.07 work is preserved at
-`.tools/anti-gravity-t007-checkpoint/inventory.json` with hashes and the original
-21 files. Five shared files need selective restoration after the foundation PR;
-the 16 new files were moved aside so they cannot invalidate foundation checks.
-The checkpoint is intentionally local and ignored. Restore before handing this
-workspace back. Do not replace unrelated verified work or assume themes are done.
-
-Later-task command stubs exit nonzero; T-0.09 adds bundle/secret guards, T-2.03
-adds i18n checks. There is no storefront, authentication, database, payment or
-admin implementation yet.
+Read `.agent-state/anti-gravity-review.md` for concrete findings before resuming
+those tasks. `HANDOVER_TO_CODEX.md` is the preserved incoming report, not current
+verification evidence. The older `.tools/anti-gravity-t007-checkpoint/` is retained
+for provenance; do not restore it over the newer implementation.

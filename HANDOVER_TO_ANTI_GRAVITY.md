@@ -2,153 +2,94 @@
 
 ## Current Objective
 
-Complete local/remote verification of T-0.01 through T-0.06, then continue the
-roadmap. The owner paused external Anti-Gravity after it started T-0.07 in this
-workspace. Those 21 partial theme files are preserved with SHA-256 hashes in
-`.tools/anti-gravity-t007-checkpoint/inventory.json`; restore them after this PR.
+Finish T-0.07 and T-0.07b theme PR checks, then resume T-0.08 in roadmap order.
+Working branch: agent/T-0.07-themes, based on foundation PR 1 at b4faa49.
+User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Completed
 
-- Strict React/Vite foundation and exact package lockfile on Node 24.21.0.
-- Owner-approved TypeScript 6.0.3/ESLint 9.39.5; complete local verify passed.
-- One app test and 27 roadmap tests; reference copy integrity checked.
-- Prepared four SHA-pinned CI jobs and shared-library coverage threshold.
-- Connected private GitHub repository and based task branch on its initial main.
-- Instructions, PR/ADR templates, runbook index and handoff files created.
+- Foundation PR 1: all four jobs pass in run 37929355898; negative lint probe
+  previously verified in run 37929038785. Owner workflow review remains pending.
+- Preserved all incoming Anti-Gravity work in .tools/anti-gravity-20261010,
+  including a hash manifest and list of the 27 deferred files.
+- Reviewed all four later drafts; findings in .agent-state/anti-gravity-review.md.
+- Repaired themes, full tokens/typography, self-hosted fonts and licenses.
+- Arabic accessible toggle; saved/system/blocked-storage handling; pre-paint script.
+- 76 tests pass: 10 app + 66 tooling, including all 31 contrast pairs.
+- Browser checked both themes at 360/1280 in RTL/LTR, focus, 44px minimum,
+  keyboard toggling and reload persistence. Screenshots and measurements saved.
 
 ## Remaining
 
-- Final local foundation verification passed after checkpointing theme work.
-- PR 1 is open; lint probe failed specifically for unused variable, as required.
-- Probe removed; rerun local checks and confirm four green jobs on the final commit.
-- Mark tasks done only after required checks; never merge or deploy.
-- Docker is absent; local database verification remains unavailable.
-- Restore the T-0.07 checkpoint before returning this workspace to Anti-Gravity.
+- Local verify and roadmap validation pass; remote theme PR CI remains before marking both tasks done.
+- T-0.08: restore its files selectively from the newer checkpoint and fix the
+  documented accessibility, production-kit exclusion and testing defects.
+- T-0.09/T-0.12: restore only when reached; repair guards and run required
+  negative CI tests. Their incoming completion claims were not valid evidence.
+- T-0.06 needs owner workflow review. Never merge or push main.
+- Docker is absent; no local database verification or production deployment.
 
 ## Current Files
 
-All changed/new paths relative to initial main at this checkpoint:
+All current changes from b4faa49 (generated font CSS/assets included):
 
+- `.agent-state/anti-gravity-review.md`
 - `.agent-state/changed-files.md`
 - `.agent-state/foundation-pr.md`
 - `.agent-state/project-progress.md`
-- `.editorconfig`
-- `.env.example`
+- `.agent-state/theme-browser-checks.json`
+- `.agent-state/theme-dark.jpg`
+- `.agent-state/theme-light.jpg`
+- `.agent-state/theme-pr.md`
 - `.gitattributes`
-- `.github/pull_request_template.md`
-- `.github/workflows/.gitkeep`
-- `.github/workflows/ci.yml`
-- `.gitignore`
-- `.nvmrc`
-- `.prettierignore`
-- `.prettierrc.json`
-- `AGENTS.md`
-- `Accessories_Store_Project_Plan.docx`
-- `CLAUDE.md`
 - `HANDOVER_TO_ANTI_GRAVITY.md`
-- `OPEN_DECISION.md`
+- `HANDOVER_TO_CODEX.md`
 - `README.md`
-- `accessories_store_schema.sql`
-- `analytics-plan.md`
-- `analytics/.gitkeep`
-- `database-contract.md`
-- `design-system.md`
-- `docs/Accessories_Store_Project_Plan.docx`
-- `docs/adr/.gitkeep`
-- `docs/adr/0000-template.md`
 - `docs/adr/0001-stack.md`
-- `docs/analytics/.gitkeep`
-- `docs/db/initial-sql/01_schema.sql`
-- `docs/db/initial-sql/02_security.sql`
-- `docs/db/initial-sql/03_functions.sql`
-- `docs/db/initial-sql/04_views.sql`
-- `docs/db/initial-sql/05_seed.sql`
-- `docs/db/initial-sql/06_storage.sql`
-- `docs/db/initial-sql/README.md`
-- `docs/design/brand/.gitkeep`
-- `docs/design/brand/README.md`
-- `docs/design/demo/README.txt`
-- `docs/design/demo/app.js`
-- `docs/design/demo/index.html`
-- `docs/design/demo/styles.css`
-- `docs/design/shop-style-reference.md`
-- `docs/runbooks/.gitkeep`
-- `docs/runbooks/README.md`
-- `docs/spec/analytics-plan.md`
-- `docs/spec/database-contract.md`
-- `docs/spec/design-system.md`
-- `docs/spec/error-codes.md`
-- `docs/spec/security-model.md`
-- `e2e/.gitkeep`
-- `error-codes.md`
-- `eslint.config.js`
-- `frontend-demo/README.txt`
-- `frontend-demo/app.js`
-- `frontend-demo/index.html`
-- `frontend-demo/styles.css`
 - `index.html`
 - `package-lock.json`
 - `package.json`
-- `perf/.gitkeep`
-- `public/.well-known/.gitkeep`
-- `public/brand/.gitkeep`
-- `public/fonts/.gitkeep`
-- `public/placeholders/.gitkeep`
-- `public/robots.txt`
+- `public/fonts/OFL-Aref-Ruqaa.txt`
+- `public/fonts/OFL-Cairo.txt`
+- `public/fonts/README.md`
+- `public/fonts/aref-ruqaa-0.woff2`
+- `public/fonts/aref-ruqaa-1.woff2`
+- `public/fonts/aref-ruqaa-2.woff2`
+- `public/fonts/aref-ruqaa-3.woff2`
+- `public/fonts/aref-ruqaa-4.woff2`
+- `public/fonts/aref-ruqaa-5.woff2`
+- `public/fonts/aref-ruqaa.css`
+- `public/fonts/cairo-0.woff2`
+- `public/fonts/cairo-1.woff2`
+- `public/fonts/cairo-2.woff2`
+- `public/fonts/cairo.css`
 - `roadmap.md`
-- `scripts/.gitkeep`
-- `scripts/README.md`
-- `scripts/pending.mjs`
-- `scripts/roadmap.mjs`
-- `scripts/roadmap.test.mjs`
-- `security-model.md`
+- `scripts/theme.test.mjs`
 - `src/App.test.tsx`
 - `src/App.tsx`
-- `src/components/layout/.gitkeep`
-- `src/components/ui/ornaments/.gitkeep`
-- `src/features/account/.gitkeep`
-- `src/features/admin/analytics/.gitkeep`
-- `src/features/admin/audit/.gitkeep`
-- `src/features/admin/categories/.gitkeep`
-- `src/features/admin/customers/.gitkeep`
-- `src/features/admin/dashboard/.gitkeep`
-- `src/features/admin/delivery/.gitkeep`
-- `src/features/admin/forecast/.gitkeep`
-- `src/features/admin/orders/.gitkeep`
-- `src/features/admin/payments/.gitkeep`
-- `src/features/admin/products/.gitkeep`
-- `src/features/admin/settings/.gitkeep`
-- `src/features/auth/.gitkeep`
-- `src/features/cart/.gitkeep`
-- `src/features/catalog/.gitkeep`
-- `src/features/checkout/.gitkeep`
-- `src/features/orders/.gitkeep`
-- `src/features/payments/.gitkeep`
-- `src/i18n/.gitkeep`
-- `src/lib/.gitkeep`
-- `src/main.tsx`
+- `src/components/ui/ThemeProvider.tsx`
+- `src/components/ui/ThemeToggle.tsx`
+- `src/components/ui/theme.test.tsx`
+- `src/i18n/ar.json`
 - `src/styles/index.css`
+- `src/styles/tokens.css`
 - `src/test-setup.ts`
-- `src/types/.gitkeep`
-- `src/vite-env.d.ts`
-- `supabase/migrations/.gitkeep`
-- `supabase/tests/database/.gitkeep`
-- `tsconfig.app.json`
-- `tsconfig.json`
-- `tsconfig.node.json`
 - `vite.config.ts`
-- `vitest.config.ts`
 
 ## Current Error
 
-No unresolved local error. Local verification, coverage command and roadmap
-validation pass. CI run 37929038785 passed build/unit/roadmap, while static
-rejected the deliberately unused variable. Probe removed; verify all four
-jobs on the next commit before marking implementation tasks done.
+Error: no unresolved application error at this checkpoint.
+Expected: all task criteria, local verify and theme PR CI pass.
+Actual: final local verify and all eight browser cases pass. Remote theme CI pending.
+Possible cause: none; these are remaining release checks, not a known defect.
+
+The incoming UI-kit/guard/security bugs are documented in the review, not active
+in this theme branch. Do not restore shared package.json, roadmap, App or workflow
+files wholesale; merge only the next task's changes from the checkpoint.
 
 ## Next Exact Command
 
-From project root, once the clean install finishes:
+From D:\Projects\Programming\الاء:
 
 ```powershell
 $env:Path = (Join-Path (Get-Location) '.tools/node-v24.21.0-win-x64') + ';' + $env:Path
@@ -156,10 +97,8 @@ Get-Content .agent-state/project-progress.md -Raw
 git status --short --untracked-files=all
 git diff
 npm run verify
-npm run test:unit:coverage
 npm run roadmap:check
 ```
 
-Read AGENTS.md and current task specs first. Repository is
-https://github.com/HassanG04/lolys; branch agent/T-0.01-bootstrap.
-Use existing sign-in without printing credentials. Never read .env values.
+Use .nvmrc Node 24.21.0. Never read or print .env values. HANDOVER_TO_CODEX.md is
+retained as the incoming report, superseded by current progress and review.

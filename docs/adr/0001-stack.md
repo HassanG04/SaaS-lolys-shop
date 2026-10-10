@@ -15,6 +15,7 @@ Use Node 24.21.0 LTS (.nvmrc), npm 11.19.0 from that official runtime, exact dir
 | Installed package           | Exact version |
 | --------------------------- | ------------- |
 | @eslint/js                  | 9.39.5        |
+| @tailwindcss/vite           | 4.3.3         |
 | @testing-library/jest-dom   | 7.0.1         |
 | @testing-library/react      | 16.3.3        |
 | @testing-library/user-event | 14.6.7        |
@@ -31,6 +32,7 @@ Use Node 24.21.0 LTS (.nvmrc), npm 11.19.0 from that official runtime, exact dir
 | prettier                    | 3.9.9         |
 | react                       | 19.3.0        |
 | react-dom                   | 19.3.0        |
+| tailwindcss                 | 4.3.3         |
 | typescript                  | 6.0.3         |
 | typescript-eslint           | 8.71.1        |
 | vite                        | 8.3.4         |
@@ -40,7 +42,17 @@ The owner approved TypeScript 6 and ESLint 9 (OD-001) to satisfy the required pl
 
 ## Planned stack, not yet installed
 
-Tailwind v4 and Cairo self-hosted fonts (T-0.07); React Router, TanStack Query, React Hook Form, Zod, i18next/react-i18next and Supabase (Phase 2); Recharts only in the admin bundle (T-6.02); Playwright/axe and local pgTAP (database/E2E tasks); Python 3.12 and the pinned analytics libraries (Phase 9). Record their real installed versions here as each task installs them. Do not invent future versions.
+Tailwind v4, Cairo and Aref Ruqaa self-hosted fonts are installed in T-0.07.
+React Router, TanStack Query, React Hook Form, Zod, i18next/react-i18next and Supabase
+remain planned for Phase 2; Recharts only in the admin bundle (T-6.02);
+Playwright/axe and local pgTAP for database/E2E tasks; Python 3.12 and the pinned
+analytics libraries for Phase 9. Record real installed versions as each task
+installs them. Do not invent future versions.
+
+T-0.07 uses the documented Tailwind integration only. Anti-Gravity's additional
+UI-kit utility/icon dependencies are deferred with T-0.08 for review. All direct
+dependencies in this branch have exact pins. Arabic theme copy starts in
+`src/i18n/ar.json`; T-2.03 will install the full translation runtime.
 
 ## Consequences
 

@@ -1,6 +1,7 @@
 * text=auto eol=lf
 *.docx binary
 *.png binary
+*.jpg binary
 *.woff2 binary
 # Preserve supplied reference inputs exactly.
 accessories_store_schema.sql -text

@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme inline {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --font-sans: 'Cairo', system-ui, 'Segoe UI', Tahoma, sans-serif;
+  --font-accent: 'Aref Ruqaa', system-ui, 'Segoe UI', Tahoma, sans-serif;
+
+  --color-bg: var(--color-bg-val);
+  --color-surface: var(--color-surface-val);
+  --color-surface-tint: var(--color-surface-tint-val);
+  --color-surface-2: var(--color-surface-2-val);
+  --color-brand: var(--color-brand-val);
+  --color-brand-contrast: var(--color-brand-contrast-val);
+  --color-text: var(--color-text-val);
+  --color-text-muted: var(--color-text-muted-val);
+  --color-pink: var(--color-pink-val);
+  --color-pink-line: var(--color-pink-line-val);
+  --color-accent-text: var(--color-accent-text-val);
+  --color-sand: var(--color-sand-val);
+  --color-caramel: var(--color-caramel-val);
+  --color-gold: var(--color-gold-val);
+  --color-border: var(--color-border-val);
+  --color-border-input: var(--color-border-input-val);
+  --color-success: var(--color-success-val);
+  --color-danger: var(--color-danger-val);
+  --color-warning: var(--color-warning-val);
+  --color-focus: var(--color-focus-val);
+
+  --radius-card: 28px;
+  --radius-image: 20px;
+  --radius-pill: 9999px;
+  --radius-chip: 12px;
+  --radius-arch: 999px 999px 28px 28px;
+
+  --text-display: 40px;
+  --text-display--line-height: 1.3;
+  --text-h1: 32px;
+  --text-h1--line-height: 1.35;
+  --text-h2: 24px;
+  --text-h2--line-height: 1.4;
+  --text-h3: 20px;
+  --text-h3--line-height: 1.45;
+  --text-body: 17px;
+  --text-body--line-height: 1.75;
+  --text-small: 14px;
+  --text-small--line-height: 1.6;
+  --text-caption: 13px;
+  --text-caption--line-height: 1.5;
+  --spacing-touch: 44px;
+  --container-layout: 1200px;
+
+  --shadow-card: var(--shadow-card-val);
+  --shadow-pill: var(--shadow-pill-val);
+  --shadow-popover: var(--shadow-popover-val);
+}
+
+@layer base {
+  :root,
+  [data-theme='light'] {
+    color-scheme: light;
+    --color-bg-val: #fbf1e8;
+    --color-surface-val: #fffaf5;
+    --color-surface-tint-val: #fce9ec;
+    --color-surface-2-val: #fffaf5;
+    --color-brand-val: #5a3322;
+    --color-brand-contrast-val: #fbf1e8;
+    --color-text-val: #3b2118;
+    --color-text-muted-val: #7b5444;
+    --color-pink-val: #f4c6d0;
+    --color-pink-line-val: #e8a0b2;
+    --color-accent-text-val: #b24c68;
+    --color-sand-val: #e6c8b3;
+    --color-caramel-val: #9f6b4e;
+    --color-gold-val: #d4ae7d;
+    --color-border-val: #e6c8b3;
+    --color-border-input-val: #a9806d;
+    --color-success-val: #2a7352;
+    --color-danger-val: #b3261e;
+    --color-warning-val: #8a5a00;
+    --color-focus-val: #5a3322;
+    --shadow-card-val: 0 8px 24px rgba(90, 51, 34, 0.1);
+    --shadow-pill-val: 0 2px 8px rgba(90, 51, 34, 0.08);
+    --shadow-popover-val: 0 12px 32px rgba(90, 51, 34, 0.16);
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
+    --color-bg-val: #1f1512;
+    --color-surface-val: #2a1d19;
+    --color-surface-tint-val: #35251f;
+    --color-surface-2-val: #35251f;
+    --color-brand-val: #f0a9ba;
+    --color-brand-contrast-val: #3b2118;
+    --color-text-val: #f6e9df;
+    --color-text-muted-val: #c9b0a2;
+    --color-pink-val: #f0a9ba;
+    --color-pink-line-val: #f0a9ba;
+    --color-accent-text-val: #f0a9ba;
+    --color-sand-val: #4a342c;
+    --color-caramel-val: #c9b0a2;
+    --color-gold-val: #e0bd88;
+    --color-border-val: #4a342c;
+    --color-border-input-val: #8c6b5c;
+    --color-success-val: #7fd1a8;
+    --color-danger-val: #ff8a80;
+    --color-warning-val: #f2c46d;
+    --color-focus-val: #f0a9ba;
+    --shadow-card-val: 0 0 24px rgba(240, 169, 186, 0.12);
+    --shadow-pill-val: 0 0 24px rgba(240, 169, 186, 0.12);
+    --shadow-popover-val: 0 0 24px rgba(240, 169, 186, 0.12);
+  }
+}

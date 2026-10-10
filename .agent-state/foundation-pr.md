@@ -25,7 +25,8 @@ locked install reported no dependency vulnerabilities. Reference copies and
 the six SQL sections match the supplied originals. Dev page verified in browser.
 The [deliberate lint-failure run](https://github.com/HassanG04/lolys/actions/runs/37929038785)
 passed build, unit and roadmap; static correctly rejected the unused `probe`
-variable. That temporary probe is now removed; the final green run is pending.
+variable. That temporary probe is removed; [all four final jobs passed](https://github.com/HassanG04/lolys/actions/runs/37929355898)
+on commit `b4faa49ede55adff9d91fdc4b168d632a45ebdfa`.
 Coverage thresholds are configured for `src/lib`, which is currently empty;
 the report has no measurable lines yet and does not establish 80% coverage.
 
@@ -39,5 +40,6 @@ support the newest majors. No checks or peer constraints were bypassed.
 Future guard commands fail explicitly until their owning task implements them.
 T-0.09 adds bundle/secret guards and T-2.03 adds the translation scanner to CI.
 Docker is not installed, so database work is not verified. The external
-Anti-Gravity's partial T-0.07 theme work is checkpointed locally for continuation
-after this foundation check. The owner paused that application to avoid concurrent edits.
+Anti-Gravity's later T-0.07/T-0.08/T-0.09/T-0.12 changes are under local review
+on a separate task branch and are outside this PR. Workflow owner review remains
+required; no main push, merge or deployment was performed.

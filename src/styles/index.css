@@ -1,1 +1,36 @@
-/* T-0.07 installs the documented brand tokens, fonts and themes. */
+@import './tokens.css';
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    letter-spacing: 0;
+    font-style: normal;
+  }
+  body {
+    margin: 0;
+    min-inline-size: 320px;
+    min-block-size: 100vh;
+    background-color: var(--color-bg-val);
+    color: var(--color-text-val);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-focus-val);
+    outline-offset: 2px;
+  }
+  .theme-toggle {
+    min-block-size: var(--spacing-touch);
+    min-inline-size: var(--spacing-touch);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

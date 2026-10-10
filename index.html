@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Lolys' Accessories & Home" />
     <title>Lolys' Accessories & Home</title>
+    <link rel="stylesheet" href="/fonts/cairo.css" />
+    <link rel="stylesheet" href="/fonts/aref-ruqaa.css" />
+    <script id="theme-init">
+      ;(function () {
+        var theme
+        try {
+          theme = localStorage.getItem('theme')
+        } catch {
+          /* Storage can be disabled; follow the system preference. */
+        }
+        if (theme !== 'light' && theme !== 'dark')
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', theme)
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
