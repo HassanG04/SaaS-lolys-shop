@@ -9,7 +9,7 @@ Arabic-first RTL storefront for accessories and home items in Egypt. The product
 3. Install dependencies with `npm ci --ignore-scripts`.
 4. Start the app with `npm run dev` and open the printed local URL.
 
-The local database workflow uses the Supabase CLI and Docker. Run `npm run db:start`, `npm run db:reset` and `npm run db:test` after the database foundation tasks are installed. Do not run linked or production database commands from an agent session.
+The local database workflow uses the Supabase CLI and Docker. **Requirement:** Docker (or Podman) must be installed and running on your local machine to use the database commands. Run `npm run db:start`, `npm run db:reset` and `npm run db:test` after the database foundation tasks are installed. Do not run linked or production database commands from an agent session.
 
 ## Quality checks
 

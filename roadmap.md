@@ -466,7 +466,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 1: Database and backend contract
 
 #### T-1.01: Local Supabase project
-`status: blocked` `owner: agent` `needs: T-0.01` `size: S`
+`status: done` `owner: agent` `needs: T-0.01` `size: S`
 - **Do:** Run `supabase init`. In `supabase/config.toml` set the auth site URL to `http://localhost:5173` and turn email confirmations off locally. Add scripts `db:start`, `db:stop`, `db:reset`, `db:test`, `db:types`. Document the Docker requirement in the README.
 - **Done when:** `npm run db:start` brings the stack up and `supabase status` prints the API URL and keys.
 - **Verify:** `npm run db:start && supabase status`
