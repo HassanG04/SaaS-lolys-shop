@@ -1245,6 +1245,8 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-10 | T-0.08f | Codex | Full verify passes (26 app + 66 tooling tests), production build/exclusion and 115-task roadmap pass. Native reset test now invokes an actual reset button, rather than merely dispatching a reset event. Browser visual gate and PR checks pending. | pending |
 
+| 2026-10-10 | T-0.08f | Codex | All four remote checks pass at a0708bc in run 38028693736. Text and choice controls are published for review; T-0.08/T-0.08b/T-0.08f retain their pending browser visual/dependency gates. | [#5](https://github.com/HassanG04/lolys/pull/5) |
+
 ### Open questions (agents add rows; the owner answers)
 
 | ID | Question | Task | Needed from | Status |

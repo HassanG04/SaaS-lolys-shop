@@ -3,7 +3,7 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08f checkbox/radio controls; full local verification passes, PR checks pending
+Current task: T-0.08f implementation and CI verified; visual gates remain open; next T-0.08c
 Completed:
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
@@ -22,6 +22,7 @@ Completed:
   - Split Checkbox/Radio into T-0.08f; their prepared source is in .tools/form-choice-draft, not discarded.
   - Text-field draft PR 4 published at 3aab682; all four jobs green in run 38028479207.
   - Restored/repaired Checkbox/Radio using native inputs, visible selection marks, 44px minimum dimensions and forced-colors fallback.
+  - Choice draft PR 5 published at a0708bc; all four jobs green in run 38028693736.
 Files changed:
   - Branch agent/T-0.08f-choice-controls is based on text-field PR 4 at 3aab682.
   - Theme components, tokens, fonts/licenses, tests, dependency pins, roadmap and review notes.
@@ -46,7 +47,7 @@ Problems found:
   - Owner workflow review and human-owned infrastructure setup remain pending.
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
-Next action: Publish/read choice-control draft CI. Then T-0.08c feedback/navigation. Keep UI tasks open until their visual checks and dependencies are complete; no acceptance gate waived.
+Next action: Prepare T-0.08c feedback/navigation from the preserved drafts and review findings. Complete pending browser visual checks when permitted before marking UI tasks done; no acceptance gate waived.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
@@ -54,6 +55,7 @@ https://github.com/HassanG04/lolys/pull/1. No main push, merge or deployment.
 Theme PR: https://github.com/HassanG04/lolys/pull/2 (stacked on PR 1).
 UI actions PR: https://github.com/HassanG04/lolys/pull/3 (stacked on PR 2).
 Text fields PR: https://github.com/HassanG04/lolys/pull/4 (stacked on PR 3).
+Choice controls PR: https://github.com/HassanG04/lolys/pull/5 (stacked on PR 4).
 
 Use Node 24.21.0 from `.nvmrc`; local runtime is
 `.tools/node-v24.21.0-win-x64`. Install with `npm ci --ignore-scripts`.

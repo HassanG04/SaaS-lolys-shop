@@ -2,7 +2,7 @@
 
 ## Current Objective
 
-Finish T-0.08f choice-control checks/publication, then prepare T-0.08c feedback.
+Prepare T-0.08c feedback/navigation; the text/choice implementations are published.
 Working branch: agent/T-0.08f-choice-controls, based on PR 4 at 3aab682.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
@@ -11,7 +11,8 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 - T-0.08f native Checkbox/Radio with 44px minimum dimensions, non-color marks,
   labelled/ref/controlled behavior and forced-colors fallback. Five behavior
   tests pass. Full verify passes (26 app + 66 tooling tests), production exclusion
-  and 115-task roadmap pass. Choice PR checks pending.
+  and 115-task roadmap pass. All four choice PR jobs pass at a0708bc in
+  run 38028693736. PR 5: https://github.com/HassanG04/lolys/pull/5.
 - Text-field PR 4: https://github.com/HassanG04/lolys/pull/4; all four jobs pass
   at 3aab6820f15a1650246ad6fe315f4e4363e2288b in run 38028479207.
 
@@ -48,7 +49,10 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Remaining
 
-- Publish/read draft PR checks for T-0.08f, then T-0.08c feedback/navigation.
+- T-0.08c feedback/navigation: inspect checkpoint Dialog/Toast/Tabs and the
+  review before selectively restoring. Repair focus containment/restoration,
+  Escape and accessible naming; tabs need unique IDs and RTL/LTR keyboard
+  behavior. Split again if review grows beyond the roadmap's size rule.
 - T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
   and directions, keyboard focus, 44px targets and reduced motion. Browser policy
   blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
@@ -157,9 +161,10 @@ $env:Path = (Join-Path (Get-Location) '.tools/node-v24.21.0-win-x64') + ';' + $e
 Get-Content .agent-state/project-progress.md -Raw
 git status --short --untracked-files=all
 git diff
-git push
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-node .tools/github.mjs create-choices
+Get-Content .agent-state/anti-gravity-review.md
+Get-Content .tools/anti-gravity-20261010/src/components/ui/Dialog.tsx
+Get-Content .tools/anti-gravity-20261010/src/components/ui/Tabs.tsx
+Get-Content .tools/anti-gravity-20261010/src/components/ui/Toast.tsx
 npm run verify
 npm run roadmap:check
 npm run roadmap:next

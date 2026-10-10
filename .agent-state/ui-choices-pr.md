@@ -15,6 +15,8 @@ radio-group isolation. No new dependencies, backend or business rules.
 - `npm run verify` passes: 26 app tests + 66 tooling tests, lint, format, types
   and production build. Development route/code/copy/fixture exclusion passes;
   roadmap validates 115 tasks.
+- [All four remote jobs pass](https://github.com/HassanG04/lolys/actions/runs/38028693736)
+  at `a0708bc3ec468547a8c381f0b60f63909f46bf77`.
 - Visual checks at 360/1280 and the upstream UI gates remain open because the
   browser tool denied preview access. T-0.08f stays doing; no gate is waived.
 - Draft is stacked on PR #4. No merge or deployment.
