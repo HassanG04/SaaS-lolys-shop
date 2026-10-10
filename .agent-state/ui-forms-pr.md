@@ -18,7 +18,9 @@ changes. Checkbox/Radio are preserved locally for the separate T-0.08f review.
   validation associations, keyboard/button search, disabled controls and unique
   IDs across repeated previews (some scenarios share a test).
 - Full verify passes: 21 app tests + 66 tooling tests, lint, format, types and build.
-- Roadmap validates 115 tasks; final production exclusion recheck runs before publish.
+- Roadmap validates 115 tasks; production exclusion recheck passed.
+- [All four remote jobs passed](https://github.com/HassanG04/lolys/actions/runs/38028479207)
+  at `3aab6820f15a1650246ad6fe315f4e4363e2288b`.
 - Browser policy still prevents the required 360/1280 visual checks. T-0.08b
   remains doing; this is prepared on top of PR #3, whose visual gate is also open.
 

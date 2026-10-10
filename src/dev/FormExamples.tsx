@@ -4,6 +4,7 @@ import { SearchInput } from '../components/ui/SearchInput'
 import { Select } from '../components/ui/Select'
 import { Textarea } from '../components/ui/Textarea'
 import ar from '../i18n/ar.json'
+import { ChoiceExamples } from './ChoiceExamples'
 
 export function FormExamples() {
   const [query, setQuery] = useState('')
@@ -27,6 +28,7 @@ export function FormExamples() {
         <option value="second">{ar.kit.second}</option>
       </Select>
       <Textarea label={ar.field.notes} />
+      <ChoiceExamples />
       <SearchInput label={ar.ui.search} placeholder={ar.search.placeholder} onSearch={setQuery} />
       {query && (
         <p role="status">

@@ -2,11 +2,18 @@
 
 ## Current Objective
 
-Publish verified T-0.08b text/search fields, then prepare T-0.08f choice controls.
-Working branch: agent/T-0.08b-form-controls, based on PR 3 at afd97fe.
+Finish T-0.08f choice-control checks/publication, then prepare T-0.08c feedback.
+Working branch: agent/T-0.08f-choice-controls, based on PR 4 at 3aab682.
 User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Completed
+
+- T-0.08f native Checkbox/Radio with 44px minimum dimensions, non-color marks,
+  labelled/ref/controlled behavior and forced-colors fallback. Five behavior
+  tests pass. Full verify passes (26 app + 66 tooling tests), production exclusion
+  and 115-task roadmap pass. Choice PR checks pending.
+- Text-field PR 4: https://github.com/HassanG04/lolys/pull/4; all four jobs pass
+  at 3aab6820f15a1650246ad6fe315f4e4363e2288b in run 38028479207.
 
 - T-0.08b Input/SearchInput/Select/Textarea and Field helper implemented with
   Arabic labels, stable descriptions, refs, disabled/native form behavior.
@@ -41,7 +48,7 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 ## Remaining
 
-- Publish T-0.08b and read its final PR checks; then T-0.08f choice controls.
+- Publish/read draft PR checks for T-0.08f, then T-0.08c feedback/navigation.
 - T-0.08 remains doing pending actual visual checks at 360/1280 in both themes
   and directions, keyboard focus, 44px targets and reduced motion. Browser policy
   blocked preview access; do not bypass it. Old screenshots predate the icons/kit.
@@ -56,6 +63,12 @@ User approved TypeScript 6 / ESLint 9. Do not revisit that resolved decision.
 
 All current changes from b4faa49 (generated font CSS/assets included):
 
+- `.agent-state/ui-choices-pr.md`
+- `src/components/ui/Choice.tsx`
+- `src/components/ui/Checkbox.tsx`
+- `src/components/ui/Radio.tsx`
+- `src/components/ui/choices.test.tsx`
+- `src/dev/ChoiceExamples.tsx`
 - `.agent-state/ui-forms-pr.md`
 - `src/components/ui/Field.tsx`
 - `src/components/ui/Input.tsx`
@@ -123,7 +136,7 @@ permanent production/token gate remains T-0.08e; no success stub was introduced.
 
 Error: browser tool rejected http://127.0.0.1:5175/ under its URL policy.
 Expected: inspect icons and UI kit in both themes/directions at 360/1280.
-Actual: no fresh visual check; 87 tests and production build pass. Do not claim
+Actual: no fresh visual check; 92 tests and production build pass. Do not claim
 the old text-toggle screenshots verify the icon change.
 Possible cause: browser tool policy/state mismatch; no workaround attempted.
 
@@ -146,7 +159,7 @@ git status --short --untracked-files=all
 git diff
 git push
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-node .tools/github.mjs create-forms
+node .tools/github.mjs create-choices
 npm run verify
 npm run roadmap:check
 npm run roadmap:next

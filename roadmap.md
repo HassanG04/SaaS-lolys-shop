@@ -386,7 +386,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08f: UI choice controls
-`status: todo` `owner: agent` `needs: T-0.08b` `size: S`
+`status: doing` `owner: agent` `needs: T-0.08b` `size: S`
 - **Do:** Complete the form-control inventory split from T-0.08b: labelled Checkbox and Radio, Arabic examples in `/__kit`, disabled and checked states, unique radio groups in repeated previews. Follow `docs/spec/design-system.md`.
 - **Done when:** label activation, Space/arrow navigation, disabled behavior and group isolation have tests; selection includes a non-color mark; controls have 44px targets and visible focus in both directions/themes, with documented tokens only.
 - **Verify:** `npm run verify`
@@ -1239,6 +1239,11 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08b, T-0.08f | Codex | Continuing implementation preparation while T-0.08 visual gate remains open; no dependency marked complete or acceptance check waived. Split checkbox/radio into T-0.08f to retain small reviews. Added labelled text/search fields and static catalogue-error preview; behavior tests pass, full verification pending. | pending |
 
 | 2026-10-10 | T-0.08b | Codex | Full verify passes (21 app + 66 tooling tests), build passes and 115 tasks validate. React review retained native behavior, direct imports and development-only loading; no new dependencies. Visual gate remains open. | pending |
+
+| 2026-10-10 | T-0.08b | Codex | All four remote jobs passed at 3aab682 in run 38028479207. Production preview-exclusion check passed. Task remains doing pending upstream and browser visual gates. | [#4](https://github.com/HassanG04/lolys/pull/4) |
+| 2026-10-10 | T-0.08f | Codex | Preparing checkbox/radio controls on a separate branch; native 44px inputs, non-color selection marks, labels, group IDs and forced-colors fallback. Visual gates are retained. | pending |
+
+| 2026-10-10 | T-0.08f | Codex | Full verify passes (26 app + 66 tooling tests), production build/exclusion and 115-task roadmap pass. Native reset test now invokes an actual reset button, rather than merely dispatching a reset event. Browser visual gate and PR checks pending. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

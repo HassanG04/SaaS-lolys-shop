@@ -3,7 +3,7 @@
 Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
 
 ```yaml
-Current task: T-0.08b text/search fields; implementation verified, visual gate still open
+Current task: T-0.08f checkbox/radio controls; full local verification passes, PR checks pending
 Completed:
   - Foundation PR 1 published; all four jobs green at b4faa49, including verified lint rejection probe.
   - T-0.01 to T-0.05 verified; T-0.06 implementation verified, owner workflow review pending.
@@ -20,12 +20,15 @@ Completed:
   - Published the previously local handover commit afd97fe to PR 3; GitHub DNS recovered.
   - Added labelled Input, SearchInput, Select and Textarea; native values/ref/disabled behavior and description IDs tested.
   - Split Checkbox/Radio into T-0.08f; their prepared source is in .tools/form-choice-draft, not discarded.
+  - Text-field draft PR 4 published at 3aab682; all four jobs green in run 38028479207.
+  - Restored/repaired Checkbox/Radio using native inputs, visible selection marks, 44px minimum dimensions and forced-colors fallback.
 Files changed:
-  - Branch agent/T-0.08b-form-controls is based on UI actions PR 3 at afd97fe.
+  - Branch agent/T-0.08f-choice-controls is based on text-field PR 4 at 3aab682.
   - Theme components, tokens, fonts/licenses, tests, dependency pins, roadmap and review notes.
   - Icon follow-up changes ThemeToggle.tsx, theme.test.tsx, ar.json and continuation/PR documentation.
   - UI actions add three components, actions.test.tsx, src/dev/KitPage.tsx and its local SVG fixture, src/styles/ui.css; update App, Arabic copy, tokens and handover/PR/roadmap docs.
   - Text fields add Field, Input, Select, Textarea, SearchInput, forms.test.tsx and FormExamples; update kit, CSS, Arabic copy and continuation/PR/roadmap docs.
+  - Choice controls add Choice, Checkbox, Radio, choices.test.tsx and ChoiceExamples; update form preview, CSS, Arabic copy and continuation/PR/roadmap docs.
 Tests executed:
   - Incoming Anti-Gravity verify passed (13 app tests, 27 tooling tests); review found requirements not covered by those tests.
   - Exact theme dependency installation passed, zero vulnerabilities reported.
@@ -34,20 +37,23 @@ Tests executed:
   - Final local verify and 110-task roadmap validation pass after the browser-driven CSS fix.
   - Icon follow-up verify passes (76 tests), build, roadmap and remote CI pass.
   - UI actions verify passes (16 app + 66 tooling tests); production route/copy/fixture exclusion, 114-task roadmap and all four PR checks pass.
-  - Text fields verify passes (21 app + 66 tooling tests); 115-task roadmap valid. Final PR checks pending.
+  - Text fields verify passes (21 app + 66 tooling tests), production exclusion passes, 115-task roadmap valid; all four PR jobs pass.
+  - Five choice behavior tests pass, including both directions, native reset, controlled/disabled states and isolated groups.
+  - Full choice verify passes: 26 app + 66 tooling tests (92 total), production build/exclusion and 115-task roadmap pass.
 Problems found:
   - Earlier approval-service usage limit interrupted verification; subsequent local checks ran successfully.
   - Later UI kit/guards/security drafts did not meet all criteria; statuses corrected to todo with review notes.
   - Owner workflow review and human-owned infrastructure setup remain pending.
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
-Next action: Publish text-field draft and read CI, then T-0.08f choice controls. Keep UI tasks open until their visual checks and dependencies are complete; no acceptance gate waived.
+Next action: Publish/read choice-control draft CI. Then T-0.08c feedback/navigation. Keep UI tasks open until their visual checks and dependencies are complete; no acceptance gate waived.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
 https://github.com/HassanG04/lolys/pull/1. No main push, merge or deployment.
 Theme PR: https://github.com/HassanG04/lolys/pull/2 (stacked on PR 1).
 UI actions PR: https://github.com/HassanG04/lolys/pull/3 (stacked on PR 2).
+Text fields PR: https://github.com/HassanG04/lolys/pull/4 (stacked on PR 3).
 
 Use Node 24.21.0 from `.nvmrc`; local runtime is
 `.tools/node-v24.21.0-win-x64`. Install with `npm ci --ignore-scripts`.
