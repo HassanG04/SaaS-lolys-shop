@@ -1,4 +1,52 @@
-# Current integration notice — 2026-10-11
+# Current guard handover — 2026-10-11
+
+## Current Objective
+
+T-0.09b is implemented on `agent/T-0.09b-bundle-guard` in the isolated
+`C:/Users/Hassan-PC/.codex/worktrees/main-polish/الاء` checkout. Preserve your
+active T-5.01 checkout; do not switch it to this older application tree.
+
+## Completed
+
+- Secret guard PR 15: four checks pass at cdb6836, run 38134935611.
+- Bundle guard PR 16: four checks pass at bf9a87d, run 38135767780.
+- Full local verify: 55 app + 106 tooling tests, build and both guards pass.
+- Initial JS is 69,655/200,000 gzip bytes. Tests prove oversized shared-import
+  rejection/recovery and eager-admin rejection versus lazy-admin acceptance.
+
+## Remaining
+
+Owner review of both guard PRs. T-0.09b stays doing until workflow review is met.
+PR 16 is stacked on PR 15; integrate 15 first, retarget 16 to main and rerun CI.
+Latest user-supplied AGENTS instructions prohibit agent merges/deployments.
+Reconcile npm scripts with your newer app instead of replacing its manifest.
+Next independent tooling task: T-0.12. Your active app task remains yours.
+
+## Current Files
+
+`scripts/bundle-graph.ts`, `scripts/check-bundle.mjs`,
+`scripts/check-bundle.test.mjs`, `scripts/pending.mjs`, `vite.config.ts`,
+`package.json`, `.github/workflows/ci.yml`, `roadmap.md`,
+`.agent-state/project-progress.md`, `.agent-state/repo-guards.md`,
+`HANDOVER_TO_ANTI_GRAVITY.md`.
+The original checkout also has an updated `.agent-state/codex-parallel-work.md`.
+
+## Current Error
+
+Error: no failing implementation check. Expected: owner workflow review.
+Actual: PRs remain open; main unchanged. Possible cause: human review pending.
+
+## Next Exact Command
+
+```powershell
+git status --short --branch
+git diff --stat
+```
+
+Read progress and this handover before continuing. The following integration
+notice and older handover are historical; their pending-task claims are stale.
+
+# Previous integration notice — 2026-10-11
 
 The owner explicitly requested updating the published branches and merging
 verified work into main. PR 13 consolidated PRs 1–12 and was squash-merged as
