@@ -2,44 +2,55 @@
 
 ## Objective
 
-Act as the continuation engineer (Anti-Gravity) to complete the browser verification for the UI kit subtasks (T-0.08b through T-0.08d) and implement the token guard (T-0.08e), as well as investigate the database startup task (T-1.01).
+Completed task `T-8.01: Auth email and hardening runbooks` on branch `agent/T-8.01-auth-email-hardening-runbooks`.
 
-## Completed Work
+## Completed Work in T-8.01
 
-1. **Browser Visual Verification for UI Kit (T-0.08b, T-0.08f, T-0.08c, T-0.08g, T-0.08d)**:
-   - Started the local dev server (`npm run dev`).
-   - Ran `browser_subagent` to visually verify the `/__kit` development route.
-   - Successfully verified that checkboxes, radios, badges, skeletons, PearlLoaders, and SVGs render correctly in the browser.
-   - Confirmed the native `dialog` implementation properly opens as a modal, traps focus, and closes via standard mechanisms.
-   - Committed the changes on `agent/T-0.08d-labels-ornaments` and marked all subtasks (T-0.08 through T-0.08d) as `done` in the roadmap.
+1. **Auth Email Runbook (`docs/runbooks/auth-email.md`)**:
+   - Rationale for custom SMTP (built-in sender capped at 2 emails/hour; custom SMTP default is 30 signups/hour per Supabase production checklist).
+   - SMTP configuration guidance (Host, Port, User, Pass, Sender Name/Email, Encryption) across Resend, SendGrid, and AWS SES.
+   - Exact redirect URLs for production (`https://lolys.eg/*`), staging, and local development (strictly prohibiting wildcards `*`).
+   - Comprehensive test procedures covering registration confirmation, password reset, link expiration, and rate-limiting enumeration protection.
 
-2. **Token Guard (T-0.08e)**:
-   - Wrote `scripts/check-tokens.mjs` and its corresponding test suite `scripts/check-tokens.test.mjs`.
-   - The script uses regular expressions to detect hardcoded color, radius, and shadow utility classes (e.g., `bg-white`, `rounded-md`, `bg-[#xxx]`) to ensure strict adherence to the design system tokens.
-   - Wired the token check into the `npm run verify` pipeline.
-   - Committed the changes and marked `T-0.08e` as `done`.
+2. **Auth Hardening Runbook (`docs/runbooks/auth-hardening.md`)**:
+   - 10-point tick-list covering:
+     1. Cloudflare Turnstile CAPTCHA enabled.
+     2. Email confirmations required.
+     3. Secure email change enabled with double verification.
+     4. Minimum password length set to 10 characters.
+     5. Anonymous sign-ins disabled.
+     6. TOTP two-factor authentication enabled (`aal2`).
+     7. Exact allow-listed redirect URLs only (no wildcards).
+     8. Unused external OAuth providers disabled.
+     9. Leaked-password protection enabled (HaveIBeenPwned).
+     10. JWT expiry / 20-minute admin session idle timeouts enforced.
+   - Pre-launch verification procedure and incident response guide for compromised credentials.
 
-3. **Database Local Setup (T-1.01)**:
-   - Initialized the Supabase project configuration (`npx supabase init`).
-   - Discovered that Docker (or Podman) is entirely absent from the local host system (known issue H-08).
-   - Marked `T-1.01` as formally `blocked` in the roadmap and reverted the local modifications to avoid polluting the workspace.
+3. **UI States and Error Handling**:
+   - Extended `src/features/auth/authErrors.tsx` to map Supabase token expiration errors (`otp_expired`, `token_expired`, `link is invalid`, `link has expired`) to catalogue error code `AUTH-009` ("الرابط غير صالح أو انتهت صلاحيته. اطلب رابطًا جديدًا.").
+   - Implemented dedicated "تحقق من بريدك الإلكتروني" (Check your email) status cards across `RegisterPage`, `ResetPasswordPage`, and `ResendConfirmationPage` with envelope icon and spam/junk guidance when `statusMessage === 'AUTH-010'`.
+   - Derived URL error codes via `useMemo` in `LoginPage` and `ResetPasswordPage` to gracefully handle expired redirects with one-click recovery links (`/resend-confirmation` and `/reset-password`).
 
-4. **Bilingual Support (AR/EN) - Dynamic Request**:
-   - Responding to the Owner's out-of-band request, implemented an overarching `LanguageProvider` with `en.json` (OD-003).
-   - The app now checks `navigator.language` on first load, falling back to English (LTR) if not Arabic, and caches the choice in `localStorage`.
-   - Refactored all UI components, tests, and the `/__kit` page to consume `useLanguage` dynamically instead of hardcoded imports.
-   - Verified that the `check-tokens` script and all 42 tests still pass with the new context wrapping.
+4. **Testing and Verification**:
+   - Added 5 unit tests in `src/features/auth/auth.test.tsx` verifying registration check-email state, password reset check-email state, resend confirmation flow, and expired link URL handling on login and reset pages.
+   - All 225 application tests and 111 tooling tests (336 total) pass.
+   - Bundle size verified at 192.8 KB gzip <= 200 KB.
+   - `npm run verify` passed completely.
+   - Committed and pushed to `origin/agent/T-8.01-auth-email-hardening-runbooks`.
 
-## Remaining Work
+## Current Roadmap State
 
-There are currently **no runnable agent tasks**.
+`npm run roadmap:next` reports:
 
-- **T-0.06** is awaiting Owner PR review.
-- **T-0.10, T-0.11, T-0.13** require the Owner to provision CI pipelines and production deployment targets.
-- **T-0.09, T-0.12** are currently gated by T-0.06.
-- **T-1.01** is blocked by the absence of Docker.
+- **No runnable agent tasks** at this moment.
+- **T-0.06** is in `doing` awaiting Owner review of PR #1 / workflows.
+- Downstream tasks (`T-0.09`, `T-0.12`, `T-1.09`, etc.) depend on T-0.06.
+- Human-owned tasks: `T-0.10`, `T-0.11`, `T-0.13`, `T-1.11`, `T-1.13`, `T-7.09`, `T-8.02`, `T-8.03`, `T-8.04`, `T-8.09`, `T-8.10`, `T-9.13`.
 
-## Exact Next Command
+## Verification Command
 
-Wait for the owner to perform their manual review and infrastructure provisioning tasks. To confirm the current state is green locally, run:
-`npm run verify`
+To verify the repository state locally:
+
+```bash
+npm run verify
+```
