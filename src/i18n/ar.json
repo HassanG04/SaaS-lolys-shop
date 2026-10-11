@@ -9,7 +9,12 @@
     "search": "بحث",
     "dismissNotification": "إغلاق التنبيه",
     "closeDialog": "إغلاق النافذة",
-    "loading": "جارٍ التحميل"
+    "loading": "جارٍ التحميل",
+    "retry": "إعادة المحاولة",
+    "errorOccurred": "حدث خطأ غير متوقع",
+    "errorDescription": "تعذر إكمال الطلب. يرجى المحاولة مرة أخرى.",
+    "errorCode": "رمز الخطأ:",
+    "emptyState": "لا توجد عناصر لعرضها"
   },
   "brand": {
     "tagline": "أشياء لطيفة لأسلوبك ومساحتك"

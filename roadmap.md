@@ -624,7 +624,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit` and manual check against `db:start`
 
 #### T-2.05: Data and feedback plumbing
-`status: todo` `owner: agent` `needs: T-2.02` `size: M`
+`status: done` `owner: agent` `needs: T-2.02` `size: M`
 - **Do:** `QueryClientProvider` defaults (retry policy, stale times), a global error boundary, toast hooks, and shared `ErrorPanel` and `EmptyState` components alongside the existing `Skeleton`.
 - **Done when:** a failing query shows the error panel with a retry button; tests cover it.
 - **Verify:** `npm run test:unit`
@@ -1305,6 +1305,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-2.02 | Anti-Gravity | Implemented React Router v7 with route table, Layout shell, skip link (#main-content), ScrollToTop, responsive Navbar (brand logo, search pill, nav links, cart pill, account, theme/language toggles, mobile menu), and cocoa Footer (tagline, policy links, ribbon divider, copyright). Added 16 route page placeholders with PearlLoader suspense fallback. Updated ADR-0001 with react-router-dom@7.18.4 pin. Verified with 72 unit tests and npm run verify. | local only |
 | 2026-10-11 | T-2.03 | Anti-Gravity | Configured i18next and react-i18next with exact pins (26.4.3 and 17.0.16) in src/i18n/i18n.ts, LanguageProvider integration with dual t() callable and property dictionary access, full copy deck in ar.json and en.json from Section 8 of design-system.md, Arabic CLDR 6-form plural rules, Western digits. Added src/lib/format.ts (formatEGP with ar-EG-u-nu-latn, formatDate, formatNumber, LTR helpers), src/components/ui/Ltr.tsx, scripts/check-i18n.mjs (parity, key usage, kit exclusion), scripts/check-i18n.test.mjs, and check:i18n npm script. Verified with 79 app tests, 101 tooling tests, and npm run verify. | local only |
 | 2026-10-11 | T-2.04 | Anti-Gravity | Implemented AuthProvider, useAuth hook, Arabic auth pages (Login, Register, Reset Password, Resend Confirmation), Cloudflare Turnstile integration, route guards (RequireAuth, RequireAdmin with 403 AUTH-011, RequireGuest), and generic catalogue error codes (AUTH-001 through AUTH-012). Strictly enforced SEC-05 enumeration protection: identical request count for known and unknown accounts, neutral AUTH-010 outcome, upfront 10-character password policy, always-visible resend link, and no raw errors in DOM. Unit tests in auth.test.tsx and full verify pass (90 app + 101 tooling tests). | local only |
+| 2026-10-11 | T-2.05 | Anti-Gravity | Installed and pinned @tanstack/react-query (5.104.1) in ADR-0001; configured QueryClientProvider with retry policy (suppressing 4xx client retries, max 2 retries for 5xx/network) and 1m/5m cache timers. Added global ErrorBoundary with Arabic reset card, useToast hook and ToastProvider container, and shared ErrorPanel and EmptyState components with documented design tokens and Ltr error codes. Full verify passes with 101 app + 101 tooling tests (202 total). | local only |
 
 ### Open questions (agents add rows; the owner answers)
 

@@ -34,6 +34,7 @@ Use Node 24.21.0 LTS (.nvmrc), npm 11.19.0 from that official runtime, exact dir
 | react-dom                   | 19.3.0        |
 | react-router-dom            | 7.18.4        |
 | @supabase/supabase-js       | 2.117.3       |
+| @tanstack/react-query       | 5.104.1       |
 | i18next                     | 26.4.3        |
 | react-i18next               | 17.0.16       |
 

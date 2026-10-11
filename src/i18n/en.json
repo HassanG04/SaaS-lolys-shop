@@ -9,7 +9,12 @@
     "search": "Search",
     "dismissNotification": "Dismiss notification",
     "closeDialog": "Close dialog",
-    "loading": "Loading"
+    "loading": "Loading",
+    "retry": "Retry",
+    "errorOccurred": "An unexpected error occurred",
+    "errorDescription": "Unable to complete request. Please try again.",
+    "errorCode": "Error code:",
+    "emptyState": "Nothing to display"
   },
   "brand": {
     "tagline": "cute things for your style & space"

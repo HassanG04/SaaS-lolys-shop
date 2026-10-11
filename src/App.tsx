@@ -1,8 +1,12 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createBrowserRouter, createMemoryRouter } from 'react-router-dom'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { ThemeProvider } from './components/ui/ThemeProvider'
+import { ToastProvider } from './components/ui/ToastProvider'
 import { AuthProvider } from './features/auth/AuthProvider'
 import { LanguageProvider } from './i18n/LanguageProvider'
 import { validateEnv, type EnvValidationResult } from './lib/env'
+import { queryClient as defaultQueryClient } from './lib/queryClient'
 import { EnvErrorScreen } from './components/EnvErrorScreen'
 import { routes } from './routes'
 
@@ -10,12 +14,14 @@ export interface AppProps {
   envValidation?: EnvValidationResult
   router?: ReturnType<typeof createBrowserRouter> | ReturnType<typeof createMemoryRouter>
   initialEntries?: string[]
+  queryClient?: QueryClient
 }
 
 export default function App({
   envValidation,
   router: customRouter,
   initialEntries,
+  queryClient: customQueryClient,
 }: AppProps = {}) {
   const validation = envValidation ?? validateEnv()
 
@@ -50,12 +56,20 @@ export default function App({
         })
       : createBrowserRouter(routes))
 
+  const activeQueryClient = customQueryClient ?? defaultQueryClient
+
   return (
     <LanguageProvider>
       <ThemeProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <QueryClientProvider client={activeQueryClient}>
+          <AuthProvider>
+            <ToastProvider>
+              <ErrorBoundary>
+                <RouterProvider router={router} />
+              </ErrorBoundary>
+            </ToastProvider>
+          </AuthProvider>
+        </QueryClientProvider>
       </ThemeProvider>
     </LanguageProvider>
   )
