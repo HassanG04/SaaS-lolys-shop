@@ -138,7 +138,19 @@
     "forecast": "Forecast",
     "backToStore": "Back to store",
     "sidebarToggle": "Admin menu",
-    "mfaBadge": "2FA active"
+    "mfaBadge": "2FA active",
+    "customersDesc": "Customer statistics, activity, and purchase history",
+    "searchCustomers": "Search by name, phone, or favorite product…",
+    "customerName": "Customer",
+    "customerPhone": "Phone",
+    "customerRole": "Role",
+    "customerOrders": "Orders count",
+    "customerSpent": "Total spent",
+    "customerFavorite": "Favorite product",
+    "noCustomers": "No customers match your search.",
+    "roleCustomer": "Customer",
+    "roleAdmin": "Admin",
+    "roleReadOnlyNote": "Role modification is restricted to database owner SQL"
   },
   "empty": {
     "search": "No results found. Try another word."

@@ -73,6 +73,24 @@ function NavIcon({ type }: { type: AdminNavItem['icon'] }): ReactNode {
           <path d="M16 10a4 4 0 0 1-8 0" />
         </svg>
       )
+    case 'customers':
+      return (
+        <svg
+          className="size-5 shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      )
     case 'payments':
       return (
         <svg
@@ -157,6 +175,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     { to: '/admin/products', label: t.admin.products, icon: 'products' },
     { to: '/admin/categories', label: t.admin.categories, icon: 'categories' },
     { to: '/admin/orders', label: t.admin.orders, icon: 'orders' },
+    { to: '/admin/customers', label: t.admin.customers, icon: 'customers' },
     { to: '/admin/payments', label: t.admin.payments, icon: 'payments' },
     { to: '/admin/delivery', label: t.admin.delivery, icon: 'delivery' },
     { to: '/admin/audit', label: t.admin.audit, icon: 'audit' },

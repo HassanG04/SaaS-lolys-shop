@@ -780,7 +780,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-5.06: Customers admin
-`status: todo` `owner: agent` `needs: T-5.01` `size: M`
+`status: done` `owner: agent` `needs: T-5.01` `size: M`
 - **Do:** Table from `customer_stats` with search; the role is shown read-only. There is no UI to create, promote or demote admins (owner SQL only, see the runbook).
 - **Done when:** a grep check in `verify` finds no write to `profiles.role` and no `admin_set_role` call anywhere in `src/`.
 - **Verify:** `npm run verify`
@@ -1312,6 +1312,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-3.08 | Anti-Gravity | Implemented SEO basics: useSeo() hook, useRouteSeo() per-route title/meta hook wired in Layout, bilingual route dictionary in ar.json and en.json, Open Graph and Twitter card meta tags, public/favicon.svg (cropped bow), public/site.webmanifest, and public/robots.txt with crawler boundaries. Verified with 144 app tests + 105 tooling tests (249 total); npm run verify passes. | local only |
 | 2026-10-11 | T-4.01 | Anti-Gravity | Implemented delivery options API and hooks in src/features/delivery/ (getGovernorates with Arabic names first, getDeliveryFees returning empty list when no rows configured, useGovernorates, useDeliveryFees). Unit tests in delivery.test.tsx verify empty list behavior, labels, Arabic sorting, and hook lifecycles. Full verify passes (155 app + 105 tooling tests = 260 tests). | local only |
 | 2026-10-11 | T-5.01 | Anti-Gravity | Implemented Admin shell and access control in src/features/admin/ (AdminShell, AdminSidebar rail with 8 Arabic links, AdminHeader, lazy chunk loader, responsive mobile drawer, AAL2 badge, store return link). Customer receives 403 view (AUTH-011) without downloading admin chunk; admin at aal1 is sent to MFA with ADM-002 prompt without downloading admin chunk; admin at aal2 loads AdminShell. Full verify passes (163 app + 105 tooling tests = 268 tests). | local only |
+| 2026-10-11 | T-5.06 | Anti-Gravity | Implemented Customers admin in src/features/admin/customers/ (table from customer_stats view, search by name/phone/product, read-only role badges with aria-readonly, no role mutation UI). Added scripts/admin-role-guard.test.mjs in test:tooling proving zero writes to profiles.role and zero admin_set_role calls in src/. Full verify passes (169 app + 107 tooling tests = 276 tests). | local only |
 
 ### Open questions (agents add rows; the owner answers)
 

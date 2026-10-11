@@ -6,6 +6,7 @@ export interface AdminNavItem {
     | 'products'
     | 'categories'
     | 'orders'
+    | 'customers'
     | 'payments'
     | 'delivery'
     | 'audit'

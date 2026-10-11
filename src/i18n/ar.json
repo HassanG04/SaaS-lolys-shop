@@ -138,7 +138,19 @@
     "forecast": "التوقعات",
     "backToStore": "العودة للمتجر",
     "sidebarToggle": "قائمة لوحة التحكم",
-    "mfaBadge": "تحقق بخطوتين مفعّل"
+    "mfaBadge": "تحقق بخطوتين مفعّل",
+    "customersDesc": "إحصائيات ونشاط العملاء وسجل المشتريات",
+    "searchCustomers": "ابحث بالاسم أو الهاتف أو المنتج المفضل…",
+    "customerName": "العميل",
+    "customerPhone": "الهاتف",
+    "customerRole": "الصلاحية",
+    "customerOrders": "عدد الطلبات",
+    "customerSpent": "إجمالي المشتريات",
+    "customerFavorite": "المنتج المفضل",
+    "noCustomers": "لا توجد نتائج تطابق بحثك.",
+    "roleCustomer": "عميل",
+    "roleAdmin": "مدير",
+    "roleReadOnlyNote": "تعديل الصلاحيات متاح فقط لمالك قاعدة البيانات"
   },
   "empty": {
     "search": "لا توجد نتائج. جرّب كلمة أخرى."
