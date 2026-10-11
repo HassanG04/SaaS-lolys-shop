@@ -20,6 +20,7 @@ const AccountSecurityPage = lazy(() => import('./pages/AccountSecurityPage'))
 const AdminShell = lazy(() => adminChunkLoader())
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const AdminCustomersPage = lazy(() => import('./features/admin/customers/CustomersPage'))
+const AdminDeliveryFeesPage = lazy(() => import('./features/admin/delivery/DeliveryFeesPage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
 const TermsPage = lazy(() => import('./pages/TermsPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
@@ -213,6 +214,14 @@ export const routes: RouteObject[] = [
             element: (
               <Suspended>
                 <AdminCustomersPage />
+              </Suspended>
+            ),
+          },
+          {
+            path: 'delivery',
+            element: (
+              <Suspended>
+                <AdminDeliveryFeesPage />
               </Suspended>
             ),
           },
