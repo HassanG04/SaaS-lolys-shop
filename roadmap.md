@@ -648,7 +648,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-2.09: Step-up confirmation
-`status: todo` `owner: agent` `needs: T-2.06` `size: S`
+`status: done` `owner: agent` `needs: T-2.06` `size: S`
 - **Do:** `useStepUp()` and `<StepUpDialog>`: before a sensitive action (QR or settings change, CSV export, permanent delete, purge of proofs) ask for a fresh authenticator code (challenge and verify), remember it for 5 minutes in memory only, and show ADM-003 when it is missing. The database still requires `aal2` on its own.
 - **Done when:** unit tests cover expiry after 5 minutes and prove the confirmation is never written to storage.
 - **Verify:** `npm run test:unit`
@@ -1308,6 +1308,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-2.05 | Anti-Gravity | Installed and pinned @tanstack/react-query (5.104.1) in ADR-0001; configured QueryClientProvider with retry policy (suppressing 4xx client retries, max 2 retries for 5xx/network) and 1m/5m cache timers. Added global ErrorBoundary with Arabic reset card, useToast hook and ToastProvider container, and shared ErrorPanel and EmptyState components with documented design tokens and Ltr error codes. Full verify passes with 101 app + 101 tooling tests (202 total). | local only |
 | 2026-10-11 | T-2.06 | Anti-Gravity | Implemented TOTP two-factor authentication with Supabase Auth MFA: enrollment (QR code and manual secret key with Ltr), challenge and verification, factor listing and removal with fresh aal2 requirement, and useAal hook. Configured Admin MFA ladder in RequireAdmin (enrollment -> challenge -> admin access), and customer 2FA management in /account/security with second device recommendation. Handled AUTH-005 and AUTH-006 Arabic errors. Unit tests in mfa.test.tsx and full verify pass (108 app + 101 tooling tests). | local only |
 | 2026-10-11 | T-2.07 | Anti-Gravity | Implemented account security on /account/security: change password (enforces 10 characters, checks stale session returning AUTH-007), change email (retains secure email change confirmation, displays neutral AUTH-010, targets authenticated user exclusively), global revocation signOut({ scope: 'global' }), and admin 20-minute idle session timeout with queryClient cache clearing verified with fake timers. Unit tests in accountSecurity.test.tsx and full verify pass (114 app + 101 tooling tests). | local only |
+| 2026-10-11 | T-2.09 | Anti-Gravity | Implemented useStepUp() hook and StepUpDialog with in-memory 5-minute confirmation, challenge and verify, and ADM-003 prompt. Unit tests in stepUp.test.tsx verify in-memory expiry with fake timers and prove confirmation is never written to storage. Full verify passes (118 app + 101 tooling tests). | local only |
 
 ### Open questions (agents add rows; the owner answers)
 

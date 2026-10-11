@@ -3,8 +3,9 @@
 Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-2.01.
 
 ```yaml
-Current task: T-2.07 verified and marked done. Ready for T-2.09.
+Current task: T-2.09 verified and marked done. Ready for next task.
 Completed:
+  - T-2.09: Implemented useStepUp() hook and StepUpDialog with in-memory 5-minute confirmation, challenge and verify, and ADM-003 prompt. Unit tests in stepUp.test.tsx verify in-memory expiry with fake timers and prove confirmation is never written to storage. Full verify passes (118 app + 101 tooling tests).
   - T-2.07: Implemented account security on /account/security: change password (enforcing 10 characters, handling stale sessions with AUTH-007), change email (retaining secure email change confirmation, neutral AUTH-010, targeting only authenticated user), global revocation signOut({ scope: 'global' }), and admin 20-minute idle session timeout with queryClient cache clearing verified with fake timers. Unit tests in accountSecurity.test.tsx and full verify pass (114 app + 101 tooling tests).
   - T-2.06: Implemented TOTP two-factor authentication with Supabase Auth MFA: factor enrollment (QR code and manual secret key in Ltr), challenge and verification, factor listing and removal (enforcing fresh aal2 session), and useAal hook. Configured Admin MFA ladder in RequireAdmin (prompting enrollment if no factors enrolled, challenging until aal2, allowing admin screens only at aal2), and customer 2FA management in /account/security with second-device guidance. Implemented Arabic catalogue error codes AUTH-005 and AUTH-006. Full verify passes with 108 app + 101 tooling tests (209 total).
   - T-2.05: Installed and pinned @tanstack/react-query (5.104.1) in ADR-0001; configured QueryClientProvider with retry policy (suppressing 4xx client retries, max 2 retries for 5xx/network) and 1m/5m cache timers. Added global ErrorBoundary with Arabic reset card, useToast hook and ToastProvider container, and shared ErrorPanel and EmptyState components with documented design tokens and Ltr error codes. Full verify passes with 101 app + 101 tooling tests (202 total).

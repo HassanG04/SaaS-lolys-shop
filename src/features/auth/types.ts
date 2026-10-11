@@ -28,6 +28,9 @@ export type AuthErrorCode =
   | 'AUTH-010'
   | 'AUTH-011'
   | 'AUTH-012'
+  | 'ADM-001'
+  | 'ADM-002'
+  | 'ADM-003'
 
 export interface SignInCredentials {
   email: string
