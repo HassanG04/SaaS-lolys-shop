@@ -54,6 +54,17 @@ export function mapAuthError(error: unknown): AuthErrorCode {
     return 'AUTH-005'
   }
 
+  if (
+    message.includes('reauthenticate') ||
+    message.includes('re-authenticate') ||
+    message.includes('recent login') ||
+    message.includes('stale') ||
+    message.includes('session expired') ||
+    message.includes('reauthentication')
+  ) {
+    return 'AUTH-007'
+  }
+
   if (message.includes('password') && (message.includes('short') || message.includes('weak'))) {
     return 'AUTH-008'
   }

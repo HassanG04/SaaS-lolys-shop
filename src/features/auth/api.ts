@@ -146,10 +146,12 @@ export async function resendConfirmationApi(
 }
 
 /**
- * Signs out the current session.
+ * Signs out the session, supporting global revocation across all devices.
  */
-export async function signOutApi(): Promise<void> {
-  await supabase.auth.signOut()
+export async function signOutApi(options?: {
+  scope?: 'global' | 'local' | 'others'
+}): Promise<void> {
+  await supabase.auth.signOut(options)
 }
 
 /**
@@ -279,5 +281,50 @@ export async function unenrollFactorApi(factorId: string): Promise<AuthActionRes
   } catch (err) {
     const code = mapAuthError(err)
     return { success: false, code, message: getAuthMessage(code) }
+  }
+}
+
+/**
+ * Updates the authenticated user's password.
+ * Requires recent sign-in; returns AUTH-007 if stale, AUTH-008 if under 10 chars.
+ */
+export async function updatePasswordApi(password: string): Promise<AuthActionResult> {
+  if (password.length < 10) {
+    return { success: false, code: 'AUTH-008', message: getAuthMessage('AUTH-008') }
+  }
+
+  try {
+    const { error } = await supabase.auth.updateUser({ password })
+    if (error) {
+      const code = mapAuthError(error)
+      return { success: false, code, message: getAuthMessage(code) }
+    }
+    return { success: true }
+  } catch (err) {
+    const code = mapAuthError(err)
+    return { success: false, code, message: getAuthMessage(code) }
+  }
+}
+
+/**
+ * Initiates an email change for the authenticated user.
+ * Keeps Supabase "Secure email change" active and returns neutral AUTH-010.
+ */
+export async function updateEmailApi(email: string): Promise<AuthActionResult> {
+  try {
+    const { error } = await supabase.auth.updateUser({ email })
+    if (error) {
+      const code = mapAuthError(error)
+      if (code === 'AUTH-007' || code === 'AUTH-002') {
+        return { success: false, code, message: getAuthMessage(code) }
+      }
+    }
+    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+  } catch (err) {
+    const code = mapAuthError(err)
+    if (code === 'AUTH-007' || code === 'AUTH-002') {
+      return { success: false, code, message: getAuthMessage(code) }
+    }
+    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
   }
 }

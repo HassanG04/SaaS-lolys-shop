@@ -90,11 +90,13 @@ export interface AuthContextValue {
   signUp: (credentials: SignUpCredentials) => Promise<AuthActionResult>
   resetPassword: (credentials: ResetPasswordCredentials) => Promise<AuthActionResult>
   resendConfirmation: (credentials: ResendConfirmationCredentials) => Promise<AuthActionResult>
-  signOut: () => Promise<void>
+  signOut: (options?: { scope?: 'global' | 'local' | 'others' }) => Promise<void>
   refreshProfile: () => Promise<void>
   refreshAal: () => Promise<AalLevel>
   refreshFactors: () => Promise<MfaFactor[]>
   enrollTotp: (friendlyName?: string) => Promise<{ data?: MfaEnrollResult; error?: AuthErrorCode }>
   challengeAndVerify: (factorId: string, code: string) => Promise<AuthActionResult>
   unenrollFactor: (factorId: string) => Promise<AuthActionResult>
+  updatePassword: (password: string) => Promise<AuthActionResult>
+  updateEmail: (email: string) => Promise<AuthActionResult>
 }

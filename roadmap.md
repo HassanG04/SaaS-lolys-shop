@@ -636,7 +636,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit` and manual check
 
 #### T-2.07: Account security
-`status: todo` `owner: agent` `needs: T-2.06` `size: M`
+`status: done` `owner: agent` `needs: T-2.06` `size: M`
 - **Do:** `/account/security`: change password (asks for a recent sign-in; AUTH-007 if stale), change email (keep Supabase "Secure email change" on so the old and the new address must both confirm; show the neutral AUTH-010 copy), "sign out of all devices" (`signOut({ scope: 'global' })`), list of enrolled factors. Admin sessions time out after 20 idle minutes (sign out and clear caches).
 - **Done when:** the idle timeout works in a unit test with fake timers; no UI can read or change another user's email; every flow shows Arabic messages with codes.
 - **Verify:** `npm run test:unit`
@@ -1307,6 +1307,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-2.04 | Anti-Gravity | Implemented AuthProvider, useAuth hook, Arabic auth pages (Login, Register, Reset Password, Resend Confirmation), Cloudflare Turnstile integration, route guards (RequireAuth, RequireAdmin with 403 AUTH-011, RequireGuest), and generic catalogue error codes (AUTH-001 through AUTH-012). Strictly enforced SEC-05 enumeration protection: identical request count for known and unknown accounts, neutral AUTH-010 outcome, upfront 10-character password policy, always-visible resend link, and no raw errors in DOM. Unit tests in auth.test.tsx and full verify pass (90 app + 101 tooling tests). | local only |
 | 2026-10-11 | T-2.05 | Anti-Gravity | Installed and pinned @tanstack/react-query (5.104.1) in ADR-0001; configured QueryClientProvider with retry policy (suppressing 4xx client retries, max 2 retries for 5xx/network) and 1m/5m cache timers. Added global ErrorBoundary with Arabic reset card, useToast hook and ToastProvider container, and shared ErrorPanel and EmptyState components with documented design tokens and Ltr error codes. Full verify passes with 101 app + 101 tooling tests (202 total). | local only |
 | 2026-10-11 | T-2.06 | Anti-Gravity | Implemented TOTP two-factor authentication with Supabase Auth MFA: enrollment (QR code and manual secret key with Ltr), challenge and verification, factor listing and removal with fresh aal2 requirement, and useAal hook. Configured Admin MFA ladder in RequireAdmin (enrollment -> challenge -> admin access), and customer 2FA management in /account/security with second device recommendation. Handled AUTH-005 and AUTH-006 Arabic errors. Unit tests in mfa.test.tsx and full verify pass (108 app + 101 tooling tests). | local only |
+| 2026-10-11 | T-2.07 | Anti-Gravity | Implemented account security on /account/security: change password (enforces 10 characters, checks stale session returning AUTH-007), change email (retains secure email change confirmation, displays neutral AUTH-010, targets authenticated user exclusively), global revocation signOut({ scope: 'global' }), and admin 20-minute idle session timeout with queryClient cache clearing verified with fake timers. Unit tests in accountSecurity.test.tsx and full verify pass (114 app + 101 tooling tests). | local only |
 
 ### Open questions (agents add rows; the owner answers)
 

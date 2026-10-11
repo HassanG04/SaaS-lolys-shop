@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
+import { queryClient } from '../../lib/queryClient'
 import { supabase } from '../../lib/supabase'
 import * as authApi from './api'
 import type {
@@ -16,6 +17,8 @@ import type {
   UserProfile,
   UserRole,
 } from './types'
+
+export const ADMIN_IDLE_TIMEOUT_MS = 20 * 60 * 1000
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
 
@@ -155,15 +158,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   )
 
-  const signOut = useCallback(async (): Promise<void> => {
-    await authApi.signOutApi()
-    setSession(null)
-    setUser(null)
-    setProfile(null)
-    setRole('customer')
-    setAal('aal1')
-    setFactors([])
+  const signOut = useCallback(
+    async (options?: { scope?: 'global' | 'local' | 'others' }): Promise<void> => {
+      await authApi.signOutApi(options)
+      setSession(null)
+      setUser(null)
+      setProfile(null)
+      setRole('customer')
+      setAal('aal1')
+      setFactors([])
+    },
+    [],
+  )
+
+  const updatePassword = useCallback(async (password: string): Promise<AuthActionResult> => {
+    return authApi.updatePasswordApi(password)
   }, [])
+
+  const updateEmail = useCallback(async (email: string): Promise<AuthActionResult> => {
+    return authApi.updateEmailApi(email)
+  }, [])
+
+  // Admin sessions time out after 20 idle minutes: sign out and clear caches
+  useEffect(() => {
+    if (role !== 'admin') return
+
+    let timeoutId: ReturnType<typeof setTimeout>
+
+    const resetTimer = () => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        queryClient.clear()
+        void signOut()
+      }, ADMIN_IDLE_TIMEOUT_MS)
+    }
+
+    const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart']
+    const handleActivity = () => resetTimer()
+
+    events.forEach((event) => window.addEventListener(event, handleActivity, { passive: true }))
+    resetTimer()
+
+    return () => {
+      clearTimeout(timeoutId)
+      events.forEach((event) => window.removeEventListener(event, handleActivity))
+    }
+  }, [role, signOut])
 
   const enrollTotp = useCallback(
     async (friendlyName?: string): Promise<{ data?: MfaEnrollResult; error?: AuthErrorCode }> => {
@@ -220,6 +260,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     enrollTotp,
     challengeAndVerify,
     unenrollFactor,
+    updatePassword,
+    updateEmail,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
