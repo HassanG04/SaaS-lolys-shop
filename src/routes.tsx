@@ -23,6 +23,8 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const ReturnsPage = lazy(() => import('./pages/ReturnsPage'))
 const ShippingPage = lazy(() => import('./pages/ShippingPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+const MfaEnrollPage = lazy(() => import('./pages/MfaEnrollPage'))
+const MfaChallengePage = lazy(() => import('./pages/MfaChallengePage'))
 
 const KitPage = import.meta.env.DEV ? lazy(() => import('./dev/KitPage')) : null
 
@@ -145,6 +147,46 @@ export const routes: RouteObject[] = [
           <RequireAuth>
             <Suspended>
               <AccountSecurityPage />
+            </Suspended>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'admin/mfa/enroll',
+        element: (
+          <RequireAdmin>
+            <Suspended>
+              <MfaEnrollPage />
+            </Suspended>
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: 'admin/mfa/challenge',
+        element: (
+          <RequireAdmin>
+            <Suspended>
+              <MfaChallengePage />
+            </Suspended>
+          </RequireAdmin>
+        ),
+      },
+      {
+        path: 'account/mfa/enroll',
+        element: (
+          <RequireAuth>
+            <Suspended>
+              <MfaEnrollPage />
+            </Suspended>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'mfa/challenge',
+        element: (
+          <RequireAuth>
+            <Suspended>
+              <MfaChallengePage />
             </Suspended>
           </RequireAuth>
         ),

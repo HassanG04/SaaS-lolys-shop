@@ -52,6 +52,25 @@ export interface ResendConfirmationCredentials {
   captchaToken?: string
 }
 
+export interface MfaFactor {
+  id: string
+  friendly_name?: string
+  factor_type: 'totp'
+  status: 'verified' | 'unverified'
+  created_at?: string
+  updated_at?: string
+}
+
+export interface MfaEnrollResult {
+  id: string
+  type: 'totp'
+  totp: {
+    qr_code: string
+    secret: string
+    uri: string
+  }
+}
+
 export interface AuthActionResult {
   success: boolean
   code?: AuthErrorCode
@@ -64,11 +83,18 @@ export interface AuthContextValue {
   profile: UserProfile | null
   role: UserRole
   aal: AalLevel
+  factors: MfaFactor[]
   loading: boolean
+  loadingFactors: boolean
   signIn: (credentials: SignInCredentials) => Promise<AuthActionResult>
   signUp: (credentials: SignUpCredentials) => Promise<AuthActionResult>
   resetPassword: (credentials: ResetPasswordCredentials) => Promise<AuthActionResult>
   resendConfirmation: (credentials: ResendConfirmationCredentials) => Promise<AuthActionResult>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
+  refreshAal: () => Promise<AalLevel>
+  refreshFactors: () => Promise<MfaFactor[]>
+  enrollTotp: (friendlyName?: string) => Promise<{ data?: MfaEnrollResult; error?: AuthErrorCode }>
+  challengeAndVerify: (factorId: string, code: string) => Promise<AuthActionResult>
+  unenrollFactor: (factorId: string) => Promise<AuthActionResult>
 }

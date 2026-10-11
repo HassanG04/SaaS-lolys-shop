@@ -29,15 +29,15 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 }
 
 export function RequireAdmin({ children }: { children: ReactNode }) {
-  const { user, role, loading } = useAuth()
+  const { user, role, aal, factors, loading, loadingFactors } = useAuth()
   const location = useLocation()
 
-  if (loading) {
+  if (loading || loadingFactors) {
     return (
       <div
         role="status"
         aria-label="Loading admin authorization"
-        className="flex h-64 w-full items-center justify-center text-(--color-brand)"
+        className="flex h-64 w-full items-center justify-center text-brand"
       >
         <PearlLoader loading />
       </div>
@@ -55,6 +55,31 @@ export function RequireAdmin({ children }: { children: ReactNode }) {
         <AuthAlert code="AUTH-011" />
       </div>
     )
+  }
+
+  const currentPath = location.pathname
+  const isEnrollPath = currentPath.includes('/admin/mfa/enroll')
+  const isChallengePath = currentPath.includes('/admin/mfa/challenge')
+
+  // Ladder step 1: If no TOTP factors are enrolled, must enroll first
+  if (factors.length === 0) {
+    if (!isEnrollPath) {
+      return <Navigate to="/admin/mfa/enroll" replace />
+    }
+    return <>{children}</>
+  }
+
+  // Ladder step 2: If enrolled but current session is aal1, must challenge
+  if (aal !== 'aal2') {
+    if (!isChallengePath) {
+      return <Navigate to="/admin/mfa/challenge" replace />
+    }
+    return <>{children}</>
+  }
+
+  // Ladder step 3: If already aal2, leave mfa pages
+  if (isEnrollPath || isChallengePath) {
+    return <Navigate to="/admin" replace />
   }
 
   return <>{children}</>

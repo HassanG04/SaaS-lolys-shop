@@ -3,6 +3,9 @@ import { getAuthMessage, mapAuthError } from './authErrors'
 import type {
   AalLevel,
   AuthActionResult,
+  AuthErrorCode,
+  MfaEnrollResult,
+  MfaFactor,
   ResendConfirmationCredentials,
   ResetPasswordCredentials,
   SignInCredentials,
@@ -185,5 +188,96 @@ export async function fetchAalApi(): Promise<AalLevel> {
     return data.currentLevel === 'aal2' ? 'aal2' : 'aal1'
   } catch {
     return 'aal1'
+  }
+}
+
+/**
+ * Fetches all enrolled TOTP factors for the current user.
+ */
+export async function fetchFactorsApi(): Promise<MfaFactor[]> {
+  try {
+    const { data, error } = await supabase.auth.mfa.listFactors()
+    if (error || !data) return []
+    return (data.totp || []).map((f) => ({
+      id: f.id,
+      friendly_name: f.friendly_name,
+      factor_type: 'totp',
+      status: f.status as 'verified' | 'unverified',
+      created_at: f.created_at,
+      updated_at: f.updated_at,
+    }))
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Enrolls a new TOTP factor returning QR code, manual key secret, and URI.
+ */
+export async function enrollTotpApi(
+  friendlyName?: string,
+): Promise<{ data?: MfaEnrollResult; error?: AuthErrorCode }> {
+  try {
+    const { data, error } = await supabase.auth.mfa.enroll({
+      factorType: 'totp',
+      issuer: "Lolys' Accessories",
+      friendlyName,
+    })
+    if (error || !data) {
+      const code = mapAuthError(error)
+      return { error: code }
+    }
+    return {
+      data: {
+        id: data.id,
+        type: 'totp',
+        totp: {
+          qr_code: data.totp.qr_code,
+          secret: data.totp.secret,
+          uri: data.totp.uri,
+        },
+      },
+    }
+  } catch (err) {
+    const code = mapAuthError(err)
+    return { error: code }
+  }
+}
+
+/**
+ * Challenges and verifies a 6-digit TOTP code, upgrading session to aal2 upon success.
+ */
+export async function challengeAndVerifyApi(
+  factorId: string,
+  code: string,
+): Promise<AuthActionResult> {
+  try {
+    const { error } = await supabase.auth.mfa.challengeAndVerify({
+      factorId,
+      code,
+    })
+    if (error) {
+      return { success: false, code: 'AUTH-006', message: getAuthMessage('AUTH-006') }
+    }
+    return { success: true }
+  } catch {
+    return { success: false, code: 'AUTH-006', message: getAuthMessage('AUTH-006') }
+  }
+}
+
+/**
+ * Unenrolls a TOTP factor (requires session to be at aal2).
+ */
+export async function unenrollFactorApi(factorId: string): Promise<AuthActionResult> {
+  try {
+    const { error } = await supabase.auth.mfa.unenroll({ factorId })
+    if (error) {
+      const code = mapAuthError(error)
+      return { success: false, code, message: getAuthMessage(code) }
+    }
+    return { success: true }
+  } catch (err) {
+    const code = mapAuthError(err)
+    return { success: false, code, message: getAuthMessage(code) }
   }
 }

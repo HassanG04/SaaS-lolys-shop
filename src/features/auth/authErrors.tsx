@@ -41,6 +41,19 @@ export function mapAuthError(error: unknown): AuthErrorCode {
     return 'AUTH-002'
   }
 
+  if (
+    message.includes('totp') ||
+    message.includes('invalid code') ||
+    message.includes('expired code') ||
+    message.includes('verification code')
+  ) {
+    return 'AUTH-006'
+  }
+
+  if (message.includes('mfa') || message.includes('aal2') || message.includes('two-factor')) {
+    return 'AUTH-005'
+  }
+
   if (message.includes('password') && (message.includes('short') || message.includes('weak'))) {
     return 'AUTH-008'
   }

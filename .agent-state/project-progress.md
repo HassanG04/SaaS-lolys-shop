@@ -3,8 +3,9 @@
 Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-2.01.
 
 ```yaml
-Current task: T-2.05 verified and marked done. Ready for next task.
+Current task: T-2.06 verified and marked done. Ready for T-2.07.
 Completed:
+  - T-2.06: Implemented TOTP two-factor authentication with Supabase Auth MFA: factor enrollment (QR code and manual secret key in Ltr), challenge and verification, factor listing and removal (enforcing fresh aal2 session), and useAal hook. Configured Admin MFA ladder in RequireAdmin (prompting enrollment if no factors enrolled, challenging until aal2, allowing admin screens only at aal2), and customer 2FA management in /account/security with second-device guidance. Implemented Arabic catalogue error codes AUTH-005 and AUTH-006. Full verify passes with 108 app + 101 tooling tests (209 total).
   - T-2.05: Installed and pinned @tanstack/react-query (5.104.1) in ADR-0001; configured QueryClientProvider with retry policy (suppressing 4xx client retries, max 2 retries for 5xx/network) and 1m/5m cache timers. Added global ErrorBoundary with Arabic reset card, useToast hook and ToastProvider container, and shared ErrorPanel and EmptyState components with documented design tokens and Ltr error codes. Full verify passes with 101 app + 101 tooling tests (202 total).
   - T-2.04: Implemented AuthProvider, useAuth hook, Arabic auth pages (Login, Register, Reset Password, Resend Confirmation), Cloudflare Turnstile integration, route guards (RequireAuth, RequireAdmin with 403 AUTH-011, RequireGuest), and generic catalogue error codes (AUTH-001 through AUTH-012). Strictly enforced SEC-05 enumeration protection: identical request count for known and unknown accounts, neutral AUTH-010 outcome, upfront 10-character password policy, always-visible resend link, and no raw errors in DOM. Unit tests in auth.test.tsx and full verify pass (90 app + 101 tooling tests).
   - T-2.03: Configured i18next and react-i18next with exact pins (26.4.3 and 17.0.16) in src/i18n/i18n.ts, LanguageProvider integration with dual t() callable and property dictionary access, full copy deck in ar.json and en.json from Section 8 of design-system.md, Arabic CLDR 6-form plural rules, Western digits. Added src/lib/format.ts (formatEGP with ar-EG-u-nu-latn, formatDate, formatNumber, LTR helpers), src/components/ui/Ltr.tsx, scripts/check-i18n.mjs (parity, key usage, kit exclusion), scripts/check-i18n.test.mjs, and check:i18n npm script. Verified with 79 app tests, 101 tooling tests, and npm run verify.
@@ -87,7 +88,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: T-1.07 is complete. Continue with T-1.08 (Concurrency check) on branch agent/T-1.08-concurrency-check.
+Next action: T-2.06 is complete. Continue with T-2.07 (Account security) on branch agent/T-2.07-account-security.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:

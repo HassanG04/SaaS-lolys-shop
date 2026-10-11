@@ -6,6 +6,9 @@ import type {
   AalLevel,
   AuthActionResult,
   AuthContextValue,
+  AuthErrorCode,
+  MfaEnrollResult,
+  MfaFactor,
   ResendConfirmationCredentials,
   ResetPasswordCredentials,
   SignInCredentials,
@@ -22,24 +25,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [role, setRole] = useState<UserRole>('customer')
   const [aal, setAal] = useState<AalLevel>('aal1')
+  const [factors, setFactors] = useState<MfaFactor[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingFactors, setLoadingFactors] = useState(true)
 
   const loadUserData = useCallback(async (activeUser: User | null) => {
     if (!activeUser) {
       setProfile(null)
       setRole('customer')
       setAal('aal1')
+      setFactors([])
+      setLoadingFactors(false)
       return
     }
 
-    const [userProfile, currentAal] = await Promise.all([
+    setLoadingFactors(true)
+    const [userProfile, currentAal, currentFactors] = await Promise.all([
       authApi.fetchProfileApi(activeUser.id),
       authApi.fetchAalApi(),
+      authApi.fetchFactorsApi(),
     ])
 
     setProfile(userProfile)
     setRole(userProfile?.role || 'customer')
     setAal(currentAal)
+    setFactors(currentFactors)
+    setLoadingFactors(false)
   }, [])
 
   const refreshProfile = useCallback(async () => {
@@ -47,6 +58,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await loadUserData(user)
     }
   }, [user, loadUserData])
+
+  const refreshAal = useCallback(async (): Promise<AalLevel> => {
+    const currentAal = await authApi.fetchAalApi()
+    setAal(currentAal)
+    return currentAal
+  }, [])
+
+  const refreshFactors = useCallback(async (): Promise<MfaFactor[]> => {
+    const list = await authApi.fetchFactorsApi()
+    setFactors(list)
+    return list
+  }, [])
 
   useEffect(() => {
     let isMounted = true
@@ -60,10 +83,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(initialSession?.user ?? null)
         if (initialSession?.user) {
           await loadUserData(initialSession.user)
+        } else {
+          setLoadingFactors(false)
         }
       })
       .catch(() => {
-        // network or initialization error handled gracefully
+        if (isMounted) setLoadingFactors(false)
       })
       .finally(() => {
         if (isMounted) setLoading(false)
@@ -82,6 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setProfile(null)
         setRole('customer')
         setAal('aal1')
+        setFactors([])
+        setLoadingFactors(false)
       }
       setLoading(false)
     })
@@ -135,7 +162,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null)
     setRole('customer')
     setAal('aal1')
+    setFactors([])
   }, [])
+
+  const enrollTotp = useCallback(
+    async (friendlyName?: string): Promise<{ data?: MfaEnrollResult; error?: AuthErrorCode }> => {
+      const result = await authApi.enrollTotpApi(friendlyName)
+      if (result.data) {
+        await refreshFactors()
+      }
+      return result
+    },
+    [refreshFactors],
+  )
+
+  const challengeAndVerify = useCallback(
+    async (factorId: string, code: string): Promise<AuthActionResult> => {
+      const result = await authApi.challengeAndVerifyApi(factorId, code)
+      if (result.success) {
+        await refreshAal()
+        await refreshFactors()
+      }
+      return result
+    },
+    [refreshAal, refreshFactors],
+  )
+
+  const unenrollFactor = useCallback(
+    async (factorId: string): Promise<AuthActionResult> => {
+      const result = await authApi.unenrollFactorApi(factorId)
+      if (result.success) {
+        await refreshFactors()
+        await refreshAal()
+      }
+      return result
+    },
+    [refreshFactors, refreshAal],
+  )
 
   const value: AuthContextValue = {
     user,
@@ -143,13 +206,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile,
     role,
     aal,
+    factors,
     loading,
+    loadingFactors,
     signIn,
     signUp,
     resetPassword,
     resendConfirmation,
     signOut,
     refreshProfile,
+    refreshAal,
+    refreshFactors,
+    enrollTotp,
+    challengeAndVerify,
+    unenrollFactor,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
@@ -161,4 +231,17 @@ export function useAuth(): AuthContextValue {
     throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
+}
+
+export function useAal() {
+  const { aal, factors, loadingFactors, refreshAal, refreshFactors } = useAuth()
+  return {
+    aal,
+    isAal2: aal === 'aal2',
+    factors,
+    loadingFactors,
+    hasEnrolledFactors: factors.length > 0,
+    refreshAal,
+    refreshFactors,
+  }
 }
