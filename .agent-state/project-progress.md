@@ -3,30 +3,29 @@
 Updated 2026-10-11 (Africa/Cairo). Codex working alongside Anti-Gravity.
 
 ```yaml
-Current task: T-0.09b bundle guard verified locally on agent/T-0.09b-bundle-guard; owner workflow review pending.
+Current task: T-1.09b append-only migration guard; preparing cloud prerequisites without touching Anti-Gravity's database or application work.
 Completed:
-  - T-0.09 secret-guard PR 15 is ready for review with four passing checks at cdb6836 (run 38134935611).
-  - Added build metadata, transitive initial-JS measurement, lazy-admin separation and fail-closed input validation without new dependencies.
-  - Anti-Gravity owns T-5.01 in the original checkout; only its Codex coordination notice was updated.
+  - PR 15 secret guard and PR 16 bundle guard are ready for review; final PR 16 checks passed at 08c18b3 in run 38135882538.
+  - Owner confirmed no hosted Supabase project exists. Prepared .agent-state/cloud-database.md with owner setup and remaining deployment gates.
+  - Split the independently testable migration guard from T-1.09; original database/type/PR acceptance remains there. Anti-Gravity owns T-5.06.
+  - Guard compares HEAD, index and working files against origin/main; push CI uses the pre-push commit. Missing history fails; new migrations remain editable.
 Files changed:
-  - scripts/bundle-graph.ts
-  - scripts/check-bundle.mjs
-  - scripts/check-bundle.test.mjs
-  - vite.config.ts
+  - scripts/check-migrations.mjs
+  - scripts/check-migrations.test.mjs
   - scripts/pending.mjs
   - package.json
   - .github/workflows/ci.yml
   - roadmap.md
   - .agent-state/project-progress.md
-  - .agent-state/repo-guards.md
+  - .agent-state/cloud-database.md
+  - HANDOVER_TO_ANTI_GRAVITY.md
 Tests executed:
-  - Four bundle tests pass, covering shared/cyclic dependencies, deliberate gzip-budget breach and recovery, disguised eager admin code, missing/malformed inputs, and real Vite eager/lazy builds.
-  - npm run verify passes with 55 app and 106 tooling tests (161 total), lint, formatting, types, build and both repository guards. Initial JS is 69,655/200,000 gzip bytes.
-  - All four PR 16 checks passed at bf9a87d in run 38135767780. Owner workflow review remains pending.
+  - Five real-Git tests pass: additions, staged/unstaged/committed edits, restoration, renames/deletions, pre-push protection, missing history and Windows line endings.
+  - Full verify passes with 55 app + 111 tooling tests (166 total), migration/token guards, lint, formatting, TypeScript, production build, preview exclusion, secret and bundle guards. Roadmap validates 121 tasks. PR checks pending.
 Problems found:
-  - Branch protection still requires GitHub Pro. Latest user-supplied AGENTS instructions prohibit agent merges; PR 15 is left open for owner review.
-  - This branch stacks on PR 15. Preserve Anti-Gravity's newer dependency versions and npm checks when integrating.
-Next action: Owner reviews PRs 15 and 16. Integrate PR 15 first, then retarget PR 16 to main and rerun CI. Preserve Anti-Gravity's newer npm scripts. Next independent task is T-0.12; do not interrupt its active T-5.01 work.
+  - No cloud deployment is available yet. T-1.09 database CI, T-1.12 deployment workflows, and human-owned T-1.11/T-1.13 remain open.
+  - This branch stacks on PR 16. No Supabase command, database reset or remote deployment ran. Workflow changes require owner review; no agent merge.
+Next action: Verify and publish T-1.09b. Owner creates shop-staging; continue T-1.09 after integrating Anti-Gravity's database code, then T-1.12. Preserve newer dependency versions and npm checks.
 ```
 
 ## Previous session: main integration
