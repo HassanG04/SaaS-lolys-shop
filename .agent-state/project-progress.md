@@ -1,5 +1,31 @@
 # Shared project progress
 
+Updated 2026-10-12 (Africa/Cairo). Codex isolated branch `agent/T-0.12-repository-security`.
+
+```yaml
+Current task: T-0.12 security configuration; implementation ready for verification and PR.
+Completed:
+  - Private reporting policy and security.txt use the owner-approved temporary mailbox (H-14).
+  - CODEOWNERS protects sensitive paths, tooling, scanner exceptions and dependency manifests.
+  - Dependabot weekly npm/Actions/pip configuration parses and matches the required ecosystems.
+  - Read-only secrets CI job installs checksum-pinned Gitleaks 8.30.1 and scans full Git history.
+  - Three scanner tests pass: fake-token/history rejection with redacted output, environment-name rejection, and unavailable-scanner failure.
+  - Reviewed three historical mock-value false positives; exceptions use exact commit/file/rule/line fingerprints only.
+Files changed:
+  - SECURITY.md, public/.well-known/security.txt, .github/CODEOWNERS, .github/dependabot.yml
+  - .github/workflows/ci.yml, .gitleaksignore, scripts/check-history-secrets.mjs, scripts/test-gitleaks.mjs
+  - roadmap.md, .agent-state/project-progress.md, HANDOVER_TO_ANTI_GRAVITY.md
+Tests executed:
+  - Real Windows Gitleaks rejection tests passed; archive checksum verified against official release metadata.
+  - Dependabot and CI YAML parsed with the installed js-yaml dependency; required settings validated.
+Problems found:
+  - Historical mock MFA and environment-validation values triggered generic-api-key; exact reviewed exclusions added.
+  - Owner workflow review and remote rejection/recovery evidence are still pending.
+Next action: Run full verification, prove rejection/recovery in CI, open the task PR; do not merge or deploy.
+```
+
+## Previous session
+
 Updated 2026-10-11 (Africa/Cairo). Codex working alongside Anti-Gravity.
 
 ```yaml

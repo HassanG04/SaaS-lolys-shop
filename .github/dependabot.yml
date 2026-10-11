@@ -1,0 +1,15 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  # T-9.02 adds the analytics dependency manifest; no placeholder package needed.
+  - package-ecosystem: pip
+    directory: /analytics
+    schedule:
+      interval: weekly

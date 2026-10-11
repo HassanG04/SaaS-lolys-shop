@@ -1,4 +1,38 @@
-# Current cloud-prerequisite handover — 2026-10-11
+# Current repository-security handover — 2026-10-12
+
+## Current Objective
+
+T-0.12 on `agent/T-0.12-repository-security`, stacked on migration guard PR 17.
+Your published application stack through T-8.01 is unchanged.
+
+## Completed / Remaining
+
+Implemented private email reporting using the owner-approved temporary mailbox,
+security.txt, owner review rules, weekly dependency updates, and checksum-pinned
+Gitleaks with three real-binary tests. Read progress for final verification/PR
+evidence. Owner workflow review remains required (SEC-15, SEC-16, SEC-24).
+No main merge, dashboard action or cloud deployment is authorized for agents.
+
+## Current Files
+
+`SECURITY.md`, `public/.well-known/security.txt`, `.github/CODEOWNERS`,
+`.github/dependabot.yml`, `.github/workflows/ci.yml`, `.gitleaksignore`,
+`scripts/check-history-secrets.mjs`, `scripts/test-gitleaks.mjs`, `roadmap.md`,
+`.agent-state/project-progress.md`, `HANDOVER_TO_ANTI_GRAVITY.md`.
+
+## Current Error
+
+History scanning found three false positives in your historical unit tests.
+They are mock values, not operational credentials; exact fingerprint exceptions
+are documented in `.gitleaksignore`. Do not replace these with broad exclusions.
+GitHub private reporting is unavailable for this private repo; use H-14 email.
+
+## Next Exact Command
+
+`git status --short --branch` — then read progress and PR checks before integrating.
+Preserve your newer app dependencies and migrations when reconciling guard work.
+
+# Previous cloud-prerequisite handover — 2026-10-11
 
 ## Current Objective
 

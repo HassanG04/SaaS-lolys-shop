@@ -175,6 +175,7 @@ Visitors browse accessories by category, see stock status and fill a cart. Logge
 | H-11 | Native-speaker review of the Arabic copy | `src/i18n/ar.json` (T-7.01) |
 | H-12 | Privacy policy, terms and returns text, reviewed by a legal professional | Arabic pages (T-7.11) |
 | H-13 | Authenticator app on the owner's phone, plus a second device for each admin | admin onboarding (T-8.09) |
+| H-14 | Temporary security-report mailbox: hassangebrill2004@gmail.com, approved 2026-10-12 until the owner supplies a replacement | SECURITY.md and public/.well-known/security.txt |
 
 ### 2.5 Non-goals before launch
 
@@ -458,7 +459,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** open the preview URL
 
 #### T-0.12: Security basics in the repository
-`status: todo` `owner: agent` `needs: T-0.06` `size: M`
+`status: doing` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Add `SECURITY.md` (how to report a vulnerability privately), `public/.well-known/security.txt`, `.github/CODEOWNERS` assigning the owner (H-09) to `supabase/migrations/**`, `src/features/auth/**`, `src/features/admin/**`, `.github/workflows/**`, `public/_headers` and `docs/spec/security-model.md`, `.github/dependabot.yml` (npm, github-actions and pip for `analytics/`, weekly), a `secrets` CI job running gitleaks, and add `CLAUDE-SECURITY-*/` to `.gitignore`.
 - **Done when:** the files exist; the `secrets` job fails on a planted fake key and passes without it; the Dependabot config validates.
 - **Verify:** open a PR and read the checks
