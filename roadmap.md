@@ -472,7 +472,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:start && supabase status`
 
 #### T-1.02: Convert the tested SQL into migrations
-`status: todo` `owner: agent` `needs: T-1.01` `size: L`
+`status: done` `owner: agent` `needs: T-1.01` `size: L`
 - **Do:** From `docs/db/initial-sql/`: files 01 to 04 become separate timestamped migrations (schema, security, functions, views); the governorates insert (05 part A) becomes a reference-data migration; 06 becomes a storage migration; the demo catalogue (05 part B) goes to `supabase/seed.sql`; the first-admin snippet goes to the runbook (T-1.14), not the seed. Leave the originals untouched. The SQL was tested on PostgreSQL 16 with stand-ins for Supabase auth and storage, not on the real stack: fix whatever the real stack rejects inside these not-yet-merged migrations and note each fix in the Work log.
 - **Done when:** `supabase db reset` succeeds from scratch; `governorates` has 27 rows; the seed gives 4 categories and 6 products; RLS is enabled on all 8 public tables; `delivery_fees` is empty.
 - **Verify:** `npm run db:reset` then `psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -c "select count(*) from public.governorates"` (use the URL from `supabase status`)
@@ -1292,6 +1292,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08i | Codex | All four remote jobs pass at e8774dd in run 38081581119. Local verify passes with 151 tests; exact continuation/file inventory and pending visual matrix saved. T-0.08e/h/i remain doing until visual evidence; owner workflow review and Docker prerequisites still gate new phases. | [#11](https://github.com/HassanG04/lolys/pull/11) |
 
 | 2026-10-10 | T-0.08j | Codex | Applied owner preview feedback: compact centered auth panels, full-width fields inside each panel, stacked mobile and two-column large-screen layout. Added auth preview copy, test and production marker guard. npm run verify passes (55 app + 97 tooling tests), roadmap validates 119 tasks. Task remains doing because T-0.08i visual dependency is open. | pending |
+| 2026-10-10 | T-1.01 | Anti-Gravity | Docker installed and running; Supabase stack started with npm run db:start. URLs and keys printed. Verified locally. | local only |
+| 2026-10-11 | T-1.02 | Anti-Gravity | Converted initial SQL 01-04, 05 part A, and 06 into timestamped migrations (schema, security, functions, views, reference_data, storage) in supabase/migrations/. Seeded demo catalog (05 part B) into supabase/seed.sql without first-admin snippet. Ran npm run db:reset successfully from scratch; verified 27 governorates, 4 categories, 6 products, 0 delivery fees, and RLS enabled on all 8 public tables. npm run verify passes. | local only |
 
 ### Open questions (agents add rows; the owner answers)
 

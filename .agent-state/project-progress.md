@@ -1,10 +1,12 @@
 # Shared project progress
 
-Updated 2026-10-10 (Africa/Cairo). Active: Codex, reviewing Anti-Gravity's handover.
+Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-1.02.
 
 ```yaml
-Current task: All Phase 0 UI-kit tasks are verified and completed (T-0.08d through T-0.08j, T-0.08e).
+Current task: T-1.02 verified and marked done. Ready for T-1.03 (Generated database types).
 Completed:
+  - T-1.01: Docker installed and local Supabase stack initialized and running (npm run db:start).
+  - T-1.02: Initial SQL converted to 6 timestamped migrations in supabase/migrations/ (schema, security, functions, views, reference_data, storage); demo catalogue seeded in supabase/seed.sql without first-admin snippet. db:reset verified cleanly from scratch; 27 governorates, 4 categories, 6 products, 0 delivery fees, and RLS enabled across all 8 tables. npm run verify passes.
   - T-0.08j compact login/register preview verified and marked done.
   - T-0.08e token guard and UI-kit exclusion checks passed and marked done.
   - T-1.01: Explored, but formally blocked due to missing Docker environment on this host (H-08).
@@ -69,7 +71,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: The human owner needs to perform required GitHub/Cloudflare CI setups (T-0.10, T-0.11, T-0.13) and install Docker locally (H-08) to unblock Database Phase 1. Once done, CI jobs can be finished (T-0.06, T-0.09, T-0.12).
+Next action: T-1.02 is complete. Continue with T-1.03 (Generated database types) on branch agent/T-1.03-database-types.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
