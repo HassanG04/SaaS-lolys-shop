@@ -1,14 +1,18 @@
 # Shared project progress
 
-Updated 2026-10-11 (Africa/Cairo). Active: Codex, main integration.
+Updated 2026-10-11 (Africa/Cairo). Codex main integration completed.
 
 ```yaml
-Current task: Owner-authorized integration of the published foundation/UI branches into main through PR 13.
+Current task: Published foundation/UI stack integrated into main; branch protection remains blocked by the GitHub plan.
 Completed:
   - Confirmed all 12 implementation PR heads have passing static, unit, build and roadmap checks and form one cumulative stack ending at bbc77ac.
   - Combined the published stack and README work in an isolated worktree; Anti-Gravity's active checkout and uncommitted Phase 2 work were not changed.
   - Added the supplied Lolys JPEG to the README, preserved byte-for-byte, and restored working local setup and relative specification links.
   - Enabled squash-only merges and automatic merged-branch deletion in GitHub.
+  - Squash-merged PR 13 as f5e36db225676191679e1ffacf67245811314dc5 after all four final PR checks passed.
+  - Confirmed main exactly matches the verified integration tree and all four post-merge main checks pass.
+  - Closed PRs 1-12 as superseded and removed their unchanged remote heads with lease-protected deletion. GitHub automatically removed the PR 13 branch; the remote inventory then contained only main and no open PRs.
+  - Fast-forwarded the inactive local main reference. All other local branches and Anti-Gravity's active checkout were preserved.
 Files changed:
   - README.md
   - docs/design/brand/README.md
@@ -21,12 +25,13 @@ Tests executed:
   - npm ci --ignore-scripts succeeded in the isolated worktree; audit reported zero vulnerabilities.
   - Fresh npm run verify passed with 55 application tests and 97 tooling tests (152 total), token/lint/format/type checks, production build and preview exclusion.
   - Roadmap validation passed with 119 tasks; all 12 source heads are ancestors of the cumulative stack; application and workflow contents are unchanged.
-  - Integration-authored whitespace checks and exact logo hash comparison passed. Final remote PR checks pending.
+  - Integration-authored whitespace checks and exact logo hash comparison passed.
+  - Final PR CI passed at 78b821d (run 38103273443); post-merge main CI passed at f5e36db (run 38103367870).
 Problems found:
   - GitHub refused branch protection with HTTP 403 because this private repository requires GitHub Pro. T-0.10 remains incomplete; do not claim main is protected.
   - Published UI acceptance notes retain outstanding browser evidence; merging does not mark those tasks or production readiness complete.
-  - Main does not yet include Anti-Gravity's newer local database work or its active T-2.01 edits.
-Next action: Verify the combined tree and exact PR head, squash-merge PR 13 under the owner's explicit instruction, then close superseded PRs and remove only their verified redundant remote branches.
+  - Main does not yet include Anti-Gravity's newer local database and Phase 2 work; its checkout had advanced to agent/T-2.02-routing-and-layout during integration.
+Next action: Anti-Gravity continues its active task, then merges origin/main into its branch after committing its work. Owner upgrades the private repository's plan before T-0.10 protection can be completed.
 ```
 
 The owner explicitly authorized branch updates and main merges in this session,

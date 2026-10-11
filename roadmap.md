@@ -1299,6 +1299,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-0.10 | Codex | GitHub protection API returned HTTP 403: this private repository requires GitHub Pro. Squash-only merge and automatic merged-branch cleanup enabled, but required PR/check enforcement and direct-push rejection are not available. Owner account upgrade needed; no paid account or visibility change made. | [#13](https://github.com/HassanG04/lolys/pull/13) |
 
 ### Open questions (agents add rows; the owner answers)
+| 2026-10-11 | T-0.06 | Codex | PR 13 squash-merged as f5e36db after all four final checks passed at 78b821d (run 38103273443). All four post-merge main jobs passed (run 38103367870); main tree exactly matches the tested integration. Closed superseded PRs 1–12 and removed all 13 obsolete remote branches with unchanged-head safeguards; local branches and Anti-Gravity's active Phase 2 checkout retained. Inactive local main fast-forwarded. T-0.10 remains blocked by GitHub Pro requirement. | [#13](https://github.com/HassanG04/lolys/pull/13) |
 
 
 | ID | Question | Task | Needed from | Status |
