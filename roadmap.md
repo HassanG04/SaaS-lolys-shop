@@ -544,7 +544,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** checklist in `docs/runbooks/deploy-db.md`
 
 #### T-1.14: Database runbooks
-`status: todo` `owner: agent` `needs: T-1.02` `size: S`
+`status: done` `owner: agent` `needs: T-1.02` `size: S`
 - **Do:** Write `docs/runbooks/local-dev.md` (Docker, start and stop, test users, where local emails appear: see `supabase status`), `first-admin.md` (sign up, then the owner-run SQL update from `05_seed.sql`) and `delivery-fees.md` (insert examples; no row means not available).
 - **Done when:** a new developer can follow them from a clean machine.
 - **Verify:** manual review
@@ -1300,6 +1300,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-1.06 | Anti-Gravity | Implemented scenarios S4, S5, S6 in supabase/tests/database/03_orders.test.sql (43 assertions) and S10, S11 in 04_cancel_restock.test.sql (22 assertions). Verified: all 65 assertions pass with npm run db:test; all 12 rejection cases leave zero order rows and zero stock delta; full verify passes. | local only |
 | 2026-10-11 | T-1.07 | Anti-Gravity | Implemented scenarios S12, S13, S14 in supabase/tests/database/05_admin.test.sql (26 assertions) and S16 in 06_privileges.test.sql (38 assertions). Verified: all 64 assertions pass with npm run db:test (177 total db tests across 7 test files); npm run verify passes. | local only |
 | 2026-10-11 | T-1.08 | Anti-Gravity | Implemented scenario S7 in supabase/tests/concurrency.sh and cross-platform launcher scripts/run-concurrency.mjs. Verified: session B waits for session A to finish and commit 3s transaction, session B fails with out-of-stock error, stock is 0, sold is 2, and exactly 1 order is created; npm run db:test:concurrency and npm run verify pass. | local only |
+| 2026-10-11 | T-1.14 | Anti-Gravity | Authored database runbooks docs/runbooks/local-dev.md (Docker, endpoints, Inbucket local mail, test users), docs/runbooks/first-admin.md (owner SQL promotion procedure, security restrictions), and docs/runbooks/delivery-fees.md (fail-safe fee configuration, nationwide post vs. representative). Verified with manual review and npm run verify. | local only |
 
 ### Open questions (agents add rows; the owner answers)
 
