@@ -135,7 +135,10 @@
     "settings": "Settings",
     "audit": "Audit Log",
     "analytics": "Analytics",
-    "forecast": "Forecast"
+    "forecast": "Forecast",
+    "backToStore": "Back to store",
+    "sidebarToggle": "Admin menu",
+    "mfaBadge": "2FA active"
   },
   "empty": {
     "search": "No results found. Try another word."

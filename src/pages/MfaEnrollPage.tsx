@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Input } from '../components/ui/Input'
@@ -12,6 +12,8 @@ import type { AuthErrorCode, MfaEnrollResult } from '../features/auth/types'
 export default function MfaEnrollPage() {
   const { enrollTotp, challengeAndVerify } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isAdminMfa = location.pathname.startsWith('/admin')
 
   const [enrollData, setEnrollData] = useState<MfaEnrollResult | null>(null)
   const [loadingEnroll, setLoadingEnroll] = useState(true)
@@ -75,6 +77,7 @@ export default function MfaEnrollPage() {
           </p>
         </div>
 
+        {isAdminMfa && <AuthAlert code="ADM-002" className="mb-6" />}
         {errorCode && <AuthAlert code={errorCode} className="mb-6" />}
 
         {loadingEnroll ? (

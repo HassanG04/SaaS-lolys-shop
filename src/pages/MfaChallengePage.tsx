@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Input } from '../components/ui/Input'
@@ -10,7 +10,9 @@ import type { AuthErrorCode } from '../features/auth/types'
 export default function MfaChallengePage() {
   const { factors, challengeAndVerify } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
+  const isAdminMfa = location.pathname.startsWith('/admin')
 
   const [code, setCode] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -58,6 +60,7 @@ export default function MfaChallengePage() {
           </p>
         </div>
 
+        {isAdminMfa && <AuthAlert code="ADM-002" className="mb-4" />}
         {errorCode && <AuthAlert code={errorCode} className="mb-6" />}
 
         <form onSubmit={handleSubmit} className="space-y-6">

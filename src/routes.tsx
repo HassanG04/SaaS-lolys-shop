@@ -3,6 +3,7 @@ import type { RouteObject } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { PearlLoader } from './components/ui/PearlLoader'
 import { RequireAdmin, RequireAuth } from './features/auth/guards'
+import { adminChunkLoader } from './features/admin'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const CategoryPage = lazy(() => import('./pages/CategoryPage'))
@@ -16,6 +17,7 @@ const CheckoutPage = lazy(() => import('./pages/CheckoutPage'))
 const PayOrderPage = lazy(() => import('./pages/PayOrderPage'))
 const AccountOrdersPage = lazy(() => import('./pages/AccountOrdersPage'))
 const AccountSecurityPage = lazy(() => import('./pages/AccountSecurityPage'))
+const AdminShell = lazy(() => adminChunkLoader())
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
 const TermsPage = lazy(() => import('./pages/TermsPage'))
@@ -196,20 +198,20 @@ export const routes: RouteObject[] = [
         element: (
           <RequireAdmin>
             <Suspended>
-              <AdminPage />
+              <AdminShell />
             </Suspended>
           </RequireAdmin>
         ),
-      },
-      {
-        path: 'admin/*',
-        element: (
-          <RequireAdmin>
-            <Suspended>
-              <AdminPage />
-            </Suspended>
-          </RequireAdmin>
-        ),
+        children: [
+          {
+            index: true,
+            element: <AdminPage />,
+          },
+          {
+            path: '*',
+            element: <AdminPage />,
+          },
+        ],
       },
       {
         path: 'about',

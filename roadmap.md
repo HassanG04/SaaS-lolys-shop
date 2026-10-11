@@ -750,7 +750,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 5: Admin
 
 #### T-5.01: Admin shell
-`status: todo` `owner: agent` `needs: T-2.06, T-2.07` `size: M`
+`status: done` `owner: agent` `needs: T-2.06, T-2.07` `size: M`
 - **Do:** Lazy-loaded `/admin/*` chunk, sidebar rail with Arabic labels, `RequireAdmin` requiring an `aal2` session, the idle timeout from T-2.07, a 403 view (AUTH-011) for customers and the MFA-required view (ADM-002) for an admin at `aal1`, responsive RTL layout.
 - **Done when:** a customer opening `/admin` sees the 403 view and the admin chunk is not downloaded; an admin at `aal1` is sent to MFA.
 - **Verify:** `npm run test:unit`
@@ -1311,6 +1311,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-2.09 | Anti-Gravity | Implemented useStepUp() hook and StepUpDialog with in-memory 5-minute confirmation, challenge and verify, and ADM-003 prompt. Unit tests in stepUp.test.tsx verify in-memory expiry with fake timers and prove confirmation is never written to storage. Full verify passes (118 app + 101 tooling tests). | local only |
 | 2026-10-11 | T-3.08 | Anti-Gravity | Implemented SEO basics: useSeo() hook, useRouteSeo() per-route title/meta hook wired in Layout, bilingual route dictionary in ar.json and en.json, Open Graph and Twitter card meta tags, public/favicon.svg (cropped bow), public/site.webmanifest, and public/robots.txt with crawler boundaries. Verified with 144 app tests + 105 tooling tests (249 total); npm run verify passes. | local only |
 | 2026-10-11 | T-4.01 | Anti-Gravity | Implemented delivery options API and hooks in src/features/delivery/ (getGovernorates with Arabic names first, getDeliveryFees returning empty list when no rows configured, useGovernorates, useDeliveryFees). Unit tests in delivery.test.tsx verify empty list behavior, labels, Arabic sorting, and hook lifecycles. Full verify passes (155 app + 105 tooling tests = 260 tests). | local only |
+| 2026-10-11 | T-5.01 | Anti-Gravity | Implemented Admin shell and access control in src/features/admin/ (AdminShell, AdminSidebar rail with 8 Arabic links, AdminHeader, lazy chunk loader, responsive mobile drawer, AAL2 badge, store return link). Customer receives 403 view (AUTH-011) without downloading admin chunk; admin at aal1 is sent to MFA with ADM-002 prompt without downloading admin chunk; admin at aal2 loads AdminShell. Full verify passes (163 app + 105 tooling tests = 268 tests). | local only |
 
 ### Open questions (agents add rows; the owner answers)
 
