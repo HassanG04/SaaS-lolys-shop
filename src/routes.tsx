@@ -2,12 +2,16 @@ import { lazy, Suspense, type ReactNode } from 'react'
 import type { RouteObject } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { PearlLoader } from './components/ui/PearlLoader'
+import { RequireAdmin, RequireAuth } from './features/auth/guards'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const CategoryPage = lazy(() => import('./pages/CategoryPage'))
 const ProductPage = lazy(() => import('./pages/ProductPage'))
 const CartPage = lazy(() => import('./pages/CartPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
+const RegisterPage = lazy(() => import('./pages/RegisterPage'))
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
+const ResendConfirmationPage = lazy(() => import('./pages/ResendConfirmationPage'))
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'))
 const PayOrderPage = lazy(() => import('./pages/PayOrderPage'))
 const AccountOrdersPage = lazy(() => import('./pages/AccountOrdersPage'))
@@ -86,6 +90,30 @@ export const routes: RouteObject[] = [
         ),
       },
       {
+        path: 'register',
+        element: (
+          <Suspended>
+            <RegisterPage />
+          </Suspended>
+        ),
+      },
+      {
+        path: 'reset-password',
+        element: (
+          <Suspended>
+            <ResetPasswordPage />
+          </Suspended>
+        ),
+      },
+      {
+        path: 'resend-confirmation',
+        element: (
+          <Suspended>
+            <ResendConfirmationPage />
+          </Suspended>
+        ),
+      },
+      {
         path: 'checkout',
         element: (
           <Suspended>
@@ -104,25 +132,41 @@ export const routes: RouteObject[] = [
       {
         path: 'account/orders',
         element: (
-          <Suspended>
-            <AccountOrdersPage />
-          </Suspended>
+          <RequireAuth>
+            <Suspended>
+              <AccountOrdersPage />
+            </Suspended>
+          </RequireAuth>
         ),
       },
       {
         path: 'account/security',
         element: (
-          <Suspended>
-            <AccountSecurityPage />
-          </Suspended>
+          <RequireAuth>
+            <Suspended>
+              <AccountSecurityPage />
+            </Suspended>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'admin',
+        element: (
+          <RequireAdmin>
+            <Suspended>
+              <AdminPage />
+            </Suspended>
+          </RequireAdmin>
         ),
       },
       {
         path: 'admin/*',
         element: (
-          <Suspended>
-            <AdminPage />
-          </Suspended>
+          <RequireAdmin>
+            <Suspended>
+              <AdminPage />
+            </Suspended>
+          </RequireAdmin>
         ),
       },
       {

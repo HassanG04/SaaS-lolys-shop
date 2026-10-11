@@ -44,9 +44,9 @@ test('navigates to routes and renders placeholders', async () => {
   expect(await screen.findByRole('heading', { name: 'سلة التسوق' })).toBeInTheDocument()
   unmount3()
 
-  // Account orders route
-  const { unmount: unmount4 } = render(<App initialEntries={['/account/orders']} />)
-  expect(await screen.findByRole('heading', { name: 'طلباتي' })).toBeInTheDocument()
+  // Terms route
+  const { unmount: unmount4 } = render(<App initialEntries={['/terms']} />)
+  expect(await screen.findByRole('heading', { name: 'الشروط والأحكام' })).toBeInTheDocument()
   unmount4()
 
   // 404 route

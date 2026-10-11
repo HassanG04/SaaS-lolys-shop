@@ -13,8 +13,33 @@ export function createSupabaseClient(
   anonKey: string,
   options?: CreateSupabaseClientOptions,
 ): SupabaseClient<Database> {
+  const safeStorage = {
+    getItem: (key: string): string | null => {
+      try {
+        return typeof localStorage !== 'undefined' ? localStorage.getItem(key) : null
+      } catch {
+        return null
+      }
+    },
+    setItem: (key: string, value: string): void => {
+      try {
+        if (typeof localStorage !== 'undefined') localStorage.setItem(key, value)
+      } catch {
+        // storage disabled or blocked
+      }
+    },
+    removeItem: (key: string): void => {
+      try {
+        if (typeof localStorage !== 'undefined') localStorage.removeItem(key)
+      } catch {
+        // storage disabled or blocked
+      }
+    },
+  }
+
   return createClient<Database>(url, anonKey, {
     auth: {
+      storage: safeStorage,
       persistSession: options?.persistSession ?? true,
       autoRefreshToken: options?.autoRefreshToken ?? true,
       ...(options?.storageKey ? { storageKey: options.storageKey } : {}),

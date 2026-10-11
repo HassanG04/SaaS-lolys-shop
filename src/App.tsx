@@ -1,5 +1,6 @@
 import { RouterProvider, createBrowserRouter, createMemoryRouter } from 'react-router-dom'
 import { ThemeProvider } from './components/ui/ThemeProvider'
+import { AuthProvider } from './features/auth/AuthProvider'
 import { LanguageProvider } from './i18n/LanguageProvider'
 import { validateEnv, type EnvValidationResult } from './lib/env'
 import { EnvErrorScreen } from './components/EnvErrorScreen'
@@ -52,7 +53,9 @@ export default function App({
   return (
     <LanguageProvider>
       <ThemeProvider>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </ThemeProvider>
     </LanguageProvider>
   )
