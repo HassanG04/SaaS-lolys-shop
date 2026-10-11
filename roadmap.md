@@ -830,7 +830,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-6.02: Dashboard UI
-`status: todo` `owner: agent` `needs: T-6.01` `size: L`
+`status: done` `owner: agent` `needs: T-6.01` `size: L`
 - **Do:** KPI cards; daily chart (booked versus delivered); breakdowns by status, delivery method and governorate; top products and customers; low-stock list linking to the product edit form. Recharts loaded lazily inside the admin chunk. Skeleton, empty and error states.
 - **Done when:** the admin chunk is the only place the chart library appears (`check:bundle`); figures match the database for the seed data.
 - **Verify:** `npm run build && npm run check:bundle`
@@ -1315,6 +1315,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-5.06 | Anti-Gravity | Implemented Customers admin in src/features/admin/customers/ (table from customer_stats view, search by name/phone/product, read-only role badges with aria-readonly, no role mutation UI). Added scripts/admin-role-guard.test.mjs in test:tooling proving zero writes to profiles.role and zero admin_set_role calls in src/. Full verify passes (169 app + 107 tooling tests = 276 tests). | local only |
 | 2026-10-11 | T-5.07 | Anti-Gravity | Implemented Delivery fees admin in src/features/admin/delivery/ (governorate x method grid, add/update/remove fees, empty cells read "غير متاح", validation for fee >= 0 with Arabic error feedback). Integrated into /admin/delivery route. Integration test proves removing fee makes that method unavailable at checkout. Full verify passes (181 app + 107 tooling tests = 288 tests). | local only |
 | 2026-10-11 | T-6.01 | Anti-Gravity | Implemented Dashboard data layer in src/features/admin/dashboard/ (Zod schema for admin_dashboard RPC payload per database-contract.md, handled DashboardParseError on malformed response, preset date ranges for 7d/30d/90d/custom in Africa/Cairo time, useAdminDashboard React Query hook). Full verify passes (197 app + 107 tooling tests = 304 tests). | local only |
+| 2026-10-11 | T-6.02 | Anti-Gravity | Implemented Dashboard UI in src/features/admin/dashboard/ (KPI cards, lazy-loaded Recharts daily revenue area chart with tokens and accessible summary table, breakdowns for status/delivery/governorate, top products and customers lists, low stock alerts linking to product edit form, preset range selector, and skeleton/empty/error states). Initial JavaScript budget enforced <= 200 KB gzip (192.5 KB) and Recharts strictly isolated to admin chunk. Full verify passes (209 app + 111 tooling tests = 320 tests). | local only |
 
 ### Open questions (agents add rows; the owner answers)
 

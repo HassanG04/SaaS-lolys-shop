@@ -37,6 +37,7 @@ Use Node 24.21.0 LTS (.nvmrc), npm 11.19.0 from that official runtime, exact dir
 | @tanstack/react-query       | 5.104.1       |
 | i18next                     | 26.4.3        |
 | react-i18next               | 17.0.16       |
+| recharts                    | 3.10.1        |
 
 | tailwindcss | 4.3.3 |
 | typescript | 6.0.3 |
@@ -50,8 +51,8 @@ The owner approved TypeScript 6 and ESLint 9 (OD-001) to satisfy the required pl
 ## Planned stack, not yet installed
 
 Tailwind v4, Cairo and Aref Ruqaa self-hosted fonts are installed in T-0.07.
-React Router, TanStack Query, React Hook Form, Zod, i18next/react-i18next and Supabase
-remain planned for Phase 2; Recharts only in the admin bundle (T-6.02);
+React Router, TanStack Query, Zod, i18next/react-i18next and Supabase
+are installed in Phase 2; Recharts in admin bundle (T-6.02);
 Playwright/axe and local pgTAP for database/E2E tasks; Python 3.12 and the pinned
 analytics libraries for Phase 9. Record real installed versions as each task
 installs them. Do not invent future versions.

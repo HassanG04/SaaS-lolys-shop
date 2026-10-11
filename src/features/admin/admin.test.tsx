@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabase'
 import * as authApi from '../auth/api'
 import { getAuthMessage } from '../auth/authErrors'
 import type { MfaFactor } from '../auth/types'
-import * as loader from './loader'
+import * as loader from '../../lib/adminLoader'
 
 describe('Admin shell and access control (T-5.01)', () => {
   beforeEach(() => {

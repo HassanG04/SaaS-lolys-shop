@@ -1,10 +1,10 @@
 import { lazy, Suspense, type ReactNode } from 'react'
 import type { RouteObject } from 'react-router-dom'
-import { Layout } from './components/layout/Layout'
 import { PearlLoader } from './components/ui/PearlLoader'
 import { RequireAdmin, RequireAuth } from './features/auth/guards'
-import { adminChunkLoader } from './features/admin'
+import { adminChunkLoader } from './lib/adminLoader'
 
+import { Layout } from './components/layout/Layout'
 const HomePage = lazy(() => import('./pages/HomePage'))
 const CategoryPage = lazy(() => import('./pages/CategoryPage'))
 const ProductPage = lazy(() => import('./pages/ProductPage'))
@@ -207,7 +207,11 @@ export const routes: RouteObject[] = [
         children: [
           {
             index: true,
-            element: <AdminPage />,
+            element: (
+              <Suspended>
+                <AdminPage />
+              </Suspended>
+            ),
           },
           {
             path: 'customers',
@@ -227,7 +231,11 @@ export const routes: RouteObject[] = [
           },
           {
             path: '*',
-            element: <AdminPage />,
+            element: (
+              <Suspended>
+                <AdminPage />
+              </Suspended>
+            ),
           },
         ],
       },

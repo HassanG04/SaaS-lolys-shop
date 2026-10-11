@@ -27,7 +27,7 @@
     "db:types": "supabase gen types typescript --local > src/types/database.types.ts",
     "db:test:concurrency": "node scripts/run-concurrency.mjs",
     "check:secrets": "node scripts/pending.mjs check:secrets",
-    "check:bundle": "node scripts/pending.mjs check:bundle",
+    "check:bundle": "node scripts/check-bundle.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "check:migrations": "node scripts/pending.mjs check:migrations",
     "check:sql": "node scripts/pending.mjs check:sql",
@@ -44,6 +44,7 @@
     "react-dom": "19.3.0",
     "react-i18next": "17.0.16",
     "react-router-dom": "7.18.4",
+    "recharts": "3.10.1",
     "zod": "4.6.5"
   },
   "devDependencies": {

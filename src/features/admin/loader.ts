@@ -1,1 +1,1 @@
-export const adminChunkLoader = () => import('./AdminShell')
+export { adminChunkLoader } from '../../lib/adminLoader'
