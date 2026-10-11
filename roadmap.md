@@ -912,7 +912,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 8: Launch
 
 #### T-8.01: Auth email and hardening runbooks
-`status: todo` `owner: agent` `needs: T-2.04` `size: M`
+`status: done` `owner: agent` `needs: T-2.04` `size: M`
 - **Do:** Write `docs/runbooks/auth-email.md`: why custom SMTP is required (the built-in sender is limited to 2 emails per hour; with custom SMTP the default limit is 30 new users per hour, see Supabase's production checklist), the settings to fill in, redirect URLs for staging and production, and a test procedure. Write `docs/runbooks/auth-hardening.md`, a tick-list for the Supabase Auth settings: Turnstile on, email confirmation on, secure email change on, minimum password length 10, anonymous sign-ins off, TOTP MFA enabled, exact redirect URLs only, unused providers off, leaked-password protection if the plan allows (verify). Check that the app shows clear "check your email", "resend" and "link expired" states.
 - **Done when:** both runbooks are complete and the UI states have tests.
 - **Verify:** `npm run test:unit`
@@ -1317,6 +1317,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-6.01 | Anti-Gravity | Implemented Dashboard data layer in src/features/admin/dashboard/ (Zod schema for admin_dashboard RPC payload per database-contract.md, handled DashboardParseError on malformed response, preset date ranges for 7d/30d/90d/custom in Africa/Cairo time, useAdminDashboard React Query hook). Full verify passes (197 app + 107 tooling tests = 304 tests). | local only |
 | 2026-10-11 | T-6.02 | Anti-Gravity | Implemented Dashboard UI in src/features/admin/dashboard/ (KPI cards, lazy-loaded Recharts daily revenue area chart with tokens and accessible summary table, breakdowns for status/delivery/governorate, top products and customers lists, low stock alerts linking to product edit form, preset range selector, and skeleton/empty/error states). Initial JavaScript budget enforced <= 200 KB gzip (192.5 KB) and Recharts strictly isolated to admin chunk. Full verify passes (209 app + 111 tooling tests = 320 tests). | local only |
 | 2026-10-11 | T-6.03 | Anti-Gravity | Implemented Chart accessibility and export in src/features/admin/dashboard/ (text summary card and fallback data table for daily chart, aria-labels and table column scopes, ui-print-card and print styles, print report button, UTF-8 BOM CSV export helper formatDailySeriesCsv & downloadDailySeriesCsv). Axe accessibility audit reports 0 serious and 0 critical violations across dashboard in both Arabic and English. Full verify passes (220 app + 111 tooling tests = 331 tests). Initial bundle budget enforced <= 200 KB gzip (192.7 KB). | local only |
+| 2026-10-11 | T-8.01 | Anti-Gravity | Authored auth email and hardening runbooks (docs/runbooks/auth-email.md explaining custom SMTP limits, configuration, exact non-wildcard redirect URLs, test procedure; docs/runbooks/auth-hardening.md 10-point checklist covering Turnstile, confirmations, 10-char password, TOTP MFA, HIBP, timeouts). Implemented clear "check your email", "resend", and "link expired" (AUTH-009) UI states across Register, Login, Reset Password, and Resend Confirmation pages. Full verify passes (225 app + 111 tooling tests = 336 tests). Initial bundle budget enforced <= 200 KB gzip (192.8 KB). | local only |
+
 
 
 ### Open questions (agents add rows; the owner answers)

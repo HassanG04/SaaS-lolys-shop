@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { AuthAlert } from '../features/auth/authErrors'
+import { AuthAlert, mapAuthError } from '../features/auth/authErrors'
 import { useAuth } from '../features/auth/AuthProvider'
 import { Turnstile } from '../features/auth/Turnstile'
 import type { AuthErrorCode } from '../features/auth/types'
@@ -13,23 +13,43 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [captchaToken, setCaptchaToken] = useState<string | undefined>()
-  const [errorCode, setErrorCode] = useState<AuthErrorCode | null>(null)
+  const [formErrorCode, setFormErrorCode] = useState<AuthErrorCode | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const params = new URLSearchParams(location.search)
   const redirectTo = params.get('redirect') || '/'
 
+  // Detect expired or invalid link errors returned via URL query or hash from Supabase
+  const urlErrorCode = useMemo(() => {
+    const searchParams = new URLSearchParams(location.search)
+    const rawHash = location.hash.startsWith('#') ? location.hash.slice(1) : location.hash
+    const hashParams = new URLSearchParams(rawHash)
+
+    const errorParam = searchParams.get('error') || hashParams.get('error')
+    const errorCodeParam = searchParams.get('error_code') || hashParams.get('error_code')
+    const errorDescParam =
+      searchParams.get('error_description') || hashParams.get('error_description')
+
+    if (errorParam || errorCodeParam || errorDescParam) {
+      const combined = `${errorCodeParam || ''} ${errorDescParam || ''} ${errorParam || ''}`
+      return mapAuthError(combined)
+    }
+    return null
+  }, [location.search, location.hash])
+
+  const errorCode = formErrorCode || urlErrorCode
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    setErrorCode(null)
+    setFormErrorCode(null)
 
     if (!email.trim() || !password) {
-      setErrorCode('AUTH-001')
+      setFormErrorCode('AUTH-001')
       return
     }
 
     if (password.length < 10) {
-      setErrorCode('AUTH-008')
+      setFormErrorCode('AUTH-008')
       return
     }
 
@@ -42,7 +62,7 @@ export default function LoginPage() {
       })
 
       if (!result.success) {
-        setErrorCode(result.code || 'AUTH-001')
+        setFormErrorCode(result.code || 'AUTH-001')
       } else {
         navigate(redirectTo, { replace: true })
       }
@@ -61,7 +81,33 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {errorCode && <AuthAlert code={errorCode} />}
+        {errorCode && (
+          <div className="space-y-3">
+            <AuthAlert code={errorCode} />
+            {errorCode === 'AUTH-009' && (
+              <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface-tint) p-3 text-small text-(--color-text) space-y-2">
+                <p className="font-semibold text-(--color-brand)">
+                  انتهت صلاحية هذا الرابط. يمكنك طلب رابط جديد:
+                </p>
+                <div className="flex flex-wrap gap-2 text-caption">
+                  <Link
+                    to="/resend-confirmation"
+                    className="font-semibold text-(--color-brand) hover:underline"
+                  >
+                    إعادة إرسال رابط تفعيل الحساب &larr;
+                  </Link>
+                  <span className="text-(--color-text-muted)">•</span>
+                  <Link
+                    to="/reset-password"
+                    className="font-semibold text-(--color-brand) hover:underline"
+                  >
+                    طلب رابط جديد لاستعادة كلمة المرور &larr;
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="space-y-1">

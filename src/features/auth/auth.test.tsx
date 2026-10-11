@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { AuthApiError, type Session, type User } from '@supabase/supabase-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../../App'
@@ -197,5 +198,109 @@ describe('Authentication unit tests (T-2.04)', () => {
     render(<App initialEntries={['/admin']} />)
 
     expect(await screen.findByText(getAuthMessage('AUTH-011'))).toBeInTheDocument()
+  })
+
+  describe('Email verification and link states (T-8.01)', () => {
+    it('displays clear "check your email" state with resend link after registration', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(supabase.auth, 'signUp').mockResolvedValue({
+        data: { user: null, session: null },
+        error: null,
+      })
+
+      render(<App initialEntries={['/register']} />)
+
+      const nameInput = await screen.findByLabelText('الاسم الكامل')
+      const emailInput = screen.getByLabelText('البريد الإلكتروني')
+      const passwordInput = screen.getByLabelText('كلمة المرور')
+      const submitBtn = screen.getByRole('button', { name: 'إنشاء حساب' })
+
+      await user.type(nameInput, 'فاطمة أحمد')
+      await user.type(emailInput, 'fatima@example.com')
+      await user.type(passwordInput, 'SecurePass1234')
+      await user.click(submitBtn)
+
+      expect(
+        await screen.findByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
+      ).toBeInTheDocument()
+      expect(screen.getByText(/إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة/)).toBeInTheDocument()
+      expect(screen.getByText(/صندوق الوارد ومجلد الرسائل غير المرغوب فيها/)).toBeInTheDocument()
+
+      const resendLink = screen.getByRole('link', { name: 'لم تصلك الرسالة؟ أعد الإرسال' })
+      expect(resendLink).toBeInTheDocument()
+      expect(resendLink).toHaveAttribute('href', '/resend-confirmation')
+    })
+
+    it('displays clear "check your email" state after password reset request', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(supabase.auth, 'resetPasswordForEmail').mockResolvedValue({
+        data: {},
+        error: null,
+      })
+
+      render(<App initialEntries={['/reset-password']} />)
+
+      const emailInput = await screen.findByLabelText('البريد الإلكتروني')
+      const submitBtn = screen.getByRole('button', { name: 'إرسال رابط إعادة التعيين' })
+
+      await user.type(emailInput, 'user@example.com')
+      await user.click(submitBtn)
+
+      expect(
+        await screen.findByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
+      ).toBeInTheDocument()
+      expect(screen.getByText(/رابط إعادة التعيين خلال دقائق/)).toBeInTheDocument()
+    })
+
+    it('displays clear "resend" state on /resend-confirmation with active submission', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(supabase.auth, 'resend').mockResolvedValue({
+        data: { user: null, session: null },
+        error: null,
+      })
+
+      render(<App initialEntries={['/resend-confirmation']} />)
+
+      expect(
+        await screen.findByRole('heading', { name: 'إعادة إرسال رسالة التفعيل' }),
+      ).toBeInTheDocument()
+      const emailInput = screen.getByLabelText('البريد الإلكتروني')
+      const submitBtn = screen.getByRole('button', { name: 'إرسال رابط التفعيل' })
+
+      await user.type(emailInput, 'unconfirmed@example.com')
+      await user.click(submitBtn)
+
+      expect(
+        await screen.findByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
+      ).toBeInTheDocument()
+    })
+
+    it('displays clear "link expired" state with recovery options when visiting login with expired link parameters', async () => {
+      render(
+        <App
+          initialEntries={[
+            '/login?error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired',
+          ]}
+        />,
+      )
+
+      expect(await screen.findByText(getAuthMessage('AUTH-009'))).toBeInTheDocument()
+      expect(screen.getByText('AUTH-009')).toBeInTheDocument()
+      expect(screen.getByText(/انتهت صلاحية هذا الرابط/)).toBeInTheDocument()
+
+      const resendLink = screen.getByRole('link', { name: /إعادة إرسال رابط تفعيل الحساب/ })
+      expect(resendLink).toHaveAttribute('href', '/resend-confirmation')
+
+      const resetLink = screen.getByRole('link', { name: /طلب رابط جديد لاستعادة كلمة المرور/ })
+      expect(resetLink).toHaveAttribute('href', '/reset-password')
+    })
+
+    it('displays clear "link expired" state when visiting reset-password with expired link parameters', async () => {
+      render(<App initialEntries={['/reset-password?error_code=otp_expired']} />)
+
+      expect(await screen.findByText(getAuthMessage('AUTH-009'))).toBeInTheDocument()
+      expect(screen.getByText('AUTH-009')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'إرسال رابط إعادة التعيين' })).toBeInTheDocument()
+    })
   })
 })

@@ -3,8 +3,9 @@
 Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-2.01.
 
 ```yaml
-Current task: T-6.03 verified and marked done. Ready for next roadmap task.
+Current task: T-8.01 verified and marked done. Ready for next roadmap task.
 Completed:
+  - T-8.01: Authored auth email and hardening runbooks (docs/runbooks/auth-email.md explaining custom SMTP limits, configuration, exact non-wildcard redirect URLs, test procedure; docs/runbooks/auth-hardening.md 10-point checklist covering Turnstile, confirmations, 10-char password, TOTP MFA, HIBP, timeouts). Implemented clear "check your email", "resend", and "link expired" (AUTH-009) UI states across Register, Login, Reset Password, and Resend Confirmation pages. Full verify passes (225 app + 111 tooling tests = 336 tests). Initial bundle budget enforced <= 200 KB gzip (192.8 KB).
   - T-6.03: Implemented Chart accessibility and export in src/features/admin/dashboard/ (text summary card and fallback data table for daily chart, aria-labels and table column scopes, ui-print-card and print styles, print report button, UTF-8 BOM CSV export helper formatDailySeriesCsv & downloadDailySeriesCsv). Axe accessibility audit reports 0 serious and 0 critical violations across dashboard in both Arabic and English. Full verify passes (220 app + 111 tooling tests = 331 tests). Initial bundle budget enforced <= 200 KB gzip (192.7 KB).
   - T-6.02: Implemented Dashboard UI in src/features/admin/dashboard/ (KPI cards, lazy-loaded Recharts daily revenue area chart with tokens and accessible summary table, breakdowns for status/delivery/governorate, top products and customers lists, low stock alerts linking to product edit form, preset range selector, and skeleton/empty/error states). Initial JavaScript budget enforced <= 200 KB gzip (192.5 KB) and Recharts strictly isolated to admin chunk. Full verify passes (209 app + 111 tooling tests = 320 tests).
   - T-6.01: Implemented Dashboard data layer in src/features/admin/dashboard/ (Zod schema for admin_dashboard RPC payload per database-contract.md, handled DashboardParseError on malformed response, preset date ranges for 7d/30d/90d/custom in Africa/Cairo time, useAdminDashboard React Query hook). Full verify passes (197 app + 107 tooling tests = 304 tests).
@@ -60,6 +61,8 @@ Completed:
   - Dialog handover e5d498b also passes all four jobs in run 38071760275.
   - Owner resolved OD-002: pearls bounce only while loading, static for reduced motion; design spec updated.
 Files changed:
+  - T-8.01: docs/runbooks/auth-email.md, docs/runbooks/auth-hardening.md, src/features/auth/authErrors.tsx, src/pages/LoginPage.tsx, src/pages/RegisterPage.tsx, src/pages/ResendConfirmationPage.tsx, src/pages/ResetPasswordPage.tsx, src/features/auth/auth.test.tsx, roadmap.md.
+  - T-6.03: src/features/admin/dashboard/DashboardChart.tsx, DashboardPage.tsx, exportCsv.ts, dashboardA11y.test.tsx, src/styles/ui.css, roadmap.md.
   - T-2.03: src/i18n/i18n.ts, LanguageProvider.tsx, ar.json, en.json, translations.ts, language.test.tsx, src/lib/format.ts, format.test.ts, src/components/ui/Ltr.tsx, scripts/check-i18n.mjs, scripts/check-i18n.test.mjs, package.json, docs/adr/0001-stack.md, roadmap.md.
   - T-2.02: Layout shell, Navbar, Footer, 16 route placeholders, routes.tsx, App.tsx, App.test.tsx, test-setup.ts, language.test.tsx, check-tokens.mjs, public/brand/ assets, docs/adr/0001-stack.md.
   - Branch agent/T-0.08d-labels-ornaments is based on dialog PR 7 at e5d498b.
@@ -71,6 +74,8 @@ Files changed:
   - Text fields add Field, Input, Select, Textarea, SearchInput, forms.test.tsx and FormExamples; update kit, CSS, Arabic copy and continuation/PR/roadmap docs.
   - Choice controls add Choice, Checkbox, Radio, choices.test.tsx and ChoiceExamples; update form preview, CSS, Arabic copy and continuation/PR/roadmap docs.
 Tests executed:
+  - T-8.01: npm run verify passes with 225 app + 111 tooling tests (336 total); check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (including email verification, expired token link states, resend flows), production build and preview exclusion all pass. Initial JS bundle size is 192.8 KB gzip <= 200 KB.
+  - T-6.03: npm run verify passes with 220 app + 111 tooling tests (331 total); axe accessibility audit passes with 0 serious and 0 critical violations across dashboard in both Arabic and English. Initial JS bundle size is 192.7 KB gzip <= 200 KB.
   - T-2.03: npm run verify passes with 79 app + 101 tooling tests (180 total); check:tokens, check:i18n, lint, prettier check, typecheck, production build and preview exclusion all pass.
   - T-2.02: npm run verify passes with 72 app + 97 tooling tests (169 total); token scan, lint, format, typecheck, production build with 16 lazy chunks, preview exclusion pass.
   - Compact form polish: npm run verify passes with 55 app + 97 tooling tests (152 total); token scan, lint, formatting, typecheck, production build and preview exclusion pass.
@@ -98,7 +103,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: T-2.07 is complete. Continue with T-2.09 (Step-up confirmation) on branch agent/T-2.09-step-up-confirmation.
+Next action: T-8.01 is complete. Continue with next runnable task from roadmap.md.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:

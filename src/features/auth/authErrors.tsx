@@ -72,6 +72,18 @@ export function mapAuthError(error: unknown): AuthErrorCode {
     return 'AUTH-008'
   }
 
+  if (
+    message.includes('otp_expired') ||
+    message.includes('token_expired') ||
+    message.includes('link is invalid') ||
+    message.includes('link has expired') ||
+    message.includes('email link is invalid') ||
+    message.includes('token has expired') ||
+    (message.includes('link') && (message.includes('expired') || message.includes('invalid')))
+  ) {
+    return 'AUTH-009'
+  }
+
   // All other sign-in errors map to generic AUTH-001
   return 'AUTH-001'
 }

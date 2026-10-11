@@ -1,24 +1,45 @@
-import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
-import { AuthAlert } from '../features/auth/authErrors'
+import { useMemo, useState, type FormEvent } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { AuthAlert, mapAuthError } from '../features/auth/authErrors'
 import { useAuth } from '../features/auth/AuthProvider'
 import { Turnstile } from '../features/auth/Turnstile'
 import type { AuthErrorCode } from '../features/auth/types'
 
 export default function ResetPasswordPage() {
   const { resetPassword } = useAuth()
+  const location = useLocation()
 
   const [email, setEmail] = useState('')
   const [captchaToken, setCaptchaToken] = useState<string | undefined>()
-  const [statusMessage, setStatusMessage] = useState<AuthErrorCode | null>(null)
+  const [formStatusMessage, setFormStatusMessage] = useState<AuthErrorCode | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Detect expired or invalid reset link from URL params or hash
+  const urlStatusMessage = useMemo(() => {
+    const searchParams = new URLSearchParams(location.search)
+    const rawHash = location.hash.startsWith('#') ? location.hash.slice(1) : location.hash
+    const hashParams = new URLSearchParams(rawHash)
+
+    const errorParam = searchParams.get('error') || hashParams.get('error')
+    const errorCodeParam = searchParams.get('error_code') || hashParams.get('error_code')
+    const errorDescParam =
+      searchParams.get('error_description') || hashParams.get('error_description')
+
+    if (errorParam || errorCodeParam || errorDescParam) {
+      const combined = `${errorCodeParam || ''} ${errorDescParam || ''} ${errorParam || ''}`
+      return mapAuthError(combined)
+    }
+    return null
+  }, [location.search, location.hash])
+
+  const statusMessage = formStatusMessage || urlStatusMessage
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    setStatusMessage(null)
+    setFormStatusMessage(null)
 
     if (!email.trim()) {
-      setStatusMessage('AUTH-001')
+      setFormStatusMessage('AUTH-001')
       return
     }
 
@@ -30,7 +51,7 @@ export default function ResetPasswordPage() {
       })
 
       // Always display neutral outcome AUTH-010
-      setStatusMessage(result.code || 'AUTH-010')
+      setFormStatusMessage(result.code || 'AUTH-010')
     } finally {
       setIsSubmitting(false)
     }
@@ -48,35 +69,74 @@ export default function ResetPasswordPage() {
           </p>
         </div>
 
-        {statusMessage && <AuthAlert code={statusMessage} />}
-
-        {statusMessage !== 'AUTH-010' && (
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div className="space-y-1">
-              <label htmlFor="email-input" className="text-small font-semibold text-(--color-text)">
-                البريد الإلكتروني
-              </label>
-              <input
-                id="email-input"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
-                required
-                className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) px-4 text-small text-(--color-text) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-              />
+        {statusMessage === 'AUTH-010' ? (
+          <div
+            role="status"
+            aria-live="polite"
+            className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface-tint) p-6 text-center space-y-4"
+          >
+            <div className="mx-auto flex size-12 items-center justify-center rounded-(--radius-pill) bg-(--color-brand)/10 text-(--color-brand)">
+              <svg
+                className="size-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
             </div>
+            <div className="space-y-1.5">
+              <h2 className="text-h3 font-bold font-accent text-(--color-brand)">
+                تحقق من بريدك الإلكتروني
+              </h2>
+              <p className="text-small text-(--color-text)">
+                إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة تحتوي على رابط إعادة التعيين
+                خلال دقائق.
+              </p>
+              <p className="text-caption text-(--color-text-muted)">
+                يرجى مراجعة صندوق الوارد ومجلد الرسائل غير المرغوب فيها (Spam).
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {statusMessage && <AuthAlert code={statusMessage} />}
 
-            <Turnstile onVerify={(token) => setCaptchaToken(token)} />
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <div className="space-y-1">
+                <label
+                  htmlFor="email-input"
+                  className="text-small font-semibold text-(--color-text)"
+                >
+                  البريد الإلكتروني
+                </label>
+                <input
+                  id="email-input"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  required
+                  className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) px-4 text-small text-(--color-text) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full h-11 rounded-(--radius-pill) bg-(--color-brand) text-small font-semibold text-(--color-brand-contrast) transition-opacity hover:opacity-90 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-            >
-              {isSubmitting ? 'جارٍ الإرسال...' : 'إرسال رابط إعادة التعيين'}
-            </button>
-          </form>
+              <Turnstile onVerify={(token) => setCaptchaToken(token)} />
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-11 rounded-(--radius-pill) bg-(--color-brand) text-small font-semibold text-(--color-brand-contrast) transition-opacity hover:opacity-90 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+              >
+                {isSubmitting ? 'جارٍ الإرسال...' : 'إرسال رابط إعادة التعيين'}
+              </button>
+            </form>
+          </>
         )}
 
         <div className="text-center text-small text-(--color-text-muted)">
