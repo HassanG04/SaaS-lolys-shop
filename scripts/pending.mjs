@@ -6,7 +6,6 @@ const tasks = {
   'db:test': 'T-1.04',
   'db:types': 'T-1.03',
   'db:test:concurrency': 'T-1.08',
-  'check:bundle': 'T-0.09b',
   'check:i18n': 'T-2.03',
   'check:migrations': 'T-1.09',
   'check:sql': 'T-1.22',

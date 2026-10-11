@@ -59,7 +59,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run build
       - run: npm run check:secrets
-      # T-0.09b adds the initial-route bundle guard.
+      - run: npm run check:bundle
 
   roadmap:
     runs-on: ubuntu-latest

@@ -440,7 +440,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run build && npm run check:secrets && npm run verify`
 
 #### T-0.09b: Initial-route bundle guard
-`status: todo` `owner: agent` `needs: T-0.09` `size: M`
+`status: doing` `owner: agent` `needs: T-0.09` `size: M`
 - **Do:** Complete the repository-guard split: write `scripts/check-bundle.mjs` to enforce a gzip budget for initial-route JS of 200 KB or less, with the admin chunk separate. Wire it into the `build` CI job and preserve the secret guard.
 - **Done when:** a budget breach is shown once then reverted; initial dependencies are counted, lazy admin code is excluded from the initial route, and full verification passes.
 - **Verify:** `npm run build && npm run check:bundle && npm run verify`
@@ -1307,6 +1307,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-0.06 | Codex | PR 13 squash-merged as f5e36db after all four final checks passed at 78b821d (run 38103273443). All four post-merge main jobs passed (run 38103367870); main tree exactly matches the tested integration. Closed superseded PRs 1–12 and removed all 13 obsolete remote branches with unchanged-head safeguards; local branches and Anti-Gravity's active Phase 2 checkout retained. Inactive local main fast-forwarded. T-0.10 remains blocked by GitHub Pro requirement. | [#13](https://github.com/HassanG04/lolys/pull/13) |
 
 | 2026-10-11 | T-0.09 | Codex | Working alongside Anti-Gravity in an isolated worktree. Split original secret/bundle guard scope into T-0.09 and T-0.09b for review size. Replaced inherited fail-open draft with tracked/nested-build scanning, key/JWT rejection even in docs/tests, redacted diagnostics and required-input failures. Five guard tests prove planted-key rejection and safe recovery; full verify passes with 157 tests and production scan; 120-task roadmap validates. All four PR checks pass at 0c4d6d3 (run 38104123639). SEC-15/SEC-16/SEC-24. | [#15](https://github.com/HassanG04/lolys/pull/15) |
+
+| 2026-10-11 | T-0.09b | Codex | Added Vite chunk/module metadata and a 200,000-byte initial-JS gzip budget including all static dependencies once. Eager admin/Recharts code fails even inside shared chunks; lazy code is excluded. Four guard tests cover breach/recovery, attribution, invalid inputs and real eager/lazy builds. Full verify passes (55 app + 106 tooling tests); real build is 69,655 gzip bytes. SEC-15/SEC-16/SEC-24 retained. Task remains doing pending owner workflow review; latest AGENTS instructions prohibit agent merges. | pending PR |
 
 ### Open questions (agents add rows; the owner answers)
 

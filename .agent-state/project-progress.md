@@ -3,14 +3,16 @@
 Updated 2026-10-11 (Africa/Cairo). Codex working alongside Anti-Gravity.
 
 ```yaml
-Current task: T-0.09 verified locally and on GitHub; T-0.09b is the next independent guard task.
+Current task: T-0.09b bundle guard verified locally on agent/T-0.09b-bundle-guard; owner workflow review pending.
 Completed:
-  - Reserved independent repository tooling work while Anti-Gravity handles routing/layout in its active checkout.
-  - Reviewed saved guard drafts and replaced fail-open handling and whole-document exemptions.
-  - Implemented tracked/build scanning, redacted failures, negative fixtures and CI/local verification wiring (SEC-15/SEC-16/SEC-24).
+  - T-0.09 secret-guard PR 15 is ready for review with four passing checks at cdb6836 (run 38134935611).
+  - Added build metadata, transitive initial-JS measurement, lazy-admin separation and fail-closed input validation without new dependencies.
+  - Anti-Gravity owns T-5.01 in the original checkout; only its Codex coordination notice was updated.
 Files changed:
-  - scripts/check-secrets.mjs
-  - scripts/check-secrets.test.mjs
+  - scripts/bundle-graph.ts
+  - scripts/check-bundle.mjs
+  - scripts/check-bundle.test.mjs
+  - vite.config.ts
   - scripts/pending.mjs
   - package.json
   - .github/workflows/ci.yml
@@ -18,14 +20,13 @@ Files changed:
   - .agent-state/project-progress.md
   - .agent-state/repo-guards.md
 Tests executed:
-  - All 5 guard tests pass, including planted fake tracked/build/document secrets, rejection without value disclosure, recovery after removal, environment-file rejection and unavailable-input failures.
-  - npm run verify passes with 55 application tests and 102 tooling tests (157 total), production build and the real tracked/build secret scan.
-  - Roadmap validates 120 tasks; the task split preserves the bundle requirement.
-  - All four PR 15 checks pass at 0c4d6d3 in run 38104123639.
+  - Four bundle tests pass, covering shared/cyclic dependencies, deliberate gzip-budget breach and recovery, disguised eager admin code, missing/malformed inputs, and real Vite eager/lazy builds.
+  - npm run verify passes with 55 app and 106 tooling tests (161 total), lint, formatting, types, build and both repository guards. Initial JS is 69,655/200,000 gzip bytes.
+  - Final PR checks pending; no remote success or owner approval is assumed.
 Problems found:
-  - The inherited draft skipped actual keys in docs/tests and silently ignored missing scan inputs; those behaviors are removed.
-  - Branch protection still requires GitHub Pro; no production or active application edits are part of this task.
-Next action: Finish PR 15 under the owner's merge authorization, then implement T-0.09b independently of Anti-Gravity's product work.
+  - Branch protection still requires GitHub Pro. Latest user-supplied AGENTS instructions prohibit agent merges; PR 15 is left open for owner review.
+  - This branch stacks on PR 15. Preserve Anti-Gravity's newer dependency versions and npm checks when integrating.
+Next action: Publish the stacked T-0.09b PR and confirm its checks. Owner reviews/merges PR 15 before this branch is retargeted to main; reconcile Anti-Gravity's newer npm scripts separately.
 ```
 
 ## Previous session: main integration
