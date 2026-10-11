@@ -484,7 +484,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:types && git diff --exit-code && npm run typecheck`
 
 #### T-1.04: pgTAP harness
-`status: todo` `owner: agent` `needs: T-1.02` `size: M`
+`status: done` `owner: agent` `needs: T-1.02` `size: M`
 - **Do:** Create `supabase/tests/database/`. Vendor the Supabase test helpers (basejump `supabase-test-helpers`: `tests.create_supabase_user`, `tests.authenticate_as`, `tests.clear_authentication`, `tests.rls_enabled`) as `00000-supabase_test_helpers.sql`. Add `01_rls_enabled.test.sql` asserting RLS is on for every `public` table (scenario S17).
 - **Done when:** `supabase test db` passes, and temporarily disabling RLS on one table makes it fail (then revert).
 - **Verify:** `npm run db:test`
@@ -1295,6 +1295,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-1.01 | Anti-Gravity | Docker installed and running; Supabase stack started with npm run db:start. URLs and keys printed. Verified locally. | local only |
 | 2026-10-11 | T-1.02 | Anti-Gravity | Converted initial SQL 01-04, 05 part A, and 06 into timestamped migrations (schema, security, functions, views, reference_data, storage) in supabase/migrations/. Seeded demo catalog (05 part B) into supabase/seed.sql without first-admin snippet. Ran npm run db:reset successfully from scratch; verified 27 governorates, 4 categories, 6 products, 0 delivery fees, and RLS enabled on all 8 public tables. npm run verify passes. | local only |
 | 2026-10-11 | T-1.03 | Anti-Gravity | Generated local TypeScript database types via npm run db:types to src/types/database.types.ts; added src/types/index.ts re-exporting Tables, TablesInsert, TablesUpdate, Enums, CompositeTypes, Constants. Added types.test.ts. Ignored generated database.types.ts in .prettierignore. Verification passed. | local only |
+| 2026-10-11 | T-1.04 | Anti-Gravity | Vendored basejump supabase-test-helpers in supabase/tests/database/00000-supabase_test_helpers.sql; implemented scenario S17 in 01_rls_enabled.test.sql asserting RLS on public schema and all 8 public tables. Verified with npm run db:test; mutation test verified (disabling RLS on categories causes failure, re-enabling passes). Full verify passes. | local only |
 
 ### Open questions (agents add rows; the owner answers)
 
