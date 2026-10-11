@@ -434,7 +434,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.09: Repository secret guard
-`status: doing` `owner: agent` `needs: T-0.06` `size: M`
+`status: done` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Write `scripts/check-secrets.mjs`: scan tracked files and `dist/`; fail on any JWT whose decoded payload has `role: service_role`, on `sb_secret_` keys, and on `service_role` strings outside an allowlist of docs and tests (the public anon key may appear in `dist/`). Wire into the `build` job. Only literal role mentions may be allowlisted; actual keys/JWTs remain forbidden everywhere. The bundle guard is split into T-0.09b to keep each security review near 400 authored lines; no original requirement is removed.
 - **Done when:** planted fake secrets in tracked source and nested build files fail, removal restores success, diagnostics never echo credential values, missing Git/files/build fail closed, and full verification passes.
 - **Verify:** `npm run build && npm run check:secrets && npm run verify`
@@ -1306,8 +1306,9 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-11 | T-0.06 | Codex | PR 13 squash-merged as f5e36db after all four final checks passed at 78b821d (run 38103273443). All four post-merge main jobs passed (run 38103367870); main tree exactly matches the tested integration. Closed superseded PRs 1–12 and removed all 13 obsolete remote branches with unchanged-head safeguards; local branches and Anti-Gravity's active Phase 2 checkout retained. Inactive local main fast-forwarded. T-0.10 remains blocked by GitHub Pro requirement. | [#13](https://github.com/HassanG04/lolys/pull/13) |
 
+| 2026-10-11 | T-0.09 | Codex | Working alongside Anti-Gravity in an isolated worktree. Split original secret/bundle guard scope into T-0.09 and T-0.09b for review size. Replaced inherited fail-open draft with tracked/nested-build scanning, key/JWT rejection even in docs/tests, redacted diagnostics and required-input failures. Five guard tests prove planted-key rejection and safe recovery; full verify passes with 157 tests and production scan; 120-task roadmap validates. All four PR checks pass at 0c4d6d3 (run 38104123639). SEC-15/SEC-16/SEC-24. | [#15](https://github.com/HassanG04/lolys/pull/15) |
+
 ### Open questions (agents add rows; the owner answers)
-| 2026-10-11 | T-0.09 | Codex | Working alongside Anti-Gravity's routing/layout task in an isolated worktree. Split original secret/bundle guard scope into T-0.09 and T-0.09b for review size. Replaced inherited fail-open draft with tracked/nested-build scanning, key/JWT rejection even in docs/tests, redacted diagnostics and required-input failures. Five guard tests prove planted-key rejection and safe recovery; full verify passes with 157 tests and production scan; 120-task roadmap validates. SEC-15/SEC-16/SEC-24; final remote checks pending. | pending |
 
 
 | ID | Question | Task | Needed from | Status |
