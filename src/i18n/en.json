@@ -11,8 +11,9 @@
     "closeDialog": "Close dialog",
     "loading": "Loading"
   },
-  "field": { "name": "Full Name", "notes": "Delivery notes", "governorate": "Governorate" },
-  "search": { "placeholder": "Search for an accessory or mug…" },
+  "brand": {
+    "tagline": "cute things for your style & space"
+  },
   "nav": {
     "store": "Store",
     "browse": "Browse",
@@ -24,6 +25,116 @@
     "openMenu": "Open main menu",
     "closeMenu": "Close menu"
   },
+  "search": {
+    "placeholder": "Search for an accessory or mug…"
+  },
+  "hero": {
+    "title": "Up to {{n}}% off",
+    "subtitle": "Accessories and home touches that add charm to your style and space",
+    "cta": "Shop Offers"
+  },
+  "section": {
+    "categories": "Shop by Category",
+    "bestsellers": "Bestsellers",
+    "all": "All Products",
+    "about": "About Us",
+    "delivery": "Delivery & Payment"
+  },
+  "product": {
+    "add": "Add to Cart",
+    "soldout": "Sold Out",
+    "left": "Only {{n}} left",
+    "discount": "{{n}}% off",
+    "items_zero": "0 items",
+    "items_one": "1 item",
+    "items_two": "2 items",
+    "items_few": "{{count}} items",
+    "items_many": "{{count}} items",
+    "items_other": "{{count}} items"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "subtotal": "Subtotal",
+    "shipping": "Delivery Fee",
+    "total": "Total",
+    "checkout": "Checkout"
+  },
+  "checkout": {
+    "title": "Delivery Information",
+    "delivery": "Delivery Method",
+    "payment": "Payment Method",
+    "submit": "Confirm Order"
+  },
+  "field": {
+    "name": "Full Name",
+    "phone": "Mobile Number",
+    "phone2": "Additional Mobile Number (Optional)",
+    "governorate": "Governorate",
+    "city": "City or District Center",
+    "district": "Neighborhood or Area",
+    "address": "Street & Building Number",
+    "floor": "Floor",
+    "apartment": "Apartment",
+    "landmark": "Nearby Landmark",
+    "notes": "Delivery notes"
+  },
+  "payment": {
+    "cod": "Cash on Delivery",
+    "instapay": "InstaPay (QR)"
+  },
+  "instapay": {
+    "scan": "Scan QR code from your bank app or InstaPay",
+    "amount": "Required Amount",
+    "note": "Write order number in transfer notes",
+    "upload": "Upload transfer receipt",
+    "reference": "Transfer Reference Number",
+    "deadline": "Payment expires in {{time}}"
+  },
+  "paystatus": {
+    "awaiting": "Awaiting Payment",
+    "review": "Under Review",
+    "paid": "Payment Confirmed",
+    "rejected": "Payment Rejected"
+  },
+  "order": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "auth": {
+    "email": "Email Address",
+    "password": "Password",
+    "login": "Log in",
+    "register": "Create Account",
+    "forgot": "Forgot password?",
+    "resend": "Didn't receive verification email? Resend"
+  },
+  "account": {
+    "orders": "My Orders",
+    "details": "My Details",
+    "security": "Security",
+    "mfa": "Two-Factor Authentication",
+    "logout": "Log out"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "categories": "Categories",
+    "orders": "Orders",
+    "customers": "Customers",
+    "delivery": "Delivery",
+    "payments": "Payments",
+    "settings": "Settings",
+    "audit": "Audit Log",
+    "analytics": "Analytics",
+    "forecast": "Forecast"
+  },
+  "empty": {
+    "search": "No results found. Try another word."
+  },
   "footer": {
     "tagline": "cute things for your style & space",
     "rights": "All rights reserved",
@@ -32,7 +143,6 @@
     "returns": "Return & Exchange Policy",
     "shipping": "Shipping & Delivery"
   },
-
   "kit": {
     "auth": {
       "title": "Login and registration",

@@ -612,7 +612,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify` and manual check
 
 #### T-2.03: Arabic i18n scaffold
-`status: todo` `owner: agent` `needs: T-2.02, T-0.08i` `size: M`
+`status: done` `owner: agent` `needs: T-2.02, T-0.08i` `size: M`
 - **Do:** Set up i18next with `src/i18n/ar.json` and `en.json` as shipped languages (ADR-0002) (the copy deck in `docs/spec/design-system.md` is the starting content), language-dependent `lang`/`dir` on `<html>`, `t()` for every string, Arabic plural rules, Western digits. Add `src/lib/format.ts` (`formatEGP` with `Intl.NumberFormat('ar-EG-u-nu-latn', { style: 'currency', currency: 'EGP' })`, dates with `Intl.DateTimeFormat('ar-EG-u-nu-latn')`). Phone numbers, emails and order numbers render inside `dir="ltr"` spans. Add `scripts/check-i18n.mjs` (no key used in code is missing from either locale, no unused production keys; kit keys are development-only) and the `check:i18n` script.
 - **Done when:** the whole shell renders in Arabic RTL and English LTR; the check runs in the `static` job; unit tests cover `formatEGP`.
 - **Verify:** `npm run check:i18n && npm run test:unit`
@@ -1303,6 +1303,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-1.14 | Anti-Gravity | Authored database runbooks docs/runbooks/local-dev.md (Docker, endpoints, Inbucket local mail, test users), docs/runbooks/first-admin.md (owner SQL promotion procedure, security restrictions), and docs/runbooks/delivery-fees.md (fail-safe fee configuration, nationwide post vs. representative). Verified with manual review and npm run verify. | local only |
 | 2026-10-11 | T-2.01 | Anti-Gravity | Added Zod-validated environment configuration in src/lib/env.ts (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_TURNSTILE_SITE_KEY) with readable error formatting, typed createClient<Database> in src/lib/supabase.ts, and clear EnvErrorScreen in development. Unit tests cover validation and error rendering. npm run test:unit:coverage (100% lines, 90% branch) and npm run verify pass. | local only |
 | 2026-10-11 | T-2.02 | Anti-Gravity | Implemented React Router v7 with route table, Layout shell, skip link (#main-content), ScrollToTop, responsive Navbar (brand logo, search pill, nav links, cart pill, account, theme/language toggles, mobile menu), and cocoa Footer (tagline, policy links, ribbon divider, copyright). Added 16 route page placeholders with PearlLoader suspense fallback. Updated ADR-0001 with react-router-dom@7.18.4 pin. Verified with 72 unit tests and npm run verify. | local only |
+| 2026-10-11 | T-2.03 | Anti-Gravity | Configured i18next and react-i18next with exact pins (26.4.3 and 17.0.16) in src/i18n/i18n.ts, LanguageProvider integration with dual t() callable and property dictionary access, full copy deck in ar.json and en.json from Section 8 of design-system.md, Arabic CLDR 6-form plural rules, Western digits. Added src/lib/format.ts (formatEGP with ar-EG-u-nu-latn, formatDate, formatNumber, LTR helpers), src/components/ui/Ltr.tsx, scripts/check-i18n.mjs (parity, key usage, kit exclusion), scripts/check-i18n.test.mjs, and check:i18n npm script. Verified with 79 app tests, 101 tooling tests, and npm run verify. | local only |
 
 ### Open questions (agents add rows; the owner answers)
 

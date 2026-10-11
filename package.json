@@ -18,7 +18,7 @@
     "test:unit": "vitest run && npm run test:tooling",
     "check:tokens": "node scripts/check-tokens.mjs",
     "check:ui-build": "node scripts/check-ui-build.mjs",
-    "verify": "npm run check:tokens && npm run lint && npm run format:check && npm run typecheck && npm run test:unit && npm run build",
+    "verify": "npm run check:tokens && npm run check:i18n && npm run lint && npm run format:check && npm run typecheck && npm run test:unit && npm run build",
     "test:e2e": "node scripts/pending.mjs test:e2e",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
@@ -28,7 +28,7 @@
     "db:test:concurrency": "node scripts/run-concurrency.mjs",
     "check:secrets": "node scripts/pending.mjs check:secrets",
     "check:bundle": "node scripts/pending.mjs check:bundle",
-    "check:i18n": "node scripts/pending.mjs check:i18n",
+    "check:i18n": "node scripts/check-i18n.mjs",
     "check:migrations": "node scripts/pending.mjs check:migrations",
     "check:sql": "node scripts/pending.mjs check:sql",
     "analytics:install": "node scripts/pending.mjs analytics:install",
@@ -38,8 +38,10 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.3",
+    "i18next": "26.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-i18next": "17.0.16",
     "react-router-dom": "7.18.4",
     "zod": "4.6.5"
   },

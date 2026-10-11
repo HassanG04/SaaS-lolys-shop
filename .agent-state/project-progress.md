@@ -3,8 +3,9 @@
 Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-2.01.
 
 ```yaml
-Current task: T-2.02 verified and marked done. Ready for next task.
+Current task: T-2.03 verified and marked done. Ready for next task.
 Completed:
+  - T-2.03: Configured i18next and react-i18next with exact pins (26.4.3 and 17.0.16) in src/i18n/i18n.ts, LanguageProvider integration with dual t() callable and property dictionary access, full copy deck in ar.json and en.json from Section 8 of design-system.md, Arabic CLDR 6-form plural rules, Western digits. Added src/lib/format.ts (formatEGP with ar-EG-u-nu-latn, formatDate, formatNumber, LTR helpers), src/components/ui/Ltr.tsx, scripts/check-i18n.mjs (parity, key usage, kit exclusion), scripts/check-i18n.test.mjs, and check:i18n npm script. Verified with 79 app tests, 101 tooling tests, and npm run verify.
   - T-2.02: Implemented React Router v7 with route table, Layout shell, skip link (#main-content), ScrollToTop, responsive Navbar (brand logo, search pill, nav links, cart pill, account, theme/language toggles, mobile menu), and cocoa Footer (tagline, policy links, ribbon divider, copyright). Added 16 route page placeholders with PearlLoader suspense fallback. Updated ADR-0001 with react-router-dom@7.18.4 pin. Verified with 72 unit tests and npm run verify.
   - T-2.01: Added Zod-validated environment configuration in src/lib/env.ts (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_TURNSTILE_SITE_KEY) with readable error formatting, typed createClient<Database> in src/lib/supabase.ts, and clear EnvErrorScreen in development. Unit tests cover validation and error rendering. npm run test:unit:coverage (100% lines, 90% branch) and npm run verify pass.
   - T-1.14: Authored database runbooks docs/runbooks/local-dev.md (Docker, endpoints, Inbucket local mail, test users), docs/runbooks/first-admin.md (owner SQL promotion procedure, security restrictions), and docs/runbooks/delivery-fees.md (fail-safe fee configuration, nationwide post vs. representative). Verified with manual review and npm run verify.
@@ -46,6 +47,7 @@ Completed:
   - Dialog handover e5d498b also passes all four jobs in run 38071760275.
   - Owner resolved OD-002: pearls bounce only while loading, static for reduced motion; design spec updated.
 Files changed:
+  - T-2.03: src/i18n/i18n.ts, LanguageProvider.tsx, ar.json, en.json, translations.ts, language.test.tsx, src/lib/format.ts, format.test.ts, src/components/ui/Ltr.tsx, scripts/check-i18n.mjs, scripts/check-i18n.test.mjs, package.json, docs/adr/0001-stack.md, roadmap.md.
   - T-2.02: Layout shell, Navbar, Footer, 16 route placeholders, routes.tsx, App.tsx, App.test.tsx, test-setup.ts, language.test.tsx, check-tokens.mjs, public/brand/ assets, docs/adr/0001-stack.md.
   - Branch agent/T-0.08d-labels-ornaments is based on dialog PR 7 at e5d498b.
   - This slice adds Tabs, Toast, feedback.test.tsx and FeedbackExamples; updates kit, Arabic copy, CSS, roadmap and continuation/PR docs.
@@ -56,6 +58,7 @@ Files changed:
   - Text fields add Field, Input, Select, Textarea, SearchInput, forms.test.tsx and FormExamples; update kit, CSS, Arabic copy and continuation/PR/roadmap docs.
   - Choice controls add Choice, Checkbox, Radio, choices.test.tsx and ChoiceExamples; update form preview, CSS, Arabic copy and continuation/PR/roadmap docs.
 Tests executed:
+  - T-2.03: npm run verify passes with 79 app + 101 tooling tests (180 total); check:tokens, check:i18n, lint, prettier check, typecheck, production build and preview exclusion all pass.
   - T-2.02: npm run verify passes with 72 app + 97 tooling tests (169 total); token scan, lint, format, typecheck, production build with 16 lazy chunks, preview exclusion pass.
   - Compact form polish: npm run verify passes with 55 app + 97 tooling tests (152 total); token scan, lint, formatting, typecheck, production build and preview exclusion pass.
   - PR 11 at e8774dd passes all four GitHub jobs in run 38081581119; no merge or deployment.

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import App from '../App'
 import KitPage from '../dev/KitPage'
+import { i18n } from './i18n'
 import { LanguageProvider } from './LanguageProvider'
 import ar from './ar.json'
 import en from './en.json'
@@ -118,4 +119,16 @@ test('both dictionaries have matching paths and nonempty translated strings', ()
     return [prefix]
   }
   expect(paths(en)).toEqual(paths(ar))
+})
+
+test('i18next plural rules resolve CLDR forms in Arabic and English', () => {
+  expect(i18n.t('product.items', { count: 0, lng: 'ar' })).toBe('لا توجد عناصر')
+  expect(i18n.t('product.items', { count: 1, lng: 'ar' })).toBe('عنصر واحد')
+  expect(i18n.t('product.items', { count: 2, lng: 'ar' })).toBe('عنصران')
+  expect(i18n.t('product.items', { count: 3, lng: 'ar' })).toBe('3 عناصر')
+  expect(i18n.t('product.items', { count: 11, lng: 'ar' })).toBe('11 عنصرًا')
+  expect(i18n.t('product.items', { count: 100, lng: 'ar' })).toBe('100 عنصر')
+
+  expect(i18n.t('product.items', { count: 1, lng: 'en' })).toBe('1 item')
+  expect(i18n.t('product.items', { count: 5, lng: 'en' })).toBe('5 items')
 })
