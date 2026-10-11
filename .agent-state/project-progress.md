@@ -1,10 +1,11 @@
 # Shared project progress
 
-Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-1.02.
+Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-1.03.
 
 ```yaml
-Current task: T-1.02 verified and marked done. Ready for T-1.03 (Generated database types).
+Current task: T-1.03 verified and marked done. Ready for T-1.04 (pgTAP harness).
 Completed:
+  - T-1.03: Generated TypeScript database types via npm run db:types into src/types/database.types.ts; added src/types/index.ts re-exporting Tables, TablesInsert, TablesUpdate, Enums, CompositeTypes, Constants; added src/types/types.test.ts. Ignored database.types.ts in .prettierignore. npm run db:types && git diff --exit-code && npm run typecheck and npm run verify pass.
   - T-1.01: Docker installed and local Supabase stack initialized and running (npm run db:start).
   - T-1.02: Initial SQL converted to 6 timestamped migrations in supabase/migrations/ (schema, security, functions, views, reference_data, storage); demo catalogue seeded in supabase/seed.sql without first-admin snippet. db:reset verified cleanly from scratch; 27 governorates, 4 categories, 6 products, 0 delivery fees, and RLS enabled across all 8 tables. npm run verify passes.
   - T-0.08j compact login/register preview verified and marked done.
@@ -71,7 +72,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: T-1.02 is complete. Continue with T-1.03 (Generated database types) on branch agent/T-1.03-database-types.
+Next action: T-1.03 is complete. Continue with T-1.04 (pgTAP harness) on branch agent/T-1.04-pgtap-harness.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:

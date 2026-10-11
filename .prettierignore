@@ -18,3 +18,4 @@ security-model.md
 analytics-plan.md
 docs/spec/
 roadmap.md
+src/types/database.types.ts

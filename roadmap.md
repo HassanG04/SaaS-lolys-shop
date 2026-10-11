@@ -478,7 +478,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:reset` then `psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -c "select count(*) from public.governorates"` (use the URL from `supabase status`)
 
 #### T-1.03: Generated database types
-`status: todo` `owner: agent` `needs: T-1.02` `size: S`
+`status: done` `owner: agent` `needs: T-1.02` `size: S`
 - **Do:** `npm run db:types` writes `src/types/database.types.ts` (`supabase gen types typescript --local`). Add `src/types/index.ts` re-exporting helpers (`Tables`, `TablesInsert`, `Enums`).
 - **Done when:** the generated file is committed and `typecheck` passes.
 - **Verify:** `npm run db:types && git diff --exit-code && npm run typecheck`
@@ -1294,6 +1294,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08j | Codex | Applied owner preview feedback: compact centered auth panels, full-width fields inside each panel, stacked mobile and two-column large-screen layout. Added auth preview copy, test and production marker guard. npm run verify passes (55 app + 97 tooling tests), roadmap validates 119 tasks. Task remains doing because T-0.08i visual dependency is open. | pending |
 | 2026-10-10 | T-1.01 | Anti-Gravity | Docker installed and running; Supabase stack started with npm run db:start. URLs and keys printed. Verified locally. | local only |
 | 2026-10-11 | T-1.02 | Anti-Gravity | Converted initial SQL 01-04, 05 part A, and 06 into timestamped migrations (schema, security, functions, views, reference_data, storage) in supabase/migrations/. Seeded demo catalog (05 part B) into supabase/seed.sql without first-admin snippet. Ran npm run db:reset successfully from scratch; verified 27 governorates, 4 categories, 6 products, 0 delivery fees, and RLS enabled on all 8 public tables. npm run verify passes. | local only |
+| 2026-10-11 | T-1.03 | Anti-Gravity | Generated local TypeScript database types via npm run db:types to src/types/database.types.ts; added src/types/index.ts re-exporting Tables, TablesInsert, TablesUpdate, Enums, CompositeTypes, Constants. Added types.test.ts. Ignored generated database.types.ts in .prettierignore. Verification passed. | local only |
 
 ### Open questions (agents add rows; the owner answers)
 
