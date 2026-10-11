@@ -1321,6 +1321,8 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-12 | T-0.12 | Codex | Implemented private reporting with owner-approved temporary H-14 mailbox, security.txt, CODEOWNERS, weekly Dependabot and checksum-pinned Gitleaks history CI (SEC-15/SEC-16/SEC-24). Existing private-report ignore rule retained. Three exact historical mock-value fingerprints documented; no broad exception. Full verify passes (55 app + 111 tooling tests); three real-scanner tests pass. Run 38176155631 at 74cbc22 proves the secrets job rejects a runtime-only synthetic credential while all four other jobs pass; probe removed for recovery run. Doing until owner workflow review; no merge or dashboard changes. | [#18](https://github.com/HassanG04/lolys/pull/18) |
 
+| 2026-10-12 | T-0.12 | Codex | Rejection probe removed. Recovery run 38176275898 at b2da8dc passed all five jobs, including secrets. T-0.12 stays doing only for owner security/workflow review; no launch or dashboard setup claimed. | [#18](https://github.com/HassanG04/lolys/pull/18) |
+
 ### Open questions (agents add rows; the owner answers)
 
 
