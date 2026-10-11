@@ -20,6 +20,7 @@ import {
   admin as arAdmin,
   empty as arEmpty,
   footer as arFooter,
+  seo as arSeo,
 } from './ar.json'
 
 import {
@@ -43,6 +44,7 @@ import {
   admin as enAdmin,
   empty as enEmpty,
   footer as enFooter,
+  seo as enSeo,
 } from './en.json'
 
 export const translations = {
@@ -67,6 +69,7 @@ export const translations = {
     admin: arAdmin,
     empty: arEmpty,
     footer: arFooter,
+    seo: arSeo,
   },
   en: {
     theme: enTheme,
@@ -89,5 +92,6 @@ export const translations = {
     admin: enAdmin,
     empty: enEmpty,
     footer: enFooter,
+    seo: enSeo,
   },
 }

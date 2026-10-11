@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { Navbar } from './Navbar'
 import { Footer } from './Footer'
 import { useLanguage } from '../../i18n/LanguageProvider'
+import { useRouteSeo } from '../../features/seo'
 
 export function ScrollToTop() {
   const { pathname } = useLocation()
@@ -16,6 +17,7 @@ export function ScrollToTop() {
 
 export function Layout() {
   const { t } = useLanguage()
+  useRouteSeo()
 
   return (
     <div className="min-h-screen flex flex-col bg-(--color-bg) text-(--color-text) font-sans antialiased">

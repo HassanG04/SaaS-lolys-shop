@@ -698,7 +698,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-3.08: SEO basics
-`status: todo` `owner: agent` `needs: T-2.02` `size: S`
+`status: done` `owner: agent` `needs: T-2.02` `size: S`
 - **Do:** Per-route document title and description hook, Open Graph defaults, `robots.txt`, favicon and web manifest.
 - **Done when:** the title changes on every route.
 - **Verify:** `npm run test:unit`
@@ -1309,6 +1309,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-2.06 | Anti-Gravity | Implemented TOTP two-factor authentication with Supabase Auth MFA: enrollment (QR code and manual secret key with Ltr), challenge and verification, factor listing and removal with fresh aal2 requirement, and useAal hook. Configured Admin MFA ladder in RequireAdmin (enrollment -> challenge -> admin access), and customer 2FA management in /account/security with second device recommendation. Handled AUTH-005 and AUTH-006 Arabic errors. Unit tests in mfa.test.tsx and full verify pass (108 app + 101 tooling tests). | local only |
 | 2026-10-11 | T-2.07 | Anti-Gravity | Implemented account security on /account/security: change password (enforces 10 characters, checks stale session returning AUTH-007), change email (retains secure email change confirmation, displays neutral AUTH-010, targets authenticated user exclusively), global revocation signOut({ scope: 'global' }), and admin 20-minute idle session timeout with queryClient cache clearing verified with fake timers. Unit tests in accountSecurity.test.tsx and full verify pass (114 app + 101 tooling tests). | local only |
 | 2026-10-11 | T-2.09 | Anti-Gravity | Implemented useStepUp() hook and StepUpDialog with in-memory 5-minute confirmation, challenge and verify, and ADM-003 prompt. Unit tests in stepUp.test.tsx verify in-memory expiry with fake timers and prove confirmation is never written to storage. Full verify passes (118 app + 101 tooling tests). | local only |
+| 2026-10-11 | T-3.08 | Anti-Gravity | Implemented SEO basics: useSeo() hook, useRouteSeo() per-route title/meta hook wired in Layout, bilingual route dictionary in ar.json and en.json, Open Graph and Twitter card meta tags, public/favicon.svg (cropped bow), public/site.webmanifest, and public/robots.txt with crawler boundaries. Verified with 144 app tests + 105 tooling tests (249 total); npm run verify passes. | local only |
 
 ### Open questions (agents add rows; the owner answers)
 
