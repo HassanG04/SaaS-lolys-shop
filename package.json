@@ -37,8 +37,10 @@
     "test:unit:coverage": "vitest run --coverage && npm run test:tooling"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.117.3",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",

@@ -32,11 +32,13 @@ Use Node 24.21.0 LTS (.nvmrc), npm 11.19.0 from that official runtime, exact dir
 | prettier                    | 3.9.9         |
 | react                       | 19.3.0        |
 | react-dom                   | 19.3.0        |
+| @supabase/supabase-js       | 2.117.3       |
 | tailwindcss                 | 4.3.3         |
 | typescript                  | 6.0.3         |
 | typescript-eslint           | 8.71.1        |
 | vite                        | 8.3.4         |
 | vitest                      | 5.0.3         |
+| zod                         | 4.6.5         |
 
 The owner approved TypeScript 6 and ESLint 9 (OD-001) to satisfy the required plugin peer ranges. Exact installed versions are listed above. All specified lint rules remain active; no peer bypass flags are used. The complete local verification gate passes. ESLint 9 is deprecated upstream; revisit this approved compatibility exception once jsx-a11y supports ESLint 10.
 

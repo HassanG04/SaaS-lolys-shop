@@ -600,7 +600,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 2: App shell
 
 #### T-2.01: Environment and Supabase client
-`status: todo` `owner: agent` `needs: T-1.03` `size: S`
+`status: done` `owner: agent` `needs: T-1.03` `size: S`
 - **Do:** Add `src/lib/env.ts` (Zod-validated `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`, readable failure message) and `src/lib/supabase.ts` (typed `createClient<Database>`).
 - **Done when:** booting without env values shows a clear error screen in development; a unit test covers validation.
 - **Verify:** `npm run test:unit`
@@ -1301,6 +1301,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-1.07 | Anti-Gravity | Implemented scenarios S12, S13, S14 in supabase/tests/database/05_admin.test.sql (26 assertions) and S16 in 06_privileges.test.sql (38 assertions). Verified: all 64 assertions pass with npm run db:test (177 total db tests across 7 test files); npm run verify passes. | local only |
 | 2026-10-11 | T-1.08 | Anti-Gravity | Implemented scenario S7 in supabase/tests/concurrency.sh and cross-platform launcher scripts/run-concurrency.mjs. Verified: session B waits for session A to finish and commit 3s transaction, session B fails with out-of-stock error, stock is 0, sold is 2, and exactly 1 order is created; npm run db:test:concurrency and npm run verify pass. | local only |
 | 2026-10-11 | T-1.14 | Anti-Gravity | Authored database runbooks docs/runbooks/local-dev.md (Docker, endpoints, Inbucket local mail, test users), docs/runbooks/first-admin.md (owner SQL promotion procedure, security restrictions), and docs/runbooks/delivery-fees.md (fail-safe fee configuration, nationwide post vs. representative). Verified with manual review and npm run verify. | local only |
+| 2026-10-11 | T-2.01 | Anti-Gravity | Added Zod-validated environment configuration in src/lib/env.ts (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_TURNSTILE_SITE_KEY) with readable error formatting, typed createClient<Database> in src/lib/supabase.ts, and clear EnvErrorScreen in development. Unit tests cover validation and error rendering. npm run test:unit:coverage (100% lines, 90% branch) and npm run verify pass. | local only |
+
 
 ### Open questions (agents add rows; the owner answers)
 

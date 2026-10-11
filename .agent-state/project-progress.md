@@ -1,10 +1,11 @@
 # Shared project progress
 
-Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-1.14.
+Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-2.01.
 
 ```yaml
-Current task: T-1.14 verified and marked done. Ready for next Phase 1 task.
+Current task: T-2.01 verified and marked done. Ready for next task.
 Completed:
+  - T-2.01: Added Zod-validated environment configuration in src/lib/env.ts (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_TURNSTILE_SITE_KEY) with readable error formatting, typed createClient<Database> in src/lib/supabase.ts, and clear EnvErrorScreen in development. Unit tests cover validation and error rendering. npm run test:unit:coverage (100% lines, 90% branch) and npm run verify pass.
   - T-1.14: Authored database runbooks docs/runbooks/local-dev.md (Docker, endpoints, Inbucket local mail, test users), docs/runbooks/first-admin.md (owner SQL promotion procedure, security restrictions), and docs/runbooks/delivery-fees.md (fail-safe fee configuration, nationwide post vs. representative). Verified with manual review and npm run verify.
   - T-1.08: Implemented scenario S7 concurrency check in supabase/tests/concurrency.sh and cross-platform launcher scripts/run-concurrency.mjs. Verified: session B waits for session A to finish and commit 3s transaction, session B fails with out-of-stock error ("Only 0 left in stock for \"Concurrent Ring\""), stock is 0, sold is 2, exactly 1 order is created; npm run db:test:concurrency and npm run verify pass.
   - T-1.07: Implemented scenarios S12, S13, S14 in supabase/tests/database/05_admin.test.sql (26 assertions) and S16 in 06_privileges.test.sql (38 assertions). Verified: all 64 assertions pass with npm run db:test (177 total db tests across 7 test files); npm run verify passes.
