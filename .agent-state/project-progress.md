@@ -3,7 +3,7 @@
 Updated 2026-10-12 (Africa/Cairo). Codex isolated branch `agent/T-0.12-repository-security`.
 
 ```yaml
-Current task: T-0.12 security configuration; implementation ready for verification and PR.
+Current task: T-0.12 implemented in PR 18; owner workflow review pending.
 Completed:
   - Private reporting policy and security.txt use the owner-approved temporary mailbox (H-14).
   - CODEOWNERS protects sensitive paths, tooling, scanner exceptions and dependency manifests.
@@ -11,6 +11,7 @@ Completed:
   - Read-only secrets CI job installs checksum-pinned Gitleaks 8.30.1 and scans full Git history.
   - Three scanner tests pass: fake-token/history rejection with redacted output, environment-name rejection, and unavailable-scanner failure.
   - Reviewed three historical mock-value false positives; exceptions use exact commit/file/rule/line fingerprints only.
+  - Remote rejection proved at 74cbc22 in run 38176155631: scanner installation and tests succeeded; only the history scan rejected the synthetic runner commit. The temporary probe is now removed.
 Files changed:
   - SECURITY.md, public/.well-known/security.txt, .github/CODEOWNERS, .github/dependabot.yml
   - .github/workflows/ci.yml, .gitleaksignore, scripts/check-history-secrets.mjs, scripts/test-gitleaks.mjs
@@ -18,10 +19,11 @@ Files changed:
 Tests executed:
   - Real Windows Gitleaks rejection tests passed; archive checksum verified against official release metadata.
   - Dependabot and CI YAML parsed with the installed js-yaml dependency; required settings validated.
+  - Full npm run verify passed: 55 app + 111 tooling tests, lint/format/types/build, migration/secret/bundle guards. Three additional real-scanner tests passed locally and on Linux CI.
 Problems found:
   - Historical mock MFA and environment-validation values triggered generic-api-key; exact reviewed exclusions added.
-  - Owner workflow review and remote rejection/recovery evidence are still pending.
-Next action: Run full verification, prove rejection/recovery in CI, open the task PR; do not merge or deploy.
+  - Owner workflow review and final remote recovery checks remain pending; PR https://github.com/HassanG04/lolys/pull/18 is stacked on PR 17.
+Next action: Read final PR 18 checks; owner reviews and integrates the stacked PRs. Preserve Anti-Gravity's newer application stack; do not merge or deploy.
 ```
 
 ## Previous session

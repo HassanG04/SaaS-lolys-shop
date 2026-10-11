@@ -11,6 +11,9 @@ Implemented private email reporting using the owner-approved temporary mailbox,
 security.txt, owner review rules, weekly dependency updates, and checksum-pinned
 Gitleaks with three real-binary tests. Read progress for final verification/PR
 evidence. Owner workflow review remains required (SEC-15, SEC-16, SEC-24).
+PR 18 is open. Full verify passes (166 tests) plus three scanner tests. CI run
+38176155631 proves rejection on a synthetic runner-only commit; the probe has
+been removed. Final clean-head checks must pass before integration.
 No main merge, dashboard action or cloud deployment is authorized for agents.
 
 ## Current Files

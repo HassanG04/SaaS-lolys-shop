@@ -38,11 +38,6 @@ jobs:
           echo "$scanner_dir" >> "$GITHUB_PATH"
       - name: Verify scanner rejection and redaction
         run: node --test scripts/test-gitleaks.mjs
-      - name: T-0.12 temporary rejection proof (removed after the expected failure)
-        run: |
-          node --input-type=module -e "import {writeFileSync} from 'node:fs'; writeFileSync('scanner-negative-fixture.txt', ['ghp','A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8'].join('_'))"
-          git add -- scanner-negative-fixture.txt
-          git -c user.name='Scanner Probe' -c user.email='scanner@example.invalid' commit --no-verify -m 'Synthetic runner-only rejection probe'
       - name: Scan all Git history
         run: node scripts/check-history-secrets.mjs
 

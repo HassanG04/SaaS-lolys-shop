@@ -1319,6 +1319,8 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-11 | T-1.09b | Codex | Owner asked about cloud hosting and confirmed no Supabase project exists yet. Prepared the owner checklist; split independent migration protection from T-1.09 without waiving its database/type/PR gates. Guard rejects merged-file edits/deletion/renaming in HEAD/index/worktree, uses pre-push main on push events and fails on missing history. Five real-Git negative/recovery tests and full verify pass (55 app + 111 tooling tests); 121-task roadmap validates. All four PR checks pass at 697e8c5 (run 38137004058). SEC-16/SEC-20/SEC-24. No database/cloud commands; owner workflow review pending. | [#17](https://github.com/HassanG04/lolys/pull/17) |
 
+| 2026-10-12 | T-0.12 | Codex | Implemented private reporting with owner-approved temporary H-14 mailbox, security.txt, CODEOWNERS, weekly Dependabot and checksum-pinned Gitleaks history CI (SEC-15/SEC-16/SEC-24). Existing private-report ignore rule retained. Three exact historical mock-value fingerprints documented; no broad exception. Full verify passes (55 app + 111 tooling tests); three real-scanner tests pass. Run 38176155631 at 74cbc22 proves the secrets job rejects a runtime-only synthetic credential while all four other jobs pass; probe removed for recovery run. Doing until owner workflow review; no merge or dashboard changes. | [#18](https://github.com/HassanG04/lolys/pull/18) |
+
 ### Open questions (agents add rows; the owner answers)
 
 
