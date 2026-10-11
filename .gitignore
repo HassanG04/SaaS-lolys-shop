@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+supabase/.temp/
+.env*
+!.env.example
+CLAUDE-SECURITY-*/
+*.local
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+analytics/.venv/
+.tools/

@@ -1,0 +1,20 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+.tools/
+.env*
+package-lock.json
+# Preserve supplied reference inputs byte-for-byte.
+frontend-demo/
+docs/design/demo/
+docs/db/initial-sql/*.sql
+accessories_store_schema.sql
+database-contract.md
+design-system.md
+error-codes.md
+security-model.md
+analytics-plan.md
+docs/spec/
+roadmap.md

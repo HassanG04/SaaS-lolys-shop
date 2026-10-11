@@ -1,30 +1,31 @@
+<p align="center">
+  <img src="docs/design/brand/lolys.jpeg" alt="Lolys' Accessories & Home — bows, pearls and gifts in cream and blush" width="420">
+</p>
+
 # Lolys' Accessories & Home
 
 **أشياء لطيفة لأسلوبك ومساحتك**
 
-_Cute things for your style & space._
+Cute things for your style & space.
 
 An Arabic-first online shop for accessories and home items in Egypt, with English
 support and a warm cream, blush and cocoa identity.
 
-[Development pull requests](https://github.com/HassanG04/lolys/pulls) ·
-[Engineering roadmap](https://github.com/HassanG04/lolys/blob/bbc77ac6bc65f5b082cf7d3f6f59c5165991e848/roadmap.md) ·
-[Design system](https://github.com/HassanG04/lolys/blob/bbc77ac6bc65f5b082cf7d3f6f59c5165991e848/docs/spec/design-system.md)
+[Roadmap](roadmap.md) · [Design system](docs/spec/design-system.md) ·
+[Shared progress](.agent-state/project-progress.md) · [Development pull requests](https://github.com/HassanG04/lolys/pulls)
 
-## Project status
+## Development status
 
-**In development — not ready for customer orders.** This branch currently serves
-as the repository overview. The application, specifications and engineering tools
-are on development branches awaiting review and integration into `main`.
+**In development — not ready for customer orders.** The repository contains the
+React foundation, documented design tokens and fonts, reusable UI components,
+Arabic/English switching, light/dark themes and compact account-form previews.
 
-The [foundation pull request](https://github.com/HassanG04/lolys/pull/1) starts the
-implementation. The [UI preview pull request](https://github.com/HassanG04/lolys/pull/12)
-includes the accumulated component work, Arabic/English switching, light/dark
-themes and compact login/register layout previews. Those previews are not working
-account forms. Further backend and application work is ongoing.
-
-The specification links here point to a published review snapshot; use the
-development pull requests and their branch roadmaps for subsequent changes.
+The development-only UI kit is available at `/__kit`. The root page currently
+contains theme and language controls. Login and registration examples are layout
+previews; the storefront, working accounts, checkout and admin workflows are still
+roadmap work. See [UI acceptance notes](.agent-state/ui-acceptance.md) for outstanding
+visual checks. Later database and application work continues on development
+branches and must be reviewed before integration.
 
 ## Planned shopping experience
 
@@ -37,6 +38,44 @@ development pull requests and their branch roadmaps for subsequent changes.
 
 The planned admin area covers products, stock, categories, orders, delivery fees
 and payment review. Admin access requires verified two-factor authentication.
+
+## Local preview
+
+Use the Node version in [`.nvmrc`](.nvmrc), then run:
+
+```sh
+npm ci --ignore-scripts
+npm run dev
+```
+
+Open the local URL printed by Vite. Add `/__kit` to that URL to explore the UI kit.
+The kit and its example content are excluded from production builds.
+
+This foundation preview does not need backend credentials. Once the database
+tasks are integrated, follow their local setup runbook; Docker and the local
+Supabase stack are required for database work. Environment values and privileged
+keys must never be committed or put in browser code.
+
+## Quality and contribution
+
+```sh
+npm run verify
+npm run roadmap:check
+npm run roadmap:next
+```
+
+`verify` checks design tokens, lint, formatting, TypeScript, application/tooling
+tests, the production build and exclusion of development previews. Commands owned
+by later tasks deliberately fail with their task ID until implemented.
+
+Read [AGENTS.md](AGENTS.md), the roadmap and shared progress before making changes.
+Use a separate worktree for simultaneous agent work. Submit changes through a
+pull request; the repository uses squash merging and automatic merged-branch
+cleanup. Branch protection for this private repository is currently blocked by
+the GitHub account plan, so passing checks still need to be verified before merging.
+
+Passing a local build does not establish production readiness. Launch also
+requires the roadmap's security, operational and owner approval gates.
 
 ## Architecture
 
@@ -52,33 +91,13 @@ The database is authoritative for prices, stock, totals and payment status.
 Orders go through the documented database functions. Payment proofs are private;
 privileged keys never belong in the browser.
 
-## Working on the project
-
-There is no runnable app or package manifest on `main` yet. To work on the
-implementation, select the relevant development pull request and follow its
-branch's `README.md`, `AGENTS.md` and `.agent-state/project-progress.md`.
-
-On an implementation branch:
-
-1. Use the Node version specified by `.nvmrc`.
-2. Follow that branch's local setup instructions, then install dependencies with
-   `npm ci --ignore-scripts`.
-3. Run `npm run roadmap:next` to identify the next unblocked task.
-4. Run `npm run dev` for the local preview and `npm run verify` for the quality gate.
-
-Database tasks also need Docker and the local Supabase stack. Never commit
-environment values or credentials. Keep simultaneous agent work in separate
-worktrees; the project owner reviews and merges pull requests and controls
-production deployment.
-
 ## Specifications
 
-The roadmap and its referenced specifications define scope and acceptance criteria.
+The [roadmap](roadmap.md) and its referenced specifications define scope and
+acceptance criteria. The compatible toolchain is recorded in [ADR-0001](docs/adr/0001-stack.md).
 
-- [Database contract](https://github.com/HassanG04/lolys/blob/bbc77ac6bc65f5b082cf7d3f6f59c5165991e848/docs/spec/database-contract.md)
-- [Security model](https://github.com/HassanG04/lolys/blob/bbc77ac6bc65f5b082cf7d3f6f59c5165991e848/docs/spec/security-model.md)
-- [Error catalogue](https://github.com/HassanG04/lolys/blob/bbc77ac6bc65f5b082cf7d3f6f59c5165991e848/docs/spec/error-codes.md)
-- [Analytics plan](https://github.com/HassanG04/lolys/blob/bbc77ac6bc65f5b082cf7d3f6f59c5165991e848/docs/spec/analytics-plan.md)
-
-Passing a local build does not establish production readiness. Launch also
-requires the roadmap's security, operational and owner approval gates.
+- [Database contract](docs/spec/database-contract.md)
+- [Security model](docs/spec/security-model.md)
+- [Error catalogue](docs/spec/error-codes.md)
+- [Analytics plan](docs/spec/analytics-plan.md)
+- [Planned runbooks](docs/runbooks/README.md)
