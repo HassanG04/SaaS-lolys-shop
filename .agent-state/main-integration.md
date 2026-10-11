@@ -40,12 +40,18 @@ were not changed. No local branch will be deleted by the integration cleanup.
   token/lint/format/type checks, production build and preview exclusion.
 - Roadmap validation passed with 119 tasks. Ancestry, unchanged application and
   workflow content, integration-authored whitespace and logo hash checks passed.
-- Final remote PR checks and merge outcome: pending.
-- Only squash-merge after all four checks succeed on the exact final PR head.
-- After merging, confirm main has the same tree, close PRs 1–12 as superseded by
-  PR 13, and remove their remote branches only if their heads still match the
-  recorded values. Preserve any concurrently changed branch.
-- Record the actual merged commit and final cleanup in the follow-up session log.
+- All four final PR checks passed at `78b821d6bfe0e077d6b1d38b8b3925d760d72c2f`
+  ([run 38103273443](https://github.com/HassanG04/lolys/actions/runs/38103273443)).
+- PR 13 was squash-merged as `f5e36db225676191679e1ffacf67245811314dc5`.
+  The merged tree exactly matches the tested PR tree.
+- All four post-merge main checks passed
+  ([run 38103367870](https://github.com/HassanG04/lolys/actions/runs/38103367870)).
+- PRs 1–12 were closed as superseded by PR 13. Their remote branches still
+  matched the recorded heads and were deleted atomically with exact-head leases.
+  GitHub automatically removed the PR 13 branch. The resulting remote inventory
+  contained only main and no open PRs. No changed branch was discarded.
+- The inactive local main reference was fast-forwarded. Other local branches,
+  including Anti-Gravity's active `agent/T-2.02-routing-and-layout`, were retained.
 
 ## Repository settings
 

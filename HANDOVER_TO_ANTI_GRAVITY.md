@@ -1,12 +1,15 @@
 # Current integration notice — 2026-10-11
 
 The owner explicitly requested updating the published branches and merging
-verified work into main. Codex is consolidating PRs 1–12 into PR 13, including the
-README and supplied logo. See `.agent-state/main-integration.md` and the latest
-shared progress for the actual merge state. The older handover below is historical.
+verified work into main. PR 13 consolidated PRs 1–12 and was squash-merged as
+`f5e36db225676191679e1ffacf67245811314dc5`, including the README and supplied logo.
+All four final PR and post-merge main checks passed. The superseded PRs are closed
+and all 13 obsolete remote branches were removed; local branches remain intact.
+See `.agent-state/main-integration.md`. The older handover below is historical.
 
-Your active checkout, local database commits and uncommitted T-2.01 work were not
-modified. Finish and commit your active task before integrating updated main into
+Your active checkout and newer database/Phase 2 work were not modified. It had
+advanced to `agent/T-2.02-routing-and-layout` during integration. Finish and commit
+your active task before integrating updated main into
 that branch. Fetch main, merge it normally and preserve your newer database and
 task-status changes when resolving documentation conflicts. Never reset or restore
 the older main package manifest over your newer implementation.
