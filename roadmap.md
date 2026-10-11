@@ -508,7 +508,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:test`
 
 #### T-1.08: Concurrency check
-`status: todo` `owner: agent` `needs: T-1.06` `size: M`
+`status: done` `owner: agent` `needs: T-1.06` `size: M`
 - **Do:** Write `supabase/tests/concurrency.sh`: two `psql` sessions against the local database (URL from `supabase status`); session A places an order for the last units and holds the transaction for a few seconds; session B orders the same product. Add script `db:test:concurrency`. This is scenario S7.
 - **Done when:** B waits, then fails with the out-of-stock error; final `stock_quantity` and `sold_count` are correct; the script exits non-zero if overselling happens.
 - **Verify:** `npm run db:test:concurrency`
@@ -1299,6 +1299,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-1.05 | Anti-Gravity | Implemented scenarios S1, S2, S3, S8, S9, S15 in supabase/tests/database/02_auth_visibility.test.sql (32 assertions). Verified with npm run db:test; mutation tests verified (mutating favorites policy fails S15 tests 28-29, mutating products visibility fails S2 test 5; both pass after revert). Full verify passes. | local only |
 | 2026-10-11 | T-1.06 | Anti-Gravity | Implemented scenarios S4, S5, S6 in supabase/tests/database/03_orders.test.sql (43 assertions) and S10, S11 in 04_cancel_restock.test.sql (22 assertions). Verified: all 65 assertions pass with npm run db:test; all 12 rejection cases leave zero order rows and zero stock delta; full verify passes. | local only |
 | 2026-10-11 | T-1.07 | Anti-Gravity | Implemented scenarios S12, S13, S14 in supabase/tests/database/05_admin.test.sql (26 assertions) and S16 in 06_privileges.test.sql (38 assertions). Verified: all 64 assertions pass with npm run db:test (177 total db tests across 7 test files); npm run verify passes. | local only |
+| 2026-10-11 | T-1.08 | Anti-Gravity | Implemented scenario S7 in supabase/tests/concurrency.sh and cross-platform launcher scripts/run-concurrency.mjs. Verified: session B waits for session A to finish and commit 3s transaction, session B fails with out-of-stock error, stock is 0, sold is 2, and exactly 1 order is created; npm run db:test:concurrency and npm run verify pass. | local only |
 
 ### Open questions (agents add rows; the owner answers)
 

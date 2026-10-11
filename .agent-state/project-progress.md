@@ -1,10 +1,11 @@
 # Shared project progress
 
-Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-1.07.
+Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-1.08.
 
 ```yaml
-Current task: T-1.07 verified and marked done. Ready for T-1.08 (Concurrency check).
+Current task: T-1.08 verified and marked done. Ready for T-1.09 (Migration immutability check).
 Completed:
+  - T-1.08: Implemented scenario S7 concurrency check in supabase/tests/concurrency.sh and cross-platform launcher scripts/run-concurrency.mjs. Verified: session B waits for session A to finish and commit 3s transaction, session B fails with out-of-stock error ("Only 0 left in stock for \"Concurrent Ring\""), stock is 0, sold is 2, exactly 1 order is created; npm run db:test:concurrency and npm run verify pass.
   - T-1.07: Implemented scenarios S12, S13, S14 in supabase/tests/database/05_admin.test.sql (26 assertions) and S16 in 06_privileges.test.sql (38 assertions). Verified: all 64 assertions pass with npm run db:test (177 total db tests across 7 test files); npm run verify passes.
   - T-1.06: Implemented scenarios S4, S5, S6 in supabase/tests/database/03_orders.test.sql (43 assertions) and S10, S11 in 04_cancel_restock.test.sql (22 assertions). Verified: all 65 assertions pass with npm run db:test (113 total db tests pass); all 12 rejection cases leave zero order rows and zero stock delta; npm run verify passes.
   - T-1.05: Implemented scenarios S1, S2, S3, S8, S9, S15 in supabase/tests/database/02_auth_visibility.test.sql (32 assertions). Verified with npm run db:test (48 total db tests pass); spot-checked two mutations (mutating favorites policy fails S15 tests 28-29, mutating products visibility policy fails S2 test 5; both pass after revert). npm run verify passes.
