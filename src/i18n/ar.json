@@ -212,7 +212,14 @@
     "noTopCustomers": "لا توجد طلبات عملاء في هذه الفترة",
     "dashboardLoading": "جاري تحميل بيانات لوحة التحكم...",
     "dashboardError": "تعذر تحميل بيانات لوحة التحكم",
-    "retry": "إعادة المحاولة"
+    "retry": "إعادة المحاولة",
+    "exportCsv": "تصدير CSV",
+    "exportCsvDesc": "تنزيل بيانات المبيعات اليومية بصيغة CSV",
+    "printReport": "طباعة التقرير",
+    "chartSummaryTitle": "ملخص المبيعات للفترة",
+    "chartDataTable": "جدول بيانات المبيعات اليومية",
+    "kpisSection": "مؤشرات الأداء الرئيسية",
+    "rangePresetGroup": "تحديد الفترة الزمنية"
   },
   "empty": {
     "search": "لا توجد نتائج. جرّب كلمة أخرى."

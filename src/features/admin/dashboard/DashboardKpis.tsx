@@ -165,13 +165,13 @@ export function DashboardKpis({ kpis }: DashboardKpisProps) {
 
   return (
     <section
-      aria-label={t.admin.kpiOrders}
+      aria-label={t.admin.kpisSection}
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
     >
       {cards.map((card) => (
         <div
           key={card.id}
-          className={`flex flex-col justify-between rounded-(--radius-card) border bg-(--color-surface) p-5 shadow-(--shadow-card) transition-all ${
+          className={`ui-print-card flex flex-col justify-between rounded-(--radius-card) border bg-(--color-surface) p-5 shadow-(--shadow-card) transition-all print:border print:shadow-none ${
             card.highlight
               ? 'border-(--color-brand) bg-(--color-surface-tint)'
               : 'border-(--color-border)'

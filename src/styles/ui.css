@@ -122,4 +122,14 @@
       opacity: 0.65;
     }
   }
+  @media print {
+    .ui-print-card {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .ui-print-details[open] summary,
+    .ui-print-details summary {
+      display: none !important;
+    }
+  }
 }

@@ -45,7 +45,7 @@ export function DashboardBreakdowns({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* 1. Status Breakdown */}
-      <div className="flex flex-col justify-between rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card)">
+      <div className="ui-print-card flex flex-col justify-between rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card) print:border print:shadow-none">
         <div>
           <h3 className="text-h3 font-bold font-accent text-(--color-brand) mb-4">
             {t.admin.breakdownStatus}
@@ -67,7 +67,14 @@ export function DashboardBreakdowns({
                         {formatNumber(count, undefined, lang)} ({percentage}%)
                       </span>
                     </div>
-                    <div className="h-2 w-full rounded-(--radius-pill) bg-(--color-surface-2) overflow-hidden">
+                    <div
+                      role="progressbar"
+                      aria-valuenow={percentage}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`${getStatusLabel(status)}: ${percentage}%`}
+                      className="h-2 w-full rounded-(--radius-pill) bg-(--color-surface-2) overflow-hidden"
+                    >
                       <div
                         className="h-full rounded-(--radius-pill) bg-(--color-brand) transition-all"
                         style={{ width: `${percentage}%` }}
@@ -82,7 +89,7 @@ export function DashboardBreakdowns({
       </div>
 
       {/* 2. Delivery Method Breakdown */}
-      <div className="flex flex-col justify-between rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card)">
+      <div className="ui-print-card flex flex-col justify-between rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card) print:border print:shadow-none">
         <div>
           <h3 className="text-h3 font-bold font-accent text-(--color-brand) mb-4">
             {t.admin.breakdownMethod}
@@ -115,7 +122,7 @@ export function DashboardBreakdowns({
       </div>
 
       {/* 3. Governorate Breakdown */}
-      <div className="flex flex-col justify-between rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card)">
+      <div className="ui-print-card flex flex-col justify-between rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card) print:border print:shadow-none">
         <div>
           <h3 className="text-h3 font-bold font-accent text-(--color-brand) mb-4">
             {t.admin.breakdownGovernorate}
@@ -123,7 +130,11 @@ export function DashboardBreakdowns({
           {byGovernorate.length === 0 ? (
             <p className="text-small text-(--color-text-muted)">{t.admin.noGovernorateData}</p>
           ) : (
-            <div className="space-y-3 max-h-72 overflow-y-auto pe-1">
+            <div
+              role="region"
+              aria-label={t.admin.breakdownGovernorate}
+              className="space-y-3 max-h-72 overflow-y-auto pe-1"
+            >
               {byGovernorate.map((item) => (
                 <div
                   key={item.governorate}

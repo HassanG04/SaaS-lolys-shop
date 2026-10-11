@@ -28,21 +28,48 @@ export function DashboardPage() {
   } = useAdminDashboard()
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 print:space-y-4 print:p-0">
       {/* Page Header and Range Selector */}
-      <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-(--shadow-card)">
+      <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-(--shadow-card) print:shadow-none print:border-none print:p-0 ui-print-card">
         <div>
           <h1 className="text-h1 font-bold font-accent text-(--color-brand)">لوحة تحكم الإدارة</h1>
           <p className="mt-2 text-body text-(--color-text-muted)">{t.admin.dashboardDesc}</p>
         </div>
 
-        <DashboardRangeSelector
-          preset={preset}
-          onPresetChange={setPreset}
-          activeRange={activeRange}
-          customRange={customRange}
-          onCustomRangeChange={setCustomRange}
-        />
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-1.5 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) px-3 py-1.5 text-small font-semibold text-(--color-text) hover:bg-(--color-surface-tint) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-focus) print:hidden"
+            aria-label={t.admin.printReport}
+          >
+            <svg
+              className="size-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect width="12" height="8" x="6" y="14" />
+            </svg>
+            <span>{t.admin.printReport}</span>
+          </button>
+
+          <div className="print:hidden">
+            <DashboardRangeSelector
+              preset={preset}
+              onPresetChange={setPreset}
+              activeRange={activeRange}
+              customRange={customRange}
+              onCustomRangeChange={setCustomRange}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Error state */}

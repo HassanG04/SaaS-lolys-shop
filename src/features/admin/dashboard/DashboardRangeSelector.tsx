@@ -44,7 +44,7 @@ export function DashboardRangeSelector({
       {/* Preset pills */}
       <div
         role="group"
-        aria-label={t.admin.presetCustom}
+        aria-label={t.admin.rangePresetGroup}
         className="inline-flex rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) p-1 shadow-(--shadow-pill)"
       >
         {presets.map((p) => {
@@ -70,19 +70,29 @@ export function DashboardRangeSelector({
       {/* Custom date range pickers */}
       {preset === 'custom' && (
         <div className="flex flex-wrap items-center gap-2">
-          <label className="flex items-center gap-1.5 text-small font-medium text-(--color-text)">
+          <label
+            htmlFor="admin-date-from"
+            className="flex items-center gap-1.5 text-small font-medium text-(--color-text)"
+          >
             <span>{t.admin.dateFrom}:</span>
             <input
+              id="admin-date-from"
               type="date"
+              aria-label={t.admin.dateFrom}
               value={customRange?.from ?? activeRange.from}
               onChange={handleFromChange}
               className="h-9 rounded-(--radius-chip) border border-(--color-border-input) bg-(--color-surface) px-2 text-small text-(--color-text) focus:border-(--color-brand) focus:outline-none focus:ring-1 focus:ring-(--color-focus)"
             />
           </label>
-          <label className="flex items-center gap-1.5 text-small font-medium text-(--color-text)">
+          <label
+            htmlFor="admin-date-to"
+            className="flex items-center gap-1.5 text-small font-medium text-(--color-text)"
+          >
             <span>{t.admin.dateTo}:</span>
             <input
+              id="admin-date-to"
               type="date"
+              aria-label={t.admin.dateTo}
               value={customRange?.to ?? activeRange.to}
               onChange={handleToChange}
               className="h-9 rounded-(--radius-chip) border border-(--color-border-input) bg-(--color-surface) px-2 text-small text-(--color-text) focus:border-(--color-brand) focus:outline-none focus:ring-1 focus:ring-(--color-focus)"

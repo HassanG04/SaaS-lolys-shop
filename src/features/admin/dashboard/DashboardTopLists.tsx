@@ -13,20 +13,32 @@ export function DashboardTopLists({ topProducts, topCustomers }: DashboardTopLis
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* 1. Top Products */}
-      <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card)">
-        <h3 className="text-h3 font-bold font-accent text-(--color-brand) mb-4">
+      <div className="ui-print-card rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card) print:border print:shadow-none">
+        <h3
+          id="admin-top-products-title"
+          className="text-h3 font-bold font-accent text-(--color-brand) mb-4"
+        >
           {t.admin.topProducts}
         </h3>
         {topProducts.length === 0 ? (
           <p className="text-small text-(--color-text-muted)">{t.admin.noTopProducts}</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-start text-small">
+            <table
+              aria-labelledby="admin-top-products-title"
+              className="w-full text-start text-small"
+            >
               <thead>
                 <tr className="border-b border-(--color-border) text-caption text-(--color-text-muted)">
-                  <th className="pb-2 text-start font-semibold">{t.admin.products}</th>
-                  <th className="pb-2 text-start font-semibold">{t.admin.unitsSold}</th>
-                  <th className="pb-2 text-start font-semibold">{t.admin.totalSales}</th>
+                  <th scope="col" className="pb-2 text-start font-semibold">
+                    {t.admin.products}
+                  </th>
+                  <th scope="col" className="pb-2 text-start font-semibold">
+                    {t.admin.unitsSold}
+                  </th>
+                  <th scope="col" className="pb-2 text-start font-semibold">
+                    {t.admin.totalSales}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-(--color-border)/50">
@@ -48,20 +60,32 @@ export function DashboardTopLists({ topProducts, topCustomers }: DashboardTopLis
       </div>
 
       {/* 2. Top Customers */}
-      <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card)">
-        <h3 className="text-h3 font-bold font-accent text-(--color-brand) mb-4">
+      <div className="ui-print-card rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card) print:border print:shadow-none">
+        <h3
+          id="admin-top-customers-title"
+          className="text-h3 font-bold font-accent text-(--color-brand) mb-4"
+        >
           {t.admin.topCustomers}
         </h3>
         {topCustomers.length === 0 ? (
           <p className="text-small text-(--color-text-muted)">{t.admin.noTopCustomers}</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-start text-small">
+            <table
+              aria-labelledby="admin-top-customers-title"
+              className="w-full text-start text-small"
+            >
               <thead>
                 <tr className="border-b border-(--color-border) text-caption text-(--color-text-muted)">
-                  <th className="pb-2 text-start font-semibold">{t.admin.customerName}</th>
-                  <th className="pb-2 text-start font-semibold">{t.admin.customerOrders}</th>
-                  <th className="pb-2 text-start font-semibold">{t.admin.customerTotalSpent}</th>
+                  <th scope="col" className="pb-2 text-start font-semibold">
+                    {t.admin.customerName}
+                  </th>
+                  <th scope="col" className="pb-2 text-start font-semibold">
+                    {t.admin.customerOrders}
+                  </th>
+                  <th scope="col" className="pb-2 text-start font-semibold">
+                    {t.admin.customerTotalSpent}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-(--color-border)/50">

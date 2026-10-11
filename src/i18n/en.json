@@ -212,7 +212,14 @@
     "noTopCustomers": "No customer orders in this range",
     "dashboardLoading": "Loading dashboard data...",
     "dashboardError": "Failed to load dashboard data",
-    "retry": "Retry"
+    "retry": "Retry",
+    "exportCsv": "Export CSV",
+    "exportCsvDesc": "Download daily sales series as CSV",
+    "printReport": "Print report",
+    "chartSummaryTitle": "Period sales summary",
+    "chartDataTable": "Daily sales data table",
+    "kpisSection": "Key performance indicators",
+    "rangePresetGroup": "Select date range"
   },
   "empty": {
     "search": "No results found. Try another word."

@@ -11,7 +11,7 @@ export function DashboardLowStock({ lowStock }: DashboardLowStockProps) {
   const { t, lang } = useLanguage()
 
   return (
-    <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card)">
+    <div className="ui-print-card rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-5 sm:p-6 shadow-(--shadow-card) print:border print:shadow-none">
       <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
           <h3 className="text-h3 font-bold font-accent text-(--color-brand)">
@@ -20,7 +20,10 @@ export function DashboardLowStock({ lowStock }: DashboardLowStockProps) {
           <p className="text-small text-(--color-text-muted)">{t.admin.lowStockDesc}</p>
         </div>
         {lowStock.length > 0 && (
-          <span className="self-start sm:self-auto rounded-(--radius-pill) bg-(--color-danger)/10 px-3 py-1 text-caption font-bold text-(--color-danger)">
+          <span
+            role="status"
+            className="self-start sm:self-auto rounded-(--radius-pill) bg-(--color-danger)/10 px-3 py-1 text-caption font-bold text-(--color-danger)"
+          >
             {formatNumber(lowStock.length, undefined, lang)} تنبيه
           </span>
         )}
