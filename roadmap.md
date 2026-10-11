@@ -1293,11 +1293,12 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-10 | T-0.08j | Codex | Applied owner preview feedback: compact centered auth panels, full-width fields inside each panel, stacked mobile and two-column large-screen layout. Added auth preview copy, test and production marker guard. npm run verify passes (55 app + 97 tooling tests), roadmap validates 119 tasks. Task remains doing because T-0.08i visual dependency is open. | pending |
 
-| 2026-10-11 | T-0.01 / T-0.06 / T-0.10 | Codex | Owner explicitly authorized updating branches and merging verified work to main. Consolidated the published PR 1–12 stack with README PR 13 in an isolated worktree; active Anti-Gravity edits remain separate. Added owner-supplied JPEG, enabled squash-only merge/automatic cleanup. Branch protection rejected with HTTP 403 (private repository requires GitHub Pro); T-0.10 remains incomplete. Fresh integration verification pending; no production or visual acceptance claim. | [#13](https://github.com/HassanG04/lolys/pull/13) |
+| 2026-10-11 | T-0.01 / T-0.06 / T-0.10 | Codex | Owner explicitly authorized updating branches and merging verified work to main. Consolidated the published PR 1–12 stack with README PR 13 in an isolated worktree; active Anti-Gravity edits remain separate. Added owner-supplied JPEG, enabled squash-only merge/automatic cleanup. Branch protection rejected with HTTP 403 (private repository requires GitHub Pro); T-0.10 remains incomplete. Fresh npm run verify passes with 152 tests; final remote integration checks still gate the merge. No production or visual acceptance claim. | [#13](https://github.com/HassanG04/lolys/pull/13) |
 
-### Open questions (agents add rows; the owner answers)
 | 2026-10-11 | T-0.06 | Codex | Owner explicitly authorized merging the existing verified CI/foundation work. Foundation lint rejection probe and all four checks are already recorded above; fresh combined npm run verify passes with 55 app and 97 tooling tests. CI implementation criteria complete; final integration PR checks still gate the merge. | [#13](https://github.com/HassanG04/lolys/pull/13) |
 | 2026-10-11 | T-0.10 | Codex | GitHub protection API returned HTTP 403: this private repository requires GitHub Pro. Squash-only merge and automatic merged-branch cleanup enabled, but required PR/check enforcement and direct-push rejection are not available. Owner account upgrade needed; no paid account or visibility change made. | [#13](https://github.com/HassanG04/lolys/pull/13) |
+
+### Open questions (agents add rows; the owner answers)
 
 
 | ID | Question | Task | Needed from | Status |
