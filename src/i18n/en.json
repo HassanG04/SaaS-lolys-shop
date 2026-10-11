@@ -13,6 +13,26 @@
   },
   "field": { "name": "Full Name", "notes": "Delivery notes", "governorate": "Governorate" },
   "search": { "placeholder": "Search for an accessory or mug…" },
+  "nav": {
+    "store": "Store",
+    "browse": "Browse",
+    "about": "About",
+    "cart": "Cart",
+    "account": "My Account",
+    "login": "Log in",
+    "skipToContent": "Skip to main content",
+    "openMenu": "Open main menu",
+    "closeMenu": "Close menu"
+  },
+  "footer": {
+    "tagline": "cute things for your style & space",
+    "rights": "All rights reserved",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "returns": "Return & Exchange Policy",
+    "shipping": "Shipping & Delivery"
+  },
+
   "kit": {
     "auth": {
       "title": "Login and registration",

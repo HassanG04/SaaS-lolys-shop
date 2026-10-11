@@ -1,18 +1,21 @@
-import { lazy, Suspense } from 'react'
+import { RouterProvider, createBrowserRouter, createMemoryRouter } from 'react-router-dom'
 import { ThemeProvider } from './components/ui/ThemeProvider'
-import { ThemeToggle } from './components/ui/ThemeToggle'
-import { LanguageToggle } from './components/ui/LanguageToggle'
 import { LanguageProvider } from './i18n/LanguageProvider'
 import { validateEnv, type EnvValidationResult } from './lib/env'
 import { EnvErrorScreen } from './components/EnvErrorScreen'
-
-const KitPage = import.meta.env.DEV ? lazy(() => import('./dev/KitPage')) : null
+import { routes } from './routes'
 
 export interface AppProps {
   envValidation?: EnvValidationResult
+  router?: ReturnType<typeof createBrowserRouter> | ReturnType<typeof createMemoryRouter>
+  initialEntries?: string[]
 }
 
-export default function App({ envValidation }: AppProps = {}) {
+export default function App({
+  envValidation,
+  router: customRouter,
+  initialEntries,
+}: AppProps = {}) {
   const validation = envValidation ?? validateEnv()
 
   if (!validation.success) {
@@ -34,19 +37,22 @@ export default function App({ envValidation }: AppProps = {}) {
     )
   }
 
+  // Use memory router in test environments or when initialEntries are provided for isolation
+  const isTest = import.meta.env.MODE === 'test'
+  const router =
+    customRouter ??
+    (initialEntries || isTest
+      ? createMemoryRouter(routes, {
+          initialEntries: initialEntries ?? [
+            typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/',
+          ],
+        })
+      : createBrowserRouter(routes))
+
   return (
     <LanguageProvider>
       <ThemeProvider>
-        {KitPage && window.location.pathname === '/__kit' ? (
-          <Suspense fallback={null}>
-            <KitPage />
-          </Suspense>
-        ) : (
-          <main className="flex gap-4 p-4">
-            <ThemeToggle />
-            <LanguageToggle />
-          </main>
-        )}
+        <RouterProvider router={router} />
       </ThemeProvider>
     </LanguageProvider>
   )

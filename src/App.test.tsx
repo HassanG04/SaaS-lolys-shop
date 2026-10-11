@@ -3,21 +3,61 @@ import { expect, test } from 'vitest'
 import App from '@/App'
 import { kit } from './i18n/ar.json'
 
-test('provides a main landmark without prototype shop behavior', () => {
-  render(<App />)
-  expect(screen.getByRole('main')).toContainElement(
+test('renders Layout with skip link, main landmark, navbar and footer', async () => {
+  render(<App initialEntries={['/']} />)
+
+  // Skip link
+  expect(
+    screen.getByRole('link', { name: /تخطي إلى المحتوى الرئيسي|Skip to main content/ }),
+  ).toBeInTheDocument()
+
+  // Main landmark
+  expect(screen.getByRole('main')).toBeInTheDocument()
+
+  // Navbar header with theme toggle
+  expect(screen.getByRole('banner')).toContainElement(
     screen.getByRole('button', { name: 'المظهر الداكن' }),
   )
+
+  // Footer landmark
+  expect(screen.getByRole('contentinfo')).toBeInTheDocument()
+
+  // Home heading
+  expect(
+    await screen.findByRole('heading', { name: 'متجر لوليز للإكسسوارات والمنزل' }),
+  ).toBeInTheDocument()
+})
+
+test('navigates to routes and renders placeholders', async () => {
+  // Category route
+  const { unmount: unmount1 } = render(<App initialEntries={['/category/earrings']} />)
+  expect(await screen.findByRole('heading', { name: 'قسم: earrings' })).toBeInTheDocument()
+  unmount1()
+
+  // Product route
+  const { unmount: unmount2 } = render(<App initialEntries={['/product/42']} />)
+  expect(await screen.findByRole('heading', { name: 'تفاصيل المنتج #42' })).toBeInTheDocument()
+  unmount2()
+
+  // Cart route
+  const { unmount: unmount3 } = render(<App initialEntries={['/cart']} />)
+  expect(await screen.findByRole('heading', { name: 'سلة التسوق' })).toBeInTheDocument()
+  unmount3()
+
+  // Account orders route
+  const { unmount: unmount4 } = render(<App initialEntries={['/account/orders']} />)
+  expect(await screen.findByRole('heading', { name: 'طلباتي' })).toBeInTheDocument()
+  unmount4()
+
+  // 404 route
+  const { unmount: unmount5 } = render(<App initialEntries={['/non-existent-route']} />)
+  expect(await screen.findByRole('heading', { name: '404' })).toBeInTheDocument()
+  unmount5()
 })
 
 test('opens the development kit at its route', async () => {
-  window.history.replaceState(null, '', '/__kit')
-  try {
-    render(<App />)
-    expect(await screen.findByRole('heading', { name: kit.title })).toBeInTheDocument()
-  } finally {
-    window.history.replaceState(null, '', '/')
-  }
+  render(<App initialEntries={['/__kit']} />)
+  expect(await screen.findByRole('heading', { name: kit.title })).toBeInTheDocument()
 })
 
 test('shows a clear development error screen when booting without env values', () => {

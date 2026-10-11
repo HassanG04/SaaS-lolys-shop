@@ -21,4 +21,9 @@ Object.defineProperty(window.navigator, 'language', {
   configurable: true,
 })
 
+Object.defineProperty(window, 'scrollTo', {
+  writable: true,
+  value: () => {},
+})
+
 afterEach(cleanup)

@@ -66,7 +66,7 @@ export function createChecker(tokens) {
           continue
         if (
           /^(?:border|divide|ring|outline|stroke)/.test(kind) &&
-          /^(?:\d+|solid|dashed|dotted|double|hidden|offset-\d+)$/.test(value)
+          /^(?:\d+|solid|dashed|dotted|double|hidden|offset-\d+|[xysetbrl])$/.test(value)
         )
           continue
         if (kind === 'bg' && /^(?:cover|contain|center|clip-text|no-repeat)$/.test(value)) continue

@@ -606,7 +606,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-2.02: Routing and layout
-`status: todo` `owner: agent` `needs: T-0.08e, T-2.01` `size: L`
+`status: done` `owner: agent` `needs: T-0.08e, T-2.01` `size: L`
 - **Do:** React Router with lazy routes. `Layout` with Navbar (Lolys' logo, search pill, links المتجر / تصفّح / عن المتجر, cart pill with count, account menu, theme and language toggles) and Footer (cocoa band with policy links). 404 page, scroll restoration, skip link, mobile navigation. Routes: `/`, `/category/:slug`, `/product/:id`, `/cart`, `/login`, `/checkout`, `/pay/:orderId`, `/account/orders`, `/account/security`, `/admin/*`, and the policy pages.
 - **Done when:** every route renders a placeholder, is keyboard navigable, fits a 360px viewport, and looks right in RTL in both themes.
 - **Verify:** `npm run verify` and manual check
@@ -1302,7 +1302,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-1.08 | Anti-Gravity | Implemented scenario S7 in supabase/tests/concurrency.sh and cross-platform launcher scripts/run-concurrency.mjs. Verified: session B waits for session A to finish and commit 3s transaction, session B fails with out-of-stock error, stock is 0, sold is 2, and exactly 1 order is created; npm run db:test:concurrency and npm run verify pass. | local only |
 | 2026-10-11 | T-1.14 | Anti-Gravity | Authored database runbooks docs/runbooks/local-dev.md (Docker, endpoints, Inbucket local mail, test users), docs/runbooks/first-admin.md (owner SQL promotion procedure, security restrictions), and docs/runbooks/delivery-fees.md (fail-safe fee configuration, nationwide post vs. representative). Verified with manual review and npm run verify. | local only |
 | 2026-10-11 | T-2.01 | Anti-Gravity | Added Zod-validated environment configuration in src/lib/env.ts (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_TURNSTILE_SITE_KEY) with readable error formatting, typed createClient<Database> in src/lib/supabase.ts, and clear EnvErrorScreen in development. Unit tests cover validation and error rendering. npm run test:unit:coverage (100% lines, 90% branch) and npm run verify pass. | local only |
-
+| 2026-10-11 | T-2.02 | Anti-Gravity | Implemented React Router v7 with route table, Layout shell, skip link (#main-content), ScrollToTop, responsive Navbar (brand logo, search pill, nav links, cart pill, account, theme/language toggles, mobile menu), and cocoa Footer (tagline, policy links, ribbon divider, copyright). Added 16 route page placeholders with PearlLoader suspense fallback. Updated ADR-0001 with react-router-dom@7.18.4 pin. Verified with 72 unit tests and npm run verify. | local only |
 
 ### Open questions (agents add rows; the owner answers)
 
