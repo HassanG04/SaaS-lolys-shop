@@ -824,7 +824,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 6: Dashboard
 
 #### T-6.01: Dashboard data
-`status: todo` `owner: agent` `needs: T-5.01, T-1.03` `size: S`
+`status: done` `owner: agent` `needs: T-5.01, T-1.03` `size: S`
 - **Do:** Hook for `admin_dashboard(p_from, p_to)`. Parse the JSON with a Zod schema (`docs/spec/database-contract.md` lists the shape). Presets 7, 30, 90 days and a custom range.
 - **Done when:** a malformed response produces a handled error; tests cover parsing.
 - **Verify:** `npm run test:unit`
@@ -1314,6 +1314,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-5.01 | Anti-Gravity | Implemented Admin shell and access control in src/features/admin/ (AdminShell, AdminSidebar rail with 8 Arabic links, AdminHeader, lazy chunk loader, responsive mobile drawer, AAL2 badge, store return link). Customer receives 403 view (AUTH-011) without downloading admin chunk; admin at aal1 is sent to MFA with ADM-002 prompt without downloading admin chunk; admin at aal2 loads AdminShell. Full verify passes (163 app + 105 tooling tests = 268 tests). | local only |
 | 2026-10-11 | T-5.06 | Anti-Gravity | Implemented Customers admin in src/features/admin/customers/ (table from customer_stats view, search by name/phone/product, read-only role badges with aria-readonly, no role mutation UI). Added scripts/admin-role-guard.test.mjs in test:tooling proving zero writes to profiles.role and zero admin_set_role calls in src/. Full verify passes (169 app + 107 tooling tests = 276 tests). | local only |
 | 2026-10-11 | T-5.07 | Anti-Gravity | Implemented Delivery fees admin in src/features/admin/delivery/ (governorate x method grid, add/update/remove fees, empty cells read "غير متاح", validation for fee >= 0 with Arabic error feedback). Integrated into /admin/delivery route. Integration test proves removing fee makes that method unavailable at checkout. Full verify passes (181 app + 107 tooling tests = 288 tests). | local only |
+| 2026-10-11 | T-6.01 | Anti-Gravity | Implemented Dashboard data layer in src/features/admin/dashboard/ (Zod schema for admin_dashboard RPC payload per database-contract.md, handled DashboardParseError on malformed response, preset date ranges for 7d/30d/90d/custom in Africa/Cairo time, useAdminDashboard React Query hook). Full verify passes (197 app + 107 tooling tests = 304 tests). | local only |
 
 ### Open questions (agents add rows; the owner answers)
 
