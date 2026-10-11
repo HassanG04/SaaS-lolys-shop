@@ -496,7 +496,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:test`
 
 #### T-1.06: DB tests: orders and cancellation
-`status: todo` `owner: agent` `needs: T-1.04` `size: L`
+`status: done` `owner: agent` `needs: T-1.04` `size: L`
 - **Do:** Implement scenarios S4, S5, S6, S10, S11 in `03_orders.test.sql` and `04_cancel_restock.test.sql`.
 - **Done when:** all assertions pass; failed orders leave no rows and no stock change.
 - **Verify:** `npm run db:test`
@@ -1297,6 +1297,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-1.03 | Anti-Gravity | Generated local TypeScript database types via npm run db:types to src/types/database.types.ts; added src/types/index.ts re-exporting Tables, TablesInsert, TablesUpdate, Enums, CompositeTypes, Constants. Added types.test.ts. Ignored generated database.types.ts in .prettierignore. Verification passed. | local only |
 | 2026-10-11 | T-1.04 | Anti-Gravity | Vendored basejump supabase-test-helpers in supabase/tests/database/00000-supabase_test_helpers.sql; implemented scenario S17 in 01_rls_enabled.test.sql asserting RLS on public schema and all 8 public tables. Verified with npm run db:test; mutation test verified (disabling RLS on categories causes failure, re-enabling passes). Full verify passes. | local only |
 | 2026-10-11 | T-1.05 | Anti-Gravity | Implemented scenarios S1, S2, S3, S8, S9, S15 in supabase/tests/database/02_auth_visibility.test.sql (32 assertions). Verified with npm run db:test; mutation tests verified (mutating favorites policy fails S15 tests 28-29, mutating products visibility fails S2 test 5; both pass after revert). Full verify passes. | local only |
+| 2026-10-11 | T-1.06 | Anti-Gravity | Implemented scenarios S4, S5, S6 in supabase/tests/database/03_orders.test.sql (43 assertions) and S10, S11 in 04_cancel_restock.test.sql (22 assertions). Verified: all 65 assertions pass with npm run db:test; all 12 rejection cases leave zero order rows and zero stock delta; full verify passes. | local only |
 
 ### Open questions (agents add rows; the owner answers)
 

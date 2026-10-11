@@ -1,10 +1,11 @@
 # Shared project progress
 
-Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-1.05.
+Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-1.06.
 
 ```yaml
-Current task: T-1.05 verified and marked done. Ready for T-1.06 (DB tests: orders and cancellation).
+Current task: T-1.06 verified and marked done. Ready for T-1.07 (DB tests: admin and privileges).
 Completed:
+  - T-1.06: Implemented scenarios S4, S5, S6 in supabase/tests/database/03_orders.test.sql (43 assertions) and S10, S11 in 04_cancel_restock.test.sql (22 assertions). Verified: all 65 assertions pass with npm run db:test (113 total db tests pass); all 12 rejection cases leave zero order rows and zero stock delta; npm run verify passes.
   - T-1.05: Implemented scenarios S1, S2, S3, S8, S9, S15 in supabase/tests/database/02_auth_visibility.test.sql (32 assertions). Verified with npm run db:test (48 total db tests pass); spot-checked two mutations (mutating favorites policy fails S15 tests 28-29, mutating products visibility policy fails S2 test 5; both pass after revert). npm run verify passes.
   - T-1.04: Vendored basejump supabase-test-helpers in supabase/tests/database/00000-supabase_test_helpers.sql; added 01_rls_enabled.test.sql asserting RLS on public schema and all 8 public tables (scenario S17). Verified with npm run db:test; mutation test verified (disabling RLS on categories causes failure, re-enabling passes). npm run verify passes.
   - T-1.03: Generated TypeScript database types via npm run db:types into src/types/database.types.ts; added src/types/index.ts re-exporting Tables, TablesInsert, TablesUpdate, Enums, CompositeTypes, Constants; added src/types/types.test.ts. Ignored database.types.ts in .prettierignore. npm run db:types && git diff --exit-code && npm run typecheck and npm run verify pass.
@@ -74,7 +75,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: T-1.05 is complete. Continue with T-1.06 (DB tests: orders and cancellation) on branch agent/T-1.06-orders-cancellation-tests.
+Next action: T-1.06 is complete. Continue with T-1.07 (DB tests: admin and privileges) on branch agent/T-1.07-admin-privileges-tests.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
