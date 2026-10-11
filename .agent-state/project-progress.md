@@ -3,11 +3,11 @@
 Updated 2026-10-11 (Africa/Cairo). Codex working alongside Anti-Gravity.
 
 ```yaml
-Current task: T-1.09b append-only migration guard; preparing cloud prerequisites without touching Anti-Gravity's database or application work.
+Current task: T-1.09b verified and published in PR 17; owner workflow review pending.
 Completed:
   - PR 15 secret guard and PR 16 bundle guard are ready for review; final PR 16 checks passed at 08c18b3 in run 38135882538.
   - Owner confirmed no hosted Supabase project exists. Prepared .agent-state/cloud-database.md with owner setup and remaining deployment gates.
-  - Split the independently testable migration guard from T-1.09; original database/type/PR acceptance remains there. Anti-Gravity owns T-5.06.
+  - Split the independently testable migration guard from T-1.09; original database/type/PR acceptance remains there. Anti-Gravity has since published its cumulative stack through T-8.01 at 7986020; its original checkout is clean.
   - Guard compares HEAD, index and working files against origin/main; push CI uses the pre-push commit. Missing history fails; new migrations remain editable.
 Files changed:
   - scripts/check-migrations.mjs
@@ -21,11 +21,13 @@ Files changed:
   - HANDOVER_TO_ANTI_GRAVITY.md
 Tests executed:
   - Five real-Git tests pass: additions, staged/unstaged/committed edits, restoration, renames/deletions, pre-push protection, missing history and Windows line endings.
-  - Full verify passes with 55 app + 111 tooling tests (166 total), migration/token guards, lint, formatting, TypeScript, production build, preview exclusion, secret and bundle guards. Roadmap validates 121 tasks. PR checks pending.
+  - Full verify passes with 55 app + 111 tooling tests (166 total), migration/token guards, lint, formatting, TypeScript, production build, preview exclusion, secret and bundle guards. Roadmap validates 121 tasks.
+  - All four PR 17 checks pass at 697e8c5 in run 38137004058. Cloud remains unprovisioned; no remote database verification is claimed.
 Problems found:
   - No cloud deployment is available yet. T-1.09 database CI, T-1.12 deployment workflows, and human-owned T-1.11/T-1.13 remain open.
   - This branch stacks on PR 16. No Supabase command, database reset or remote deployment ran. Workflow changes require owner review; no agent merge.
-Next action: Verify and publish T-1.09b. Owner creates shop-staging; continue T-1.09 after integrating Anti-Gravity's database code, then T-1.12. Preserve newer dependency versions and npm checks.
+  - The earlier automatic approval-review usage failure is resolved; the retry committed and pushed successfully.
+Next action: Owner reviews PRs 15, 16 and 17 in order. Reconcile the published Anti-Gravity stack with current main/guards on an implementation branch, preserving its newer dependencies and npm checks; then complete T-1.09 database CI and T-1.12 deployment workflows. Owner creates shop-staging using the cloud checklist.
 ```
 
 ## Previous session: main integration
