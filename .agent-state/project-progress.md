@@ -3,8 +3,9 @@
 Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-2.01.
 
 ```yaml
-Current task: T-1.16 done. Ready for next task.
+Current task: T-1.17 done. Ready for next task.
 Completed:
+  - T-1.17: Implemented shop settings (S22): created shop_settings table with 16 seeded default rows, privacy RLS (public keys readable by anon/customers, private keys visible only to admin at AAL2), admin_update_setting RPC enforcing key allow-list (ADM-008) and typed range/regex validation (ADM-007), audit trigger recording settings changes, and configured product-images bucket limit to 3 MB and allowed types (JPEG, PNG, WebP). Created 10_shop_settings.test.sql (26 assertions). Full verify passes (225 app + 121 tooling tests = 346 tests).
   - T-1.16: Implemented audit log (S21): created append-only audit_log table with immutability trigger blocking update and delete for all roles including owner, RLS allowing select only to admin at AAL2, audit_event helper, and triggers recording admin and database owner changes across products, categories, delivery_fees, orders, and profiles role. Customer place_order stock decrements are excluded. Created 09_audit_log.test.sql (17 assertions). Full verify passes (225 app + 121 tooling tests = 346 tests).
   - T-1.15: Hardened database admin access: is_admin() requires AAL2 MFA claim, added require_admin() raising ADM-002 at AAL1 and ADM-001 for non-admins, removed admin_set_role, added protect_profile_role trigger blocking API role mutations, clamped sign-up metadata in handle_new_user, and added text column length check constraints on profiles, categories, products, and orders. Created 08_admin_hardening.test.sql (30 assertions for S19, S20, S30) and updated 05_admin.test.sql. Full verify passes (225 app + 121 tooling tests = 346 tests).
   - T-1.12: Added .github/workflows/db-staging.yml and .github/workflows/db-production.yml with SHA-pinned setup-cli, un-echoed secrets, and manual confirmation gate. Authored docs/runbooks/deploy-db.md covering staging/production procedures, pausing caveat and checklists. Full verify passes (225 app + 121 tooling tests = 346 tests).

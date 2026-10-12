@@ -101,7 +101,7 @@ begin
       v_is_admin := true;
     end if;
   else
-    if current_user in ('postgres', 'supabase_admin', 'service_role')
+    if current_user in ('postgres', 'supabase_admin')
        or session_user in ('postgres', 'supabase_admin') then
       v_is_owner := true;
       v_role := current_user;

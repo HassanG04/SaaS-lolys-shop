@@ -232,6 +232,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"shop_settings": {
+                  Row: {
+                    "is_public": boolean;
+                    "key": string;
+                    "updated_at": string;
+                    "updated_by": string | null;
+                    "value": Json;
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "is_public"?: boolean;
+                    "key": string;
+                    "updated_at"?: string;
+                    "updated_by"?: string | null;
+                    "value": Json;
+                  }
+                  Update: {
+                    "is_public"?: boolean;
+                    "key"?: string;
+                    "updated_at"?: string;
+                    "updated_by"?: string | null;
+                    "value"?: Json;
+                  }
+                  Relationships: [
+                    {
+                      foreignKeyName: "shop_settings_updated_by_fkey"
+                      columns: ["updated_by"]
+                      isOneToOne: false
+                      referencedRelation: "users"
+                      referencedColumns: ["id"]
+                    }
+                  ]
                 }
           }
           Views: {
@@ -252,6 +284,13 @@ isOneToOne: false
                 }
           }
           Functions: {
+            "admin_update_setting": {
+              Args: {
+                "p_key": string;
+                "p_value": Json;
+              };
+              Returns: undefined;
+            };
             "audit_event": {
               Args: {
                 "p_action": string;
