@@ -23,6 +23,7 @@ const ResendConfirmationPage = lazy(() => import('./pages/ResendConfirmationPage
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'))
 const OrderConfirmationPage = lazy(() => import('./pages/OrderConfirmationPage'))
 const PayOrderPage = lazy(() => import('./pages/PayOrderPage'))
+const AccountPage = lazy(() => import('./pages/AccountPage'))
 const AccountOrdersPage = lazy(() => import('./pages/AccountOrdersPage'))
 const AccountSecurityPage = lazy(() => import('./pages/AccountSecurityPage'))
 const AdminShell = lazy(() => adminChunkLoader())
@@ -74,257 +75,63 @@ function ProtectedAdmin({ children }: { children: ReactNode }) {
   )
 }
 
+const lazyRoute = (Component: React.ComponentType) => (
+  <Suspended>
+    <Component />
+  </Suspended>
+)
+const authRoute = (Component: React.ComponentType) => (
+  <ProtectedAuth>
+    <Component />
+  </ProtectedAuth>
+)
+const adminRoute = (Component: React.ComponentType) => (
+  <ProtectedAdmin>
+    <Component />
+  </ProtectedAdmin>
+)
+
 export const routes: RouteObject[] = [
   {
     path: '/',
     element: <Layout />,
     children: [
-      {
-        index: true,
-        element: (
-          <Suspended>
-            <HomePage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'category/:slug',
-        element: (
-          <Suspended>
-            <CategoryPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'product/:id',
-        element: (
-          <Suspended>
-            <ProductPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'cart',
-        element: (
-          <Suspended>
-            <CartPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'search',
-        element: (
-          <Suspended>
-            <SearchPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'login',
-        element: (
-          <Suspended>
-            <LoginPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'register',
-        element: (
-          <Suspended>
-            <RegisterPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'reset-password',
-        element: (
-          <Suspended>
-            <ResetPasswordPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'resend-confirmation',
-        element: (
-          <Suspended>
-            <ResendConfirmationPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'checkout',
-        element: (
-          <ProtectedAuth>
-            <CheckoutPage />
-          </ProtectedAuth>
-        ),
-      },
-      {
-        path: 'order/:id/thanks',
-        element: (
-          <ProtectedAuth>
-            <OrderConfirmationPage />
-          </ProtectedAuth>
-        ),
-      },
-      {
-        path: 'pay/:orderId',
-        element: (
-          <Suspended>
-            <PayOrderPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'account/orders',
-        element: (
-          <ProtectedAuth>
-            <AccountOrdersPage />
-          </ProtectedAuth>
-        ),
-      },
-      {
-        path: 'account/security',
-        element: (
-          <ProtectedAuth>
-            <AccountSecurityPage />
-          </ProtectedAuth>
-        ),
-      },
-      {
-        path: 'admin/mfa/enroll',
-        element: (
-          <ProtectedAdmin>
-            <MfaEnrollPage />
-          </ProtectedAdmin>
-        ),
-      },
-      {
-        path: 'admin/mfa/challenge',
-        element: (
-          <ProtectedAdmin>
-            <MfaChallengePage />
-          </ProtectedAdmin>
-        ),
-      },
-      {
-        path: 'account/mfa/enroll',
-        element: (
-          <ProtectedAuth>
-            <MfaEnrollPage />
-          </ProtectedAuth>
-        ),
-      },
-      {
-        path: 'mfa/challenge',
-        element: (
-          <ProtectedAuth>
-            <MfaChallengePage />
-          </ProtectedAuth>
-        ),
-      },
+      { index: true, element: lazyRoute(HomePage) },
+      { path: 'category/:slug', element: lazyRoute(CategoryPage) },
+      { path: 'product/:id', element: lazyRoute(ProductPage) },
+      { path: 'cart', element: lazyRoute(CartPage) },
+      { path: 'search', element: lazyRoute(SearchPage) },
+      { path: 'login', element: lazyRoute(LoginPage) },
+      { path: 'register', element: lazyRoute(RegisterPage) },
+      { path: 'reset-password', element: lazyRoute(ResetPasswordPage) },
+      { path: 'resend-confirmation', element: lazyRoute(ResendConfirmationPage) },
+      { path: 'checkout', element: authRoute(CheckoutPage) },
+      { path: 'order/:id/thanks', element: authRoute(OrderConfirmationPage) },
+      { path: 'pay/:orderId', element: lazyRoute(PayOrderPage) },
+      { path: 'account', element: authRoute(AccountPage) },
+      { path: 'account/orders', element: authRoute(AccountOrdersPage) },
+      { path: 'account/security', element: authRoute(AccountSecurityPage) },
+      { path: 'admin/mfa/enroll', element: adminRoute(MfaEnrollPage) },
+      { path: 'admin/mfa/challenge', element: adminRoute(MfaChallengePage) },
+      { path: 'account/mfa/enroll', element: authRoute(MfaEnrollPage) },
+      { path: 'mfa/challenge', element: authRoute(MfaChallengePage) },
       {
         path: 'admin',
-        element: (
-          <ProtectedAdmin>
-            <AdminShell />
-          </ProtectedAdmin>
-        ),
+        element: adminRoute(AdminShell),
         children: [
-          {
-            index: true,
-            element: (
-              <Suspended>
-                <AdminPage />
-              </Suspended>
-            ),
-          },
-          {
-            path: 'customers',
-            element: (
-              <Suspended>
-                <AdminCustomersPage />
-              </Suspended>
-            ),
-          },
-          {
-            path: 'delivery',
-            element: (
-              <Suspended>
-                <AdminDeliveryFeesPage />
-              </Suspended>
-            ),
-          },
-          {
-            path: '*',
-            element: (
-              <Suspended>
-                <AdminPage />
-              </Suspended>
-            ),
-          },
+          { index: true, element: lazyRoute(AdminPage) },
+          { path: 'customers', element: lazyRoute(AdminCustomersPage) },
+          { path: 'delivery', element: lazyRoute(AdminDeliveryFeesPage) },
+          { path: '*', element: lazyRoute(AdminPage) },
         ],
       },
-      {
-        path: 'about',
-        element: (
-          <Suspended>
-            <AboutPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'terms',
-        element: (
-          <Suspended>
-            <TermsPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'privacy',
-        element: (
-          <Suspended>
-            <PrivacyPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'returns',
-        element: (
-          <Suspended>
-            <ReturnsPage />
-          </Suspended>
-        ),
-      },
-      {
-        path: 'shipping',
-        element: (
-          <Suspended>
-            <ShippingPage />
-          </Suspended>
-        ),
-      },
-      ...(KitPage
-        ? [
-            {
-              path: '__kit',
-              element: (
-                <Suspended>
-                  <KitPage />
-                </Suspended>
-              ),
-            },
-          ]
-        : []),
-      {
-        path: '*',
-        element: (
-          <Suspended>
-            <NotFoundPage />
-          </Suspended>
-        ),
-      },
+      { path: 'about', element: lazyRoute(AboutPage) },
+      { path: 'terms', element: lazyRoute(TermsPage) },
+      { path: 'privacy', element: lazyRoute(PrivacyPage) },
+      { path: 'returns', element: lazyRoute(ReturnsPage) },
+      { path: 'shipping', element: lazyRoute(ShippingPage) },
+      ...(KitPage ? [{ path: '__kit', element: lazyRoute(KitPage) }] : []),
+      { path: '*', element: lazyRoute(NotFoundPage) },
     ],
   },
 ]

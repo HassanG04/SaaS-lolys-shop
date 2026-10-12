@@ -5,7 +5,7 @@ import { Card } from '../components/ui/Card'
 import { Input } from '../components/ui/Input'
 import { Ltr } from '../components/ui/Ltr'
 import { PearlLoader } from '../components/ui/PearlLoader'
-import { AuthAlert } from '../features/auth/authErrors'
+import { AuthAlert } from '../features/auth/AuthAlert'
 import { useAuth } from '../features/auth/AuthProvider'
 import type { AuthErrorCode, MfaEnrollResult } from '../features/auth/types'
 

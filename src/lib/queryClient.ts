@@ -6,13 +6,11 @@ export function createQueryClient(config?: QueryClientConfig): QueryClient {
       queries: {
         retry: (failureCount, error) => {
           if (failureCount >= 2) return false
-          if (error && typeof error === 'object' && 'status' in error) {
-            const status = (error as { status: unknown }).status
-            if (typeof status === 'number' && status >= 400 && status < 500) {
-              return false
-            }
-          }
-          return true
+          const status =
+            error && typeof error === 'object' && 'status' in error
+              ? Number((error as { status: unknown }).status)
+              : 0
+          return !(status >= 400 && status < 500)
         },
         staleTime: 60 * 1000,
         gcTime: 5 * 60 * 1000,

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
-import { RibbonDivider } from '../ui/ornaments'
+import { RibbonDivider } from '../ui/RibbonDivider'
 
 export function Footer() {
   const { t } = useLanguage()

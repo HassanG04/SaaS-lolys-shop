@@ -5,7 +5,7 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Input } from '../components/ui/Input'
 import { Ltr } from '../components/ui/Ltr'
-import { AuthAlert } from '../features/auth/authErrors'
+import { AuthAlert } from '../features/auth/AuthAlert'
 import { useAal, useAuth } from '../features/auth/AuthProvider'
 import type { AuthErrorCode } from '../features/auth/types'
 

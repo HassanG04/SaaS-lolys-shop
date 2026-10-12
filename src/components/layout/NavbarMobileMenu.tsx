@@ -71,7 +71,7 @@ export default function NavbarMobileMenu({
           </NavLink>
         ))}
         <Link
-          to="/account/orders"
+          to="/account"
           onClick={onClose}
           className="flex h-11 items-center px-4 rounded-(--radius-chip) text-body font-medium text-(--color-text) hover:bg-(--color-surface-2)"
         >

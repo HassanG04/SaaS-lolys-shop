@@ -7,24 +7,40 @@ import { useCart } from '../../features/cart'
 
 const NavbarMobileMenu = lazy(() => import('./NavbarMobileMenu'))
 
-function NavbarLogoOrnament({ className = 'size-6' }: { className?: string }) {
+function NavIcon({
+  children,
+  className = 'size-5',
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
   return (
     <svg
-      aria-hidden="true"
-      focusable="false"
-      viewBox="0 0 24 24"
       className={className}
+      viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
-      <path d="M11 10C4 2 1 5 3 10s6 4 8 2m2-2c7-8 10-5 8 0s-6 4-8 2M10 13l-4 8 4-2 2 2 2-8m-1 0 5 8-1-5 4 1-6-5" />
-      <rect x="10" y="9" width="4" height="5" rx="1" />
+      {children}
     </svg>
   )
 }
+
+function NavbarLogoOrnament({ className = 'size-6' }: { className?: string }) {
+  return (
+    <NavIcon className={className}>
+      <path d="M11 10C4 2 1 5 3 10s6 4 8 2m2-2c7-8 10-5 8 0s-6 4-8 2M10 13l-4 8 4-2 2 2 2-8m-1 0 5 8-1-5 4 1-6-5" />
+      <rect x="10" y="9" width="4" height="5" rx="1" />
+    </NavIcon>
+  )
+}
+
+const pillBtnClass =
+  'h-11 items-center rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) px-3 py-1 text-small font-medium text-(--color-text) transition-colors hover:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)'
 
 interface NavbarProps {
   cartCount?: number
@@ -102,19 +118,10 @@ export function Navbar({ cartCount }: NavbarProps) {
               aria-label={t.ui.search}
               className="absolute end-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-(--radius-pill) bg-(--color-brand) text-(--color-brand-contrast) transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
             >
-              <svg
-                className="size-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
+              <NavIcon className="size-4">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.3-4.3" />
-              </svg>
+              </NavIcon>
             </button>
           </div>
         </form>
@@ -145,45 +152,27 @@ export function Navbar({ cartCount }: NavbarProps) {
               e.preventDefault()
               cart.openDrawer()
             }}
-            className="flex h-11 items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) px-3 py-1 text-small font-medium text-(--color-text) transition-colors hover:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+            className={`flex gap-2 ${pillBtnClass}`}
             aria-label={`${t.nav.cart} (${displayCartCount})`}
           >
-            <svg
-              className="size-5 text-(--color-brand)"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
+            <NavIcon className="size-5 text-(--color-brand)">
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
               <path d="M3 6h18" />
               <path d="M16 10a4 4 0 0 1-8 0" />
-            </svg>
+            </NavIcon>
             <span className="font-semibold text-(--color-brand)">{displayCartCount}</span>
           </Link>
 
           {/* Account Link */}
           <Link
-            to="/account/orders"
-            className="hidden sm:flex h-11 items-center justify-center rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) px-3 py-1 text-small font-medium text-(--color-text) transition-colors hover:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+            to="/account"
+            className={`hidden sm:flex justify-center ${pillBtnClass}`}
             aria-label={t.nav.account}
           >
-            <svg
-              className="size-5 text-(--color-brand)"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
+            <NavIcon className="size-5 text-(--color-brand)">
               <circle cx="12" cy="8" r="5" />
               <path d="M20 21a8 8 0 1 0-16 0" />
-            </svg>
+            </NavIcon>
           </Link>
 
           {/* Theme & Language Toggles */}
@@ -198,35 +187,17 @@ export function Navbar({ cartCount }: NavbarProps) {
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? t.nav.closeMenu : t.nav.openMenu}
           >
-            {mobileMenuOpen ? (
-              <svg
-                className="size-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
+            <NavIcon className="size-5">
+              {mobileMenuOpen ? (
                 <path d="M18 6 6 18M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg
-                className="size-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <line x1="4" x2="20" y1="12" y2="12" />
-                <line x1="4" x2="20" y1="6" y2="6" />
-                <line x1="4" x2="20" y1="18" y2="18" />
-              </svg>
-            )}
+              ) : (
+                <>
+                  <line x1="4" x2="20" y1="12" y2="12" />
+                  <line x1="4" x2="20" y1="6" y2="6" />
+                  <line x1="4" x2="20" y1="18" y2="18" />
+                </>
+              )}
+            </NavIcon>
           </button>
         </div>
       </div>
