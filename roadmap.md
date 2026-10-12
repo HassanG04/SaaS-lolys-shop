@@ -520,7 +520,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** open a PR and read the checks. Then ask the owner to add `db` to the required checks (T-0.10).
 
 #### T-1.10: Stable error codes
-`status: todo` `owner: agent` `needs: T-1.09` `size: M`
+`status: done` `owner: agent` `needs: T-1.09` `size: M`
 - **Do:** One new migration (never edit merged ones) that recreates `place_order`, `cancel_my_order`, `admin_dashboard` and `orders_status_guard` so every `raise exception` also sets `using hint = '<code>'` from `docs/spec/error-codes.md` (stock errors add `detail = 'left=<n>'`). English messages stay for logs and tests. Add pgTAP checks (scenario S18) and regenerate types. (`admin_set_role` is dropped in T-1.15, so it is left alone here.)
 - **Done when:** every failure path returns its code in `hint`, and all earlier tests still pass.
 - **Verify:** `npm run db:reset && npm run db:test`
@@ -1321,6 +1321,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-0.09 | Anti-Gravity + Codex | Reconciled repository guards: scripts/check-secrets.mjs rejecting privileged JWTs, secret keys and role mentions outside tests/docs; scripts/check-bundle.mjs enforcing <= 200 KB initial JS gzip budget and lazy admin separation; wired both into build and verify pipelines. Full verify passes. | PR #15 / local |
 | 2026-10-12 | T-0.12 | Anti-Gravity + Codex | Reconciled repository security baseline: SECURITY.md, public/.well-known/security.txt, .github/CODEOWNERS, .github/dependabot.yml, .gitleaksignore, and secrets CI job. Full verify passes (225 app + 121 tooling tests = 346 tests). | PR #18 / local |
 | 2026-10-12 | T-1.09 | Anti-Gravity | Added db job to .github/workflows/ci.yml with SHA-pinned setup-cli, supabase start, reset, test, concurrency launcher, types regeneration diff check, and migration guard. Removed completed check:migrations from pending.mjs. Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.10 | Anti-Gravity | Added migration 20261012040559_error_codes.sql setting hint to stable error codes (AUTH-004, ORD-001..ORD-008, ORD-009, ORD-014, ADM-001) and detail left=N for stock in place_order, cancel_my_order, admin_dashboard, and orders_status_guard. Implemented Scenario S18 pgTAP test suite in 07_error_codes.test.sql (20 assertions). Full verify passes (346 tests). | pending |
 
 
 
