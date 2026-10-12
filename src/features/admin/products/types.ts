@@ -34,3 +34,27 @@ export interface UpdateProductActiveParams {
   productId: number
   isActive: boolean
 }
+
+export interface ProductFormData {
+  name: string
+  name_ar: string
+  description: string
+  description_ar: string
+  category_id: number | ''
+  price: number | ''
+  discount_percent: number | ''
+  stock_quantity: number | ''
+  is_featured: boolean
+  is_active: boolean
+  image_url: string | null
+  extra_images: string[]
+}
+
+export interface CreateProductParams {
+  formData: ProductFormData
+}
+
+export interface UpdateProductParams {
+  productId: number
+  formData: Partial<ProductFormData>
+}

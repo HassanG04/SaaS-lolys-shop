@@ -22,7 +22,8 @@ export default defineConfig({
             id.includes('node_modules/scheduler/') ||
             id.includes('node_modules/@tanstack/') ||
             id.includes('node_modules/i18next/') ||
-            id.includes('node_modules/react-i18next/')
+            id.includes('node_modules/react-i18next/') ||
+            id.includes('node_modules/react-router')
           ) {
             return 'react-vendor'
           }

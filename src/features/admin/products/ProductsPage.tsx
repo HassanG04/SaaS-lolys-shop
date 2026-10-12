@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { useSeo } from '@/features/seo'
 import { Card } from '@/components/ui/Card'
@@ -12,10 +13,12 @@ import { ProductImage } from '@/features/catalog/components/ProductImage'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useAdminProducts, useAdminCategories, useUpdateProductActive } from './hooks'
 import { StockEditDialog } from './StockEditDialog'
+import { DeleteProductDialog } from './DeleteProductDialog'
 import type { AdminProduct, ActiveFilterValue, StockFilterValue } from './types'
 
 export default function ProductsPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const isAr = lang === 'ar'
   const toast = useToast()
 
   useSeo({
@@ -39,6 +42,7 @@ export default function ProductsPage() {
 
   // Dialog state
   const [stockEditProduct, setStockEditProduct] = useState<AdminProduct | null>(null)
+  const [productToDelete, setProductToDelete] = useState<AdminProduct | null>(null)
 
   // Filter state
   const [search, setSearch] = useState('')
@@ -149,10 +153,16 @@ export default function ProductsPage() {
           <h1 className="text-h1 font-bold font-accent text-brand">{t.admin.productsTitle}</h1>
           <p className="mt-2 text-body text-text-muted">{t.admin.productsDesc}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <span className="rounded-pill bg-surface-tint border border-border px-3 py-1 text-small font-semibold text-brand">
             <Ltr>{filteredProducts.length}</Ltr> / <Ltr>{products?.length ?? 0}</Ltr> منتج
           </span>
+          <Link
+            to="/admin/products/new"
+            className="inline-flex items-center justify-center rounded-pill bg-brand px-4 py-2 text-small font-semibold text-brand-contrast shadow-card hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-focus"
+          >
+            + {isAr ? 'إضافة منتج جديد' : 'Add New Product'}
+          </Link>
         </div>
       </div>
 
@@ -432,9 +442,26 @@ export default function ProductsPage() {
 
                       {/* Actions */}
                       <td className="p-4 align-middle text-end">
-                        <Button variant="secondary" onClick={() => setStockEditProduct(product)}>
-                          {t.admin.editStock}
-                        </Button>
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            to={`/admin/products/${product.id}`}
+                            className="inline-flex items-center justify-center rounded-pill border border-border bg-surface px-3 py-1 text-small font-semibold text-text hover:border-brand hover:text-brand focus:outline-none focus:ring-2 focus:ring-focus"
+                            aria-label={`تعديل تفاصيل ${product.name_ar || product.name}`}
+                          >
+                            {isAr ? 'تعديل' : 'Edit'}
+                          </Link>
+                          <Button variant="secondary" onClick={() => setStockEditProduct(product)}>
+                            {t.admin.editStock}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            onClick={() => setProductToDelete(product)}
+                            className="text-danger hover:underline p-1 text-small"
+                            aria-label={`حذف ${product.name_ar || product.name}`}
+                          >
+                            {isAr ? 'حذف' : 'Delete'}
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   )
@@ -447,6 +474,9 @@ export default function ProductsPage() {
 
       {/* Inline Stock Edit Dialog */}
       <StockEditDialog product={stockEditProduct} onClose={() => setStockEditProduct(null)} />
+
+      {/* Delete / Archive Dialog */}
+      <DeleteProductDialog product={productToDelete} onClose={() => setProductToDelete(null)} />
     </div>
   )
 }

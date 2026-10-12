@@ -30,6 +30,7 @@ const AccountSecurityPage = lazy(() => import('./pages/AccountSecurityPage'))
 const AdminShell = lazy(() => adminChunkLoader())
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const AdminProductsPage = lazy(() => import('./features/admin/products/ProductsPage'))
+const AdminProductFormPage = lazy(() => import('./features/admin/products/ProductFormPage'))
 const AdminCustomersPage = lazy(() => import('./features/admin/customers/CustomersPage'))
 const AdminDeliveryFeesPage = lazy(() => import('./features/admin/delivery/DeliveryFeesPage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
@@ -106,6 +107,8 @@ export const routes: RouteObject[] = [
         children: [
           { index: true, element: lazyR(AdminPage) },
           r('products', lazyR(AdminProductsPage)),
+          r('products/new', lazyR(AdminProductFormPage)),
+          r('products/:id', lazyR(AdminProductFormPage)),
           r('customers', lazyR(AdminCustomersPage)),
           r('delivery', lazyR(AdminDeliveryFeesPage)),
           r('*', lazyR(AdminPage)),

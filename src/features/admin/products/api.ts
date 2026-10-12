@@ -98,6 +98,12 @@ export async function updateProductStock({
   }
 }
 
+import {
+  buildProductInsertPayload,
+  buildProductUpdatePayload,
+  type ProductInputForm,
+} from './payloadBuilder'
+
 /**
  * Updates a product's active (is_active) status.
  */
@@ -121,4 +127,139 @@ export async function updateProductActive({
   } catch (err) {
     throw toAppError(err)
   }
+}
+
+/**
+ * Fetches a single product by ID for admin viewing / editing.
+ */
+export async function getAdminProductById(productId: number): Promise<AdminProduct> {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, categories:category_id (id, name, name_ar, slug)')
+      .eq('id', productId)
+      .single()
+
+    if (error) {
+      throw toAppError(error)
+    }
+
+    return normalizeAdminProduct(data as RawAdminProductRow)
+  } catch (err) {
+    throw toAppError(err)
+  }
+}
+
+/**
+ * Creates a new product.
+ * Uses buildProductInsertPayload to strictly omit generated and DB-maintained columns.
+ */
+export async function createAdminProduct(formData: ProductInputForm): Promise<AdminProduct> {
+  try {
+    const payload = buildProductInsertPayload(formData)
+
+    const { data, error } = await supabase
+      .from('products')
+      .insert(payload)
+      .select('*, categories:category_id (id, name, name_ar, slug)')
+      .single()
+
+    if (error) {
+      throw toAppError(error)
+    }
+
+    return normalizeAdminProduct(data as RawAdminProductRow)
+  } catch (err) {
+    throw toAppError(err)
+  }
+}
+
+/**
+ * Updates an existing product.
+ * Uses buildProductUpdatePayload to strictly omit generated and DB-maintained columns.
+ */
+export async function updateAdminProduct(
+  productId: number,
+  formData: Partial<ProductInputForm>,
+): Promise<AdminProduct> {
+  try {
+    const payload = buildProductUpdatePayload(formData)
+
+    const { data, error } = await supabase
+      .from('products')
+      .update(payload)
+      .eq('id', productId)
+      .select('*, categories:category_id (id, name, name_ar, slug)')
+      .single()
+
+    if (error) {
+      throw toAppError(error)
+    }
+
+    return normalizeAdminProduct(data as RawAdminProductRow)
+  } catch (err) {
+    throw toAppError(err)
+  }
+}
+
+/**
+ * Permanently deletes a product via admin_delete_product RPC.
+ * Throws AppError('ADM-004') if the product has already been ordered.
+ */
+export async function deleteAdminProduct(productId: number): Promise<void> {
+  try {
+    const { error } = await supabase.rpc('admin_delete_product', {
+      p_id: productId,
+    })
+
+    if (error) {
+      throw toAppError(error)
+    }
+  } catch (err) {
+    throw toAppError(err)
+  }
+}
+
+/**
+ * Archives a product (sets is_active to false).
+ */
+export async function archiveAdminProduct(productId: number): Promise<AdminProduct> {
+  return updateProductActive({ productId, isActive: false })
+}
+
+/**
+ * Restores an archived product (sets is_active to true).
+ */
+export async function restoreAdminProduct(productId: number): Promise<AdminProduct> {
+  return updateProductActive({ productId, isActive: true })
+}
+
+import {
+  validateProductImageFile,
+  resizeAndEncodeImage,
+  generateProductStoragePath,
+} from './imageUpload'
+
+/**
+ * Validates, resizes, re-encodes, and uploads an image to `product-images` bucket.
+ * Returns the relative storage path to be stored in the database.
+ */
+export async function uploadProductImage(
+  file: File | Blob,
+  productId: number | string,
+): Promise<string> {
+  await validateProductImageFile(file)
+  const { blob, extension, contentType } = await resizeAndEncodeImage(file)
+  const storagePath = generateProductStoragePath(productId, extension)
+
+  const { error } = await supabase.storage.from('product-images').upload(storagePath, blob, {
+    contentType,
+    upsert: true,
+  })
+
+  if (error) {
+    throw new AppError('UPL-001')
+  }
+
+  return storagePath
 }

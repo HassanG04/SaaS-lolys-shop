@@ -1,4 +1,8 @@
 export { default } from './ProductsPage'
+export { default as ProductFormPage } from './ProductFormPage'
 export * from './types'
 export * from './api'
 export * from './hooks'
+export * from './payloadBuilder'
+export * from './imageUpload'
+export * from './DeleteProductDialog'
