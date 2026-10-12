@@ -62,6 +62,7 @@ jobs:
         run: npm run check:migrations
         env:
           MIGRATION_BASE_SHA: ${{ github.event.before }}
+      - run: npm run check:sql
       - run: npm run lint
       - run: npm run check:tokens
       - run: npm run format:check
@@ -136,6 +137,8 @@ jobs:
         run: npm run check:migrations
         env:
           MIGRATION_BASE_SHA: ${{ github.event.before }}
+      - name: Verify SQL guard rules
+        run: npm run check:sql
       - name: Start local Supabase stack
         run: supabase start
       - name: Reset database and run migrations
