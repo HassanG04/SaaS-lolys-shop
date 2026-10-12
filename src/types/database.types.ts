@@ -168,14 +168,14 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "created_at": string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id": number,"notes": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"rep_name": string | null,"rep_phone": string | null,"ship_address": string,"ship_city": string | null,"ship_governorate": string,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number": string | null,"updated_at": string,"user_id": string
+                    "created_at": string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id": number,"notes": string | null,"paid_at": string | null,"payment_deadline": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"payment_proof_path": string | null,"payment_reference": string | null,"payment_review_note": string | null,"payment_reviewed_by": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"payment_submitted_at": string | null,"rep_name": string | null,"rep_phone": string | null,"ship_address": string,"ship_alt_phone": string | null,"ship_apartment": string | null,"ship_city": string | null,"ship_district": string | null,"ship_floor": string | null,"ship_governorate": string,"ship_landmark": string | null,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number": string | null,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address": string,"ship_city"?: string | null,"ship_governorate": string,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status"?: Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id": string
+                    "created_at"?: string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"paid_at"?: string | null,"payment_deadline"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"payment_proof_path"?: string | null,"payment_reference"?: string | null,"payment_review_note"?: string | null,"payment_reviewed_by"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"payment_submitted_at"?: string | null,"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address": string,"ship_alt_phone"?: string | null,"ship_apartment"?: string | null,"ship_city"?: string | null,"ship_district"?: string | null,"ship_floor"?: string | null,"ship_governorate": string,"ship_landmark"?: string | null,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status"?: Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "created_at"?: string,"delivery_method"?: Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address"?: string,"ship_city"?: string | null,"ship_governorate"?: string,"ship_name"?: string,"ship_phone"?: string,"shipping_fee"?: number,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string
+                    "created_at"?: string,"delivery_method"?: Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"paid_at"?: string | null,"payment_deadline"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"payment_proof_path"?: string | null,"payment_reference"?: string | null,"payment_review_note"?: string | null,"payment_reviewed_by"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"payment_submitted_at"?: string | null,"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address"?: string,"ship_alt_phone"?: string | null,"ship_apartment"?: string | null,"ship_city"?: string | null,"ship_district"?: string | null,"ship_floor"?: string | null,"ship_governorate"?: string,"ship_landmark"?: string | null,"ship_name"?: string,"ship_phone"?: string,"shipping_fee"?: number,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -214,14 +214,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "address": string | null,"city": string | null,"created_at": string,"full_name": string,"governorate_id": number | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["user_role"]
+                    "address": string | null,"alt_phone": string | null,"apartment": string | null,"city": string | null,"created_at": string,"district": string | null,"floor": string | null,"full_name": string,"governorate_id": number | null,"id": string,"landmark": string | null,"phone": string | null,"role": Database["public"]['Enums']["user_role"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"city"?: string | null,"created_at"?: string,"full_name"?: string,"governorate_id"?: number | null,"id": string,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id": string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Update: {
-                    "address"?: string | null,"city"?: string | null,"created_at"?: string,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Relationships: [
                     {
@@ -317,22 +317,38 @@ isOneToOne: false
               Args: Record<PropertyKey, never>;
               Returns: undefined;
             };
+            "submit_payment_proof": {
+              Args: {
+                "p_order_id": number;
+                "p_proof_path": string;
+                "p_reference": string;
+              };
+              Returns: undefined;
+            };
+            "admin_review_payment": {
+              Args: {
+                "p_approve": boolean;
+                "p_note"?: string | null;
+                "p_order_id": number;
+              };
+              Returns: undefined;
+            };
+            "expire_unpaid_orders": {
+              Args: Record<PropertyKey, never>;
+              Returns: number;
+            };
             "place_order": {
               Args: {
                 "p_delivery_method": Database["public"]["Enums"]["delivery_method"];
-                "p_governorate_id": number;
                 "p_items": Json;
-                "p_notes"?: string;
-                "p_ship_address": string;
-                "p_ship_city": string;
-                "p_ship_name": string;
-                "p_ship_phone": string;
+                "p_payment_method": Database["public"]["Enums"]["payment_method"];
+                "p_ship": Json;
               };
               Returns: number;
             };
           }
           Enums: {
-            "delivery_method": "egypt_post"|"representative","order_status": "pending"|"confirmed"|"shipped"|"delivered"|"cancelled","payment_method": "cod","user_role": "customer"|"admin"
+            "delivery_method": "egypt_post"|"representative","order_status": "pending"|"confirmed"|"shipped"|"delivered"|"cancelled","payment_method": "cod"|"instapay_qr","payment_status": "unpaid"|"awaiting_proof"|"under_review"|"paid"|"rejected","user_role": "customer"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never

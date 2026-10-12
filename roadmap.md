@@ -568,7 +568,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:test`
 
 #### T-1.18: Orders v2 and payments
-`status: todo` `owner: agent` `needs: T-1.17` `size: L`
+`status: done` `owner: agent` `needs: T-1.17` `size: L`
 - **Do:** Migration (S23, S24, S25). Add `instapay_qr` to `payment_method`; add enum `payment_status`; add the new order columns and the structured address fields; add the profile address columns; replace `place_order` with the v2 signature (`p_items`, `p_delivery_method`, `p_payment_method`, `p_ship`), enforcing settings (enabled methods, payment window), field lengths and error codes; add `submit_payment_proof`, `admin_review_payment` and `expire_unpaid_orders` (schedule with `pg_cron` every 30 minutes if available, otherwise document a manual admin button); add a trigger that sets COD orders to `paid` on delivery; create the private bucket `payment-proofs` with per-user folder policies and admin read and delete; make `payment_reference` unique.
 - **Done when:** S23 to S25 pass; a proof path outside `<uid>/<order_id>/` is refused; overdue unpaid InstaPay orders are cancelled and restocked.
 - **Verify:** `npm run db:reset && npm run db:test`
