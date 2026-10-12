@@ -151,7 +151,7 @@ $$ LANGUAGE plpgsql;
     *   SELECT tests.authenticate_as('test_owner');
     * ```
  */
-CREATE OR REPLACE FUNCTION tests.authenticate_as (identifier text)
+CREATE OR REPLACE FUNCTION tests.authenticate_as (identifier text, aal text)
     RETURNS void
     AS $$
         DECLARE
@@ -173,7 +173,8 @@ CREATE OR REPLACE FUNCTION tests.authenticate_as (identifier text)
                 'email', user_data ->> 'email', 
                 'phone', user_data ->> 'phone', 
                 'user_metadata', user_data -> 'raw_user_meta_data', 
-                'app_metadata', user_data -> 'raw_app_meta_data'
+                'app_metadata', user_data -> 'raw_app_meta_data',
+                'aal', aal
             )::text, true);
 
         EXCEPTION
@@ -184,6 +185,14 @@ CREATE OR REPLACE FUNCTION tests.authenticate_as (identifier text)
                 RAISE;
         END
     $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION tests.authenticate_as (identifier text)
+    RETURNS void
+    AS $$
+BEGIN
+    PERFORM tests.authenticate_as(identifier, 'aal2');
+END;
+$$ LANGUAGE plpgsql;
 
 /**
     * ### tests.authenticate_as_service_role()

@@ -215,21 +215,35 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "admin_dashboard":
-{ Args: { "p_from"?: string,"p_to"?: string }; Returns: Json
-                           },
-"admin_set_role":
-{ Args: { "p_role": Database["public"]['Enums']["user_role"],"p_user_id": string }; Returns: undefined
-                           },
-"cancel_my_order":
-{ Args: { "p_order_id": number }; Returns: undefined
-                           },
-"is_admin":
-{ Args: Record<PropertyKey, never>; Returns: boolean
-                           },
-"place_order":
-{ Args: { "p_delivery_method": Database["public"]['Enums']["delivery_method"],"p_governorate_id": number,"p_items": Json,"p_notes"?: string,"p_ship_address": string,"p_ship_city": string,"p_ship_name": string,"p_ship_phone": string }; Returns: number
-                           }
+            "admin_dashboard": {
+              Args: { "p_from"?: string; "p_to"?: string };
+              Returns: Json;
+            };
+            "cancel_my_order": {
+              Args: { "p_order_id": number };
+              Returns: undefined;
+            };
+            "is_admin": {
+              Args: Record<PropertyKey, never>;
+              Returns: boolean;
+            };
+            "require_admin": {
+              Args: Record<PropertyKey, never>;
+              Returns: undefined;
+            };
+            "place_order": {
+              Args: {
+                "p_delivery_method": Database["public"]["Enums"]["delivery_method"];
+                "p_governorate_id": number;
+                "p_items": Json;
+                "p_notes"?: string;
+                "p_ship_address": string;
+                "p_ship_city": string;
+                "p_ship_name": string;
+                "p_ship_phone": string;
+              };
+              Returns: number;
+            };
           }
           Enums: {
             "delivery_method": "egypt_post"|"representative","order_status": "pending"|"confirmed"|"shipped"|"delivered"|"cancelled","payment_method": "cod","user_role": "customer"|"admin"

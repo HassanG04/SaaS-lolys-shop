@@ -550,7 +550,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** manual review
 
 #### T-1.15: Admin hardening (two factors in the database)
-`status: todo` `owner: agent` `needs: T-1.10` `size: M`
+`status: done` `owner: agent` `needs: T-1.10` `size: M`
 - **Do:** One new migration (S19, S20, S30). `is_admin()` returns true only when the role is `admin` and `auth.jwt() ->> 'aal'` is `aal2`. Add `require_admin()` (raises ADM-002 for an admin at `aal1`, otherwise ADM-001) and call it first in every admin function. Drop `admin_set_role`. Add a trigger that blocks changes to `profiles.role` unless the session user is the database owner. Clamp sign-up metadata in `handle_new_user` (name 100, phone 20 characters). Add length checks to text columns. Make sure every admin policy goes through `is_admin()`.
 - **Done when:** pgTAP shows an admin at `aal1` reads zero admin rows and gets ADM-002, and at `aal2` it works; API attempts to change a role fail; `admin_set_role` no longer exists; owner SQL can still promote an account.
 - **Verify:** `npm run db:reset && npm run db:test`
@@ -1323,6 +1323,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-1.09 | Anti-Gravity | Added db job to .github/workflows/ci.yml with SHA-pinned setup-cli, supabase start, reset, test, concurrency launcher, types regeneration diff check, and migration guard. Removed completed check:migrations from pending.mjs. Full verify passes (346 tests). | pending |
 | 2026-10-12 | T-1.10 | Anti-Gravity | Added migration 20261012040559_error_codes.sql setting hint to stable error codes (AUTH-004, ORD-001..ORD-008, ORD-009, ORD-014, ADM-001) and detail left=N for stock in place_order, cancel_my_order, admin_dashboard, and orders_status_guard. Implemented Scenario S18 pgTAP test suite in 07_error_codes.test.sql (20 assertions). Full verify passes (346 tests). | pending |
 | 2026-10-12 | T-1.12 | Anti-Gravity | Added .github/workflows/db-staging.yml and .github/workflows/db-production.yml with SHA-pinned setup-cli, un-echoed secrets, and manual confirmation gate. Authored docs/runbooks/deploy-db.md covering staging/production procedures, pausing caveat and checklists. Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.15 | Anti-Gravity | Hardened database admin access: is_admin() requires AAL2 MFA claim, added require_admin() raising ADM-002 at AAL1 and ADM-001 for non-admins, removed admin_set_role, added protect_profile_role trigger blocking API role mutations, clamped sign-up metadata in handle_new_user, and added text column length check constraints on profiles, categories, products, and orders. Created 08_admin_hardening.test.sql (30 assertions for S19, S20, S30) and updated 05_admin.test.sql. Full verify passes (346 tests). | pending |
 
 
 

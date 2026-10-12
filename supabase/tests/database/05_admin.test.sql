@@ -123,54 +123,59 @@ SELECT ok(
 );
 
 -- ============================================================================
--- Scenario S13: admin_set_role: self-demotion blocked; customers refused
+-- Scenario S20 (supersedes S13): admin_set_role dropped; API role updates blocked
 -- ============================================================================
+
+-- 1. admin_set_role function no longer exists
+SELECT hasnt_function(
+    'public',
+    'admin_set_role',
+    'S20: admin_set_role function has been removed'
+);
 
 -- Switch to customer
 SELECT tests.authenticate_as('customer_s12');
 
--- 1. Customer calling admin_set_role is refused
+-- 2. Customer attempting to update profiles.role via API is blocked by trigger
 SELECT throws_ok(
-    format('SELECT public.admin_set_role(''%s''::uuid, ''admin''::public.user_role)', tests.get_supabase_uid('customer_s12')),
+    format('UPDATE public.profiles SET role = ''admin'' WHERE id = ''%s''::uuid', tests.get_supabase_uid('customer_s12')),
     '42501',
     NULL,
-    'S13: Customer cannot call admin_set_role (refused with 42501)'
+    'S20: Customer cannot update role via API (refused with 42501)'
 );
 
 -- Switch to admin
 SELECT tests.authenticate_as('admin_s12');
 
--- 2. Admin self-demotion is blocked
+-- 3. Admin attempting to update profiles.role via API is also blocked by trigger
 SELECT throws_ok(
-    format('SELECT public.admin_set_role(''%s''::uuid, ''customer''::public.user_role)', tests.get_supabase_uid('admin_s12')),
-    'P0001',
-    'You cannot remove your own admin role',
-    'S13: Admin self-demotion is blocked'
+    format('UPDATE public.profiles SET role = ''admin'' WHERE id = ''%s''::uuid', tests.get_supabase_uid('target_s13')),
+    '42501',
+    NULL,
+    'S20: Admin cannot update target role via API (refused with 42501)'
 );
 
-SELECT is(
-    (SELECT role::text FROM public.profiles WHERE id = tests.get_supabase_uid('admin_s12')),
-    'admin',
-    'S13: Admin role remains admin after self-demotion attempt'
-);
-
--- 3. Admin promotes another customer
-SELECT public.admin_set_role(tests.get_supabase_uid('target_s13'), 'admin');
-
-SELECT is(
-    (SELECT role::text FROM public.profiles WHERE id = tests.get_supabase_uid('target_s13')),
-    'admin',
-    'S13: Admin can promote target user to admin'
-);
-
--- 4. Admin demotes target user back to customer
-SELECT public.admin_set_role(tests.get_supabase_uid('target_s13'), 'customer');
-
+-- 4. Target user role remains customer
 SELECT is(
     (SELECT role::text FROM public.profiles WHERE id = tests.get_supabase_uid('target_s13')),
     'customer',
-    'S13: Admin can demote target user back to customer'
+    'S20: Target user role remains customer after blocked API update'
 );
+
+-- 5. Database owner (via superuser/postgres) CAN update role directly
+SELECT tests.authenticate_as_service_role();
+UPDATE public.profiles
+   SET role = 'admin'
+ WHERE id = tests.get_supabase_uid('target_s13');
+
+SELECT is(
+    (SELECT role::text FROM public.profiles WHERE id = tests.get_supabase_uid('target_s13')),
+    'admin',
+    'S20: Database owner can promote user'
+);
+
+-- Switch back to admin for S14
+SELECT tests.authenticate_as('admin_s12');
 
 -- ============================================================================
 -- Scenario S14: Admin creates categories and products; generated columns protected; invalid slug rejected
