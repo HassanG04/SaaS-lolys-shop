@@ -111,3 +111,40 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run roadmap:check
+
+  db:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1.7.2
+        with:
+          version: 2.120.0
+      - run: npm ci --ignore-scripts
+      - name: Protect merged migrations
+        if: github.event_name == 'pull_request'
+        run: npm run check:migrations
+      - name: Protect previous main migrations
+        if: github.event_name == 'push'
+        run: npm run check:migrations
+        env:
+          MIGRATION_BASE_SHA: ${{ github.event.before }}
+      - name: Start local Supabase stack
+        run: supabase start
+      - name: Reset database and run migrations
+        run: supabase db reset
+      - name: Run pgTAP database tests
+        run: supabase test db
+      - name: Run concurrency test
+        run: npm run db:test:concurrency
+      - name: Regenerate TypeScript types and verify no diff
+        run: |
+          npm run db:types
+          git diff --exit-code src/types/database.types.ts
