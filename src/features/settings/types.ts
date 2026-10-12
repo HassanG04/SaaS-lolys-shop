@@ -1,0 +1,19 @@
+export interface PublicShopSettings {
+  shop_name_ar?: string
+  shop_name_en?: string
+  tagline_ar?: string
+  phone?: string
+  whatsapp?: string
+  instagram?: string
+  announcement_ar?: string
+  hero_title_ar?: string
+  hero_subtitle_ar?: string
+  sale_percent?: number
+  payment_methods_enabled?: string[]
+  instapay_qr_path?: string
+  instapay_handle?: string
+  returns_text_ar?: string
+  returns_days?: number
+  delivery_notes_ar?: string
+  [key: string]: unknown
+}

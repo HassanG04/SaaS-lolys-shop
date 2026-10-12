@@ -7,8 +7,15 @@ import {
   getProductById,
   searchProducts,
   getFeaturedProducts,
+  getBrowseProducts,
 } from './api'
-import type { Category, ProductWithCategory, GetCategoriesOptions } from './types'
+import type {
+  Category,
+  ProductWithCategory,
+  GetCategoriesOptions,
+  GetBrowseProductsOptions,
+  BrowseProductsResult,
+} from './types'
 
 export function useCategories(options?: GetCategoriesOptions) {
   return useQuery<Category[], AppError>({
@@ -63,5 +70,18 @@ export function useSearchProducts(query?: string | null, limit = 20) {
     queryFn: () => searchProducts(trimmed, limit),
     enabled: trimmed.length > 0,
     staleTime: 2 * 60 * 1000,
+  })
+}
+
+export function useBrowseProducts(options?: GetBrowseProductsOptions) {
+  const categorySlug = options?.categorySlug ?? 'all'
+  const sortBy = options?.sortBy ?? 'best_sellers'
+  const limit = options?.limit ?? 12
+  const offset = options?.offset ?? 0
+
+  return useQuery<BrowseProductsResult, AppError>({
+    queryKey: ['catalog', 'browse', categorySlug, sortBy, limit, offset],
+    queryFn: () => getBrowseProducts(options),
+    staleTime: 5 * 60 * 1000,
   })
 }

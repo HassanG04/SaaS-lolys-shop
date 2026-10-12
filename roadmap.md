@@ -668,7 +668,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-3.03: Home page
-`status: todo` `owner: agent` `needs: T-3.02, T-2.03` `size: L`
+`status: done` `owner: agent` `needs: T-3.02, T-2.03` `size: L`
 - **Do:** Hero (sale banner with text and percent from public settings, arch-framed photo, ribbon and pearl ornaments, floating product cards from best sellers, call to action), category pills, Store (category tiles with arch frames), Browse (filters, best sellers first, "load more" in steps of 12), About and delivery info using `returns_text_ar` and the settings. Anchors `#store`, `#browse`, `#about` with smooth scroll. Skeleton, empty and error states. Copy from the deck in `docs/spec/design-system.md`.
 - **Done when:** all sections render from live data in Arabic RTL; the page works at 360px and 1280px in both themes; changing a public setting changes the hero without a deploy.
 - **Verify:** `npm run verify` and manual check
@@ -1334,6 +1334,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-2.08 | Anti-Gravity | Implemented error framework in src/lib/errors.ts: AppError with code, ref (8-char), params; toAppError mapping Supabase Auth codes, DB hint/detail, HTTP statuses, and network errors to 48-entry error catalogue; ErrorMessage component rendering Arabic message, code, and ref; updated ErrorPanel; added scripts/no-raw-error-messages.test.mjs in test:tooling verifying raw error.message never renders in JSX/DOM. Full verify passes (288 app + 139 tooling tests = 427 tests). | pending |
 | 2026-10-12 | T-3.01 | Anti-Gravity | Implemented catalog data layer in src/features/catalog/ (getCategories with show_on_home option, getBestSellers by sold_count desc, getProductsByCategory with categories!inner(slug) filter, getProductById, searchProducts across Arabic/English names and descriptions, getFeaturedProducts) and React Query hooks. Added publicImageUrl(path) in src/lib/images.ts. Added architecture guard test scripts/supabase-import-boundary.test.mjs in test:tooling verifying no Supabase client imports outside api.ts and src/lib. Full verify passes (309 app + 141 tooling tests = 450 tests). | pending |
 | 2026-10-12 | T-3.02 | Anti-Gravity | Implemented catalog UI components in src/features/catalog/components/: ProductImage with aspect-ratio box, lazy loading, graceful fallback and publicImageUrl; ProductCard with 28px card radius, 20px image radius, struck-through original price on discount, sold-out badge and disabled add button; CategoryTile with full-bleed image and floating label chip. Added catalogUI.test.tsx testing layout stability, prices, sold out states. Full verify passes (317 app + 141 tooling tests = 458 tests). | pending |
+| 2026-10-12 | T-3.03 | Anti-Gravity | Implemented complete Home page in src/pages/HomePage.tsx (Hero with dynamic public settings from shop_settings, arch frame, pearl/ribbon ornaments, floating best sellers; Store section with category tiles; Browse section with category pills, sorting, and load more in steps of 12; About & Delivery section with returns guarantee). Created settings feature (src/features/settings/) and HomePage.test.tsx. Full verify passes (324 app + 141 tooling tests = 465 tests). Initial bundle budget 195.7 KB <= 200 KB. | pending |
 
 
 

@@ -6,7 +6,7 @@ import { Badge } from './Badge'
 import { Pill, Chip } from './Label'
 import { Skeleton } from './Skeleton'
 import { PearlLoader } from './PearlLoader'
-import { ArchFrame, RibbonBow, RibbonDivider, Sparkle } from './ornaments'
+import { ArchFrame, RibbonBow, RibbonDivider, Sparkle, PearlOrnament } from './ornaments'
 import KitPage from '../../dev/KitPage'
 import ar from '../../i18n/ar.json'
 import placeholder from '../../dev/card-placeholder.svg'
@@ -59,6 +59,7 @@ test('decorative SVGs and skeletons stay outside the accessibility tree', () => 
       <RibbonBow />
       <RibbonDivider />
       <Sparkle />
+      <PearlOrnament />
       <Skeleton />
     </>,
   )

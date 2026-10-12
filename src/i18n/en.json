@@ -260,6 +260,20 @@
     "shipping": "Shipping & Delivery",
     "notFound": "Page Not Found"
   },
+  "catalog": {
+    "allCategories": "All Categories",
+    "loadMore": "Load More",
+    "sortBy": "Sort By",
+    "sortBestSellers": "Best Sellers",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price: Low to High",
+    "sortPriceDesc": "Price: High to Low",
+    "noProducts": "No products found in this category.",
+    "exploreStore": "Explore Categories",
+    "aboutStory": "Lolys' Accessories & Home offers a curated selection of delicate jewelry, lifestyle accessories, and home accents crafted with quality and care to brighten your everyday style.",
+    "shippingDetails": "Fast shipping and elegant gift wrapping across all Egypt governorates with flexible and secure payment options.",
+    "returnsPolicy": "Return & Exchange Policy"
+  },
   "kit": {
     "auth": {
       "title": "Login and registration",

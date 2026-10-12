@@ -19,3 +19,18 @@ export interface ProductWithCategory extends Product {
 export interface GetCategoriesOptions {
   showOnHomeOnly?: boolean
 }
+
+export type ProductSortOption = 'best_sellers' | 'newest' | 'price_asc' | 'price_desc'
+
+export interface GetBrowseProductsOptions {
+  categorySlug?: string | null
+  sortBy?: ProductSortOption
+  limit?: number
+  offset?: number
+}
+
+export interface BrowseProductsResult {
+  products: ProductWithCategory[]
+  totalCount: number
+  hasMore: boolean
+}

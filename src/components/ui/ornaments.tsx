@@ -55,3 +55,22 @@ export function ArchFrame({ className = '', ...props }: ComponentPropsWithRef<'d
     <div {...props} className={`overflow-hidden rounded-arch border border-current ${className}`} />
   )
 }
+
+export function PearlOrnament({ className = 'text-sand' }: OrnamentProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 120 24"
+      className={className}
+      fill="currentColor"
+    >
+      <circle cx="12" cy="12" r="5" className="opacity-70" />
+      <circle cx="28" cy="12" r="7" className="opacity-90" />
+      <circle cx="48" cy="12" r="9" />
+      <circle cx="72" cy="12" r="9" />
+      <circle cx="92" cy="12" r="7" className="opacity-90" />
+      <circle cx="108" cy="12" r="5" className="opacity-70" />
+    </svg>
+  )
+}

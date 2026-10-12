@@ -21,6 +21,7 @@ import {
   empty as arEmpty,
   footer as arFooter,
   seo as arSeo,
+  catalog as arCatalog,
 } from './ar.json'
 
 import {
@@ -45,6 +46,7 @@ import {
   empty as enEmpty,
   footer as enFooter,
   seo as enSeo,
+  catalog as enCatalog,
 } from './en.json'
 
 export const translations = {
@@ -70,6 +72,7 @@ export const translations = {
     empty: arEmpty,
     footer: arFooter,
     seo: arSeo,
+    catalog: arCatalog,
   },
   en: {
     theme: enTheme,
@@ -93,5 +96,6 @@ export const translations = {
     empty: enEmpty,
     footer: enFooter,
     seo: enSeo,
+    catalog: enCatalog,
   },
 }

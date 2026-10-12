@@ -2,6 +2,9 @@
 @import './ui.css';
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   * {
     box-sizing: border-box;
     letter-spacing: 0;
