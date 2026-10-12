@@ -586,7 +586,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:test`
 
 #### T-1.21: Stock ledger
-`status: todo` `owner: agent` `needs: T-1.18` `size: M`
+`status: done` `owner: agent` `needs: T-1.18` `size: M`
 - **Do:** Migration (S29). Table `stock_movements` filled by a trigger on `products.stock_quantity`. Functions set the reason with `set_config('app.stock_reason', ...)`; an unexplained admin edit is recorded as `admin_adjust`.
 - **Done when:** every order, cancellation and admin edit appears with delta, reason and actor; the movements add up to the current stock for the seed data.
 - **Verify:** `npm run db:test`

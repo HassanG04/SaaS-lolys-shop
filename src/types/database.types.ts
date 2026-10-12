@@ -264,6 +264,61 @@ isOneToOne: false
                       referencedColumns: ["id"]
                     }
                   ]
+                },"stock_movements": {
+                  Row: {
+                    "actor": string | null;
+                    "at": string;
+                    "delta": number;
+                    "id": number;
+                    "new_quantity": number;
+                    "order_id": number | null;
+                    "product_id": number;
+                    "reason": Database["public"]["Enums"]["stock_reason"];
+                  };
+                  ComputedFields: never;
+                  Insert: {
+                    "actor"?: string | null;
+                    "at"?: string;
+                    "delta": number;
+                    "id"?: never;
+                    "new_quantity": number;
+                    "order_id"?: number | null;
+                    "product_id": number;
+                    "reason": Database["public"]["Enums"]["stock_reason"];
+                  };
+                  Update: {
+                    "actor"?: string | null;
+                    "at"?: string;
+                    "delta"?: number;
+                    "id"?: never;
+                    "new_quantity"?: number;
+                    "order_id"?: number | null;
+                    "product_id"?: number;
+                    "reason"?: Database["public"]["Enums"]["stock_reason"];
+                  };
+                  Relationships: [
+                    {
+                      foreignKeyName: "stock_movements_actor_fkey";
+                      columns: ["actor"];
+                      isOneToOne: false;
+                      referencedRelation: "users";
+                      referencedColumns: ["id"];
+                    },
+                    {
+                      foreignKeyName: "stock_movements_order_id_fkey";
+                      columns: ["order_id"];
+                      isOneToOne: false;
+                      referencedRelation: "orders";
+                      referencedColumns: ["id"];
+                    },
+                    {
+                      foreignKeyName: "stock_movements_product_id_fkey";
+                      columns: ["product_id"];
+                      isOneToOne: false;
+                      referencedRelation: "products";
+                      referencedColumns: ["id"];
+                    }
+                  ];
                 }
           }
           Views: {
@@ -369,7 +424,7 @@ isOneToOne: false
             };
           }
           Enums: {
-            "delivery_method": "egypt_post"|"representative","order_status": "pending"|"confirmed"|"shipped"|"delivered"|"cancelled","payment_method": "cod"|"instapay_qr","payment_status": "unpaid"|"awaiting_proof"|"under_review"|"paid"|"rejected","user_role": "customer"|"admin"
+            "delivery_method": "egypt_post"|"representative","order_status": "pending"|"confirmed"|"shipped"|"delivered"|"cancelled","payment_method": "cod"|"instapay_qr","payment_status": "unpaid"|"awaiting_proof"|"under_review"|"paid"|"rejected","stock_reason": "order"|"cancel"|"admin_adjust"|"restock"|"correction","user_role": "customer"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -489,7 +544,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "delivery_method": ["egypt_post", "representative"],"order_status": ["pending", "confirmed", "shipped", "delivered", "cancelled"],"payment_method": ["cod", "instapay_qr"],"payment_status": ["unpaid", "awaiting_proof", "under_review", "paid", "rejected"],"user_role": ["customer", "admin"]
+            "delivery_method": ["egypt_post", "representative"],"order_status": ["pending", "confirmed", "shipped", "delivered", "cancelled"],"payment_method": ["cod", "instapay_qr"],"payment_status": ["unpaid", "awaiting_proof", "under_review", "paid", "rejected"],"stock_reason": ["order", "cancel", "admin_adjust", "restock", "correction"],"user_role": ["customer", "admin"]
           }
         }
 } as const

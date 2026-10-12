@@ -21,6 +21,13 @@ describe('database types and helpers', () => {
       'paid',
       'rejected',
     ])
+    expect(Constants.public.Enums.stock_reason).toEqual([
+      'order',
+      'cancel',
+      'admin_adjust',
+      'restock',
+      'correction',
+    ])
   })
 
   it('provides compile-time types for table rows and inserts', () => {
