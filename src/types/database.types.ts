@@ -284,6 +284,14 @@ isOneToOne: false
                 }
           }
           Functions: {
+            "check_rate_limit": {
+              Args: {
+                "p_action": string;
+                "p_limit": number;
+                "p_window": unknown;
+              };
+              Returns: undefined;
+            };
             "admin_delete_product": {
               Args: {
                 "p_id": number;

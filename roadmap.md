@@ -580,7 +580,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:test`
 
 #### T-1.20: Abuse controls
-`status: todo` `owner: agent` `needs: T-1.18` `size: M`
+`status: done` `owner: agent` `needs: T-1.18` `size: M`
 - **Do:** Migration (S27, S28). Add `rate_limits` and `check_rate_limit()` and use it in `place_order`, `submit_payment_proof` and `cancel_my_order`. In `place_order` also cap order lines (30), quantity per line (20 or the stock) and pending orders per customer (setting `pending_order_limit`, default 3). Rate-limit by user id; add IP-based limits only after confirming on staging which forwarded-address value can be trusted.
 - **Done when:** the fourth pending order returns ORD-010; repeated calls return SYS-003 and recover after the window.
 - **Verify:** `npm run db:test`
