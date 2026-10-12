@@ -21,48 +21,30 @@ export function getRouteMetadata(
   }
   if (p === '/__kit' && import.meta.env.DEV) return { title: 'UI Kit', noindex: true }
 
-  const pubTitle =
-    p === '/cart'
-      ? s.cart
-      : p === '/login'
-        ? s.login
-        : p === '/register'
-          ? s.register
-          : p === '/about'
-            ? s.about
-            : p === '/terms'
-              ? s.terms
-              : p === '/privacy'
-                ? s.privacy
-                : p === '/returns'
-                  ? s.returns
-                  : p === '/shipping'
-                    ? s.shipping
-                    : null
-  if (pubTitle) return { title: pubTitle, noindex: false }
+  const pubMap: Record<string, string> = {
+    '/cart': s.cart,
+    '/login': s.login,
+    '/register': s.register,
+    '/about': s.about,
+    '/terms': s.terms,
+    '/privacy': s.privacy,
+    '/returns': s.returns,
+    '/shipping': s.shipping,
+  }
+  if (pubMap[p]) return { title: pubMap[p], noindex: false }
 
-  const privTitle =
-    p === '/account'
-      ? t.account.details
-      : p === '/account/orders'
-        ? s.orders
-        : p === '/account/favorites'
-          ? s.favorites
-          : p === '/account/security'
-            ? s.security
-            : p === '/account/mfa/enroll'
-              ? s.mfaEnroll
-              : p === '/mfa/challenge'
-                ? s.mfaChallenge
-                : p === '/checkout'
-                  ? s.checkout
-                  : p === '/reset-password'
-                    ? s.resetPassword
-                    : p === '/resend-confirmation'
-                      ? s.resendConfirmation
-                      : s.notFound
-
-  return { title: privTitle, noindex: true }
+  const privMap: Record<string, string> = {
+    '/account': t.account.details,
+    '/account/orders': s.orders,
+    '/account/favorites': s.favorites,
+    '/account/security': s.security,
+    '/account/mfa/enroll': s.mfaEnroll,
+    '/mfa/challenge': s.mfaChallenge,
+    '/checkout': s.checkout,
+    '/reset-password': s.resetPassword,
+    '/resend-confirmation': s.resendConfirmation,
+  }
+  return { title: privMap[p] || s.notFound, noindex: true }
 }
 
 export function useRouteSeo() {
