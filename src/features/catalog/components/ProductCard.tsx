@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatEGP } from '@/lib/format'
 import { ProductImage } from './ProductImage'
+import { FavoriteButton } from '@/features/favorites'
 import type { Product, ProductWithCategory } from '../types'
 
 export interface ProductCardProps {
@@ -42,7 +43,7 @@ export function ProductCard({
       data-testid={`product-card-${product.id}`}
     >
       <div>
-        {/* Image Container with Badges */}
+        {/* Image Container with Badges & Favorite Toggle */}
         <div className="relative mb-3 overflow-hidden rounded-image">
           <Link to={productUrl} tabIndex={-1} aria-hidden="true" className="block">
             <ProductImage
@@ -53,14 +54,14 @@ export function ProductCard({
           </Link>
 
           {/* Badges Overlay */}
-          <div className="pointer-events-none absolute inset-x-2 top-2 flex items-center justify-between gap-1">
-            {hasDiscount ? (
-              <Badge variant="sale" label={`-${product.discount_percent}%`} />
-            ) : (
-              <span />
-            )}
-
+          <div className="pointer-events-none absolute inset-inline-start-2 top-2 flex flex-col items-start gap-1">
+            {hasDiscount && <Badge variant="sale" label={`-${product.discount_percent}%`} />}
             {isSoldOut && <Badge variant="sold-out" label={t.product.soldout} />}
+          </div>
+
+          {/* Bow-shaped Heart Favorite Button */}
+          <div className="absolute top-2 inset-inline-end-2 z-10">
+            <FavoriteButton product={product} size="sm" />
           </div>
         </div>
 

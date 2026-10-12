@@ -168,9 +168,29 @@
   "account": {
     "orders": "My Orders",
     "details": "My Details",
+    "favorites": "Favorites",
     "security": "Security",
     "mfa": "Two-Factor Authentication",
     "logout": "Log out"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "emptyTitle": "Your favorites list is empty",
+    "emptyDesc": "You haven't added any products to your favorites yet. Explore our collection and save what you love!",
+    "browse": "Browse products",
+    "add": "Add to favorites",
+    "remove": "Remove from favorites",
+    "loginTitle": "Log in to continue",
+    "loginPrompt": "Please log in to save items to your favorites.",
+    "loginCta": "Log in",
+    "loginCancel": "Cancel",
+    "itemCount_zero": "No items",
+    "itemCount_one": "1 item",
+    "itemCount_two": "2 items",
+    "itemCount_few": "{{count}} items",
+    "itemCount_many": "{{count}} items",
+    "itemCount_other": "{{count}} items",
+    "errorToggle": "Failed to update favorites"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -295,6 +315,7 @@
     "checkout": "Checkout",
     "pay": "Pay Order",
     "orders": "My Orders",
+    "favorites": "Favorites",
     "security": "Account Security",
     "mfaEnroll": "Two-Factor Setup",
     "mfaChallenge": "Two-Factor Verification",

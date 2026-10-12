@@ -158,6 +158,12 @@ export default function AccountPage() {
             {t.account.orders || 'طلباتي'}
           </Link>
           <Link
+            to="/account/favorites"
+            className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
+          >
+            {t.account?.favorites || 'المفضلة'}
+          </Link>
+          <Link
             to="/account/security"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >

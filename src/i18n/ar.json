@@ -168,9 +168,29 @@
   "account": {
     "orders": "طلباتي",
     "details": "بياناتي",
+    "favorites": "المفضلة",
     "security": "الأمان",
     "mfa": "التحقق بخطوتين",
     "logout": "تسجيل الخروج"
+  },
+  "favorites": {
+    "title": "المفضلة",
+    "emptyTitle": "قائمة المفضلة فارغة",
+    "emptyDesc": "لم تقم بإضافة أي منتجات إلى المفضلة بعد. استكشف مجموعتنا وأضف ما يعجبك!",
+    "browse": "تصفّح المنتجات",
+    "add": "إضافة إلى المفضلة",
+    "remove": "إزالة من المفضلة",
+    "loginTitle": "تسجيل الدخول للمتابعة",
+    "loginPrompt": "يرجى تسجيل الدخول لحفظ المنتجات في قائمة المفضلة.",
+    "loginCta": "تسجيل الدخول",
+    "loginCancel": "إلغاء",
+    "itemCount_zero": "لا توجد منتجات",
+    "itemCount_one": "منتج واحد",
+    "itemCount_two": "منتجان مفضلان",
+    "itemCount_few": "{{count}} منتجات",
+    "itemCount_many": "{{count}} منتجًا",
+    "itemCount_other": "{{count}} منتج",
+    "errorToggle": "تعذر تحديث المفضلة"
   },
   "admin": {
     "dashboard": "لوحة التحكم",
@@ -295,6 +315,7 @@
     "checkout": "إتمام الطلب",
     "pay": "دفع الطلب",
     "orders": "طلباتي",
+    "favorites": "المفضلة",
     "security": "أمان الحساب",
     "mfaEnroll": "إعداد التحقق بخطوتين",
     "mfaChallenge": "تأكيد الهوية",

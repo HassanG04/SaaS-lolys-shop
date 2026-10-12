@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useProduct, useProductsByCategory, ProductCard, ProductImage } from '@/features/catalog'
+import { FavoriteButton } from '@/features/favorites'
 import { useCart } from '@/features/cart'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatEGP } from '@/lib/format'
@@ -252,7 +253,7 @@ export default function ProductPage() {
         {/* Right column: Details & Purchase */}
         <div className="flex flex-col justify-between space-y-6">
           <div className="space-y-4">
-            {/* Title & Category pill */}
+            {/* Title & Category pill with Favorite Button */}
             <div className="space-y-2">
               {categoryName ? (
                 <Link
@@ -262,7 +263,10 @@ export default function ProductPage() {
                   {categoryName}
                 </Link>
               ) : null}
-              <h1 className="text-h1 font-bold font-accent text-brand">{displayName}</h1>
+              <div className="flex items-start justify-between gap-4">
+                <h1 className="text-h1 font-bold font-accent text-brand">{displayName}</h1>
+                <FavoriteButton product={product} size="lg" />
+              </div>
             </div>
 
             {/* Pricing block */}

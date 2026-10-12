@@ -30,17 +30,8 @@ function NavIcon({
   )
 }
 
-function NavbarLogoOrnament({ className = 'size-6' }: { className?: string }) {
-  return (
-    <NavIcon className={className}>
-      <path d="M11 10C4 2 1 5 3 10s6 4 8 2m2-2c7-8 10-5 8 0s-6 4-8 2M10 13l-4 8 4-2 2 2 2-8m-1 0 5 8-1-5 4 1-6-5" />
-      <rect x="10" y="9" width="4" height="5" rx="1" />
-    </NavIcon>
-  )
-}
-
 const pillBtnClass =
-  'h-11 items-center rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) px-3 py-1 text-small font-medium text-(--color-text) transition-colors hover:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)'
+  'h-11 items-center rounded-pill border border-border bg-surface-2 px-3 py-1 text-small font-medium text-text transition-colors hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus'
 
 interface NavbarProps {
   cartCount?: number
@@ -70,15 +61,15 @@ export function Navbar({ cartCount }: NavbarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-(--color-border) bg-(--color-surface)/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-surface/95 backdrop-blur-md">
       <div className="mx-auto flex h-20 max-w-(--container-layout) items-center justify-between gap-4 px-4 sm:px-6">
         {/* Brand Logo & Wordmark */}
         <Link
           to="/"
-          className="group flex items-center gap-3 text-(--color-brand) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-focus) rounded-(--radius-pill) p-1"
+          className="group flex items-center gap-3 text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-pill p-1"
           aria-label="Lolys' Accessories & Home"
         >
-          <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-(--radius-pill) border border-(--color-border) bg-(--color-bg)">
+          <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-pill border border-border bg-bg">
             <img
               src="/brand/logo.png"
               alt=""
@@ -89,13 +80,16 @@ export function Navbar({ cartCount }: NavbarProps) {
                 e.currentTarget.style.display = 'none'
               }}
             />
-            <NavbarLogoOrnament className="size-6 text-(--color-brand)" />
+            <NavIcon className="size-6 text-brand">
+              <path d="M11 10C4 2 1 5 3 10s6 4 8 2m2-2c7-8 10-5 8 0s-6 4-8 2M10 13l-4 8 4-2 2 2 2-8m-1 0 5 8-1-5 4 1-6-5" />
+              <rect x="10" y="9" width="4" height="5" />
+            </NavIcon>
           </div>
           <div className="flex flex-col">
-            <span className="font-accent text-h3 font-bold leading-tight tracking-normal text-(--color-brand)">
+            <span className="font-accent text-h3 font-bold leading-tight tracking-normal text-brand">
               Lolys&apos;
             </span>
-            <span className="text-caption text-(--color-text-muted)">{t.footer.tagline}</span>
+            <span className="text-caption text-text-muted">{t.footer.tagline}</span>
           </div>
         </Link>
 
@@ -111,16 +105,15 @@ export function Navbar({ cartCount }: NavbarProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.search.placeholder}
-              className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) ps-4 pe-11 text-small text-(--color-text) placeholder:text-(--color-text-muted) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+              className="w-full h-11 rounded-pill border border-border-input bg-bg ps-4 pe-11 text-small text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
             />
             <button
               type="submit"
               aria-label={t.ui.search}
-              className="absolute end-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-(--radius-pill) bg-(--color-brand) text-(--color-brand-contrast) transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+              className="absolute end-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-pill bg-brand text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
             >
               <NavIcon className="size-4">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
+                <path d="M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16m10 18-4.3-4.3" />
               </NavIcon>
             </button>
           </div>
@@ -133,8 +126,8 @@ export function Navbar({ cartCount }: NavbarProps) {
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `text-small font-medium transition-colors hover:text-(--color-brand) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-focus) rounded-(--radius-chip) px-2 py-1 ${
-                  isActive ? 'text-(--color-brand) font-bold' : 'text-(--color-text)'
+                `text-small font-medium transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-chip px-2 py-1 ${
+                  isActive ? 'text-brand font-bold' : 'text-text'
                 }`
               }
             >
@@ -155,12 +148,10 @@ export function Navbar({ cartCount }: NavbarProps) {
             className={`flex gap-2 ${pillBtnClass}`}
             aria-label={`${t.nav.cart} (${displayCartCount})`}
           >
-            <NavIcon className="size-5 text-(--color-brand)">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-              <path d="M3 6h18" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
+            <NavIcon className="size-5 text-brand">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0" />
             </NavIcon>
-            <span className="font-semibold text-(--color-brand)">{displayCartCount}</span>
+            <span className="font-semibold text-brand">{displayCartCount}</span>
           </Link>
 
           {/* Account Link */}
@@ -169,9 +160,8 @@ export function Navbar({ cartCount }: NavbarProps) {
             className={`hidden sm:flex justify-center ${pillBtnClass}`}
             aria-label={t.nav.account}
           >
-            <NavIcon className="size-5 text-(--color-brand)">
-              <circle cx="12" cy="8" r="5" />
-              <path d="M20 21a8 8 0 1 0-16 0" />
+            <NavIcon className="size-5 text-brand">
+              <path d="M12 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10m8 18a8 8 0 1 0-16 0" />
             </NavIcon>
           </Link>
 
@@ -183,7 +173,7 @@ export function Navbar({ cartCount }: NavbarProps) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex lg:hidden h-11 w-11 items-center justify-center rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+            className="flex lg:hidden h-11 w-11 items-center justify-center rounded-pill border border-border bg-surface-2 text-text focus:outline-none focus:ring-2 focus:ring-focus"
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? t.nav.closeMenu : t.nav.openMenu}
           >
@@ -191,11 +181,7 @@ export function Navbar({ cartCount }: NavbarProps) {
               {mobileMenuOpen ? (
                 <path d="M18 6 6 18M6 6l12 12" />
               ) : (
-                <>
-                  <line x1="4" x2="20" y1="12" y2="12" />
-                  <line x1="4" x2="20" y1="6" y2="6" />
-                  <line x1="4" x2="20" y1="18" y2="18" />
-                </>
+                <path d="M4 6h16M4 12h16M4 18h16" />
               )}
             </NavIcon>
           </button>

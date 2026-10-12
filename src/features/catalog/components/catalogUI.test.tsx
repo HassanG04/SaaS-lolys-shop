@@ -62,11 +62,18 @@ const mockCategory: Category = {
   created_at: '2026-10-10T00:00:00Z',
 }
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
 function renderWithProviders(ui: React.ReactElement, initialLanguage: Language = 'ar') {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
   return render(
-    <MemoryRouter>
-      <LanguageProvider initialLanguage={initialLanguage}>{ui}</LanguageProvider>
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <LanguageProvider initialLanguage={initialLanguage}>{ui}</LanguageProvider>
+      </MemoryRouter>
+    </QueryClientProvider>,
   )
 }
 

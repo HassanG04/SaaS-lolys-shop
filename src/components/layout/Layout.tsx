@@ -14,7 +14,7 @@ export function ScrollToTop() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
+    window.scrollTo(0, 0)
   }, [pathname])
 
   return null
@@ -26,14 +26,14 @@ export function Layout() {
   useRouteSeo()
 
   return (
-    <div className="min-h-screen flex flex-col bg-(--color-bg) text-(--color-text) font-sans antialiased">
+    <div className="min-h-screen flex flex-col bg-bg text-text font-sans antialiased">
       {/* Scroll restoration */}
       <ScrollToTop />
 
       {/* Skip to Main Content Link */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-(--color-brand) focus:text-(--color-brand-contrast) focus:rounded-(--radius-pill) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand focus:text-brand-contrast focus:rounded-pill focus:outline-none focus:ring-2 focus:ring-focus"
       >
         {t.nav.skipToContent}
       </a>

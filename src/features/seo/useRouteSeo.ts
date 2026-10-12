@@ -7,58 +7,62 @@ export function getRouteMetadata(
   pathname: string,
   t: ReturnType<typeof useLanguage>['t'],
 ): SeoOptions {
-  const path = pathname.replace(/\/+$/, '') || '/'
-
-  if (path === '/') {
-    return { title: t.seo.home, description: t.seo.defaultDescription, noindex: false }
-  }
-  if (path.startsWith('/category')) return { title: t.seo.category, noindex: false }
-  if (path.startsWith('/product')) return { title: t.seo.product, noindex: false }
-  if (path.startsWith('/pay')) return { title: t.seo.pay, noindex: true }
-  if (path.startsWith('/admin')) {
-    if (path === '/admin/mfa/enroll') return { title: t.seo.adminMfaEnroll, noindex: true }
-    if (path === '/admin/mfa/challenge') return { title: t.seo.adminMfaChallenge, noindex: true }
-    return { title: t.seo.admin, noindex: true }
-  }
-  if (path === '/__kit' && import.meta.env.DEV) return { title: 'UI Kit', noindex: true }
-
+  const p = pathname.replace(/\/+$/, '') || '/'
   const s = t.seo
-  switch (path) {
-    case '/cart':
-      return { title: s.cart, noindex: false }
-    case '/login':
-      return { title: s.login, noindex: false }
-    case '/register':
-      return { title: s.register, noindex: false }
-    case '/about':
-      return { title: s.about, noindex: false }
-    case '/terms':
-      return { title: s.terms, noindex: false }
-    case '/privacy':
-      return { title: s.privacy, noindex: false }
-    case '/returns':
-      return { title: s.returns, noindex: false }
-    case '/shipping':
-      return { title: s.shipping, noindex: false }
-    case '/reset-password':
-      return { title: s.resetPassword, noindex: true }
-    case '/resend-confirmation':
-      return { title: s.resendConfirmation, noindex: true }
-    case '/checkout':
-      return { title: s.checkout, noindex: true }
-    case '/account':
-      return { title: t.account.details, noindex: true }
-    case '/account/orders':
-      return { title: s.orders, noindex: true }
-    case '/account/security':
-      return { title: s.security, noindex: true }
-    case '/account/mfa/enroll':
-      return { title: s.mfaEnroll, noindex: true }
-    case '/mfa/challenge':
-      return { title: s.mfaChallenge, noindex: true }
-    default:
-      return { title: s.notFound, noindex: true }
+
+  if (p === '/') return { title: s.home, description: s.defaultDescription, noindex: false }
+  if (p.startsWith('/category')) return { title: s.category, noindex: false }
+  if (p.startsWith('/product')) return { title: s.product, noindex: false }
+  if (p.startsWith('/pay')) return { title: s.pay, noindex: true }
+  if (p.startsWith('/admin')) {
+    if (p === '/admin/mfa/enroll') return { title: s.adminMfaEnroll, noindex: true }
+    if (p === '/admin/mfa/challenge') return { title: s.adminMfaChallenge, noindex: true }
+    return { title: s.admin, noindex: true }
   }
+  if (p === '/__kit' && import.meta.env.DEV) return { title: 'UI Kit', noindex: true }
+
+  const pubTitle =
+    p === '/cart'
+      ? s.cart
+      : p === '/login'
+        ? s.login
+        : p === '/register'
+          ? s.register
+          : p === '/about'
+            ? s.about
+            : p === '/terms'
+              ? s.terms
+              : p === '/privacy'
+                ? s.privacy
+                : p === '/returns'
+                  ? s.returns
+                  : p === '/shipping'
+                    ? s.shipping
+                    : null
+  if (pubTitle) return { title: pubTitle, noindex: false }
+
+  const privTitle =
+    p === '/account'
+      ? t.account.details
+      : p === '/account/orders'
+        ? s.orders
+        : p === '/account/favorites'
+          ? s.favorites
+          : p === '/account/security'
+            ? s.security
+            : p === '/account/mfa/enroll'
+              ? s.mfaEnroll
+              : p === '/mfa/challenge'
+                ? s.mfaChallenge
+                : p === '/checkout'
+                  ? s.checkout
+                  : p === '/reset-password'
+                    ? s.resetPassword
+                    : p === '/resend-confirmation'
+                      ? s.resendConfirmation
+                      : s.notFound
+
+  return { title: privTitle, noindex: true }
 }
 
 export function useRouteSeo() {
