@@ -656,7 +656,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 3: Storefront
 
 #### T-3.01: Catalog API
-`status: todo` `owner: agent` `needs: T-2.05, T-2.08, T-1.03` `size: M`
+`status: done` `owner: agent` `needs: T-2.05, T-2.08, T-1.03` `size: M`
 - **Do:** `features/catalog/api.ts` and hooks: active categories (`show_on_home`, ordered by `sort_order`); best sellers (`sold_count` descending); products by category (`categories!inner(slug)` filter); product by id; search. Typed results, errors through `toAppError`, tests with a mocked client (`docs/spec/database-contract.md` lists the columns). Image fields are storage paths; add `publicImageUrl(path)` in `src/lib`.
 - **Done when:** all functions are typed and unit-tested; no Supabase import exists outside `api.ts` files and `src/lib`.
 - **Verify:** `npm run test:unit`
@@ -1332,6 +1332,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-1.21 | Anti-Gravity | Implemented Stock ledger (S29): migration 20261012054500_stock_ledger.sql with stock_movements table, immutability trigger, AAL2 MFA read policy, log_stock_movement trigger with app.stock_reason session config, and integration across place_order ('order') and cancel_my_order ('cancel'). Created 14_stock_ledger.test.sql (22 assertions). Full verify passes. | pending |
 | 2026-10-12 | T-1.22 | Anti-Gravity | Implemented SQL guard script: scripts/check-sql.mjs (check:sql script) blocking dynamic execute with string concatenation (||), security definer functions without set search_path, public tables without RLS enabled, and anon table grants outside allow-list. Created test suite scripts/check-sql.test.mjs in test:tooling and wired check:sql into verify and CI db job. Full verify passes (225 app + 136 tooling tests = 361 tests). | pending |
 | 2026-10-12 | T-2.08 | Anti-Gravity | Implemented error framework in src/lib/errors.ts: AppError with code, ref (8-char), params; toAppError mapping Supabase Auth codes, DB hint/detail, HTTP statuses, and network errors to 48-entry error catalogue; ErrorMessage component rendering Arabic message, code, and ref; updated ErrorPanel; added scripts/no-raw-error-messages.test.mjs in test:tooling verifying raw error.message never renders in JSX/DOM. Full verify passes (288 app + 139 tooling tests = 427 tests). | pending |
+| 2026-10-12 | T-3.01 | Anti-Gravity | Implemented catalog data layer in src/features/catalog/ (getCategories with show_on_home option, getBestSellers by sold_count desc, getProductsByCategory with categories!inner(slug) filter, getProductById, searchProducts across Arabic/English names and descriptions, getFeaturedProducts) and React Query hooks. Added publicImageUrl(path) in src/lib/images.ts. Added architecture guard test scripts/supabase-import-boundary.test.mjs in test:tooling verifying no Supabase client imports outside api.ts and src/lib. Full verify passes (309 app + 141 tooling tests = 450 tests). | pending |
 
 
 
