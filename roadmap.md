@@ -574,7 +574,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:reset && npm run db:test`
 
 #### T-1.19: Catalog admin support
-`status: todo` `owner: agent` `needs: T-1.18` `size: M`
+`status: done` `owner: agent` `needs: T-1.18` `size: M`
 - **Do:** Migration (S26). Add `categories.is_active`, `categories.show_on_home` and `products.is_featured`. Image columns hold storage paths and are pattern-checked (`docs/spec/database-contract.md`). Add `admin_delete_product` (only if never ordered) and `admin_delete_category(p_id, p_move_to)`. Storefront policies show only active categories and products.
 - **Done when:** deleting an ordered product returns ADM-004; deleting a non-empty category without a target returns ADM-005; URLs and bad paths in image columns are refused.
 - **Verify:** `npm run db:test`

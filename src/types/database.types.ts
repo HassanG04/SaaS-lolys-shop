@@ -62,14 +62,14 @@ export type Database = {
             };
             "categories": {
                   Row: {
-                    "created_at": string,"id": number,"image_url": string | null,"name": string,"name_ar": string | null,"slug": string,"sort_order": number
+                    "created_at": string,"id": number,"image_url": string | null,"is_active": boolean,"name": string,"name_ar": string | null,"show_on_home": boolean,"slug": string,"sort_order": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id"?: never,"image_url"?: string | null,"name": string,"name_ar"?: string | null,"slug": string,"sort_order"?: number
+                    "created_at"?: string,"id"?: never,"image_url"?: string | null,"is_active"?: boolean,"name": string,"name_ar"?: string | null,"show_on_home"?: boolean,"slug": string,"sort_order"?: number
                   }
                   Update: {
-                    "created_at"?: string,"id"?: never,"image_url"?: string | null,"name"?: string,"name_ar"?: string | null,"slug"?: string,"sort_order"?: number
+                    "created_at"?: string,"id"?: never,"image_url"?: string | null,"is_active"?: boolean,"name"?: string,"name_ar"?: string | null,"show_on_home"?: boolean,"slug"?: string,"sort_order"?: number
                   }
                   Relationships: [
                     
@@ -194,14 +194,14 @@ isOneToOne: false
                   ]
                 },"products": {
                   Row: {
-                    "category_id": number,"created_at": string,"description": string | null,"description_ar": string | null,"discount_percent": number,"extra_images": (string)[],"final_price": number | null,"id": number,"image_url": string | null,"in_stock": boolean | null,"is_active": boolean,"name": string,"name_ar": string | null,"price": number,"sold_count": number,"stock_quantity": number,"updated_at": string
+                    "category_id": number,"created_at": string,"description": string | null,"description_ar": string | null,"discount_percent": number,"extra_images": (string)[],"final_price": number | null,"id": number,"image_url": string | null,"in_stock": boolean | null,"is_active": boolean,"is_featured": boolean,"name": string,"name_ar": string | null,"price": number,"sold_count": number,"stock_quantity": number,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "category_id": number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"name": string,"name_ar"?: string | null,"price": number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
+                    "category_id": number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"is_featured"?: boolean,"name": string,"name_ar"?: string | null,"price": number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
                   }
                   Update: {
-                    "category_id"?: number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"name"?: string,"name_ar"?: string | null,"price"?: number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
+                    "category_id"?: number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"is_featured"?: boolean,"name"?: string,"name_ar"?: string | null,"price"?: number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -284,6 +284,19 @@ isOneToOne: false
                 }
           }
           Functions: {
+            "admin_delete_product": {
+              Args: {
+                "p_id": number;
+              };
+              Returns: undefined;
+            };
+            "admin_delete_category": {
+              Args: {
+                "p_id": number;
+                "p_move_to"?: number | null;
+              };
+              Returns: undefined;
+            };
             "admin_update_setting": {
               Args: {
                 "p_key": string;
@@ -468,7 +481,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "delivery_method": ["egypt_post", "representative"],"order_status": ["pending", "confirmed", "shipped", "delivered", "cancelled"],"payment_method": ["cod"],"user_role": ["customer", "admin"]
+            "delivery_method": ["egypt_post", "representative"],"order_status": ["pending", "confirmed", "shipped", "delivered", "cancelled"],"payment_method": ["cod", "instapay_qr"],"payment_status": ["unpaid", "awaiting_proof", "under_review", "paid", "rejected"],"user_role": ["customer", "admin"]
           }
         }
 } as const
