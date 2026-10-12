@@ -662,7 +662,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-3.02: Product image, card and category tile
-`status: todo` `owner: agent` `needs: T-0.08e, T-3.01` `size: M`
+`status: done` `owner: agent` `needs: T-0.08e, T-3.01` `size: M`
 - **Do:** `ProductImage` (aspect-ratio box, lazy loading, fallback), `ProductCard` (image-first: 28px card, 20px inner image, discount tag, sold-out badge, price with struck-through original, add button disabled when sold out) and `CategoryTile` (full-bleed image with label chip).
 - **Done when:** no layout shift while images load; sold-out items are clearly marked and cannot be added.
 - **Verify:** `npm run verify`
@@ -1333,6 +1333,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-1.22 | Anti-Gravity | Implemented SQL guard script: scripts/check-sql.mjs (check:sql script) blocking dynamic execute with string concatenation (||), security definer functions without set search_path, public tables without RLS enabled, and anon table grants outside allow-list. Created test suite scripts/check-sql.test.mjs in test:tooling and wired check:sql into verify and CI db job. Full verify passes (225 app + 136 tooling tests = 361 tests). | pending |
 | 2026-10-12 | T-2.08 | Anti-Gravity | Implemented error framework in src/lib/errors.ts: AppError with code, ref (8-char), params; toAppError mapping Supabase Auth codes, DB hint/detail, HTTP statuses, and network errors to 48-entry error catalogue; ErrorMessage component rendering Arabic message, code, and ref; updated ErrorPanel; added scripts/no-raw-error-messages.test.mjs in test:tooling verifying raw error.message never renders in JSX/DOM. Full verify passes (288 app + 139 tooling tests = 427 tests). | pending |
 | 2026-10-12 | T-3.01 | Anti-Gravity | Implemented catalog data layer in src/features/catalog/ (getCategories with show_on_home option, getBestSellers by sold_count desc, getProductsByCategory with categories!inner(slug) filter, getProductById, searchProducts across Arabic/English names and descriptions, getFeaturedProducts) and React Query hooks. Added publicImageUrl(path) in src/lib/images.ts. Added architecture guard test scripts/supabase-import-boundary.test.mjs in test:tooling verifying no Supabase client imports outside api.ts and src/lib. Full verify passes (309 app + 141 tooling tests = 450 tests). | pending |
+| 2026-10-12 | T-3.02 | Anti-Gravity | Implemented catalog UI components in src/features/catalog/components/: ProductImage with aspect-ratio box, lazy loading, graceful fallback and publicImageUrl; ProductCard with 28px card radius, 20px image radius, struck-through original price on discount, sold-out badge and disabled add button; CategoryTile with full-bleed image and floating label chip. Added catalogUI.test.tsx testing layout stability, prices, sold out states. Full verify passes (317 app + 141 tooling tests = 458 tests). | pending |
 
 
 

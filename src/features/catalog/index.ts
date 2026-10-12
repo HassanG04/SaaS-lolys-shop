@@ -1,3 +1,6 @@
 export * from './api'
 export * from './hooks'
 export * from './types'
+export * from './components/ProductImage'
+export * from './components/ProductCard'
+export * from './components/CategoryTile'
