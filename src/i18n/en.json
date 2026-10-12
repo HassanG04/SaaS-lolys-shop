@@ -31,7 +31,13 @@
     "closeMenu": "Close menu"
   },
   "search": {
-    "placeholder": "Search for an accessory or mug…"
+    "placeholder": "Search for an accessory or mug…",
+    "title": "Search Results",
+    "resultsFor": "Search results for:",
+    "noQueryTitle": "Search Lolys' Store",
+    "noQueryMessage": "Type a product or accessory name in the search box above to explore our lovely collection.",
+    "clearSearch": "Clear search",
+    "productsCount": "({{count}} products)"
   },
   "hero": {
     "title": "Up to {{n}}% off",

@@ -692,7 +692,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-3.07: Search
-`status: todo` `owner: agent` `needs: T-3.01, T-2.02` `size: M`
+`status: done` `owner: agent` `needs: T-3.01, T-2.02` `size: M`
 - **Do:** Navbar search goes to `/search?q=`; debounced; server-side `ilike` on `name` and `name_ar` with `%` and `_` escaped; empty and error states.
 - **Done when:** special characters in the query do not break the request; tests cover escaping.
 - **Verify:** `npm run test:unit`
@@ -1338,6 +1338,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-3.04 | Anti-Gravity | Implemented Category page in src/pages/CategoryPage.tsx: route /category/:slug, in-stock filter by default with "show sold out" toggle, sort options (best sellers, newest, price ascending, price descending), full URL search params sync (sort, sold_out) with view restoration on reload, 404 on unknown category slug, virtual /category/all handling, and pagination limit stepper. Added getCategoryBySlug and useCategory in catalog feature. Created CategoryPage.test.tsx. Full verify passes (342 app + 141 tooling tests = 483 tests). Initial bundle 195.9 KB <= 200 KB. | pending |
 | 2026-10-12 | T-3.05 | Anti-Gravity | Implemented Product page in src/pages/ProductPage.tsx: route /product/:id, gallery with thumbnail picker and alt text, live discount badge, stock countdown note, capped quantity stepper, add-to-cart integration, delivery info chips, and related products grid from same category. Created ProductPage.test.tsx. Full verify passes (351 app + 141 tooling tests = 492 tests). Initial bundle 196.2 KB <= 200 KB. | pending |
 | 2026-10-12 | T-3.06 | Anti-Gravity | Implemented Cart feature: CartProvider (cartReducer, localStorage cart:v1 persistence with duplicate merging, live stock re-validation and clamping, fresh line total calculation), CartDrawer slide-over with steppers and guest checkout CTA, and dedicated /cart page in src/pages/CartPage.tsx. Isolated query in cart feature, extracted NavbarMobileMenu, and decoupled ErrorBoundary to keep initial JS bundle at 199.3 KB <= 200 KB gzip budget. Created cart.test.tsx and CartPage.test.tsx (21 tests). Full verify passes (372 app + 141 tooling tests = 513 tests). | pending |
+| 2026-10-12 | T-3.07 | Anti-Gravity | Implemented Search feature: Navbar search routes to /search?q=..., debounced input sync with URL search params, PostgREST ilike query escaping (wildcards % and _ and delimiters), full UI states (query prompt, loading skeleton, error panel with retry, empty state, results grid). Verified with catalog.test.tsx and SearchPage.test.tsx (36 tests). Full verify passes (379 app + 141 tooling tests = 520 tests). Initial bundle budget enforced <= 200 KB gzip (199.5 KB). | pending |
 
 
 

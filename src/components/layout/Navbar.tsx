@@ -47,7 +47,7 @@ export function Navbar({ cartCount }: NavbarProps) {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      navigate(`/category/all?q=${encodeURIComponent(searchQuery.trim())}`)
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
       setSearchQuery('')
       setMobileMenuOpen(false)
     }

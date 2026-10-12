@@ -11,6 +11,7 @@ import {
   getProductsByCategory,
   getProductById,
   searchProducts,
+  escapeSearchPattern,
   getFeaturedProducts,
   useCategories,
   useCategory,
@@ -399,7 +400,7 @@ describe('Catalog API and hooks (T-3.01)', () => {
       expect(fromSpy).not.toHaveBeenCalled()
     })
 
-    it('searches across name, name_ar, description and description_ar', async () => {
+    it('searches across name and name_ar with server-side ilike', async () => {
       const limitMock = vi.fn().mockResolvedValue({
         data: [mockProducts[0]],
         error: null,
@@ -420,6 +421,57 @@ describe('Catalog API and hooks (T-3.01)', () => {
       expect(limitMock).toHaveBeenCalledWith(10)
       expect(result).toHaveLength(1)
       expect(result[0].name_ar).toBe('عقد لؤلؤ')
+    })
+
+    it('escapes % and _ wildcards in search query to prevent wildcard exploitation (T-3.07)', async () => {
+      const limitMock = vi.fn().mockResolvedValue({
+        data: [],
+        error: null,
+      })
+      const orderMock = vi.fn().mockReturnValue({ limit: limitMock })
+      const orMock = vi.fn().mockReturnValue({ order: orderMock })
+      const eqCatActiveMock = vi.fn().mockReturnValue({ or: orMock })
+      const eqActiveMock = vi.fn().mockReturnValue({ eq: eqCatActiveMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqActiveMock })
+      vi.spyOn(getSupabase(), 'from').mockReturnValue({
+        select: selectMock,
+      } as unknown as ReturnType<ReturnType<typeof getSupabase>['from']>)
+
+      await searchProducts('50%_off', 5)
+
+      // Both % and _ must be escaped with backslash
+      expect(orMock).toHaveBeenCalledWith('name.ilike.%50\\%\\_off%,name_ar.ilike.%50\\%\\_off%')
+    })
+
+    it('sanitizes PostgREST delimiters like commas and parentheses without breaking request', async () => {
+      const limitMock = vi.fn().mockResolvedValue({
+        data: [],
+        error: null,
+      })
+      const orderMock = vi.fn().mockReturnValue({ limit: limitMock })
+      const orMock = vi.fn().mockReturnValue({ order: orderMock })
+      const eqCatActiveMock = vi.fn().mockReturnValue({ or: orMock })
+      const eqActiveMock = vi.fn().mockReturnValue({ eq: eqCatActiveMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqActiveMock })
+      vi.spyOn(getSupabase(), 'from').mockReturnValue({
+        select: selectMock,
+      } as unknown as ReturnType<ReturnType<typeof getSupabase>['from']>)
+
+      await searchProducts('silver, (gold) & pearl', 10)
+
+      // Comma and parens replaced with space
+      expect(orMock).toHaveBeenCalledWith(
+        'name.ilike.%silver   gold  & pearl%,name_ar.ilike.%silver   gold  & pearl%',
+      )
+    })
+
+    it('escapeSearchPattern properly escapes %, _, \\ and cleans PostgREST syntax', () => {
+      expect(escapeSearchPattern('normal')).toBe('normal')
+      expect(escapeSearchPattern('100%')).toBe('100\\%')
+      expect(escapeSearchPattern('item_1')).toBe('item\\_1')
+      expect(escapeSearchPattern('path\\file')).toBe('path\\\\file')
+      expect(escapeSearchPattern('a, b (c)')).toBe('a  b  c')
+      expect(escapeSearchPattern('')).toBe('')
     })
   })
 

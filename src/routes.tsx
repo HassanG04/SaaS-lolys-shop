@@ -15,6 +15,7 @@ const HomePage = lazy(() => import('./pages/HomePage'))
 const CategoryPage = lazy(() => import('./pages/CategoryPage'))
 const ProductPage = lazy(() => import('./pages/ProductPage'))
 const CartPage = lazy(() => import('./pages/CartPage'))
+const SearchPage = lazy(() => import('./pages/SearchPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
@@ -106,6 +107,14 @@ export const routes: RouteObject[] = [
         element: (
           <Suspended>
             <CartPage />
+          </Suspended>
+        ),
+      },
+      {
+        path: 'search',
+        element: (
+          <Suspended>
+            <SearchPage />
           </Suspended>
         ),
       },

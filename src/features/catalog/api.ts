@@ -194,11 +194,31 @@ export async function getProductsByIds(ids: number[]): Promise<ProductWithCatego
 }
 
 /**
- * Searches active products matching a query across Arabic/English name and description.
+ * Escapes characters with special meaning in SQL ILIKE patterns (% and _)
+ * and PostgREST .or() filter syntax (commas, parentheses, backslashes).
+ */
+export function escapeSearchPattern(term: string): string {
+  if (!term) return ''
+  return term
+    .replace(/\\/g, '\\\\')
+    .replace(/%/g, '\\%')
+    .replace(/_/g, '\\_')
+    .replace(/[,()]/g, ' ')
+    .trim()
+}
+
+/**
+ * Searches active products matching a query across Arabic and English product names.
+ * Escapes % and _ to prevent SQL wildcard exploitation and PostgREST delimiter breakage.
  */
 export async function searchProducts(query: string, limit = 20): Promise<ProductWithCategory[]> {
   const trimmed = query?.trim()
   if (!trimmed) {
+    return []
+  }
+
+  const escaped = escapeSearchPattern(trimmed)
+  if (!escaped) {
     return []
   }
 
@@ -208,9 +228,7 @@ export async function searchProducts(query: string, limit = 20): Promise<Product
       .select('*, categories!inner(id, name, name_ar, slug, is_active)')
       .eq('is_active', true)
       .eq('categories.is_active', true)
-      .or(
-        `name.ilike.%${trimmed}%,name_ar.ilike.%${trimmed}%,description.ilike.%${trimmed}%,description_ar.ilike.%${trimmed}%`,
-      )
+      .or(`name.ilike.%${escaped}%,name_ar.ilike.%${escaped}%`)
       .order('sold_count', { ascending: false })
       .limit(limit)
 
