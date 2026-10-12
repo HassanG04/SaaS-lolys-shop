@@ -165,6 +165,35 @@ export async function getProductById(id: number | string): Promise<ProductWithCa
 }
 
 /**
+ * Fetches multiple active products by their unique IDs.
+ * Returns only products that exist and are active.
+ */
+export async function getProductsByIds(ids: number[]): Promise<ProductWithCategory[]> {
+  const validIds = Array.from(
+    new Set(ids.filter((id) => typeof id === 'number' && !Number.isNaN(id) && id > 0)),
+  )
+  if (validIds.length === 0) {
+    return []
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, categories(id, name, name_ar, slug)')
+      .in('id', validIds)
+      .eq('is_active', true)
+
+    if (error) {
+      throw toAppError(error)
+    }
+
+    return ((data ?? []) as unknown as RawProductRow[]).map(normalizeProduct)
+  } catch (err) {
+    throw toAppError(err)
+  }
+}
+
+/**
  * Searches active products matching a query across Arabic/English name and description.
  */
 export async function searchProducts(query: string, limit = 20): Promise<ProductWithCategory[]> {

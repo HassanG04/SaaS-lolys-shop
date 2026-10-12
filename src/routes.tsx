@@ -1,8 +1,14 @@
 import { lazy, Suspense, type ReactNode } from 'react'
 import type { RouteObject } from 'react-router-dom'
 import { PearlLoader } from './components/ui/PearlLoader'
-import { RequireAdmin, RequireAuth } from './features/auth/guards'
 import { adminChunkLoader } from './lib/adminLoader'
+
+const RequireAuth = lazy(() =>
+  import('./features/auth/guards').then((m) => ({ default: m.RequireAuth })),
+)
+const RequireAdmin = lazy(() =>
+  import('./features/auth/guards').then((m) => ({ default: m.RequireAdmin })),
+)
 
 import { Layout } from './components/layout/Layout'
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -47,6 +53,22 @@ function Suspended({ children }: { children: ReactNode }) {
     >
       {children}
     </Suspense>
+  )
+}
+
+function ProtectedAuth({ children }: { children: ReactNode }) {
+  return (
+    <Suspended>
+      <RequireAuth>{children}</RequireAuth>
+    </Suspended>
+  )
+}
+
+function ProtectedAdmin({ children }: { children: ReactNode }) {
+  return (
+    <Suspended>
+      <RequireAdmin>{children}</RequireAdmin>
+    </Suspended>
   )
 }
 
@@ -138,71 +160,57 @@ export const routes: RouteObject[] = [
       {
         path: 'account/orders',
         element: (
-          <RequireAuth>
-            <Suspended>
-              <AccountOrdersPage />
-            </Suspended>
-          </RequireAuth>
+          <ProtectedAuth>
+            <AccountOrdersPage />
+          </ProtectedAuth>
         ),
       },
       {
         path: 'account/security',
         element: (
-          <RequireAuth>
-            <Suspended>
-              <AccountSecurityPage />
-            </Suspended>
-          </RequireAuth>
+          <ProtectedAuth>
+            <AccountSecurityPage />
+          </ProtectedAuth>
         ),
       },
       {
         path: 'admin/mfa/enroll',
         element: (
-          <RequireAdmin>
-            <Suspended>
-              <MfaEnrollPage />
-            </Suspended>
-          </RequireAdmin>
+          <ProtectedAdmin>
+            <MfaEnrollPage />
+          </ProtectedAdmin>
         ),
       },
       {
         path: 'admin/mfa/challenge',
         element: (
-          <RequireAdmin>
-            <Suspended>
-              <MfaChallengePage />
-            </Suspended>
-          </RequireAdmin>
+          <ProtectedAdmin>
+            <MfaChallengePage />
+          </ProtectedAdmin>
         ),
       },
       {
         path: 'account/mfa/enroll',
         element: (
-          <RequireAuth>
-            <Suspended>
-              <MfaEnrollPage />
-            </Suspended>
-          </RequireAuth>
+          <ProtectedAuth>
+            <MfaEnrollPage />
+          </ProtectedAuth>
         ),
       },
       {
         path: 'mfa/challenge',
         element: (
-          <RequireAuth>
-            <Suspended>
-              <MfaChallengePage />
-            </Suspended>
-          </RequireAuth>
+          <ProtectedAuth>
+            <MfaChallengePage />
+          </ProtectedAuth>
         ),
       },
       {
         path: 'admin',
         element: (
-          <RequireAdmin>
-            <Suspended>
-              <AdminShell />
-            </Suspended>
-          </RequireAdmin>
+          <ProtectedAdmin>
+            <AdminShell />
+          </ProtectedAdmin>
         ),
         children: [
           {

@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useProduct, useProductsByCategory, ProductCard, ProductImage } from '@/features/catalog'
+import { useCart } from '@/features/cart'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatEGP } from '@/lib/format'
 
@@ -13,6 +14,7 @@ export default function ProductPage() {
   const { id } = useParams<{ id: string }>()
   const { lang, t } = useLanguage()
   const { success } = useToast()
+  const { addItem } = useCart()
 
   const productId = id ? Number(id) : null
 
@@ -77,6 +79,7 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (isSoldOut || !product) return
+    addItem(product.id, quantity, product.stock_quantity)
     success(t('product.addedToCart', { count: quantity }), product.name_ar || product.name)
   }
 

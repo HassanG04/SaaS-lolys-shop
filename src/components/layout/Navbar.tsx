@@ -1,16 +1,39 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { ThemeToggle } from '../ui/ThemeToggle'
 import { LanguageToggle } from '../ui/LanguageToggle'
-import { RibbonBow } from '../ui/ornaments'
+import { useCart } from '../../features/cart'
+
+const NavbarMobileMenu = lazy(() => import('./NavbarMobileMenu'))
+
+function NavbarLogoOrnament({ className = 'size-6' }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M11 10C4 2 1 5 3 10s6 4 8 2m2-2c7-8 10-5 8 0s-6 4-8 2M10 13l-4 8 4-2 2 2 2-8m-1 0 5 8-1-5 4 1-6-5" />
+      <rect x="10" y="9" width="4" height="5" rx="1" />
+    </svg>
+  )
+}
 
 interface NavbarProps {
   cartCount?: number
 }
 
-export function Navbar({ cartCount = 0 }: NavbarProps) {
+export function Navbar({ cartCount }: NavbarProps) {
   const { t } = useLanguage()
+  const cart = useCart()
+  const displayCartCount = cartCount ?? cart.totalCount
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
@@ -50,7 +73,7 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
                 e.currentTarget.style.display = 'none'
               }}
             />
-            <RibbonBow className="size-6 text-(--color-brand)" />
+            <NavbarLogoOrnament className="size-6 text-(--color-brand)" />
           </div>
           <div className="flex flex-col">
             <span className="font-accent text-h3 font-bold leading-tight tracking-normal text-(--color-brand)">
@@ -118,8 +141,12 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
           {/* Cart Pill */}
           <Link
             to="/cart"
+            onClick={(e) => {
+              e.preventDefault()
+              cart.openDrawer()
+            }}
             className="flex h-11 items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) px-3 py-1 text-small font-medium text-(--color-text) transition-colors hover:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-            aria-label={`${t.nav.cart} (${cartCount})`}
+            aria-label={`${t.nav.cart} (${displayCartCount})`}
           >
             <svg
               className="size-5 text-(--color-brand)"
@@ -135,7 +162,7 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
               <path d="M3 6h18" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
-            <span className="font-semibold text-(--color-brand)">{cartCount}</span>
+            <span className="font-semibold text-(--color-brand)">{displayCartCount}</span>
           </Link>
 
           {/* Account Link */}
@@ -206,66 +233,15 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
 
       {/* Mobile Drawer / Dropdown */}
       {mobileMenuOpen && (
-        <div className="border-t border-(--color-border) bg-(--color-surface) px-4 py-4 lg:hidden">
-          {/* Mobile Search */}
-          <form role="search" onSubmit={handleSearchSubmit} className="mb-4">
-            <div className="relative">
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t.search.placeholder}
-                className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) ps-4 pe-11 text-small text-(--color-text) placeholder:text-(--color-text-muted) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-              />
-              <button
-                type="submit"
-                aria-label={t.ui.search}
-                className="absolute end-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-(--radius-pill) bg-(--color-brand) text-(--color-brand-contrast)"
-              >
-                <svg
-                  className="size-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.3-4.3" />
-                </svg>
-              </button>
-            </div>
-          </form>
-
-          {/* Mobile Links */}
-          <nav className="flex flex-col gap-2" aria-label="Mobile Navigation">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `flex h-11 items-center px-4 rounded-(--radius-chip) text-body font-medium transition-colors ${
-                    isActive
-                      ? 'bg-(--color-surface-tint) text-(--color-brand) font-bold'
-                      : 'text-(--color-text) hover:bg-(--color-surface-2)'
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-            <Link
-              to="/account/orders"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex h-11 items-center px-4 rounded-(--radius-chip) text-body font-medium text-(--color-text) hover:bg-(--color-surface-2)"
-            >
-              {t.nav.account}
-            </Link>
-          </nav>
-        </div>
+        <Suspense fallback={null}>
+          <NavbarMobileMenu
+            navLinks={navLinks}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+            onSearchSubmit={handleSearchSubmit}
+            onClose={() => setMobileMenuOpen(false)}
+          />
+        </Suspense>
       )}
     </header>
   )

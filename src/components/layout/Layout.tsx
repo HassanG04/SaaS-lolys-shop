@@ -1,9 +1,14 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Navbar } from './Navbar'
 import { Footer } from './Footer'
+import { useCart } from '../../features/cart'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { useRouteSeo } from '../../features/seo'
+
+const CartDrawer = lazy(() =>
+  import('../../features/cart/components/CartDrawer').then((m) => ({ default: m.CartDrawer })),
+)
 
 export function ScrollToTop() {
   const { pathname } = useLocation()
@@ -17,6 +22,7 @@ export function ScrollToTop() {
 
 export function Layout() {
   const { t } = useLanguage()
+  const { isDrawerOpen } = useCart()
   useRouteSeo()
 
   return (
@@ -34,6 +40,13 @@ export function Layout() {
 
       {/* Navigation Header */}
       <Navbar />
+
+      {/* Cart Drawer Slide-over */}
+      {isDrawerOpen && (
+        <Suspense fallback={null}>
+          <CartDrawer />
+        </Suspense>
+      )}
 
       {/* Main Content Area */}
       <main

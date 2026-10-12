@@ -686,7 +686,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-3.06: Cart
-`status: todo` `owner: agent` `needs: T-3.01, T-0.08e` `size: L`
+`status: done` `owner: agent` `needs: T-3.01, T-0.08e` `size: L`
 - **Do:** `CartProvider` (reducer, localStorage key `cart:v1`, stores only `{productId, quantity}`), cart drawer and `/cart` page, quantity clamped to live stock (re-validated on load), line totals from fresh product data, "log in to check out" call to action for guests.
 - **Done when:** tests cover merging duplicates, clamping, persistence and removal of stale products.
 - **Verify:** `npm run test:unit`
@@ -1336,6 +1336,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-3.02 | Anti-Gravity | Implemented catalog UI components in src/features/catalog/components/: ProductImage with aspect-ratio box, lazy loading, graceful fallback and publicImageUrl; ProductCard with 28px card radius, 20px image radius, struck-through original price on discount, sold-out badge and disabled add button; CategoryTile with full-bleed image and floating label chip. Added catalogUI.test.tsx testing layout stability, prices, sold out states. Full verify passes (317 app + 141 tooling tests = 458 tests). | pending |
 | 2026-10-12 | T-3.03 | Anti-Gravity | Implemented complete Home page in src/pages/HomePage.tsx (Hero with dynamic public settings from shop_settings, arch frame, pearl/ribbon ornaments, floating best sellers; Store section with category tiles; Browse section with category pills, sorting, and load more in steps of 12; About & Delivery section with returns guarantee). Created settings feature (src/features/settings/) and HomePage.test.tsx. Full verify passes (324 app + 141 tooling tests = 465 tests). Initial bundle budget 195.7 KB <= 200 KB. | pending |
 | 2026-10-12 | T-3.04 | Anti-Gravity | Implemented Category page in src/pages/CategoryPage.tsx: route /category/:slug, in-stock filter by default with "show sold out" toggle, sort options (best sellers, newest, price ascending, price descending), full URL search params sync (sort, sold_out) with view restoration on reload, 404 on unknown category slug, virtual /category/all handling, and pagination limit stepper. Added getCategoryBySlug and useCategory in catalog feature. Created CategoryPage.test.tsx. Full verify passes (342 app + 141 tooling tests = 483 tests). Initial bundle 195.9 KB <= 200 KB. | pending |
+| 2026-10-12 | T-3.05 | Anti-Gravity | Implemented Product page in src/pages/ProductPage.tsx: route /product/:id, gallery with thumbnail picker and alt text, live discount badge, stock countdown note, capped quantity stepper, add-to-cart integration, delivery info chips, and related products grid from same category. Created ProductPage.test.tsx. Full verify passes (351 app + 141 tooling tests = 492 tests). Initial bundle 196.2 KB <= 200 KB. | pending |
+| 2026-10-12 | T-3.06 | Anti-Gravity | Implemented Cart feature: CartProvider (cartReducer, localStorage cart:v1 persistence with duplicate merging, live stock re-validation and clamping, fresh line total calculation), CartDrawer slide-over with steppers and guest checkout CTA, and dedicated /cart page in src/pages/CartPage.tsx. Isolated query in cart feature, extracted NavbarMobileMenu, and decoupled ErrorBoundary to keep initial JS bundle at 199.3 KB <= 200 KB gzip budget. Created cart.test.tsx and CartPage.test.tsx (21 tests). Full verify passes (372 app + 141 tooling tests = 513 tests). | pending |
 
 
 

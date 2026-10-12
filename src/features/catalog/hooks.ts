@@ -9,6 +9,7 @@ import {
   searchProducts,
   getFeaturedProducts,
   getBrowseProducts,
+  getProductsByIds,
 } from './api'
 import type {
   Category,
@@ -74,6 +75,21 @@ export function useProduct(id?: number | string | null) {
     queryFn: () => (isValid ? getProductById(numericId) : Promise.resolve(null)),
     enabled: isValid,
     staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useProductsByIds(ids: number[]) {
+  const validIds = Array.from(
+    new Set(ids.filter((id) => typeof id === 'number' && !Number.isNaN(id) && id > 0)),
+  ).sort((a, b) => a - b)
+
+  const queryKey = ['catalog', 'products', validIds.join(',')]
+
+  return useQuery<ProductWithCategory[], AppError>({
+    queryKey,
+    queryFn: () => (validIds.length > 0 ? getProductsByIds(validIds) : Promise.resolve([])),
+    enabled: validIds.length > 0,
+    staleTime: 60 * 1000,
   })
 }
 
