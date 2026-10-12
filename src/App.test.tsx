@@ -35,8 +35,8 @@ test('navigates to routes and renders placeholders', async () => {
   unmount1()
 
   // Product route
-  const { unmount: unmount2 } = render(<App initialEntries={['/product/42']} />)
-  expect(await screen.findByRole('heading', { name: 'تفاصيل المنتج #42' })).toBeInTheDocument()
+  const { unmount: unmount2 } = render(<App initialEntries={['/product/invalid']} />)
+  expect(await screen.findByRole('heading', { name: '404' })).toBeInTheDocument()
   unmount2()
 
   // Cart route

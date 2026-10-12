@@ -55,7 +55,18 @@
     "items_two": "عنصران",
     "items_few": "{{count}} عناصر",
     "items_many": "{{count}} عنصرًا",
-    "items_other": "{{count}} عنصر"
+    "items_other": "{{count}} عنصر",
+    "fastDelivery": "توصيل سريع لجميع المحافظات",
+    "giftWrap": "تغليف هدايا أنيق متاح",
+    "easyReturns": "استرجاع واستبدال خلال 14 يومًا",
+    "relatedTitle": "منتجات قد تعجبك",
+    "inStock": "متوفر في المخزون",
+    "notFound": "المنتج غير موجود",
+    "notFoundDesc": "عذرًا، المنتج الذي تبحث عنه غير متوفر أو تم حذفه.",
+    "quantity": "الكمية",
+    "decreaseQty": "تقليل الكمية",
+    "increaseQty": "زيادة الكمية",
+    "addedToCart": "تمت إضافة {{count}} إلى السلة"
   },
   "cart": {
     "title": "سلة التسوق",

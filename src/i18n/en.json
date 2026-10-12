@@ -55,7 +55,18 @@
     "items_two": "2 items",
     "items_few": "{{count}} items",
     "items_many": "{{count}} items",
-    "items_other": "{{count}} items"
+    "items_other": "{{count}} items",
+    "fastDelivery": "Fast delivery nationwide",
+    "giftWrap": "Elegant gift wrapping available",
+    "easyReturns": "Easy 14-day exchange & return",
+    "relatedTitle": "You might also like",
+    "inStock": "In Stock",
+    "notFound": "Product not found",
+    "notFoundDesc": "Sorry, the product you are looking for is unavailable or has been removed.",
+    "quantity": "Quantity",
+    "decreaseQty": "Decrease quantity",
+    "increaseQty": "Increase quantity",
+    "addedToCart": "Added {{count}} to cart"
   },
   "cart": {
     "title": "Shopping Cart",

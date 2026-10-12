@@ -680,7 +680,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-3.05: Product page
-`status: todo` `owner: agent` `needs: T-3.02` `size: M`
+`status: done` `owner: agent` `needs: T-3.02` `size: M`
 - **Do:** Gallery (`image_url` and `extra_images`), price and discount, stock note ("only N left" at 5 or fewer), quantity stepper capped at stock, add to cart, delivery info chips, related products from the same category.
 - **Done when:** the quantity cannot exceed stock; a sold-out product shows a disabled state.
 - **Verify:** `npm run test:unit`
