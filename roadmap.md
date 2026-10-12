@@ -556,7 +556,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:reset && npm run db:test`
 
 #### T-1.16: Audit log
-`status: todo` `owner: agent` `needs: T-1.15` `size: M`
+`status: done` `owner: agent` `needs: T-1.15` `size: M`
 - **Do:** Migration (S21). Table `audit_log` as in `docs/spec/database-contract.md`: readable only by an admin at `aal2`, no write grants for any API role, and a trigger that blocks update and delete. Triggers on products (name, price, discount, stock, active, featured), categories, delivery_fees, shop_settings, orders (status, payment fields, tracking) and profiles (role) record actor, role and old and new values when the actor is an admin or the database owner. An `audit_event()` helper for functions.
 - **Done when:** admin changes appear with actor and values; stock changes made by `place_order` do not; update and delete of log rows fail even for the owner role.
 - **Verify:** `npm run db:test`
@@ -1324,6 +1324,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-1.10 | Anti-Gravity | Added migration 20261012040559_error_codes.sql setting hint to stable error codes (AUTH-004, ORD-001..ORD-008, ORD-009, ORD-014, ADM-001) and detail left=N for stock in place_order, cancel_my_order, admin_dashboard, and orders_status_guard. Implemented Scenario S18 pgTAP test suite in 07_error_codes.test.sql (20 assertions). Full verify passes (346 tests). | pending |
 | 2026-10-12 | T-1.12 | Anti-Gravity | Added .github/workflows/db-staging.yml and .github/workflows/db-production.yml with SHA-pinned setup-cli, un-echoed secrets, and manual confirmation gate. Authored docs/runbooks/deploy-db.md covering staging/production procedures, pausing caveat and checklists. Full verify passes (346 tests). | pending |
 | 2026-10-12 | T-1.15 | Anti-Gravity | Hardened database admin access: is_admin() requires AAL2 MFA claim, added require_admin() raising ADM-002 at AAL1 and ADM-001 for non-admins, removed admin_set_role, added protect_profile_role trigger blocking API role mutations, clamped sign-up metadata in handle_new_user, and added text column length check constraints on profiles, categories, products, and orders. Created 08_admin_hardening.test.sql (30 assertions for S19, S20, S30) and updated 05_admin.test.sql. Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.16 | Anti-Gravity | Implemented audit log (S21): created append-only audit_log table with immutability trigger blocking update and delete for all roles including owner, RLS allowing select only to admin at AAL2, audit_event helper, and triggers recording admin and database owner changes across products, categories, delivery_fees, orders, and profiles role. Customer place_order stock decrements are excluded. Created 09_audit_log.test.sql (17 assertions). Full verify passes (346 tests). | pending |
 
 
 

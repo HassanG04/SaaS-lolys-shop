@@ -23,6 +23,43 @@ export type Database = {
           }
         },"public": {
           Tables: {
+            "audit_log": {
+              Row: {
+                "action": string;
+                "actor": string | null;
+                "actor_role": string;
+                "at": string;
+                "entity": string;
+                "entity_id": string;
+                "id": number;
+                "new": Json | null;
+                "old": Json | null;
+              };
+              ComputedFields: never;
+              Insert: {
+                "action": string;
+                "actor"?: string | null;
+                "actor_role": string;
+                "at"?: string;
+                "entity": string;
+                "entity_id": string;
+                "id"?: never;
+                "new"?: Json | null;
+                "old"?: Json | null;
+              };
+              Update: {
+                "action"?: string;
+                "actor"?: string | null;
+                "actor_role"?: string;
+                "at"?: string;
+                "entity"?: string;
+                "entity_id"?: string;
+                "id"?: never;
+                "new"?: Json | null;
+                "old"?: Json | null;
+              };
+              Relationships: [];
+            };
             "categories": {
                   Row: {
                     "created_at": string,"id": number,"image_url": string | null,"name": string,"name_ar": string | null,"slug": string,"sort_order": number
@@ -215,6 +252,16 @@ isOneToOne: false
                 }
           }
           Functions: {
+            "audit_event": {
+              Args: {
+                "p_action": string;
+                "p_entity": string;
+                "p_entity_id": string;
+                "p_new"?: Json | null;
+                "p_old"?: Json | null;
+              };
+              Returns: undefined;
+            };
             "admin_dashboard": {
               Args: { "p_from"?: string; "p_to"?: string };
               Returns: Json;
