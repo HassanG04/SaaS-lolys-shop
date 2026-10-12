@@ -192,11 +192,7 @@ export default function DeliveryFeesPage() {
           <PearlLoader loading />
         </div>
       ) : error ? (
-        <ErrorPanel
-          message={error.message}
-          onRetry={() => void refetch()}
-          retryLabel={t.ui.retry}
-        />
+        <ErrorPanel error={error} onRetry={() => void refetch()} retryLabel={t.ui.retry} />
       ) : filteredRows.length === 0 ? (
         <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-8 text-center text-(--color-text-muted)">
           {t.empty.search}

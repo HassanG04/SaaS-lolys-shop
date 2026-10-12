@@ -76,7 +76,7 @@ export function DashboardPage() {
       {isError && (
         <ErrorPanel
           title={t.admin.dashboardError}
-          message={error?.message}
+          error={error}
           onRetry={() => refetch()}
           retryLabel={t.admin.retry}
         />

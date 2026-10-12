@@ -277,8 +277,9 @@ describe('Admin Delivery Fees (T-5.07)', () => {
       render(<DeliveryFeesPage />, { wrapper: createWrapper() })
 
       await waitFor(() => {
-        expect(screen.getByText('Network error loading fees')).toBeInTheDocument()
+        expect(screen.getByText(/تعذّر الاتصال بالإنترنت/)).toBeInTheDocument()
       })
+      expect(screen.getByText(/رمز الخطأ:\s*SYS-002/)).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'إعادة المحاولة' })).toBeInTheDocument()
     })
   })

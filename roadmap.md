@@ -642,7 +642,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-2.08: Error framework
-`status: todo` `owner: agent` `needs: T-1.10, T-2.05` `size: M`
+`status: done` `owner: agent` `needs: T-1.10, T-2.05` `size: M`
 - **Do:** `src/lib/errors.ts`: `AppError` with `code`, `ref` (8 random characters) and `params`; `toAppError(unknown)` maps Supabase Auth error codes, `hint` codes from the database, HTTP statuses and network failures to the catalogue in `docs/spec/error-codes.md`; anything unknown becomes SYS-001 with a reference. An `ErrorMessage` component shows the Arabic message and "رمز الخطأ: CODE" (plus the reference for SYS-001). Add an ESLint rule or test that forbids rendering `error.message` anywhere in `src/`. Log details to the console in development only.
 - **Done when:** a table-driven test covers every code in the catalogue; a test proves raw English messages never reach the DOM.
 - **Verify:** `npm run test:unit`
@@ -1331,6 +1331,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-1.20 | Anti-Gravity | Implemented Abuse controls (S27, S28): migration 20261012053000_abuse_controls.sql with rate_limits table, check_rate_limit function raising SYS-003, integrated rate limits in place_order, submit_payment_proof, and cancel_my_order. Enforced 30 item lines limit (ORD-013), qty <= 20 (ORD-006), and pending orders limit (ORD-010). Created 13_abuse_controls.test.sql (19 assertions). Full verify passes. | pending |
 | 2026-10-12 | T-1.21 | Anti-Gravity | Implemented Stock ledger (S29): migration 20261012054500_stock_ledger.sql with stock_movements table, immutability trigger, AAL2 MFA read policy, log_stock_movement trigger with app.stock_reason session config, and integration across place_order ('order') and cancel_my_order ('cancel'). Created 14_stock_ledger.test.sql (22 assertions). Full verify passes. | pending |
 | 2026-10-12 | T-1.22 | Anti-Gravity | Implemented SQL guard script: scripts/check-sql.mjs (check:sql script) blocking dynamic execute with string concatenation (||), security definer functions without set search_path, public tables without RLS enabled, and anon table grants outside allow-list. Created test suite scripts/check-sql.test.mjs in test:tooling and wired check:sql into verify and CI db job. Full verify passes (225 app + 136 tooling tests = 361 tests). | pending |
+| 2026-10-12 | T-2.08 | Anti-Gravity | Implemented error framework in src/lib/errors.ts: AppError with code, ref (8-char), params; toAppError mapping Supabase Auth codes, DB hint/detail, HTTP statuses, and network errors to 48-entry error catalogue; ErrorMessage component rendering Arabic message, code, and ref; updated ErrorPanel; added scripts/no-raw-error-messages.test.mjs in test:tooling verifying raw error.message never renders in JSX/DOM. Full verify passes (288 app + 139 tooling tests = 427 tests). | pending |
 
 
 
