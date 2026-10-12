@@ -30,8 +30,8 @@ test('renders Layout with skip link, main landmark, navbar and footer', async ()
 
 test('navigates to routes and renders placeholders', async () => {
   // Category route
-  const { unmount: unmount1 } = render(<App initialEntries={['/category/earrings']} />)
-  expect(await screen.findByRole('heading', { name: 'قسم: earrings' })).toBeInTheDocument()
+  const { unmount: unmount1 } = render(<App initialEntries={['/category/all']} />)
+  expect(await screen.findByRole('heading', { name: 'جميع المنتجات' })).toBeInTheDocument()
   unmount1()
 
   // Product route

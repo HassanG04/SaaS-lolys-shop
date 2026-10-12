@@ -54,6 +54,34 @@ export async function getCategories(options?: GetCategoriesOptions): Promise<Cat
 }
 
 /**
+ * Fetches an active category by its unique slug.
+ * Returns null if not found or inactive.
+ */
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  const trimmed = slug?.trim()
+  if (!trimmed || trimmed === 'all') {
+    return null
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', trimmed)
+      .eq('is_active', true)
+      .maybeSingle()
+
+    if (error) {
+      throw toAppError(error)
+    }
+
+    return (data as Category) ?? null
+  } catch (err) {
+    throw toAppError(err)
+  }
+}
+
+/**
  * Fetches best selling active products ordered by sold_count descending.
  */
 export async function getBestSellers(limit = 8): Promise<ProductWithCategory[]> {
@@ -211,6 +239,10 @@ export async function getBrowseProducts(
 
     if (categorySlug && categorySlug !== 'all') {
       query = query.eq('categories.slug', categorySlug)
+    }
+
+    if (options?.inStockOnly) {
+      query = query.gt('stock_quantity', 0)
     }
 
     if (sortBy === 'price_asc') {

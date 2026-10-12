@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import type { AppError } from '@/lib/errors'
 import {
   getCategories,
+  getCategoryBySlug,
   getBestSellers,
   getProductsByCategory,
   getProductById,
@@ -21,6 +22,19 @@ export function useCategories(options?: GetCategoriesOptions) {
   return useQuery<Category[], AppError>({
     queryKey: ['catalog', 'categories', options?.showOnHomeOnly ?? false],
     queryFn: () => getCategories(options),
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useCategory(slug?: string | null) {
+  const trimmed = slug?.trim() ?? ''
+  const isAll = trimmed === 'all'
+  const isEnabled = Boolean(trimmed) && !isAll
+
+  return useQuery<Category | null, AppError>({
+    queryKey: ['catalog', 'categoryDetail', trimmed],
+    queryFn: () => (isEnabled ? getCategoryBySlug(trimmed) : Promise.resolve(null)),
+    enabled: isEnabled,
     staleTime: 5 * 60 * 1000,
   })
 }
@@ -78,9 +92,10 @@ export function useBrowseProducts(options?: GetBrowseProductsOptions) {
   const sortBy = options?.sortBy ?? 'best_sellers'
   const limit = options?.limit ?? 12
   const offset = options?.offset ?? 0
+  const inStockOnly = options?.inStockOnly ?? false
 
   return useQuery<BrowseProductsResult, AppError>({
-    queryKey: ['catalog', 'browse', categorySlug, sortBy, limit, offset],
+    queryKey: ['catalog', 'browse', categorySlug, sortBy, limit, offset, inStockOnly],
     queryFn: () => getBrowseProducts(options),
     staleTime: 5 * 60 * 1000,
   })

@@ -6,12 +6,14 @@ import { getSupabase } from '@/lib/supabase'
 import { AppError } from '@/lib/errors'
 import {
   getCategories,
+  getCategoryBySlug,
   getBestSellers,
   getProductsByCategory,
   getProductById,
   searchProducts,
   getFeaturedProducts,
   useCategories,
+  useCategory,
   useBestSellers,
   useFeaturedProducts,
   useProductsByCategory,
@@ -189,6 +191,48 @@ describe('Catalog API and hooks (T-3.01)', () => {
       } as unknown as ReturnType<ReturnType<typeof getSupabase>['from']>)
 
       await expect(getCategories()).rejects.toThrow(AppError)
+    })
+  })
+
+  describe('getCategoryBySlug', () => {
+    it('returns null when slug is empty or "all"', async () => {
+      expect(await getCategoryBySlug('')).toBeNull()
+      expect(await getCategoryBySlug('all')).toBeNull()
+    })
+
+    it('fetches an active category by slug', async () => {
+      const maybeSingleMock = vi.fn().mockResolvedValue({
+        data: mockCategories[0],
+        error: null,
+      })
+      const eqActiveMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+      const eqSlugMock = vi.fn().mockReturnValue({ eq: eqActiveMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqSlugMock })
+      vi.spyOn(getSupabase(), 'from').mockReturnValue({
+        select: selectMock,
+      } as unknown as ReturnType<ReturnType<typeof getSupabase>['from']>)
+
+      const result = await getCategoryBySlug('necklaces')
+      expect(selectMock).toHaveBeenCalledWith('*')
+      expect(eqSlugMock).toHaveBeenCalledWith('slug', 'necklaces')
+      expect(eqActiveMock).toHaveBeenCalledWith('is_active', true)
+      expect(result).toEqual(mockCategories[0])
+    })
+
+    it('returns null when category is not found', async () => {
+      const maybeSingleMock = vi.fn().mockResolvedValue({
+        data: null,
+        error: null,
+      })
+      const eqActiveMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+      const eqSlugMock = vi.fn().mockReturnValue({ eq: eqActiveMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqSlugMock })
+      vi.spyOn(getSupabase(), 'from').mockReturnValue({
+        select: selectMock,
+      } as unknown as ReturnType<ReturnType<typeof getSupabase>['from']>)
+
+      const result = await getCategoryBySlug('nonexistent')
+      expect(result).toBeNull()
     })
   })
 
@@ -422,6 +466,41 @@ describe('Catalog API and hooks (T-3.01)', () => {
       })
 
       expect(result.current.data).toEqual(mockCategories)
+    })
+
+    it('useCategory fetches category details for valid slug', async () => {
+      const maybeSingleMock = vi.fn().mockResolvedValue({
+        data: mockCategories[0],
+        error: null,
+      })
+      const eqActiveMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+      const eqSlugMock = vi.fn().mockReturnValue({ eq: eqActiveMock })
+      const selectMock = vi.fn().mockReturnValue({ eq: eqSlugMock })
+      vi.spyOn(getSupabase(), 'from').mockReturnValue({
+        select: selectMock,
+      } as unknown as ReturnType<ReturnType<typeof getSupabase>['from']>)
+
+      const { result } = renderHook(() => useCategory('necklaces'), {
+        wrapper: createWrapper(),
+      })
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true)
+      })
+
+      expect(result.current.data).toEqual(mockCategories[0])
+    })
+
+    it('useCategory is disabled when slug is empty or "all"', () => {
+      const { result } = renderHook(() => useCategory(''), {
+        wrapper: createWrapper(),
+      })
+      expect(result.current.fetchStatus).toBe('idle')
+
+      const { result: allResult } = renderHook(() => useCategory('all'), {
+        wrapper: createWrapper(),
+      })
+      expect(allResult.current.fetchStatus).toBe('idle')
     })
 
     it('useBestSellers returns best seller products', async () => {

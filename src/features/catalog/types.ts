@@ -27,6 +27,7 @@ export interface GetBrowseProductsOptions {
   sortBy?: ProductSortOption
   limit?: number
   offset?: number
+  inStockOnly?: boolean
 }
 
 export interface BrowseProductsResult {

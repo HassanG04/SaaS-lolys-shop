@@ -3,8 +3,9 @@
 Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-2.01.
 
 ```yaml
-Current task: T-3.03 done. Ready for T-3.04.
+Current task: T-3.04 done. Ready for T-3.05.
 Completed:
+  - T-3.04: Implemented Category page in src/pages/CategoryPage.tsx: route /category/:slug, in-stock filter by default with "show sold out" toggle, sort options (best sellers, newest, price ascending, price descending), full URL search params sync (sort, sold_out) with view restoration on reload, 404 on unknown category slug, virtual /category/all handling, and pagination limit stepper. Added getCategoryBySlug and useCategory in catalog feature. Created CategoryPage.test.tsx. Full verify passes (342 app + 141 tooling tests = 483 tests). Initial bundle 195.9 KB <= 200 KB.
   - T-3.03: Implemented complete Home page in src/pages/HomePage.tsx (Hero with dynamic public settings from shop_settings, arch frame, pearl/ribbon ornaments, floating best sellers; Store section with category tiles; Browse section with category pills, sorting, and load more in steps of 12; About & Delivery section with returns guarantee). Created settings feature (src/features/settings/) and HomePage.test.tsx. Full verify passes (324 app + 141 tooling tests = 465 tests). Initial bundle budget 195.7 KB <= 200 KB.
   - T-3.02: Implemented catalog UI components in src/features/catalog/components/ (ProductImage with aspect-ratio box, lazy loading, graceful fallback, storage URL resolution; ProductCard with 28px card radius, 20px image radius, struck-through original price on discount, sold-out badge and disabled add button; CategoryTile with full-bleed image and floating label chip). Added catalogUI.test.tsx. Full verify passes (317 app + 141 tooling tests = 458 tests). Initial bundle budget 194.9 KB <= 200 KB.
   - T-3.01: Implemented catalog data layer in src/features/catalog/ (getCategories with show_on_home option, getBestSellers by sold_count desc, getProductsByCategory with categories!inner(slug) filter, getProductById, searchProducts across Arabic/English names and descriptions, getFeaturedProducts) and React Query hooks. Added publicImageUrl(path) in src/lib/images.ts. Added architecture guard test scripts/supabase-import-boundary.test.mjs in test:tooling verifying no Supabase client imports outside api.ts and src/lib. Full verify passes (309 app + 141 tooling tests = 450 tests).
@@ -78,6 +79,7 @@ Completed:
   - Dialog handover e5d498b also passes all four jobs in run 38071760275.
   - Owner resolved OD-002: pearls bounce only while loading, static for reduced motion; design spec updated.
 Files changed:
+  - T-3.04: roadmap.md, src/App.test.tsx, src/features/catalog/api.ts, src/features/catalog/catalog.test.tsx, src/features/catalog/hooks.ts, src/features/catalog/types.ts, src/i18n/ar.json, src/i18n/en.json, src/pages/CategoryPage.tsx, src/pages/CategoryPage.test.tsx.
   - T-3.03: roadmap.md, src/App.test.tsx, src/components/ui/ornaments.test.tsx, src/components/ui/ornaments.tsx, src/features/catalog/api.ts, src/features/catalog/hooks.ts, src/features/catalog/types.ts, src/features/settings/api.ts, src/features/settings/hooks.ts, src/features/settings/index.ts, src/features/settings/types.ts, src/features/settings/settings.test.tsx, src/i18n/ar.json, src/i18n/en.json, src/i18n/translations.ts, src/pages/HomePage.tsx, src/pages/HomePage.test.tsx, src/styles/index.css.
   - T-3.02: src/features/catalog/components/ProductImage.tsx, src/features/catalog/components/ProductCard.tsx, src/features/catalog/components/CategoryTile.tsx, src/features/catalog/components/catalogUI.test.tsx, src/features/catalog/components/index.ts, src/features/catalog/index.ts, src/styles/ui.css, roadmap.md.
   - T-8.01: docs/runbooks/auth-email.md, docs/runbooks/auth-hardening.md, src/features/auth/authErrors.tsx, src/pages/LoginPage.tsx, src/pages/RegisterPage.tsx, src/pages/ResendConfirmationPage.tsx, src/pages/ResetPasswordPage.tsx, src/features/auth/auth.test.tsx, roadmap.md.
@@ -93,6 +95,7 @@ Files changed:
   - Text fields add Field, Input, Select, Textarea, SearchInput, forms.test.tsx and FormExamples; update kit, CSS, Arabic copy and continuation/PR/roadmap docs.
   - Choice controls add Choice, Checkbox, Radio, choices.test.tsx and ChoiceExamples; update form preview, CSS, Arabic copy and continuation/PR/roadmap docs.
 Tests executed:
+  - T-3.04: npm run verify passes with 342 app + 141 tooling tests (483 total); check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (404 on unknown category slug, category title, breadcrumbs, in-stock default, show sold out URL toggle, sort dropdown URL sync, URL state restore on reload, all products virtual category, empty state, English/LTR support), production build, and check:bundle pass. Initial JS bundle size is 195.9 KB gzip <= 200 KB.
   - T-3.03: npm run verify passes with 324 app + 141 tooling tests (465 total); check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (dynamic hero settings, arch frame, pearl/ribbon ornaments, store category tiles, browse filters/sorting/load more, returns policy, and anchor links), production build, and check:bundle pass. Initial JS bundle size is 195.7 KB gzip <= 200 KB.
   - T-3.02: npm run verify passes with 317 app + 141 tooling tests (458 total); check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (image aspect ratio, fallback, price discount, sold out badge, card radius), production build, and check:bundle pass. Initial JS bundle size is 194.9 KB gzip <= 200 KB.
   - T-8.01: npm run verify passes with 225 app + 111 tooling tests (336 total); check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (including email verification, expired token link states, resend flows), production build and preview exclusion all pass. Initial JS bundle size is 192.8 KB gzip <= 200 KB.
@@ -124,7 +127,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: T-3.03 done. Proceeding with T-3.04 (Category page and filters).
+Next action: T-3.04 done. Proceeding with T-3.05 (Product page).
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:
