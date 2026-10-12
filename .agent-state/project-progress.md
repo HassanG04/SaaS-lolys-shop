@@ -3,8 +3,9 @@
 Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-2.01.
 
 ```yaml
-Current task: T-1.10 done. Ready for T-1.12 (DB deploy workflows).
+Current task: T-1.12 done. Ready for T-1.15 (Admin hardening).
 Completed:
+  - T-1.12: Added .github/workflows/db-staging.yml and .github/workflows/db-production.yml with SHA-pinned setup-cli, un-echoed secrets, and manual confirmation gate. Authored docs/runbooks/deploy-db.md covering staging/production procedures, pausing caveat and checklists. Full verify passes (225 app + 121 tooling tests = 346 tests).
   - T-1.10: Added migration 20261012040559_error_codes.sql setting hint to stable error codes (AUTH-004, ORD-001..ORD-008, ORD-009, ORD-014, ADM-001) and detail left=N for stock in place_order, cancel_my_order, admin_dashboard, and orders_status_guard. Implemented Scenario S18 pgTAP test suite in 07_error_codes.test.sql (20 assertions). Full verify passes (225 app + 121 tooling tests = 346 tests).
   - T-1.09: Added db job to .github/workflows/ci.yml with SHA-pinned setup-cli, supabase start, reset, test, concurrency launcher, types regeneration diff check, and migration guard. Removed completed check:migrations stub from scripts/pending.mjs. Full verify passes (225 app + 121 tooling tests = 346 tests).
   - T-0.12: Reconciled repository security baseline: SECURITY.md, public/.well-known/security.txt, .github/CODEOWNERS, .github/dependabot.yml, .gitleaksignore, and secrets CI job. Full verify passes (225 app + 121 tooling tests = 346 tests).
@@ -107,7 +108,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: T-1.10 done. Proceeding with T-1.12 (DB deploy workflows).
+Next action: T-1.12 done. Proceeding with T-1.15 (Admin hardening).
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:

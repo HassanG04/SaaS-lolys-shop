@@ -532,7 +532,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `db-staging.yml` runs green (after T-1.12)
 
 #### T-1.12: DB deploy workflows
-`status: todo` `owner: agent` `needs: T-1.09` `size: M`
+`status: done` `owner: agent` `needs: T-1.09` `size: M`
 - **Do:** Add `.github/workflows/db-staging.yml` (on push to `main` touching `supabase/migrations/**`: setup CLI, `supabase link --project-ref`, `supabase db push`) and `.github/workflows/db-production.yml` (`workflow_dispatch` only; requires the input `PRODUCTION`; same steps with the production secrets). Never echo secrets. Document both in `docs/runbooks/deploy-db.md`, including: a paused free project must be restored in the dashboard before the job can connect.
 - **Done when:** both files pass `actionlint` (if available) and review; the staging run succeeds once T-1.11 is done.
 - **Verify:** review the workflow files
@@ -1322,6 +1322,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-0.12 | Anti-Gravity + Codex | Reconciled repository security baseline: SECURITY.md, public/.well-known/security.txt, .github/CODEOWNERS, .github/dependabot.yml, .gitleaksignore, and secrets CI job. Full verify passes (225 app + 121 tooling tests = 346 tests). | PR #18 / local |
 | 2026-10-12 | T-1.09 | Anti-Gravity | Added db job to .github/workflows/ci.yml with SHA-pinned setup-cli, supabase start, reset, test, concurrency launcher, types regeneration diff check, and migration guard. Removed completed check:migrations from pending.mjs. Full verify passes (346 tests). | pending |
 | 2026-10-12 | T-1.10 | Anti-Gravity | Added migration 20261012040559_error_codes.sql setting hint to stable error codes (AUTH-004, ORD-001..ORD-008, ORD-009, ORD-014, ADM-001) and detail left=N for stock in place_order, cancel_my_order, admin_dashboard, and orders_status_guard. Implemented Scenario S18 pgTAP test suite in 07_error_codes.test.sql (20 assertions). Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.12 | Anti-Gravity | Added .github/workflows/db-staging.yml and .github/workflows/db-production.yml with SHA-pinned setup-cli, un-echoed secrets, and manual confirmation gate. Authored docs/runbooks/deploy-db.md covering staging/production procedures, pausing caveat and checklists. Full verify passes (346 tests). | pending |
 
 
 
