@@ -163,7 +163,7 @@ begin
   end if;
 
   v_expected_prefix := v_uid::text || '/' || p_order_id::text || '/';
-  if p_proof_path is null or not (p_proof_path starts with v_expected_prefix) then
+  if p_proof_path is null or not starts_with(p_proof_path, v_expected_prefix) then
     raise exception 'Proof path must start with user and order ID'
       using errcode = '22023', hint = 'PAY-004';
   end if;

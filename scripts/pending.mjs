@@ -1,5 +1,4 @@
 const tasks = {
-  'test:e2e': 'T-4.07',
   'analytics:install': 'T-9.02',
   'analytics:test': 'T-9.02',
   'analytics:forecast': 'T-9.08',
