@@ -1,0 +1,12 @@
+# H-09: repository owner supplied by the user; SEC-15, SEC-16 and SEC-24.
+/supabase/migrations/** @HassanG04
+/src/features/auth/** @HassanG04
+/src/features/admin/** @HassanG04
+/.github/** @HassanG04
+/public/_headers @HassanG04
+/docs/spec/security-model.md @HassanG04
+/scripts/** @HassanG04
+/.gitleaks* @HassanG04
+/package*.json @HassanG04
+/SECURITY.md @HassanG04
+/public/.well-known/security.txt @HassanG04

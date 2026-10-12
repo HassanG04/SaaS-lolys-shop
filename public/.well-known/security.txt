@@ -1,0 +1,4 @@
+# Temporary contact approved by the owner; replace when H-14 is updated.
+Contact: mailto:hassangebrill2004@gmail.com
+Expires: 2027-10-01T00:00:00Z
+Preferred-Languages: ar, en

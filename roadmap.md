@@ -356,7 +356,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** manual review
 
 #### T-0.06: CI v1
-`status: doing` `owner: agent` `needs: T-0.02, T-0.03` `size: M`
+`status: done` `owner: agent` `needs: T-0.02, T-0.03` `size: M`
 - **Do:** Add `.github/workflows/ci.yml` with jobs `static`, `unit`, `build`, `roadmap` per section 3.3. Use `permissions: contents: read`, a concurrency group per ref (cancel in-progress on PRs), npm cache, Node version from `.nvmrc`, actions pinned to full SHAs.
 - **Done when:** a test PR shows all four jobs green, and a deliberately broken lint rule turns `static` red (then revert).
 - **Verify:** open the PR and read the checks
@@ -434,7 +434,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.09: Repo guards
-`status: todo` `owner: agent` `needs: T-0.06` `size: M`
+`status: done` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Write `scripts/check-secrets.mjs`: scan tracked files and `dist/`; fail on any JWT whose decoded payload has `role: service_role`, on `sb_secret_` keys, and on `service_role` strings outside an allowlist of docs and tests (the public anon key may appear in `dist/`). Write `scripts/check-bundle.mjs`: gzip budget for initial route JS of 200 KB or less, admin chunk separate. Wire both into the `build` job.
 - **Done when:** a planted fake secret makes the script fail; a budget breach is shown once, then reverted.
 - **Verify:** `npm run check:secrets && npm run build && npm run check:bundle`
@@ -452,7 +452,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** open the preview URL
 
 #### T-0.12: Security basics in the repository
-`status: todo` `owner: agent` `needs: T-0.06` `size: M`
+`status: done` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Add `SECURITY.md` (how to report a vulnerability privately), `public/.well-known/security.txt`, `.github/CODEOWNERS` assigning the owner (H-09) to `supabase/migrations/**`, `src/features/auth/**`, `src/features/admin/**`, `.github/workflows/**`, `public/_headers` and `docs/spec/security-model.md`, `.github/dependabot.yml` (npm, github-actions and pip for `analytics/`, weekly), a `secrets` CI job running gitleaks, and add `CLAUDE-SECURITY-*/` to `.gitignore`.
 - **Done when:** the files exist; the `secrets` job fails on a planted fake key and passes without it; the Dependabot config validates.
 - **Verify:** open a PR and read the checks
@@ -1318,6 +1318,9 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-6.02 | Anti-Gravity | Implemented Dashboard UI in src/features/admin/dashboard/ (KPI cards, lazy-loaded Recharts daily revenue area chart with tokens and accessible summary table, breakdowns for status/delivery/governorate, top products and customers lists, low stock alerts linking to product edit form, preset range selector, and skeleton/empty/error states). Initial JavaScript budget enforced <= 200 KB gzip (192.5 KB) and Recharts strictly isolated to admin chunk. Full verify passes (209 app + 111 tooling tests = 320 tests). | local only |
 | 2026-10-11 | T-6.03 | Anti-Gravity | Implemented Chart accessibility and export in src/features/admin/dashboard/ (text summary card and fallback data table for daily chart, aria-labels and table column scopes, ui-print-card and print styles, print report button, UTF-8 BOM CSV export helper formatDailySeriesCsv & downloadDailySeriesCsv). Axe accessibility audit reports 0 serious and 0 critical violations across dashboard in both Arabic and English. Full verify passes (220 app + 111 tooling tests = 331 tests). Initial bundle budget enforced <= 200 KB gzip (192.7 KB). | local only |
 | 2026-10-11 | T-8.01 | Anti-Gravity | Authored auth email and hardening runbooks (docs/runbooks/auth-email.md explaining custom SMTP limits, configuration, exact non-wildcard redirect URLs, test procedure; docs/runbooks/auth-hardening.md 10-point checklist covering Turnstile, confirmations, 10-char password, TOTP MFA, HIBP, timeouts). Implemented clear "check your email", "resend", and "link expired" (AUTH-009) UI states across Register, Login, Reset Password, and Resend Confirmation pages. Full verify passes (225 app + 111 tooling tests = 336 tests). Initial bundle budget enforced <= 200 KB gzip (192.8 KB). | local only |
+| 2026-10-12 | T-0.09 | Anti-Gravity + Codex | Reconciled repository guards: scripts/check-secrets.mjs rejecting privileged JWTs, secret keys and role mentions outside tests/docs; scripts/check-bundle.mjs enforcing <= 200 KB initial JS gzip budget and lazy admin separation; wired both into build and verify pipelines. Full verify passes. | PR #15 / local |
+| 2026-10-12 | T-0.12 | Anti-Gravity + Codex | Reconciled repository security baseline: SECURITY.md, public/.well-known/security.txt, .github/CODEOWNERS, .github/dependabot.yml, .gitleaksignore, and secrets CI job. Full verify passes (225 app + 121 tooling tests = 346 tests). | PR #18 / local |
+
 
 
 

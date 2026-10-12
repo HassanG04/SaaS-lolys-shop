@@ -1,0 +1,7 @@
+# Confirmed synthetic test values, reviewed 2026-10-12. Exact commit/file/rule/line
+# only: new credentials at these paths remain scanned. Never allowlist a directory.
+# Mock MFA enrollment: invalid Base32 placeholder and its matching otpauth URI.
+d334e5738906cfaea4a859c0e27eddf0fe711c28:src/features/admin/admin.test.tsx:generic-api-key:138
+d334e5738906cfaea4a859c0e27eddf0fe711c28:src/features/admin/admin.test.tsx:generic-api-key:139
+# Environment-validation fixture: non-JWT test public key, not a credential.
+686cfe2a4db575ed3bddffdfd588ecb0456615b8:src/lib/env.test.ts:generic-api-key:11
