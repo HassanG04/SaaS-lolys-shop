@@ -21,6 +21,7 @@ const RegisterPage = lazy(() => import('./pages/RegisterPage'))
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
 const ResendConfirmationPage = lazy(() => import('./pages/ResendConfirmationPage'))
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'))
+const OrderConfirmationPage = lazy(() => import('./pages/OrderConfirmationPage'))
 const PayOrderPage = lazy(() => import('./pages/PayOrderPage'))
 const AccountOrdersPage = lazy(() => import('./pages/AccountOrdersPage'))
 const AccountSecurityPage = lazy(() => import('./pages/AccountSecurityPage'))
@@ -153,9 +154,17 @@ export const routes: RouteObject[] = [
       {
         path: 'checkout',
         element: (
-          <Suspended>
+          <ProtectedAuth>
             <CheckoutPage />
-          </Suspended>
+          </ProtectedAuth>
+        ),
+      },
+      {
+        path: 'order/:id/thanks',
+        element: (
+          <ProtectedAuth>
+            <OrderConfirmationPage />
+          </ProtectedAuth>
         ),
       },
       {

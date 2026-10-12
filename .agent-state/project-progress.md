@@ -3,8 +3,9 @@
 Updated 2026-10-11 (Africa/Cairo). Active: Anti-Gravity, completed T-2.01.
 
 ```yaml
-Current task: T-3.07 done. Ready for next task.
+Current task: T-4.02 done. Ready for next task.
 Completed:
+  - T-4.02: Implemented Checkout feature with location details and payment choice in src/pages/CheckoutPage.tsx, pre-filled from customer profile (full name, phone, optional alt phone, governorate, city, district, address, floor, apartment, landmark, notes). Egyptian mobile number normalization and validation. Dynamic delivery fees from database by governorate (useGovernorates, useDeliveryFees). Enabled payment methods (cod, instapay_qr) from shop settings. Sticky estimated order summary. Calls place_order RPC with p_items, p_delivery_method, p_payment_method, and p_ship. Routes COD to /order/:id/thanks (warm confirmation screen with order reference and ribbon ornament) and InstaPay to /pay/:orderId. Protected with ProtectedAuth. Created checkout.test.tsx and CheckoutPage.test.tsx (22 tests). Full verify passes (404 app + 141 tooling tests = 545 tests). Initial bundle budget enforced <= 200 KB gzip (199.9 KB).
   - T-3.07: Implemented Search feature: Navbar search routes to /search?q=..., debounced input sync with URL search params, PostgREST ilike query escaping (wildcards % and _ and delimiters), full UI states (query prompt, loading skeleton, error panel with retry, empty state, results grid). Verified with catalog.test.tsx and SearchPage.test.tsx (36 tests). Full verify passes (379 app + 141 tooling tests = 520 tests). Initial bundle budget enforced <= 200 KB gzip (199.5 KB).
   - T-3.06: Implemented Cart feature: CartProvider (cartReducer, localStorage cart:v1 persistence with duplicate merging, live stock re-validation and clamping, fresh line total calculation), CartDrawer slide-over with steppers and guest checkout CTA, and dedicated /cart page in src/pages/CartPage.tsx. Isolated query in cart feature, extracted NavbarMobileMenu, and decoupled ErrorBoundary to keep initial JS bundle at 199.3 KB <= 200 KB gzip budget. Created cart.test.tsx and CartPage.test.tsx (21 tests). Full verify passes (372 app + 141 tooling tests = 513 tests).
   - T-3.05: Implemented Product page in src/pages/ProductPage.tsx: full image gallery with thumbnail switcher, pricing with discount badge and struck-through original price, stock note ("only N left" at 5 or fewer, in-stock chip, sold-out badge), quantity stepper strictly capped at stock_quantity (disabled decrements at 1, disabled increments at stock, 0 and disabled when sold out), add-to-cart button disabled when sold out with toast feedback, 3 delivery info chips (fast delivery, gift wrap, easy returns), related products section filtering current product, 404 screen on non-numeric or missing product. Created ProductPage.test.tsx (10 tests). Full verify passes (351 app + 141 tooling tests = 492 tests). Initial bundle 196.2 KB <= 200 KB.
@@ -82,6 +83,7 @@ Completed:
   - Dialog handover e5d498b also passes all four jobs in run 38071760275.
   - Owner resolved OD-002: pearls bounce only while loading, static for reduced motion; design spec updated.
 Files changed:
+  - T-4.02: roadmap.md, src/App.test.tsx, src/features/admin/admin.test.tsx, src/features/auth/api.ts, src/features/auth/types.ts, src/features/cart/CartProvider.tsx, src/features/checkout/api.ts, src/features/checkout/checkout.test.tsx, src/features/checkout/index.ts, src/features/checkout/types.ts, src/features/checkout/validation.ts, src/i18n/ar.json, src/i18n/en.json, src/pages/CheckoutPage.tsx, src/pages/CheckoutPage.test.tsx, src/pages/OrderConfirmationPage.tsx, src/routes.tsx.
   - T-3.07: roadmap.md, src/components/layout/Navbar.tsx, src/features/catalog/api.ts, src/features/catalog/catalog.test.tsx, src/i18n/ar.json, src/i18n/en.json, src/pages/SearchPage.tsx, src/pages/SearchPage.test.tsx, src/routes.tsx.
   - T-3.06: roadmap.md, src/components/layout/Navbar.tsx, src/components/layout/NavbarMobileMenu.tsx, src/features/cart/api.ts, src/features/cart/cart.test.tsx, src/features/cart/CartProvider.tsx, src/features/cart/cartReducer.ts, src/features/cart/cartStorage.ts, src/features/cart/components/CartDrawer.tsx, src/features/cart/index.ts, src/features/cart/types.ts, src/pages/CartPage.tsx, src/pages/CartPage.test.tsx, src/routes.tsx.
   - T-3.04: roadmap.md, src/App.test.tsx, src/features/catalog/api.ts, src/features/catalog/catalog.test.tsx, src/features/catalog/hooks.ts, src/features/catalog/types.ts, src/i18n/ar.json, src/i18n/en.json, src/pages/CategoryPage.tsx, src/pages/CategoryPage.test.tsx.
@@ -100,6 +102,7 @@ Files changed:
   - Text fields add Field, Input, Select, Textarea, SearchInput, forms.test.tsx and FormExamples; update kit, CSS, Arabic copy and continuation/PR/roadmap docs.
   - Choice controls add Choice, Checkbox, Radio, choices.test.tsx and ChoiceExamples; update form preview, CSS, Arabic copy and continuation/PR/roadmap docs.
 Tests executed:
+  - T-4.02: npm run verify passes with 404 app + 141 tooling tests (545 total); check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (phone normalization/validation, form bounds, place_order RPC argument mapping, AppError hint mapping, prefill from profile, governorate delivery fees calculation, COD order routing, InstaPay QR routing, empty cart state), production build, check:secrets, and check:bundle pass. Initial JS bundle size is 199.9 KB gzip <= 200 KB.
   - T-3.07: npm run verify passes with 379 app + 141 tooling tests (520 total); check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (search query debounce, URL param sync, PostgREST ilike pattern escaping, empty prompt state, results grid, empty results, error panel with retry), production build, and check:bundle pass. Initial JS bundle size is 199.5 KB gzip <= 200 KB.
   - T-3.06: npm run verify passes with 372 app + 141 tooling tests (513 total); check:tokens, check:i18n, lint, prettier check, typecheck, unit tests, production build, and check:bundle pass. Initial JS bundle size is 199.3 KB gzip <= 200 KB.
   - T-3.04: npm run verify passes with 342 app + 141 tooling tests (483 total); check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (404 on unknown category slug, category title, breadcrumbs, in-stock default, show sold out URL toggle, sort dropdown URL sync, URL state restore on reload, all products virtual category, empty state, English/LTR support), production build, and check:bundle pass. Initial JS bundle size is 195.9 KB gzip <= 200 KB.
@@ -134,7 +137,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: T-3.07 done. Ready for next task.
+Next action: T-4.02 done. Ready for next task.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:

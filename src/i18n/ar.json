@@ -107,7 +107,17 @@
     "title": "بيانات التوصيل",
     "delivery": "طريقة التوصيل",
     "payment": "طريقة الدفع",
-    "submit": "تأكيد الطلب"
+    "submit": "تأكيد الطلب",
+    "estimateSummary": "ملخص الطلب (تقديري)",
+    "selectGovernorateFirst": "اختر المحافظة لعرض طرق التوصيل",
+    "noDeliveryMethods": "لا تتوفر طرق توصيل لهذه المحافظة",
+    "noPaymentMethods": "لا تتوفر طرق دفع حاليًا",
+    "submitting": "جارٍ تأكيد الطلب…",
+    "phoneFormatHint": "01012345678",
+    "addressDetails": "تفاصيل العنوان",
+    "codDescription": "الدفع نقدًا عند الاستلام",
+    "instapayDescription": "تحويل فوري عبر إنستاباي (QR)",
+    "fastAndSecure": "سريع وآمن"
   },
   "field": {
     "name": "الاسم الكامل",

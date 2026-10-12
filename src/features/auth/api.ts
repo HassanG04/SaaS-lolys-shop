@@ -161,19 +161,16 @@ export async function fetchProfileApi(userId: string): Promise<UserProfile | nul
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, role, full_name, phone, governorate_id, city, address')
+      .select(
+        'id, role, full_name, phone, alt_phone, governorate_id, city, district, address, floor, apartment, landmark',
+      )
       .eq('id', userId)
       .maybeSingle()
 
     if (error || !data) return null
     return {
-      id: data.id,
+      ...data,
       role: (data.role as 'admin' | 'customer') || 'customer',
-      full_name: data.full_name,
-      phone: data.phone,
-      governorate_id: data.governorate_id,
-      city: data.city,
-      address: data.address,
     }
   } catch {
     return null

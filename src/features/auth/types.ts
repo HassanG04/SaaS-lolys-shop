@@ -8,9 +8,14 @@ export interface UserProfile {
   role: UserRole
   full_name: string | null
   phone: string | null
+  alt_phone?: string | null
   governorate_id?: number | null
   city?: string | null
+  district?: string | null
   address?: string | null
+  floor?: string | null
+  apartment?: string | null
+  landmark?: string | null
   created_at?: string
   updated_at?: string
 }

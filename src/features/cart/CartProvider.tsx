@@ -13,7 +13,7 @@ import { loadCart, saveCart } from './cartStorage'
 import { cartReducer } from './cartReducer'
 import type { CartContextValue, CartLine, CartStoredItem } from './types'
 
-const CartContext = createContext<CartContextValue | null>(null)
+export const CartContext = createContext<CartContextValue | null>(null)
 
 interface CartProviderProps {
   children: ReactNode

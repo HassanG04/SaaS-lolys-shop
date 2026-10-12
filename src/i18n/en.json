@@ -107,7 +107,17 @@
     "title": "Delivery Information",
     "delivery": "Delivery Method",
     "payment": "Payment Method",
-    "submit": "Confirm Order"
+    "submit": "Confirm Order",
+    "estimateSummary": "Order summary (estimated)",
+    "selectGovernorateFirst": "Select governorate for delivery options",
+    "noDeliveryMethods": "No delivery methods available",
+    "noPaymentMethods": "No payment methods available",
+    "submitting": "Confirming order…",
+    "phoneFormatHint": "01012345678",
+    "addressDetails": "Address details",
+    "codDescription": "Cash on delivery",
+    "instapayDescription": "Instant transfer via InstaPay QR",
+    "fastAndSecure": "Fast & Secure"
   },
   "field": {
     "name": "Full Name",

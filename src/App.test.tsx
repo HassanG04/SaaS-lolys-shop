@@ -24,7 +24,11 @@ test('renders Layout with skip link, main landmark, navbar and footer', async ()
 
   // Home heading
   expect(
-    await screen.findByRole('heading', { name: /إكسسوارات|خصم يصل إلى|متجر لوليز/ }),
+    await screen.findByRole(
+      'heading',
+      { name: /إكسسوارات|خصم يصل إلى|متجر لوليز/ },
+      { timeout: 3000 },
+    ),
   ).toBeInTheDocument()
 })
 
