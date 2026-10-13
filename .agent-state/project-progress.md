@@ -1,5 +1,29 @@
 # Shared project progress
 
+Updated 2026-10-13 (Africa/Cairo). Codex isolated branch `agent/T-7.06-semgrep`.
+
+```yaml
+Current task: T-7.06 implemented and locally verified; PR checks pending.
+Completed:
+  - Added read-only, digest-pinned Semgrep CI with maintained TypeScript/React packs and seven project rules.
+  - Disabled metrics and inline suppressions; source snippets stay out of logs; failures and empty scans reject.
+  - Full scan found no high-severity findings in this branch or Anti-Gravity source at 56529b3.
+Files changed:
+  - .semgrep/project.yml, .semgrep/README.md, .semgrepignore, .github/workflows/sast.yml, .github/CODEOWNERS
+  - scripts/check-sast.mjs, scripts/test-semgrep.mjs, roadmap.md
+  - .agent-state/project-progress.md, .agent-state/sast-pr.md, HANDOVER_TO_ANTI_GRAVITY.md
+Tests executed:
+  - Full verify passed: 55 app and 111 tooling tests plus lint, formatting, types, production build and existing guards.
+  - Real scanner suite passed: 12 planted cases across seven rules, safe recovery, reported partial-parse rejection and missing-scanner failure.
+Problems found:
+  - Semgrep can prefilter malformed files without reporting a parser error; lint/typecheck remain mandatory.
+  - Raw-error taint analysis is within a function, not proof of cross-function safety.
+  - This tooling branch intentionally retains its older application base; do not replace Anti-Gravity's newer app.
+Next action: Complete fixture/PR verification; retain doing until owner workflow review. Anti-Gravity's next app task is T-5.05.
+```
+
+## Previous session
+
 Updated 2026-10-12 (Africa/Cairo). Codex isolated branch `agent/T-0.12-repository-security`.
 
 ```yaml

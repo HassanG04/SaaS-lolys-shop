@@ -1,4 +1,38 @@
-# Current repository-security handover — 2026-10-12
+# Current static-analysis handover — 2026-10-13
+
+## Current Objective
+
+Finish T-7.06 on `agent/T-7.06-semgrep`, stacked on repository-security PR 18.
+Your app is at 56529b3 (T-5.04); next app task is T-5.05. Its checkout is untouched.
+
+## Completed / Remaining
+
+Seven project rules plus maintained TypeScript/React packs, a digest-pinned
+read-only `sast` workflow, redacted scanner runner and real-binary fixtures.
+Both source trees scanned without high findings. Real-scanner fixtures pass;
+PR checks are pending. Owner workflow review remains required.
+Preserve your newer application/dependencies when integrating this tooling patch.
+
+## Current Files
+
+`.semgrep/project.yml`, `.semgrep/README.md`, `.semgrepignore`,
+`.github/workflows/sast.yml`, `.github/CODEOWNERS`, `scripts/check-sast.mjs`,
+`scripts/test-semgrep.mjs`, `roadmap.md`, `.agent-state/project-progress.md`,
+`.agent-state/sast-pr.md`, `HANDOVER_TO_ANTI_GRAVITY.md`.
+
+## Current Error
+
+No known application scan finding. Expected: fixture and remote PR verification.
+Actual: local verify and fixtures pass; PR checks pending. Parser prefiltering and
+cross-function taint limits are documented; lint/typecheck and error tests remain.
+
+## Next Exact Command
+
+`git status --short --branch` then read this handover, progress and the PR checks.
+Run `node --test scripts/test-semgrep.mjs` with Semgrep 1.179.0 on PATH.
+No agent merges, cloud deployments or dashboard changes.
+
+# Previous repository-security handover — 2026-10-12
 
 ## Current Objective
 
