@@ -32,9 +32,7 @@ export function DeleteCategoryDialog({
   if (!category) return null
 
   const hasProducts = category.product_count > 0
-  const displayName = isAr
-    ? (category.name_ar ?? category.name)
-    : category.name
+  const displayName = isAr ? (category.name_ar ?? category.name) : category.name
 
   const handleDelete = async () => {
     setDeleteError(null)
@@ -58,11 +56,7 @@ export function DeleteCategoryDialog({
   }
 
   return (
-    <Dialog
-      open
-      title={isAr ? 'تأكيد حذف القسم' : 'Confirm Category Deletion'}
-      onClose={onClose}
-    >
+    <Dialog open title={isAr ? 'تأكيد حذف القسم' : 'Confirm Category Deletion'} onClose={onClose}>
       <div className="space-y-4 max-w-sm">
         <p className="text-body text-text">
           {isAr ? (
@@ -84,12 +78,8 @@ export function DeleteCategoryDialog({
                 : `This category has ${category.product_count} product(s). Select a target category to move them to first.`}
             </p>
             <div className="space-y-1.5">
-              <label
-                htmlFor="del-cat-move-to"
-                className="block text-small font-semibold text-text"
-              >
-                {isAr ? 'القسم البديل' : 'Target Category'}{' '}
-                <span className="text-danger">*</span>
+              <label htmlFor="del-cat-move-to" className="block text-small font-semibold text-text">
+                {isAr ? 'القسم البديل' : 'Target Category'} <span className="text-danger">*</span>
               </label>
               <select
                 id="del-cat-move-to"
@@ -135,9 +125,15 @@ export function DeleteCategoryDialog({
             type="button"
             variant="danger"
             onClick={() => void handleDelete()}
-            disabled={deleteMutation.isPending || (hasProducts && !moveToId)}
+            disabled={deleteMutation.isPending}
           >
-            {deleteMutation.isPending ? (isAr ? 'جارٍ الحذف...' : 'Deleting...') : (isAr ? 'تأكيد الحذف' : 'Confirm Deletion')}
+            {deleteMutation.isPending
+              ? isAr
+                ? 'جارٍ الحذف...'
+                : 'Deleting...'
+              : isAr
+                ? 'تأكيد الحذف'
+                : 'Confirm Deletion'}
           </Button>
         </div>
       </div>

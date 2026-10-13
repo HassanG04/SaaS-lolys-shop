@@ -166,9 +166,7 @@ export async function uploadCategoryImage(
   file: File | Blob,
   categoryId: number | string,
 ): Promise<string> {
-  const { validateProductImageFile, resizeAndEncodeImage } = await import(
-    '../products/imageUpload'
-  )
+  const { validateProductImageFile, resizeAndEncodeImage } = await import('../products/imageUpload')
 
   await validateProductImageFile(file)
   const { blob, extension, contentType } = await resizeAndEncodeImage(file)

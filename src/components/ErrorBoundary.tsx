@@ -1,5 +1,4 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
-import { Button } from './ui/Button'
 
 export interface ErrorBoundaryProps {
   children: ReactNode
@@ -73,9 +72,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               <p>نعتذر عن هذا الخطأ. يمكنك محاولة إعادة التحميل أو العودة لاحقًا.</p>
             </div>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Button variant="secondary" onClick={this.resetError}>
+              <button
+                type="button"
+                data-variant="secondary"
+                className="ui-control ui-button inline-flex items-center justify-center gap-2 rounded-pill font-semibold disabled:cursor-not-allowed px-6 py-2"
+                onClick={this.resetError}
+              >
                 إعادة المحاولة
-              </Button>
+              </button>
             </div>
           </div>
         </div>

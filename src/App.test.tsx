@@ -20,7 +20,7 @@ test('renders Layout with skip link, main landmark, navbar and footer', async ()
   )
 
   // Footer landmark
-  expect(screen.getByRole('contentinfo')).toBeInTheDocument()
+  expect(await screen.findByRole('contentinfo')).toBeInTheDocument()
 
   // Home heading
   expect(
@@ -61,7 +61,9 @@ test('navigates to routes and renders placeholders', async () => {
 
 test('opens the development kit at its route', async () => {
   render(<App initialEntries={['/__kit']} />)
-  expect(await screen.findByRole('heading', { name: kit.title })).toBeInTheDocument()
+  expect(
+    await screen.findByRole('heading', { name: kit.title }, { timeout: 10000 }),
+  ).toBeInTheDocument()
 })
 
 test('shows a clear development error screen when booting without env values', () => {

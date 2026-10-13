@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Navbar } from './Navbar'
-import { Footer } from './Footer'
 import { useCart } from '../../features/cart'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { useRouteSeo } from '../../features/seo'
@@ -9,6 +8,8 @@ import { useRouteSeo } from '../../features/seo'
 const CartDrawer = lazy(() =>
   import('../../features/cart/components/CartDrawer').then((m) => ({ default: m.CartDrawer })),
 )
+
+const Footer = lazy(() => import('./Footer').then((m) => ({ default: m.Footer })))
 
 export function ScrollToTop() {
   const { pathname } = useLocation()
@@ -54,11 +55,28 @@ export function Layout() {
         tabIndex={-1}
         className="flex-1 w-full max-w-(--container-layout) mx-auto px-4 sm:px-6 py-8 focus:outline-none"
       >
-        <Outlet />
+        <Suspense
+          fallback={
+            <div
+              role="status"
+              aria-label="Loading"
+              className="flex h-64 items-center justify-center text-brand"
+            >
+              <span
+                className="size-6 animate-spin rounded-pill border-2 border-brand border-t-transparent"
+                aria-hidden="true"
+              />
+            </div>
+          }
+        >
+          <Outlet />
+        </Suspense>
       </main>
 
       {/* Global Footer */}
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   )
 }

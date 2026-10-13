@@ -61,12 +61,7 @@ export function useDeleteCategory() {
 export function useReorderCategories() {
   const queryClient = useQueryClient()
 
-  return useMutation<
-    void,
-    AppError,
-    number[],
-    { previous?: AdminCategoryWithCount[] }
-  >({
+  return useMutation<void, AppError, number[], { previous?: AdminCategoryWithCount[] }>({
     mutationFn: reorderAdminCategories,
     onMutate: async (orderedIds) => {
       await queryClient.cancelQueries({ queryKey: ADMIN_CATEGORIES_FULL_KEY })

@@ -21,30 +21,27 @@ export function getRouteMetadata(
   }
   if (p === '/__kit' && import.meta.env.DEV) return { title: 'UI Kit', noindex: true }
 
-  const pubMap: Record<string, string> = {
-    '/cart': s.cart,
-    '/login': s.login,
-    '/register': s.register,
-    '/about': s.about,
-    '/terms': s.terms,
-    '/privacy': s.privacy,
-    '/returns': s.returns,
-    '/shipping': s.shipping,
+  const map: Record<string, [string, boolean]> = {
+    '/cart': [s.cart, false],
+    '/login': [s.login, false],
+    '/register': [s.register, false],
+    '/about': [s.about, false],
+    '/terms': [s.terms, false],
+    '/privacy': [s.privacy, false],
+    '/returns': [s.returns, false],
+    '/shipping': [s.shipping, false],
+    '/account': [t.account.details, true],
+    '/account/orders': [s.orders, true],
+    '/account/favorites': [s.favorites, true],
+    '/account/security': [s.security, true],
+    '/account/mfa/enroll': [s.mfaEnroll, true],
+    '/mfa/challenge': [s.mfaChallenge, true],
+    '/checkout': [s.checkout, true],
+    '/reset-password': [s.resetPassword, true],
+    '/resend-confirmation': [s.resendConfirmation, true],
   }
-  if (pubMap[p]) return { title: pubMap[p], noindex: false }
-
-  const privMap: Record<string, string> = {
-    '/account': t.account.details,
-    '/account/orders': s.orders,
-    '/account/favorites': s.favorites,
-    '/account/security': s.security,
-    '/account/mfa/enroll': s.mfaEnroll,
-    '/mfa/challenge': s.mfaChallenge,
-    '/checkout': s.checkout,
-    '/reset-password': s.resetPassword,
-    '/resend-confirmation': s.resendConfirmation,
-  }
-  return { title: privMap[p] || s.notFound, noindex: true }
+  const match = map[p]
+  return match ? { title: match[0], noindex: match[1] } : { title: s.notFound, noindex: true }
 }
 
 export function useRouteSeo() {

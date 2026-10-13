@@ -92,12 +92,10 @@ function CategoryRow({
         <div className="mt-1 flex flex-wrap gap-2">
           <span
             className={`inline-flex items-center rounded-pill px-2 py-0.5 text-caption font-semibold ${
-              category.is_active
-                ? 'bg-success/15 text-success'
-                : 'bg-text-muted/10 text-text-muted'
+              category.is_active ? 'bg-success/15 text-success' : 'bg-text-muted/10 text-text-muted'
             }`}
           >
-            {category.is_active ? (isAr ? 'نشط' : 'Active') : (isAr ? 'مؤرشف' : 'Archived')}
+            {category.is_active ? (isAr ? 'نشط' : 'Active') : isAr ? 'مؤرشف' : 'Archived'}
           </span>
           {category.show_on_home && (
             <span className="inline-flex items-center rounded-pill bg-brand/15 px-2 py-0.5 text-caption font-semibold text-brand">
@@ -105,9 +103,7 @@ function CategoryRow({
             </span>
           )}
           <span className="inline-flex items-center gap-1 text-caption text-text-muted">
-            {isAr
-              ? `${category.product_count} منتج`
-              : `${category.product_count} product(s)`}
+            {isAr ? `${category.product_count} منتج` : `${category.product_count} product(s)`}
           </span>
         </div>
       </div>
@@ -241,8 +237,7 @@ function CategoryForm({
       {/* Arabic name */}
       <div className="space-y-1.5">
         <label htmlFor={nameArId} className="block text-small font-semibold text-text">
-          {isAr ? 'اسم القسم (بالعربية)' : 'Category Name (Arabic)'}
-          {' '}
+          {isAr ? 'اسم القسم (بالعربية)' : 'Category Name (Arabic)'}{' '}
           <span className="text-danger">*</span>
         </label>
         <input
@@ -274,9 +269,7 @@ function CategoryForm({
       {/* Slug */}
       <div className="space-y-1.5">
         <label htmlFor={slugId} className="block text-small font-semibold text-text">
-          {isAr ? 'الاسم المختصر (Slug)' : 'Category Slug'}
-          {' '}
-          <span className="text-danger">*</span>
+          {isAr ? 'الاسم المختصر (Slug)' : 'Category Slug'} <span className="text-danger">*</span>
         </label>
         <input
           id={slugId}
@@ -322,14 +315,14 @@ function CategoryForm({
             className="hidden"
             onChange={handleImageChange}
           />
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => imageInputRef.current?.click()}
-          >
+          <Button type="button" variant="secondary" onClick={() => imageInputRef.current?.click()}>
             {imagePreview
-              ? (isAr ? 'تغيير الصورة' : 'Change image')
-              : (isAr ? 'اختر صورة' : 'Choose image')}
+              ? isAr
+                ? 'تغيير الصورة'
+                : 'Change image'
+              : isAr
+                ? 'اختر صورة'
+                : 'Choose image'}
           </Button>
           {imagePreview && (
             <button
@@ -397,10 +390,16 @@ function CategoryForm({
         </Button>
         <Button type="submit" variant="primary" disabled={isSaving || slugInvalid}>
           {isSaving
-            ? (isAr ? 'جارٍ الحفظ...' : 'Saving...')
+            ? isAr
+              ? 'جارٍ الحفظ...'
+              : 'Saving...'
             : isEdit
-              ? (isAr ? 'حفظ التعديلات' : 'Save Changes')
-              : (isAr ? 'إضافة القسم' : 'Add Category')}
+              ? isAr
+                ? 'حفظ التعديلات'
+                : 'Save Changes'
+              : isAr
+                ? 'إضافة القسم'
+                : 'Add Category'}
         </Button>
       </div>
     </form>
@@ -449,10 +448,7 @@ export default function CategoriesPage() {
     setFormError(null)
   }
 
-  async function handleSave(
-    values: CategoryFormState,
-    imageFile: File | null,
-  ) {
+  async function handleSave(values: CategoryFormState, imageFile: File | null) {
     setFormError(null)
     try {
       // Determine final image path
@@ -567,12 +563,7 @@ export default function CategoriesPage() {
           <h1 className="text-h2 font-bold text-text">{t.admin.categoriesTitle}</h1>
           <p className="mt-1 text-small text-text-muted">{t.admin.categoriesDesc}</p>
         </div>
-        <Button
-          id="add-category-btn"
-          variant="primary"
-          onClick={openAdd}
-          disabled={mode === 'add'}
-        >
+        <Button id="add-category-btn" variant="primary" onClick={openAdd} disabled={mode === 'add'}>
           + {isAr ? 'إضافة قسم' : 'Add Category'}
         </Button>
       </div>
@@ -586,16 +577,15 @@ export default function CategoriesPage() {
             </div>
           )}
 
-          {isError && (
-            <ErrorPanel
-              error={error}
-              onRetry={() => void refetch()}
-            />
-          )}
+          {isError && <ErrorPanel error={error} onRetry={() => void refetch()} />}
 
           {!isLoading && !isError && list.length === 0 && (
             <EmptyState
-              description={isAr ? 'لا توجد أقسام بعد. أضف قسمًا جديدًا.' : 'No categories yet. Add one to get started.'}
+              description={
+                isAr
+                  ? 'لا توجد أقسام بعد. أضف قسمًا جديدًا.'
+                  : 'No categories yet. Add one to get started.'
+              }
             />
           )}
 
@@ -628,8 +618,12 @@ export default function CategoriesPage() {
           <Card className="self-start p-5">
             <h2 className="mb-4 text-h3 font-bold text-text">
               {mode === 'edit'
-                ? (isAr ? 'تعديل القسم' : 'Edit Category')
-                : (isAr ? 'إضافة قسم جديد' : 'Add New Category')}
+                ? isAr
+                  ? 'تعديل القسم'
+                  : 'Edit Category'
+                : isAr
+                  ? 'إضافة قسم جديد'
+                  : 'Add New Category'}
             </h2>
             <CategoryForm
               key={editTarget?.id ?? 'new'}

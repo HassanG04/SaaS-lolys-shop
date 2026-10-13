@@ -185,9 +185,9 @@ describe('createAdminCategory', () => {
 
 describe('updateAdminCategory', () => {
   it('throws ADM-006 on invalid slug in update', async () => {
-    await expect(
-      api.updateAdminCategory(1, { slug: 'Bad Slug!' }),
-    ).rejects.toMatchObject({ code: 'ADM-006' })
+    await expect(api.updateAdminCategory(1, { slug: 'Bad Slug!' })).rejects.toMatchObject({
+      code: 'ADM-006',
+    })
   })
 
   it('allows update without providing a slug', async () => {
@@ -221,8 +221,12 @@ describe('reorderAdminCategories', () => {
 
 describe('DeleteCategoryDialog', () => {
   beforeEach(() => {
-    HTMLDialogElement.prototype.showModal = vi.fn()
-    HTMLDialogElement.prototype.close = vi.fn()
+    HTMLDialogElement.prototype.showModal = vi.fn(function (this: HTMLDialogElement) {
+      this.setAttribute('open', '')
+    })
+    HTMLDialogElement.prototype.close = vi.fn(function (this: HTMLDialogElement) {
+      this.removeAttribute('open')
+    })
   })
 
   it('renders empty-category confirmation without migration select', () => {
@@ -237,7 +241,9 @@ describe('DeleteCategoryDialog', () => {
       </Wrapper>,
     )
     expect(screen.queryByRole('combobox')).toBeNull()
-    expect(screen.getByRole('button', { name: /تأكيد الحذف|Confirm Deletion/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /تأكيد الحذف|Confirm Deletion/i }),
+    ).toBeInTheDocument()
   })
 
   it('renders migration select when category has products', () => {
@@ -281,11 +287,7 @@ describe('DeleteCategoryDialog', () => {
 
     render(
       <Wrapper>
-        <DeleteCategoryDialog
-          category={emptyCategory}
-          otherCategories={[]}
-          onClose={onClose}
-        />
+        <DeleteCategoryDialog category={emptyCategory} otherCategories={[]} onClose={onClose} />
       </Wrapper>,
     )
 

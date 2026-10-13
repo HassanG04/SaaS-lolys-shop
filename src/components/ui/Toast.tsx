@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { IconButton } from './IconButton'
 
 const states = {
   success: { color: 'text-success', path: 'm5 12 4 4L19 6' },
@@ -47,7 +46,13 @@ export function Toast({ title, message, severity = 'info', onDismiss }: ToastPro
         </div>
       </div>
       {onDismiss ? (
-        <IconButton aria-label={ui.dismissNotification} variant="ghost" onClick={onDismiss}>
+        <button
+          type="button"
+          aria-label={ui.dismissNotification}
+          data-variant="ghost"
+          className="ui-control ui-button inline-flex aspect-square items-center justify-center rounded-pill p-2"
+          onClick={onDismiss}
+        >
           <svg
             width="24"
             height="24"
@@ -55,11 +60,11 @@ export function Toast({ title, message, severity = 'info', onDismiss }: ToastPro
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
-            focusable="false"
+            aria-hidden="true"
           >
             <path d="m6 6 12 12M18 6 6 18" />
           </svg>
-        </IconButton>
+        </button>
       ) : null}
     </div>
   )

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
 import { AdminHeader } from './AdminHeader'
 import { AdminSidebar } from './AdminSidebar'
+import { AdminRoutes } from './AdminRoutes'
 
 export default function AdminShell() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -23,7 +23,7 @@ export default function AdminShell() {
           tabIndex={-1}
           className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto focus:outline-none"
         >
-          <Outlet />
+          <AdminRoutes />
         </main>
       </div>
     </div>

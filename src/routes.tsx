@@ -1,6 +1,5 @@
-import { lazy, Suspense, type ReactNode } from 'react'
+import { lazy } from 'react'
 import type { RouteObject } from 'react-router-dom'
-import { PearlLoader } from './components/ui/PearlLoader'
 import { adminChunkLoader } from './lib/adminLoader'
 
 const RequireAuth = lazy(() =>
@@ -28,12 +27,6 @@ const AccountOrdersPage = lazy(() => import('./pages/AccountOrdersPage'))
 const AccountFavoritesPage = lazy(() => import('./pages/AccountFavoritesPage'))
 const AccountSecurityPage = lazy(() => import('./pages/AccountSecurityPage'))
 const AdminShell = lazy(() => adminChunkLoader())
-const AdminPage = lazy(() => import('./pages/AdminPage'))
-const AdminProductsPage = lazy(() => import('./features/admin/products/ProductsPage'))
-const AdminProductFormPage = lazy(() => import('./features/admin/products/ProductFormPage'))
-const AdminCustomersPage = lazy(() => import('./features/admin/customers/CustomersPage'))
-const AdminDeliveryFeesPage = lazy(() => import('./features/admin/delivery/DeliveryFeesPage'))
-const AdminCategoriesPage = lazy(() => import('./features/admin/categories/CategoriesPage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
 const TermsPage = lazy(() => import('./pages/TermsPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
@@ -45,84 +38,57 @@ const MfaChallengePage = lazy(() => import('./pages/MfaChallengePage'))
 
 const KitPage = import.meta.env.DEV ? lazy(() => import('./dev/KitPage')) : null
 
-const Fallback = (
-  <div
-    role="status"
-    aria-label="Loading"
-    className="flex h-64 w-full items-center justify-center text-brand"
-  >
-    <PearlLoader loading />
-  </div>
-)
-
-const lazyR = (C: React.ComponentType) => (
-  <Suspense fallback={Fallback}>
-    <C />
-  </Suspense>
-)
-const authR = (C: React.ComponentType) => (
-  <Suspense fallback={Fallback}>
+const r = (path: string, C: React.ComponentType): RouteObject => ({ path, element: <C /> })
+const auth = (path: string, C: React.ComponentType): RouteObject => ({
+  path,
+  element: (
     <RequireAuth>
       <C />
     </RequireAuth>
-  </Suspense>
-)
-const adminR = (C: React.ComponentType) => (
-  <Suspense fallback={Fallback}>
+  ),
+})
+const admin = (path: string, C: React.ComponentType): RouteObject => ({
+  path,
+  element: (
     <RequireAdmin>
       <C />
     </RequireAdmin>
-  </Suspense>
-)
-
-const r = (path: string, element: ReactNode) => ({ path, element })
+  ),
+})
 
 export const routes: RouteObject[] = [
   {
     path: '/',
     element: <Layout />,
     children: [
-      { index: true, element: lazyR(HomePage) },
-      r('category/:slug', lazyR(CategoryPage)),
-      r('product/:id', lazyR(ProductPage)),
-      r('cart', lazyR(CartPage)),
-      r('search', lazyR(SearchPage)),
-      r('login', lazyR(LoginPage)),
-      r('register', lazyR(RegisterPage)),
-      r('reset-password', lazyR(ResetPasswordPage)),
-      r('resend-confirmation', lazyR(ResendConfirmationPage)),
-      r('checkout', authR(CheckoutPage)),
-      r('order/:id/thanks', authR(OrderConfirmationPage)),
-      r('pay/:orderId', lazyR(PayOrderPage)),
-      r('account', authR(AccountPage)),
-      r('account/orders', authR(AccountOrdersPage)),
-      r('account/favorites', authR(AccountFavoritesPage)),
-      r('account/security', authR(AccountSecurityPage)),
-      r('admin/mfa/enroll', adminR(MfaEnrollPage)),
-      r('admin/mfa/challenge', adminR(MfaChallengePage)),
-      r('account/mfa/enroll', authR(MfaEnrollPage)),
-      r('mfa/challenge', authR(MfaChallengePage)),
-      {
-        path: 'admin',
-        element: adminR(AdminShell),
-        children: [
-          { index: true, element: lazyR(AdminPage) },
-          r('products', lazyR(AdminProductsPage)),
-          r('products/new', lazyR(AdminProductFormPage)),
-          r('products/:id', lazyR(AdminProductFormPage)),
-          r('categories', lazyR(AdminCategoriesPage)),
-          r('customers', lazyR(AdminCustomersPage)),
-          r('delivery', lazyR(AdminDeliveryFeesPage)),
-          r('*', lazyR(AdminPage)),
-        ],
-      },
-      r('about', lazyR(AboutPage)),
-      r('terms', lazyR(TermsPage)),
-      r('privacy', lazyR(PrivacyPage)),
-      r('returns', lazyR(ReturnsPage)),
-      r('shipping', lazyR(ShippingPage)),
-      ...(KitPage ? [r('__kit', lazyR(KitPage))] : []),
-      r('*', lazyR(NotFoundPage)),
+      { index: true, element: <HomePage /> },
+      r('category/:slug', CategoryPage),
+      r('product/:id', ProductPage),
+      r('cart', CartPage),
+      r('search', SearchPage),
+      r('login', LoginPage),
+      r('register', RegisterPage),
+      r('reset-password', ResetPasswordPage),
+      r('resend-confirmation', ResendConfirmationPage),
+      auth('checkout', CheckoutPage),
+      auth('order/:id/thanks', OrderConfirmationPage),
+      r('pay/:orderId', PayOrderPage),
+      auth('account', AccountPage),
+      auth('account/orders', AccountOrdersPage),
+      auth('account/favorites', AccountFavoritesPage),
+      auth('account/security', AccountSecurityPage),
+      admin('admin/mfa/enroll', MfaEnrollPage),
+      admin('admin/mfa/challenge', MfaChallengePage),
+      auth('account/mfa/enroll', MfaEnrollPage),
+      auth('mfa/challenge', MfaChallengePage),
+      admin('admin/*', AdminShell),
+      r('about', AboutPage),
+      r('terms', TermsPage),
+      r('privacy', PrivacyPage),
+      r('returns', ReturnsPage),
+      r('shipping', ShippingPage),
+      ...(KitPage ? [r('__kit', KitPage)] : []),
+      r('*', NotFoundPage),
     ],
   },
 ]

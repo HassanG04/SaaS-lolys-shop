@@ -1,17 +1,19 @@
 import { useLanguage } from '../../i18n/LanguageProvider'
-import { Button } from './Button'
 
 export function LanguageToggle() {
   const { lang, setLang, t } = useLanguage()
+  const isAr = lang === 'ar'
 
   return (
-    <Button
-      variant="secondary"
-      onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-      lang={lang === 'ar' ? 'en' : 'ar'}
-      dir={lang === 'ar' ? 'ltr' : 'rtl'}
+    <button
+      type="button"
+      data-variant="secondary"
+      className="ui-control ui-button inline-flex items-center justify-center rounded-pill font-semibold px-6 py-2"
+      onClick={() => setLang(isAr ? 'en' : 'ar')}
+      lang={isAr ? 'en' : 'ar'}
+      dir={isAr ? 'ltr' : 'rtl'}
     >
       {t.ui.switchLanguage}
-    </Button>
+    </button>
   )
 }
