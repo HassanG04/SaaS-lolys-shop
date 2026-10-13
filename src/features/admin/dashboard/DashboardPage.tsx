@@ -9,6 +9,7 @@ import { DashboardKpis } from './DashboardKpis'
 import { DashboardBreakdowns } from './DashboardBreakdowns'
 import { DashboardTopLists } from './DashboardTopLists'
 import { DashboardLowStock } from './DashboardLowStock'
+import { RecentSensitiveChangesPanel } from '../audit'
 
 const DashboardChart = lazy(() => import('./DashboardChart'))
 
@@ -142,6 +143,9 @@ export function DashboardPage() {
 
           {/* 5. Low-stock inventory alerts */}
           <DashboardLowStock lowStock={data.low_stock} />
+
+          {/* 6. Recent sensitive system changes */}
+          <RecentSensitiveChangesPanel />
         </div>
       )}
     </div>
