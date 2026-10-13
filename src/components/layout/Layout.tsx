@@ -11,26 +11,18 @@ const CartDrawer = lazy(() =>
 
 const Footer = lazy(() => import('./Footer').then((m) => ({ default: m.Footer })))
 
-export function ScrollToTop() {
+export function Layout() {
+  const { t } = useLanguage()
+  const { isDrawerOpen } = useCart()
   const { pathname } = useLocation()
+  useRouteSeo()
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [pathname])
 
-  return null
-}
-
-export function Layout() {
-  const { t } = useLanguage()
-  const { isDrawerOpen } = useCart()
-  useRouteSeo()
-
   return (
     <div className="min-h-screen flex flex-col bg-bg text-text font-sans antialiased">
-      {/* Scroll restoration */}
-      <ScrollToTop />
-
       {/* Skip to Main Content Link */}
       <a
         href="#main-content"

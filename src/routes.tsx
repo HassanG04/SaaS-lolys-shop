@@ -2,12 +2,9 @@ import { lazy } from 'react'
 import type { RouteObject } from 'react-router-dom'
 import { adminChunkLoader } from './lib/adminLoader'
 
-const RequireAuth = lazy(() =>
-  import('./features/auth/guards').then((m) => ({ default: m.RequireAuth })),
-)
-const RequireAdmin = lazy(() =>
-  import('./features/auth/guards').then((m) => ({ default: m.RequireAdmin })),
-)
+const loadGuards = () => import('./features/auth/guards')
+const RequireAuth = lazy(() => loadGuards().then((m) => ({ default: m.RequireAuth })))
+const RequireAdmin = lazy(() => loadGuards().then((m) => ({ default: m.RequireAdmin })))
 
 import { Layout } from './components/layout/Layout'
 const HomePage = lazy(() => import('./pages/HomePage'))
