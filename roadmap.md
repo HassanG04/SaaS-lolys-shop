@@ -768,7 +768,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit` and manual check
 
 #### T-5.04: Categories admin
-`status: todo` `owner: agent` `needs: T-5.01, T-1.19` `size: M`
+`status: done` `owner: agent` `needs: T-5.01, T-1.19` `size: M`
 - **Do:** Add a category (Arabic name, slug suggested then validated), change its tile image, show or hide it on the home page, reorder, archive, delete. Deleting a category that has products requires choosing another category to move them to (`admin_delete_category`); an empty category deletes directly. Slug pattern `^[a-z0-9]+(-[a-z0-9]+)*$`.
 - **Done when:** moving products on delete works; ADM-005 and ADM-006 are mapped; tests cover the validators.
 - **Verify:** `npm run test:unit`

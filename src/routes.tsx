@@ -33,6 +33,7 @@ const AdminProductsPage = lazy(() => import('./features/admin/products/ProductsP
 const AdminProductFormPage = lazy(() => import('./features/admin/products/ProductFormPage'))
 const AdminCustomersPage = lazy(() => import('./features/admin/customers/CustomersPage'))
 const AdminDeliveryFeesPage = lazy(() => import('./features/admin/delivery/DeliveryFeesPage'))
+const AdminCategoriesPage = lazy(() => import('./features/admin/categories/CategoriesPage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
 const TermsPage = lazy(() => import('./pages/TermsPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
@@ -109,6 +110,7 @@ export const routes: RouteObject[] = [
           r('products', lazyR(AdminProductsPage)),
           r('products/new', lazyR(AdminProductFormPage)),
           r('products/:id', lazyR(AdminProductFormPage)),
+          r('categories', lazyR(AdminCategoriesPage)),
           r('customers', lazyR(AdminCustomersPage)),
           r('delivery', lazyR(AdminDeliveryFeesPage)),
           r('*', lazyR(AdminPage)),
