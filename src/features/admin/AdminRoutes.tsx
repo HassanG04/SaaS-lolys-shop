@@ -10,6 +10,7 @@ const AdminDeliveryFeesPage = lazy(() => import('./delivery/DeliveryFeesPage'))
 const AdminCategoriesPage = lazy(() => import('./categories/CategoriesPage'))
 const AdminOrdersPage = lazy(() => import('./orders/OrdersPage'))
 const AdminPaymentsPage = lazy(() => import('./payments/PaymentsPage'))
+const AdminSettingsPage = lazy(() => import('./settings/SettingsPage'))
 
 const AdminFallback = (
   <div
@@ -32,6 +33,7 @@ const adminSubroutes = [
   { path: 'customers', element: <AdminCustomersPage /> },
   { path: 'payments', element: <AdminPaymentsPage /> },
   { path: 'delivery', element: <AdminDeliveryFeesPage /> },
+  { path: 'settings', element: <AdminSettingsPage /> },
   { path: '*', element: <AdminPage /> },
 ]
 

@@ -2,70 +2,55 @@
 
 ## Objective
 
-Completed task `T-5.08: Payment review` on branch `agent/T-5.08-admin-payments`.
+Completed task `T-5.09: Site settings` on branch `agent/T-5.09-admin-settings`.
 
-## Completed Work in T-5.08
+## Completed Work in T-5.09
 
-1. **Payment Review View (`src/features/admin/payments/PaymentsPage.tsx`)**:
-   - Queue of orders `under_review` sorted oldest first (FIFO) for administrative verification.
-   - Status tabs: `under_review` (default with active count badge), `all`, `paid`, `rejected`, `awaiting_proof`.
-   - Search input supporting order `#ID`, customer name, phone number, and payment reference code.
-   - Responsive table displaying order ID & timestamp, customer name & phone, total in EGP (`formatEGP`), payment reference code with copy button, deadline/submission timestamp, proof viewer trigger, and `PaymentStatusBadge`.
-   - Quick action buttons ("قبول" / "رفض") for review directly from table.
-   - Action launcher for "تطهير الإثباتات القديمة" (Purge old proofs).
+1. **Settings Types (`src/features/admin/settings/types.ts`)**:
+   - `ShopSettingsMap` defining all 16 allow-listed database settings keys: `shop_name_ar`, `shop_name_en`, `tagline_ar`, `phone`, `whatsapp`, `instagram`, `announcement_ar`, `hero_title_ar`, `hero_subtitle_ar`, `sale_percent`, `payment_methods_enabled`, `instapay_qr_path`, `instapay_handle`, `returns_text_ar`, `payment_window_hours`, `pending_order_limit`.
+   - `UpdateSettingPayload` discriminated union and `SettingsAuditEntry` schema.
+   - `SENSITIVE_SETTING_KEYS` identifying MFA Step-Up requirements.
 
-2. **Ephemeral Proof Viewer (`src/features/admin/payments/ProofViewerModal.tsx`)**:
-   - Generates short-lived 60-second signed URLs via `supabase.storage.from('payment-proofs').createSignedUrl(path, 60)`.
-   - Never stores signed URLs in persistent storage or database.
-   - Displays proof image, order amount, copyable reference code, customer details, and external tab link.
-   - Ephemeral privacy notice banner explaining 60s validity.
+2. **Validators (`src/features/admin/settings/validators.ts`)**:
+   - Pure validation functions enforcing exact database contract constraints, character limits, number ranges, and regexes.
+   - `validateSettingValue` returning `{ valid: false, errorHint: 'ADM-008' }` for unknown keys and `ADM-007` for value violations.
 
-3. **Payment Review Dialog (`src/features/admin/payments/PaymentReviewDialog.tsx`)**:
-   - Approve action: marks payment `paid` via `admin_review_payment` RPC (AAL2 MFA required, auto-audited).
-   - Reject action: marks payment `rejected` with note via `admin_review_payment` RPC, allowing the customer to resubmit before deadline on storefront `/pay/:orderId`.
-   - Arabic catalogue error mapping via `toAppError`.
+3. **API Layer (`src/features/admin/settings/api.ts`)**:
+   - `getAdminSettings`: queries `shop_settings` table and returns typed settings with `DEFAULT_SETTINGS` fallbacks.
+   - `updateAdminSetting`: pre-validates inputs and calls database RPC `admin_update_setting(p_key, p_value)` with Arabic error catalogue mapping (`toAppError`).
+   - `uploadInstaPayQrImage`: validates file magic bytes (JPEG/PNG/WebP <= 5 MB), resizes and re-encodes, uploads to `product-images` bucket under `settings/instapay-qr-${uuid}.${ext}`, persists path via RPC, and deletes previous custom QR image from storage (leaving default placeholder untouched).
+   - `getPublicQrUrl`: resolves public URL, falling back to `/placeholders/instapay-qr.svg` if empty or default.
+   - `getRecentSettingsAudit`: queries `audit_log` where `entity = 'shop_settings'` (latest 10 entries).
 
-4. **Purge Old Proofs Action (`src/features/admin/payments/PurgeProofsDialog.tsx`)**:
-   - Enforces data retention and privacy policy (`docs/spec/security-model.md § 7`): targets orders delivered longer ago than retention period (default 90 days after delivery).
-   - Guarded by Step-Up MFA (`useStepUp` / `StepUpDialog`).
-   - Deletes image objects from private `payment-proofs` bucket through Storage API (`remove`).
-   - Clears `payment_proof_path = null` on the order records in the database.
-   - Toast feedback with count of purged files.
+4. **React Query Hooks (`src/features/admin/settings/hooks.ts`)**:
+   - `useAdminSettings`, `useUpdateAdminSetting`, `useUploadInstaPayQr`, and `useRecentSettingsAudit`.
+   - Invalidation synchronizes admin settings, public storefront settings (`['settings', 'public']`), and audit log query keys.
 
-5. **API & Data Hooks (`src/features/admin/payments/api.ts`, `hooks.ts`, `types.ts`)**:
-   - `getAdminPaymentOrders`: Query filtered by status and search with FIFO sorting for `under_review`.
-   - `getSignedProofUrl`: 60-second signed URL generator.
-   - `adminReviewPayment`: RPC wrapper for `admin_review_payment`.
-   - `purgeOldProofs`: Retention query, storage object removal, and database path cleanup.
-   - TanStack Query hooks with automatic cache invalidation (`admin-payment-orders`, `admin-orders`, `admin-dashboard`).
+5. **Settings Administration UI (`src/features/admin/settings/SettingsPage.tsx`)**:
+   - Organized into 5 tabbed sections:
+     - **معلومات المتجر والتواصل**: Names, tagline, phone, WhatsApp, Instagram link.
+     - **الواجهة الرئيسية والخصم والإعلانات**: Announcement bar, hero title, subtitle, sale discount percent, with live storefront hero badge preview.
+     - **طرق الدفع المفعلة وإنستاباي**: Payment method checkboxes, InstaPay IPA address, QR preview and replacement file picker.
+     - **الحدود التشغيلية والسياسات**: Pending order limit (1..10), InstaPay payment window (1..72 hours), returns text.
+     - **سجل تغييرات إعدادات المتجر**: Chronological audit log table with translated friendly setting names, old/new values, and actor roles.
+   - Step-Up MFA prompt integration (`useStepUp` / `StepUpDialog`) guarding payment methods, operational limits, and QR image replacement.
 
-6. **Route Wiring**:
-   - Added lazy route `payments` to `src/features/admin/AdminRoutes.tsx`.
+6. **Route & Layout Wiring**:
+   - Added lazy route `{ path: 'settings', element: <AdminSettingsPage /> }` in `src/features/admin/AdminRoutes.tsx`.
+   - Added `'settings'` icon and navigation entry `{ to: '/admin/settings', label: t.admin.settings, icon: 'settings' }` in `src/features/admin/AdminSidebar.tsx` and `types.ts`.
 
-7. **Bundle Budget & Optimizations**:
-   - Inlined scroll restoration in `src/components/layout/Layout.tsx` and consolidated guard loaders in `src/routes.tsx`.
-   - Initial JavaScript bundle: exactly **199,994 gzip bytes** (under 200,000 byte budget).
-   - Recharts and admin chunks strictly isolated to admin lazy chunk.
-
-8. **Verification & Quality**:
-   - 15 unit tests in `src/features/admin/payments/payments.test.tsx` testing API queries, FIFO sorting, signed link expiry, approve/reject RPC, error mapping, retention purge, and UI interactions.
-   - Full test suite: **706 tests pass** (565 application tests + 141 tooling tests).
-   - Full verify passed: `npm run verify` exited 0 (`check:migrations`, `check:sql`, `check:tokens`, `check:i18n`, `lint`, `format:check`, `typecheck`, `test:unit`, `build`, `check:secrets`, `check:bundle`).
-   - Roadmap updated: `T-5.08: done` (76/119 tasks completed, Phase 5: 8/12 completed).
+7. **Verification & Quality**:
+   - 22 unit tests in `src/features/admin/settings/settings.test.tsx` (100% pass) testing validators, API functions, RPC calls, old QR file deletion, error mappings, step-up prompts, and UI interactions.
+   - Full test suite: **728 tests pass** (587 application tests + 141 tooling tests).
+   - Full `npm run verify` passed: `check:migrations`, `check:sql`, `check:tokens`, `check:i18n`, `lint`, `format:check`, `typecheck`, `test:unit`, `build`, `check:secrets`, and `check:bundle`.
+   - Initial JS bundle budget maintained: **199,998 / 200,000 gzip bytes** in 4 initial chunks.
+   - Roadmap updated: `T-5.09: done` (77/119 tasks completed, Phase 5: 9/12 completed).
 
 ## Next Task
 
-- **T-5.09: Site settings** (`/admin/settings`):
-  - Shop info, WhatsApp and phone, announcement bar, hero text and sale percent, enabled payment methods, InstaPay address and QR image (replace with preview), returns text.
-  - Each save calls `admin_update_setting`.
-  - QR, payment methods and limits require step-up MFA.
-  - Show latest changes from audit log.
-  - Ship placeholder QR until real images exist (H-10).
-  - Verify with `npm run test:unit`.
-
-## Command to run next
-
-```bash
-git checkout -b agent/T-5.09-admin-settings
-npm run roadmap:next
-```
+- **T-5.10: Audit log viewer** (`/admin/audit`):
+  - Read-only table with filters (date, entity, actor, action).
+  - Readable before-and-after view.
+  - "Recent sensitive changes" panel for the dashboard.
+  - No edit or delete controls.
+  - Verification: `npm run verify`.
