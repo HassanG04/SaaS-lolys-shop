@@ -2,55 +2,67 @@
 
 ## Objective
 
-Completed task `T-8.01: Auth email and hardening runbooks` on branch `agent/T-8.01-auth-email-hardening-runbooks`.
+Completed task `T-5.05: Orders admin` on branch `agent/T-5.05-admin-orders`.
 
-## Completed Work in T-8.01
+## Completed Work in T-5.05
 
-1. **Auth Email Runbook (`docs/runbooks/auth-email.md`)**:
-   - Rationale for custom SMTP (built-in sender capped at 2 emails/hour; custom SMTP default is 30 signups/hour per Supabase production checklist).
-   - SMTP configuration guidance (Host, Port, User, Pass, Sender Name/Email, Encryption) across Resend, SendGrid, and AWS SES.
-   - Exact redirect URLs for production (`https://lolys.eg/*`), staging, and local development (strictly prohibiting wildcards `*`).
-   - Comprehensive test procedures covering registration confirmation, password reset, link expiration, and rate-limiting enumeration protection.
+1. **Orders Administration View (`src/features/admin/orders/OrdersPage.tsx`)**:
+   - Order search by order `#ID`, customer name, phone number, and tracking number.
+   - Status tab pills (`all`, `pending`, `confirmed`, `shipped`, `delivered`, `cancelled`).
+   - Payment status dropdown (`all`, `unpaid`, `awaiting_proof`, `under_review`, `paid`, `rejected`).
+   - Responsive orders table with Western digits EGP price formatting, status pill badges, payment status badges, and one-click detail access.
+   - Auto-opens order detail modal when routed via `/admin/orders/:id`.
 
-2. **Auth Hardening Runbook (`docs/runbooks/auth-hardening.md`)**:
-   - 10-point tick-list covering:
-     1. Cloudflare Turnstile CAPTCHA enabled.
-     2. Email confirmations required.
-     3. Secure email change enabled with double verification.
-     4. Minimum password length set to 10 characters.
-     5. Anonymous sign-ins disabled.
-     6. TOTP two-factor authentication enabled (`aal2`).
-     7. Exact allow-listed redirect URLs only (no wildcards).
-     8. Unused external OAuth providers disabled.
-     9. Leaked-password protection enabled (HaveIBeenPwned).
-     10. JWT expiry / 20-minute admin session idle timeouts enforced.
-   - Pre-launch verification procedure and incident response guide for compromised credentials.
+2. **Order Detail Modal (`src/features/admin/orders/OrderDetailModal.tsx`)**:
+   - Detailed customer information (name, phone, alternative phone).
+   - Delivery address details with governorate, city, district, street, floor, apartment, landmark, and delivery method badge.
+   - Fulfillment tracking details (Egypt Post tracking number or Courier Representative name and phone) with inline edit launcher.
+   - Payment metadata (method, status, transfer reference code, payment timestamp).
+   - Itemized product list with thumbnail, quantity, formatted unit price, and line totals.
+   - Financial totals summary (subtotal, shipping fee, total).
+   - Allowed status transition action buttons and cancellation button.
+   - Terminal notice displayed for cancelled orders with transition actions completely removed.
 
-3. **UI States and Error Handling**:
-   - Extended `src/features/auth/authErrors.tsx` to map Supabase token expiration errors (`otp_expired`, `token_expired`, `link is invalid`, `link has expired`) to catalogue error code `AUTH-009` ("الرابط غير صالح أو انتهت صلاحيته. اطلب رابطًا جديدًا.").
-   - Implemented dedicated "تحقق من بريدك الإلكتروني" (Check your email) status cards across `RegisterPage`, `ResetPasswordPage`, and `ResendConfirmationPage` with envelope icon and spam/junk guidance when `statusMessage === 'AUTH-010'`.
-   - Derived URL error codes via `useMemo` in `LoginPage` and `ResetPasswordPage` to gracefully handle expired redirects with one-click recovery links (`/resend-confirmation` and `/reset-password`).
+3. **Status Transitions & Validation (`src/features/admin/orders/transitions.ts`)**:
+   - Standard path: `pending` -> `confirmed` -> `shipped` -> `delivered`.
+   - Cancellation permitted from any active state (`pending`, `confirmed`, `shipped`, `delivered`).
+   - Pure validator `isTransitionAllowed` rejects forward jumps, backward moves, identity moves, and reopening cancelled orders (`ORD-014`).
+   - Documented CSS token styles for status badges (`borderClass`, `bg`, `text`, `dot`).
 
-4. **Testing and Verification**:
-   - Added 5 unit tests in `src/features/auth/auth.test.tsx` verifying registration check-email state, password reset check-email state, resend confirmation flow, and expired link URL handling on login and reset pages.
-   - All 225 application tests and 111 tooling tests (336 total) pass.
-   - Bundle size verified at 192.8 KB gzip <= 200 KB.
-   - `npm run verify` passed completely.
-   - Committed and pushed to `origin/agent/T-8.01-auth-email-hardening-runbooks`.
+4. **Status Transition Dialog (`src/features/admin/orders/OrderStatusDialog.tsx`)**:
+   - Confirmation dialog for status transitions.
+   - Contextual input fields: prompts for tracking number (Egypt Post) or Courier Rep phone/name when transitioning to `shipped`.
+   - Prominent irreversible warning banner for cancellation explaining automatic database inventory restocking and catalogue code `ORD-014`.
+   - Error mapping to Arabic catalogue messages via `toAppError`.
 
-## Current Roadmap State
+5. **Fulfillment Details Dialog (`src/features/admin/orders/OrderFulfillmentDialog.tsx`)**:
+   - Dedicated dialog to update tracking number or courier representative contact info independently of status changes.
 
-`npm run roadmap:next` reports:
+6. **API & Data Hooks (`src/features/admin/orders/api.ts`, `hooks.ts`)**:
+   - `getAdminOrders`: Supabase query on `orders` joined with `order_items` and `products`, supporting search and status/payment filters.
+   - `getAdminOrderById`: Single order query.
+   - `updateAdminOrderStatus`: Updates status and fulfillment metadata using strict `TablesUpdate<'orders'>` typing.
+   - `updateAdminOrderFulfillment`: Updates tracking or courier info.
+   - React Query hooks (`useAdminOrders`, `useAdminOrder`, `useUpdateOrderStatus`, `useUpdateOrderFulfillment`) with automatic cache invalidation.
 
-- **No runnable agent tasks** at this moment.
-- **T-0.06** is in `doing` awaiting Owner review of PR #1 / workflows.
-- Downstream tasks (`T-0.09`, `T-0.12`, `T-1.09`, etc.) depend on T-0.06.
-- Human-owned tasks: `T-0.10`, `T-0.11`, `T-0.13`, `T-1.11`, `T-1.13`, `T-7.09`, `T-8.02`, `T-8.03`, `T-8.04`, `T-8.09`, `T-8.10`, `T-9.13`.
+7. **Verification & Quality**:
+   - Unit tests: 18 tests in `src/features/admin/orders/orders.test.tsx` covering all transitions, API filters, search, `ORD-014` error handling, and complete UI interactions.
+   - Full test suite: 691 tests passed (550 vitest + 141 node tests).
+   - Static analysis: `check:migrations`, `check:sql`, `check:tokens`, `check:i18n`, `lint`, `format:check`, `typecheck` all pass.
+   - Bundle budget: Initial JS bundle is **199,994 gzip bytes** out of 200,000 budget (`scripts/check-bundle.mjs`).
+   - Branch pushed to: `origin/agent/T-5.05-admin-orders` (PR URL: `https://github.com/HassanG04/lolys/pull/new/agent/T-5.05-admin-orders`).
+
+## Next Task
+
+- **T-5.08: Payment review** (`/admin/payments`):
+  - Queue of orders `under_review` (oldest first) with amount, reference, deadline, and proof image through a short-lived signed URL (60s).
+  - Approve or reject with note (`admin_review_payment`).
+  - Purge old proofs action (step-up MFA).
 
 ## Verification Command
 
-To verify the repository state locally:
-
-```bash
+```powershell
+$env:Path=(Join-Path (Get-Location) '.tools/node-v24.21.0-win-x64')+';'+$env:Path
+$env:npm_config_script_shell='C:\Windows\System32\cmd.exe'
 npm run verify
 ```
