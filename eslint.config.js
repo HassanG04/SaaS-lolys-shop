@@ -23,6 +23,10 @@ export default tseslint.config(
     languageOptions: { globals: globals.node },
   },
   {
+    files: ['perf/**/*.js'],
+    languageOptions: { globals: { ...globals.builtin, ...globals.node, __ENV: 'readonly' } },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     extends: [...tseslint.configs.recommended],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
