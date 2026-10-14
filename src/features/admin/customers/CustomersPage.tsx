@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { PearlLoader } from '@/components/ui/PearlLoader'
+import { Ltr } from '@/components/ui/Ltr'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatEGP, formatNumber } from '@/lib/format'
 import {
@@ -169,7 +170,7 @@ export default function CustomersPage() {
 
                   {/* Phone */}
                   <td className="px-4 py-4 text-(--color-text-muted)">
-                    {customer.phone ? <span dir="ltr">{customer.phone}</span> : '—'}
+                    {customer.phone ? <Ltr>{customer.phone}</Ltr> : '—'}
                   </td>
 
                   {/* Role (Read-only Badge: No create, promote or demote UI) */}

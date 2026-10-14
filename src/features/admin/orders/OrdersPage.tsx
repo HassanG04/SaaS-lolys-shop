@@ -7,6 +7,7 @@ import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { PaymentStatusBadge } from '@/features/orders/components/PaymentStatusBadge'
 import { formatEGP, formatDate } from '@/lib/format'
 import { useLanguage } from '@/i18n/LanguageProvider'
+import { Ltr } from '@/components/ui/Ltr'
 import { useAdminOrders } from './hooks'
 import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, DELIVERY_METHOD_LABELS } from './transitions'
 import { OrderDetailModal } from './OrderDetailModal'
@@ -270,7 +271,9 @@ export default function OrdersPage() {
                       onClick={() => setSelectedOrderId(order.id)}
                     >
                       {/* Order ID */}
-                      <td className="px-4 py-3 font-mono font-bold text-brand">#{order.id}</td>
+                      <td className="px-4 py-3 font-mono font-bold text-brand">
+                        <Ltr>#{order.id}</Ltr>
+                      </td>
 
                       {/* Date */}
                       <td className="px-4 py-3 text-caption text-text-muted whitespace-nowrap">
@@ -281,7 +284,7 @@ export default function OrdersPage() {
                       <td className="px-4 py-3">
                         <div className="font-semibold text-text">{order.ship_name}</div>
                         <div className="text-caption font-mono text-text-muted">
-                          {order.ship_phone}
+                          <Ltr>{order.ship_phone}</Ltr>
                         </div>
                       </td>
 

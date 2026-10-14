@@ -135,7 +135,7 @@ export default function ProductsPage() {
     return (
       <div
         role="status"
-        aria-label="جاري تحميل المنتجات"
+        aria-label="جارٍ تحميل المنتجات"
         className="flex min-h-[400px] w-full items-center justify-center text-brand"
       >
         <PearlLoader loading />

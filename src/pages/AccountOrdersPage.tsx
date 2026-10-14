@@ -50,7 +50,7 @@ export default function AccountOrdersPage() {
     return (
       <div
         role="status"
-        aria-label="جاري تحميل الطلبات"
+        aria-label="جارٍ تحميل الطلبات"
         className="flex min-h-[350px] w-full items-center justify-center text-brand"
       >
         <PearlLoader loading />
@@ -207,7 +207,7 @@ export default function AccountOrdersPage() {
                               <Ltr>{order.tracking_number}</Ltr>
                             </span>
                           ) : (
-                            <span className="text-text-muted italic">جاري تعيين رقم الشحنة</span>
+                            <span className="text-text-muted italic">جارٍ تعيين رقم الشحنة</span>
                           )}
                         </div>
                       ) : (
@@ -216,7 +216,7 @@ export default function AccountOrdersPage() {
                             <span className="text-text-muted">مندوب التوصيل:</span>
                             <span className="font-medium text-text">
                               {order.rep_name ||
-                                (order.rep_phone ? 'مندوب لوليز' : 'جاري تعيين مندوب التوصيل')}
+                                (order.rep_phone ? 'مندوب لوليز' : 'جارٍ تعيين مندوب التوصيل')}
                             </span>
                           </div>
                           {order.rep_phone && (

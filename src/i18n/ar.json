@@ -283,7 +283,7 @@
     "noGovernorateData": "لا توجد بيانات محافظات",
     "noTopProducts": "لا توجد مبيعات منتجات في هذه الفترة",
     "noTopCustomers": "لا توجد طلبات عملاء في هذه الفترة",
-    "dashboardLoading": "جاري تحميل بيانات لوحة التحكم...",
+    "dashboardLoading": "جارٍ تحميل بيانات لوحة التحكم...",
     "dashboardError": "تعذر تحميل بيانات لوحة التحكم",
     "retry": "إعادة المحاولة",
     "exportCsv": "تصدير CSV",

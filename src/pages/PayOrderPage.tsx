@@ -15,6 +15,7 @@ import { PearlLoader } from '@/components/ui/PearlLoader'
 import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { ErrorMessage } from '@/lib/errors'
 import { useToast } from '@/components/ui/ToastProvider'
+import { Ltr } from '@/components/ui/Ltr'
 
 export default function PayOrderPage() {
   const { orderId } = useParams<{ orderId: string }>()
@@ -131,7 +132,8 @@ export default function PayOrderPage() {
         <div className="rounded-card border border-border bg-surface p-6 sm:p-8 text-center space-y-4">
           <h1 className="text-h2 font-bold font-accent text-brand">الدفع عند الاستلام</h1>
           <p className="text-body text-text-muted">
-            هذا الطلب (#{order.id}) مسجل بطريقة الدفع عند الاستلام، ولا يتطلب تحويلًا عبر إنستاباي.
+            هذا الطلب (<Ltr>#{order.id}</Ltr>) مسجل بطريقة الدفع عند الاستلام، ولا يتطلب تحويلًا عبر
+            إنستاباي.
           </p>
           <div className="pt-4 flex justify-center gap-4">
             <Link
@@ -171,7 +173,9 @@ export default function PayOrderPage() {
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
           <div>
             <span className="text-caption font-medium text-text-muted">دفع الطلب</span>
-            <h1 className="text-h2 font-bold font-accent text-brand">#{order.id}</h1>
+            <h1 className="text-h2 font-bold font-accent text-brand">
+              <Ltr>#{order.id}</Ltr>
+            </h1>
           </div>
 
           {/* Status chips */}
@@ -283,8 +287,11 @@ export default function PayOrderPage() {
               <li>افتح تطبيق إنستاباي أو تطبيق البنك الخاص بك.</li>
               <li>امسح رمز QR أدناه أو حوّل إلى معرّف إنستاباي الموضح.</li>
               <li>
-                اكتب رقم الطلب <strong className="text-brand">#{order.id}</strong> في خانة ملاحظات
-                التحويل.
+                اكتب رقم الطلب{' '}
+                <strong className="text-brand">
+                  <Ltr>#{order.id}</Ltr>
+                </strong>{' '}
+                في خانة ملاحظات التحويل.
               </li>
               <li>التقط لقطة شاشة لإشعار نجاح التحويل وارفعها أدناه مع رقم العملية.</li>
             </ol>

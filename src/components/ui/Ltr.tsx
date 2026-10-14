@@ -7,9 +7,9 @@ export interface LtrProps extends HTMLAttributes<HTMLSpanElement> {
 /**
  * Renders LTR-isolated text (phone numbers, emails, order codes) within RTL/LTR contexts.
  */
-export function Ltr({ children, className, ...rest }: LtrProps) {
+export function Ltr({ children, className, style, ...rest }: LtrProps) {
   return (
-    <span dir="ltr" className={className} {...rest}>
+    <span dir="ltr" style={{ unicodeBidi: 'isolate', ...style }} className={className} {...rest}>
       {children}
     </span>
   )

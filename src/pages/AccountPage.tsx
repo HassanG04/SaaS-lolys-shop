@@ -447,7 +447,7 @@ export default function AccountPage() {
               disabled={updateMutation.isPending}
               className="w-full sm:w-auto min-w-[160px]"
             >
-              {updateMutation.isPending ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+              {updateMutation.isPending ? 'جارٍ الحفظ...' : 'حفظ التغييرات'}
             </Button>
           </div>
         </form>

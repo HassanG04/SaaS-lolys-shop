@@ -5,6 +5,7 @@ import { PaymentStatusBadge } from '@/features/orders/components/PaymentStatusBa
 import { formatEGP, formatDate } from '@/lib/format'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { useToast } from '@/components/ui/ToastProvider'
+import { Ltr } from '@/components/ui/Ltr'
 import { useAdminApproveOrder } from './hooks'
 import { OrderRejectDialog } from './OrderRejectDialog'
 import {
@@ -99,11 +100,13 @@ export function OrderDetailModal({
               </h3>
               <div className="text-small space-y-1 text-text">
                 <p className="font-semibold">{order.ship_name}</p>
-                <p className="font-mono text-text-muted">{order.ship_phone}</p>
+                <p className="font-mono text-text-muted">
+                  <Ltr>{order.ship_phone}</Ltr>
+                </p>
                 {order.ship_alt_phone ? (
                   <p className="font-mono text-caption text-text-muted">
                     {isAr ? 'هاتف بديل: ' : 'Alt phone: '}
-                    {order.ship_alt_phone}
+                    <Ltr>{order.ship_alt_phone}</Ltr>
                   </p>
                 ) : null}
               </div>
@@ -158,7 +161,9 @@ export function OrderDetailModal({
                   {isAr ? 'رقم التتبع: ' : 'Tracking Number: '}
                 </span>
                 {order.tracking_number ? (
-                  <span className="font-mono font-semibold text-text">{order.tracking_number}</span>
+                  <span className="font-mono font-semibold text-text">
+                    <Ltr>{order.tracking_number}</Ltr>
+                  </span>
                 ) : (
                   <span className="text-text-muted italic">
                     {isAr ? 'لم يُسجّل رقم تتبع بعد' : 'No tracking number recorded yet'}
@@ -178,7 +183,13 @@ export function OrderDetailModal({
                 <div>
                   <span className="text-text-muted">{isAr ? 'هاتف المندوب: ' : 'Rep Phone: '}</span>
                   <span className="font-mono text-text">
-                    {order.rep_phone || (isAr ? 'غير محدد' : 'Unspecified')}
+                    {order.rep_phone ? (
+                      <Ltr>{order.rep_phone}</Ltr>
+                    ) : isAr ? (
+                      'غير محدد'
+                    ) : (
+                      'Unspecified'
+                    )}
                   </span>
                 </div>
               </div>
@@ -206,7 +217,9 @@ export function OrderDetailModal({
                   <span className="text-text-muted">
                     {isAr ? 'رقم مرجع التحويل: ' : 'Reference: '}
                   </span>
-                  <span className="font-mono font-semibold">{order.payment_reference}</span>
+                  <span className="font-mono font-semibold">
+                    <Ltr>{order.payment_reference}</Ltr>
+                  </span>
                 </div>
               ) : null}
               {order.paid_at ? (

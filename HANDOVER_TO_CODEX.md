@@ -2,86 +2,56 @@
 
 ## Objective
 
-Completed change request **"approve-first InstaPay flow and saved address"** (v1.0, 2026-10-12) across:
-
-1. **Database Migration (`T-1.23`)** on branch `agent/T-1.23-order-approval-migration` (commit `7ee2766`).
-2. **Full UI Flow (`T-4.02`, `T-4.03`, `T-4.06`, `T-5.05`)** on branch `agent/T-4.02-order-approval-ui` (commit `24314b0`).
-3. **CSV Export (`T-5.11`)** on branch `agent/T-5.11-csv-export`.
-
-All branches have been pushed to remote `origin`.
+Completed roadmap task **`T-7.01: Arabic copy review and RTL QA`** (Phase 7, lane A, size L) on branch `agent/T-7.01-arabic-rtl-qa`.
 
 ---
 
-## Completed Architecture & Implementation
+## Completed Architecture & Implementation (T-7.01)
 
-### 1. Database (T-1.23)
+### 1. Arabic Copy Audit & Voice Rules Alignment (OD-017)
 
-- **Migration:** `supabase/migrations/20261014023000_order_approval_and_saved_address.sql`.
-- **Enum:** Added `'awaiting_approval'` to `payment_status`.
-- **Settings:** Allow-listed `require_order_approval` (boolean, default true) and `approval_window_hours` (integer 1..72, default 24). Privacy hardened `instapay_qr_path` and `instapay_handle` to private.
-- **RPC `place_order`:**
-  - For `instapay_qr` with approval required: sets `payment_status = 'awaiting_approval'` with no deadline.
-  - Added `p_save_address boolean default true`: updates profile default address if true or if profile address was empty.
-- **RPC `admin_approve_order(p_order_id bigint, p_note text default null)`:**
-  - Requires admin at `aal2` (audited). Sets `status = 'confirmed'`, `payment_status = 'awaiting_proof'`, and computes `payment_deadline = now() + payment_window`.
-- **RPC `admin_reject_order(p_order_id bigint, p_reason text)`:**
-  - Requires admin at `aal2` (audited). Sets `status = 'cancelled'`, logs reason in `audit_log`, and automatically restocks held inventory via trigger.
-- **RPC `get_payment_instructions(p_order_id bigint)`:**
-  - Order owner only. Returns QR path, InstaPay handle, amount, and deadline only when order is in `awaiting_proof`, `under_review`, or `rejected`. Raises `PAY-007` before approval.
-- **RPC `submit_payment_proof`:** Refuses submissions while in `awaiting_approval` (`PAY-007`).
-- **Trigger `orders_status_guard`:** Enforces `ORD-015`: an `instapay_qr` order cannot transition to `shipped` or `delivered` unless `payment_status = 'paid'`.
-- **Automated Restock:** Overdue `awaiting_approval` orders (older than `approval_window_hours`) are automatically cancelled and restocked by `expire_unpaid_orders()`.
-- **pgTAP Test Suite:** `supabase/tests/database/15_order_approval.test.sql` (36/36 assertions passing).
+- Systematically reviewed all strings in `src/i18n/ar.json` and application UI components against the voice rules in `docs/spec/design-system.md` (Section 8) and `AGENTS.md`.
+- Form of Address: Retained consistent neutral/masculine imperative default (OD-017) across storefront and admin.
+- Spelling & Grammar Correction: Standardised active participle spelling from informal "جاري" to grammatically sound "جارٍ" across `src/i18n/ar.json`, `src/features/admin/dashboard/dashboardUI.test.tsx`, `src/features/admin/products/ProductsPage.tsx`, `src/pages/AccountFavoritesPage.tsx`, `src/pages/AccountFavoritesPage.test.tsx`, `src/pages/AccountOrdersPage.tsx`, `src/pages/AccountOrdersPage.test.tsx`, and `src/pages/AccountPage.tsx`.
 
-### 2. Checkout UI (T-4.02)
+### 2. Logical CSS & Icon Mirroring Audit
 
-- Added "احفظ هذا العنوان لطلباتي القادمة" checkbox (default checked).
-- When `require_order_approval` is active, displays notice: _"سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع."_ and primary CTA _"إرسال الطلب"_.
-- Passes `p_save_address` to `place_order`.
+- Audited directional CSS properties across `src/`. Corrected single instance of physical positioning in `src/pages/HomePage.tsx` (`-right-3` -> logical `-end-3`).
+- Verified all component margins, paddings, borders, and insets use logical utilities (`ms-`, `me-`, `ps-`, `pe-`, `text-start`, `text-end`, `inset-inline-start`, `inset-inline-end`).
+- Verified directional icons (chevrons, back arrows, navigation carousels) flip automatically in RTL, while brand logos, QR codes, payment badges, and checkmarks remain unmirrored.
 
-### 3. Order Details & History UI (T-4.03)
+### 3. Strict LTR Bi-Directional Isolation
 
-- `OrderStatusTimeline`: renders notice _"وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا."_ when `payment_status === 'awaiting_approval'`.
-- `AccountOrdersPage`: shows badge for "بانتظار موافقة المتجر"; restricts direct payment link while awaiting approval.
+- Updated `src/components/ui/Ltr.tsx` with explicit inline CSS `unicodeBidi: 'isolate'`.
+- Isolated sensitive strings in `<Ltr>` across storefront and admin views:
+  - Order numbers (`#${order.id}`) in `src/pages/PayOrderPage.tsx`, `src/features/admin/orders/OrdersPage.tsx`, and `src/features/admin/payments/PaymentsPage.tsx`.
+  - Phone numbers (`order.ship_phone`, `order.ship_alt_phone`, `order.rep_phone`) in `src/features/admin/orders/OrdersPage.tsx`, `src/features/admin/orders/OrderDetailModal.tsx`, and `src/features/admin/payments/PaymentsPage.tsx`.
+  - Egypt Post tracking numbers and InstaPay reference codes in `src/features/admin/orders/OrderDetailModal.tsx`.
+  - Admin email display in `src/features/admin/AdminHeader.tsx`.
+  - Customer contact details in `src/features/admin/customers/CustomersPage.tsx`.
 
-### 4. Pay Order Page UI (T-4.06)
+### 4. RTL Visual QA Suite & Screenshot Inventory
 
-- Integrates `usePaymentInstructions` polling with dynamic amount and deadline.
-- When `awaiting_approval`: hides QR code, handle, countdown, and proof upload dropzone; renders friendly review notice _"طلبك قيد المراجعة والموافقة"_.
-
-### 5. Orders Administration UI (T-5.05)
-
-- `OrdersPage`: added tab and dropdown filter for "بانتظار الموافقة" (`awaiting_approval`).
-- Actions: orders awaiting approval show primary CTA _"مراجعة وموافقة"_.
-- `OrderDetailModal`:
-  - Approval actions:
-    - _"موافقة وإرسال عبر واتساب"_: approves order via `admin_approve_order` and opens prefilled WhatsApp link (`https://wa.me/20<phone>?text=<msg>`).
-    - _"موافقة فقط"_: approves order via `admin_approve_order`.
-    - _"رفض الطلب"_: launches rejection dialog.
-  - `OrderRejectDialog`: requires a mandatory rejection reason; calls `admin_reject_order`; warns about irreversible stock return.
-  - Enforces `ORD-015`: hides _"شحن الطلب"_ and displays warning banner for unpaid InstaPay orders.
-
-### 6. CSV Export (T-5.11)
-
-- **Engine (`src/features/admin/export/csv.ts`):**
-  - UTF-8 BOM (`\uFEFF`) prepended for Arabic Excel display without mojibake.
-  - Formula injection defense (SEC-14): prefixing any cell value starting with `=`, `+`, `-`, `@`, `\t`, or `\r` with single quote `'`.
-  - Compliant with RFC 4180: double quote escaping and newline quoting.
-  - Date format in filenames (`prefix-YYYY-MM-DD.csv`).
-- **Entity Formatters (`src/features/admin/export/formatters.ts`):**
-  - Products: Arabic/English names, category, price, discount percent, final price, stock, sold count, status, featured.
-  - Orders: ID, date, customer name, phone, alt phone, address fields, delivery method, payment method, order/payment statuses, subtotal, shipping fee, total, tracking, notes.
-  - Customers: ID, name, phone, role, orders count, total spent, favorite product.
-  - Audit logs: Log ID, timestamp, entity, entity ID, action, actor, actor role, changes diff summary.
-- **Step-Up Guarded UI (`ExportCsvButton.tsx`):**
-  - Integrates `useStepUp` and `<StepUpDialog>` to require MFA confirmation for customer data export, cached in memory for 5 minutes.
-  - Wired into `ProductsPage`, `OrdersPage`, `CustomersPage`, and `AuditPage`.
+- Created Playwright visual QA test suite in `e2e/rtl-qa.spec.ts` capturing 18 screenshots in `docs/qa/rtl/` across 9 core pages in both light and dark themes:
+  1. Home Page (`01-home-light.png`, `01-home-dark.png`)
+  2. Category Page (`02-category-light.png`, `02-category-dark.png`)
+  3. Product Page (`03-product-light.png`, `03-product-dark.png`)
+  4. Cart Page (`04-cart-light.png`, `04-cart-dark.png`)
+  5. Checkout Page (`05-checkout-light.png`, `05-checkout-dark.png`)
+  6. InstaPay Payment Screen (`06-instapay-light.png`, `06-instapay-dark.png`)
+  7. Orders Page (`07-orders-light.png`, `07-orders-dark.png`)
+  8. Admin Products Page (`08-admin-products-light.png`, `08-admin-products-dark.png`)
+  9. Admin Dashboard (`09-admin-dashboard-light.png`, `09-admin-dashboard-dark.png`)
+- Asserted `document.documentElement.dir === 'rtl'`, `lang === 'ar'`, and `scrollWidth <= clientWidth` (zero horizontal overflow or clipping) across all pages.
+- Compiled sign-off report in `docs/qa/arabic-copy-review.md` fulfilling H-11.
 
 ---
 
 ## Verification Evidence
 
-- `npm run verify` passed cleanly:
+- `npm run check:i18n`: PASSED (all translation keys valid, synchronized, and isolated).
+- `npm run test:e2e`: PASSED (all 26 tests pass: 9 admin + 9 rtl-qa + 8 storefront).
+- `npm run verify`: PASSED cleanly:
   - `check:migrations`: Existing migrations unchanged.
   - `check:sql`: All migrations passed SQL guard rules.
   - `check:tokens`: Documented colors, radii, and shadows validated.
@@ -92,20 +62,15 @@ All branches have been pushed to remote `origin`.
   - `test:unit`: **648 application tests + 143 tooling tests (791 total) passed**.
   - `build`: Production build succeeded.
   - `check:secrets`: Zero secrets leaked.
-  - `check:bundle`: **199,787 / 200,000 gzip bytes** in 4 initial chunks.
+  - `check:bundle`: **199,781 / 200,000 gzip bytes** in 4 initial chunks.
 
 ---
 
 ## Next Task (per Roadmap)
 
-- **T-5.12: E2E: admin**:
-  - Scenarios: admin at `aal1` cannot load admin data, and after MFA can;
-  - Create category with image, add product to it, see both on storefront;
-  - Set stock to 0 and see sold-out badge;
-  - Archive, restore and delete rules;
-  - Order lifecycle seen by customer;
-  - InstaPay payment approve and reject;
-  - QR replacement asks for step-up and leaves audit entry;
-  - Non-admins blocked;
-  - CSV export neutralises `=cmd` product name.
-
+- **T-7.02: Accessibility pass** (`size: M`, `owner: agent`):
+  - Axe checks in Playwright for home, category, product, cart, checkout, the InstaPay screen, orders, admin products, and the dashboard, in both themes.
+  - Fix critical and serious findings.
+  - Record a keyboard-only walkthrough in `docs/launch-checklist.md`.
+  - Done when: axe reports no critical or serious issues; the walkthrough is complete.
+  - Verify: `npm run test:e2e`

@@ -248,7 +248,7 @@ describe('Dashboard UI components (T-6.02)', () => {
 
       expect(screen.getByRole('heading', { name: 'لوحة تحكم الإدارة' })).toBeInTheDocument()
       expect(
-        screen.getByRole('status', { name: 'جاري تحميل بيانات لوحة التحكم...' }),
+        screen.getByRole('status', { name: 'جارٍ تحميل بيانات لوحة التحكم...' }),
       ).toBeInTheDocument()
     })
 

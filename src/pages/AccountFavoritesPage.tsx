@@ -82,7 +82,7 @@ export default function AccountFavoritesPage() {
       {isLoading ? (
         <div
           role="status"
-          aria-label="جاري تحميل المنتجات المفضلة"
+          aria-label="جارٍ تحميل المنتجات المفضلة"
           className="rounded-card border border-border bg-surface p-12 flex justify-center items-center text-brand"
         >
           <PearlLoader loading />

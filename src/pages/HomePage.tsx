@@ -141,7 +141,7 @@ export default function HomePage() {
               </ArchFrame>
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -bottom-3 -right-3 rounded-pill bg-brand text-brand-contrast p-2 shadow-pill"
+                className="pointer-events-none absolute -bottom-3 -end-3 rounded-pill bg-brand text-brand-contrast p-2 shadow-pill"
               >
                 <RibbonBow className="size-6" />
               </div>

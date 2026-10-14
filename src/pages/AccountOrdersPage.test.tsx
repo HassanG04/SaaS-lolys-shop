@@ -174,7 +174,7 @@ describe('AccountOrdersPage', () => {
     vi.spyOn(ordersApi, 'getMyOrdersApi').mockImplementation(() => new Promise(() => {}))
     renderWithProviders(<AccountOrdersPage />)
 
-    expect(screen.getByRole('status', { name: 'جاري تحميل الطلبات' })).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: 'جارٍ تحميل الطلبات' })).toBeInTheDocument()
   })
 
   it('renders error panel on query failure and allows retry', async () => {
