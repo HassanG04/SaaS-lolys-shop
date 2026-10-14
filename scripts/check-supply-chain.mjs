@@ -22,6 +22,41 @@ export const ALLOWED_LICENSES = new Set([
 
 export const ALLOWED_INSTALL_SCRIPTS = new Set(['fsevents'])
 
+function evaluateBooleanExpression(expr) {
+  const tokens = expr.match(/\(|\)|&&|\|\||true|false/g) || []
+  let pos = 0
+
+  function parsePrimary() {
+    const token = tokens[pos++]
+    if (token === '(') {
+      const val = parseOr()
+      pos++ // skip ')'
+      return val
+    }
+    return token === 'true'
+  }
+
+  function parseAnd() {
+    let val = parsePrimary()
+    while (pos < tokens.length && tokens[pos] === '&&') {
+      pos++
+      val = val && parsePrimary()
+    }
+    return val
+  }
+
+  function parseOr() {
+    let val = parseAnd()
+    while (pos < tokens.length && tokens[pos] === '||') {
+      pos++
+      val = val || parseAnd()
+    }
+    return val
+  }
+
+  return parseOr()
+}
+
 /**
  * Validates a license expression (handles SPDX expressions with AND, OR, parentheses).
  */
@@ -47,7 +82,7 @@ export function isLicenseAllowed(expression, allowedSet = ALLOWED_LICENSES) {
   }
 
   try {
-    return Boolean(Function(`"use strict"; return (${boolExpr})`)())
+    return evaluateBooleanExpression(boolExpr)
   } catch {
     return false
   }

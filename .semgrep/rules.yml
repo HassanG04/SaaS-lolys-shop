@@ -1,0 +1,76 @@
+rules:
+  - id: forbid-dangerously-set-inner-html
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: 'Do not use dangerouslySetInnerHTML. Direct HTML injection violates SEC-07 and can lead to XSS. All storefront content must be rendered as text with React automatic escaping.'
+    patterns:
+      - pattern-either:
+          - pattern: '<$TAG ... dangerouslySetInnerHTML=... />'
+          - pattern: '{ dangerouslySetInnerHTML: ... }'
+          - pattern: 'dangerouslySetInnerHTML'
+
+  - id: forbid-inner-html
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: 'Direct assignment to innerHTML or outerHTML is strictly forbidden (SEC-07). Use React components and text nodes instead.'
+    patterns:
+      - pattern-either:
+          - pattern: '$X.innerHTML = ...'
+          - pattern: '$X.outerHTML = ...'
+          - pattern: '$X.innerHTML += ...'
+          - pattern: '$X.outerHTML += ...'
+
+  - id: forbid-eval
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: 'Do not use eval(). Dynamic execution of untrusted or constructed strings is strictly forbidden.'
+    pattern: 'eval(...)'
+
+  - id: forbid-new-function
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: 'Do not use new Function(). Dynamic function generation from strings is strictly forbidden.'
+    patterns:
+      - pattern-either:
+          - pattern: 'new Function(...)'
+          - pattern: 'Function(...)'
+
+  - id: forbid-render-error-message
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: 'Never render raw error.message directly in the DOM or JSX (SEC-04). Always pass errors to toAppError(), ErrorMessage, or ErrorPanel with mapped Arabic catalogue messages.'
+    patterns:
+      - pattern-either:
+          - pattern: '<$TAG ...>{$ERR.message}</$TAG>'
+          - pattern: '<$TAG ...>{$ERR?.message}</$TAG>'
+          - pattern: '<$TAG ... title={$ERR.message} ... />'
+          - pattern: '<$TAG ... title={$ERR?.message} ... />'
+          - pattern: '<$TAG ... children={$ERR.message} ... />'
+          - pattern: '<$TAG ... children={$ERR?.message} ... />'
+          - pattern: '<$TAG ... message={$ERR.message} ... />'
+          - pattern: '<$TAG ... message={$ERR?.message} ... />'
+      - metavariable-regex:
+          metavariable: $ERR
+          regex: (?i)(error|err)
+
+  - id: forbid-unapproved-fetch-host
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: 'fetch() calls to external hosts outside the allowlist (Supabase endpoints, Turnstile, and local/relative URLs) are forbidden. Use configured API clients or environment endpoints.'
+    patterns:
+      - pattern-either:
+          - pattern: 'fetch($URL, ...)'
+          - pattern: 'window.fetch($URL, ...)'
+      - metavariable-regex:
+          metavariable: $URL
+          regex: '^["'']https?:\/\/(?!(127\.0\.0\.1|localhost|([a-z0-9-]+\.)*supabase\.co|challenges\.cloudflare\.com)).*["'']$'
+
+  - id: forbid-service-role
+    languages: [generic]
+    severity: ERROR
+    message: 'service_role tokens or mentions must never appear in application frontend or client code.'
+    pattern-regex: 'service_role'
+    paths:
+      include:
+        - 'src/'
+        - 'public/'

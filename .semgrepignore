@@ -1,0 +1,13 @@
+# Directories to ignore during static analysis
+docs/
+frontend-demo/
+dist/
+coverage/
+.tools/
+node_modules/
+supabase/
+e2e/
+scripts/
+*.test.ts
+*.test.tsx
+*.test.mjs
