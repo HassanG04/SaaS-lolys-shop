@@ -128,8 +128,8 @@ export default function AccountOrdersPage() {
             const showCancel = canCancelOrder(order)
             const isInstaPayAwaiting =
               order.payment_method === 'instapay_qr' &&
-              order.payment_status === 'awaiting_proof' &&
-              order.status === 'pending'
+              (order.payment_status === 'awaiting_proof' || order.payment_status === 'rejected') &&
+              (order.status === 'pending' || order.status === 'confirmed')
 
             return (
               <Card
@@ -172,7 +172,10 @@ export default function AccountOrdersPage() {
                 <div className="p-4 sm:p-6 space-y-6">
                   {/* Status Timeline */}
                   <div className="rounded-card border border-border bg-surface-2 p-4">
-                    <OrderStatusTimeline status={order.status} />
+                    <OrderStatusTimeline
+                      status={order.status}
+                      paymentStatus={order.payment_status}
+                    />
                   </div>
 
                   {/* Delivery & Shipping Information */}
@@ -343,6 +346,12 @@ export default function AccountOrdersPage() {
                         >
                           استكمال الدفع (إنستاباي)
                         </Link>
+                      )}
+
+                      {order.payment_status === 'awaiting_approval' && (
+                        <span className="text-caption text-text-muted bg-surface-2 px-3 py-1.5 rounded-pill border border-border">
+                          وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا.
+                        </span>
                       )}
 
                       {order.payment_status === 'under_review' && (

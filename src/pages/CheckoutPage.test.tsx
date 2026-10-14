@@ -257,14 +257,16 @@ describe('CheckoutPage (T-4.02)', () => {
     const instapayCard = screen.getByRole('radio', { name: /الدفع عبر إنستاباي/ })
     await user.click(instapayCard)
 
-    // Click submit
-    const submitBtn = screen.getByRole('button', { name: 'تأكيد الطلب' })
+    // When InstaPay with approval is active, button text is "إرسال الطلب" and note is shown
+    expect(screen.getByText(/سنراجع طلبك أولًا/)).toBeInTheDocument()
+    const submitBtn = screen.getByRole('button', { name: 'إرسال الطلب' })
     await user.click(submitBtn)
 
     await waitFor(() => {
       expect(placeOrderMock).toHaveBeenCalledWith(
         expect.objectContaining({
           payment_method: 'instapay_qr',
+          save_address: true,
         }),
       )
       expect(clearCartMock).toHaveBeenCalled()
@@ -290,6 +292,35 @@ describe('CheckoutPage (T-4.02)', () => {
     await waitFor(() => {
       expect(screen.getAllByRole('alert')[0]).toBeInTheDocument()
       expect(screen.getByText(/المتبقي/)).toBeInTheDocument()
+    })
+  })
+
+  it('passes save_address: false when user unticks the save address checkbox', async () => {
+    const user = userEvent.setup()
+    const placeOrderMock = vi.spyOn(checkoutApi, 'placeOrderApi').mockResolvedValue(9903)
+
+    renderCheckoutPage()
+
+    await waitFor(() => {
+      expect(screen.getByText('الدفع نقدًا عند الاستلام')).toBeInTheDocument()
+    })
+
+    const saveAddressCheckbox = screen.getByRole('checkbox', {
+      name: /احفظ هذا العنوان لطلباتي القادمة/i,
+    })
+    expect(saveAddressCheckbox).toBeChecked()
+    await user.click(saveAddressCheckbox)
+    expect(saveAddressCheckbox).not.toBeChecked()
+
+    const submitBtn = screen.getByRole('button', { name: 'تأكيد الطلب' })
+    await user.click(submitBtn)
+
+    await waitFor(() => {
+      expect(placeOrderMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          save_address: false,
+        }),
+      )
     })
   })
 })

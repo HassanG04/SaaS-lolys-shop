@@ -49,6 +49,7 @@ export default function CheckoutPage() {
     landmark: profile?.landmark ?? '',
     notes: '',
   })
+  const [saveAddress, setSaveAddress] = useState(true)
 
   // Prefill synchronization when profile loads
   const [profileLoaded, setProfileLoaded] = useState(false)
@@ -87,6 +88,7 @@ export default function CheckoutPage() {
 
   const { data: deliveryFees, isLoading: loadingFees } = useDeliveryFees(selectedGovId)
   const { data: settings } = usePublicSettings()
+  const requireApproval = settings?.require_order_approval ?? true
 
   // Delivery methods available for the chosen governorate
   const availableDeliveryOptions = deliveryFees ?? []
@@ -175,6 +177,7 @@ export default function CheckoutPage() {
         delivery_method: activeDeliveryMethod,
         payment_method: activePaymentMethod,
         ship: shippingPayload,
+        save_address: saveAddress,
       })
 
       // Clear shopping cart on successful checkout
@@ -205,6 +208,7 @@ export default function CheckoutPage() {
   const aptId = useId()
   const landmarkId = useId()
   const notesId = useId()
+  const saveAddressId = useId()
 
   if (lines.length === 0) {
     return (
@@ -487,6 +491,25 @@ export default function CheckoutPage() {
                   className="w-full rounded-image border border-border-input bg-surface p-3 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                 />
               </div>
+
+              {/* Save Address Checkbox */}
+              <div className="sm:col-span-2 pt-2">
+                <label
+                  htmlFor={saveAddressId}
+                  className="flex items-center gap-3 cursor-pointer select-none"
+                >
+                  <input
+                    id={saveAddressId}
+                    type="checkbox"
+                    checked={saveAddress}
+                    onChange={(e) => setSaveAddress(e.target.checked)}
+                    className="size-5 rounded-chip border-border-input text-brand focus:ring-focus"
+                  />
+                  <span className="text-small font-medium text-text">
+                    {t.checkout.save_address || 'احفظ هذا العنوان لطلباتي القادمة'}
+                  </span>
+                </label>
+              </div>
             </div>
           </Card>
 
@@ -683,8 +706,18 @@ export default function CheckoutPage() {
                 disabled={isSubmitting}
                 className="w-full h-12 flex items-center justify-center rounded-pill bg-brand px-6 text-body font-semibold text-brand-contrast transition-opacity hover:opacity-90 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-focus shadow-pill"
               >
-                {isSubmitting ? t.checkout.submitting : t.checkout.submit}
+                {isSubmitting
+                  ? t.checkout.submitting
+                  : activePaymentMethod === 'instapay_qr' && requireApproval
+                    ? t.checkout.submit_request || 'إرسال الطلب'
+                    : t.checkout.submit}
               </button>
+
+              {activePaymentMethod === 'instapay_qr' && requireApproval && (
+                <p className="text-center text-caption text-text-muted">
+                  {t.checkout.approval_note || 'سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع.'}
+                </p>
+              )}
 
               <Link
                 to="/cart"

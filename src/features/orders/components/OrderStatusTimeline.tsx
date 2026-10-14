@@ -2,6 +2,7 @@ import type { OrderStatus } from '../types'
 
 interface OrderStatusTimelineProps {
   status: OrderStatus
+  paymentStatus?: string | null
 }
 
 interface Step {
@@ -23,7 +24,7 @@ const STEP_ORDER: Record<string, number> = {
   delivered: 3,
 }
 
-export function OrderStatusTimeline({ status }: OrderStatusTimelineProps) {
+export function OrderStatusTimeline({ status, paymentStatus }: OrderStatusTimelineProps) {
   if (status === 'cancelled') {
     return (
       <div
@@ -104,6 +105,11 @@ export function OrderStatusTimeline({ status }: OrderStatusTimelineProps) {
           )
         })}
       </ol>
+      {paymentStatus === 'awaiting_approval' && (
+        <p className="mt-3 text-center text-small text-text-muted border-t border-border/60 pt-2">
+          وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا.
+        </p>
+      )}
     </div>
   )
 }

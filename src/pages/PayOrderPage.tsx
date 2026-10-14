@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '@/features/auth/AuthProvider'
 import {
   useOrderPaymentDetails,
+  usePaymentInstructions,
   useSubmitPaymentProof,
   usePaymentCountdown,
   validateProofFile,
@@ -22,6 +23,11 @@ export default function PayOrderPage() {
   const { user } = useAuth()
   const { success: toastSuccess } = useToast()
   const { data: order, isLoading, error, refetch } = useOrderPaymentDetails(parsedOrderId)
+  const isAwaitingApproval = order?.payment_status === 'awaiting_approval'
+  const { data: instructions } = usePaymentInstructions(
+    parsedOrderId,
+    !isAwaitingApproval && Boolean(order),
+  )
   const { data: settings } = usePublicSettings()
 
   const [referenceInput, setReferenceInput] = useState('')
@@ -33,7 +39,8 @@ export default function PayOrderPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const submitMutation = useSubmitPaymentProof()
 
-  const countdown = usePaymentCountdown(order?.payment_deadline)
+  const effectiveDeadline = instructions?.deadline || order?.payment_deadline
+  const countdown = usePaymentCountdown(effectiveDeadline)
 
   const handleCopy = (text: string, field: 'handle' | 'reference') => {
     if (!text) return
@@ -144,13 +151,16 @@ export default function PayOrderPage() {
   const isRejected = order.payment_status === 'rejected'
   const isAwaitingProof = order.payment_status === 'awaiting_proof'
 
-  const canUploadProof = (isAwaitingProof || isRejected) && !isExpired
+  const canUploadProof = (isAwaitingProof || isRejected) && !isExpired && !isAwaitingApproval
 
-  const qrImageUrl = settings?.instapay_qr_path
-    ? publicImageUrl(settings.instapay_qr_path) || '/placeholders/instapay-qr.svg'
+  const effectiveTotal = instructions?.amount ?? order.total
+
+  const qrPath = instructions?.qr_path || settings?.instapay_qr_path
+  const qrImageUrl = qrPath
+    ? publicImageUrl(qrPath) || '/placeholders/instapay-qr.svg'
     : '/placeholders/instapay-qr.svg'
 
-  const instapayHandle = settings?.instapay_handle || 'lolys@instapay'
+  const instapayHandle = instructions?.handle || settings?.instapay_handle || 'lolys@instapay'
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 pb-12">
@@ -164,6 +174,12 @@ export default function PayOrderPage() {
 
           {/* Status chips */}
           <div>
+            {isAwaitingApproval && (
+              <span className="inline-flex items-center gap-1.5 rounded-pill border border-brand bg-surface-tint px-3 py-1 text-small font-semibold text-brand">
+                <span className="size-2 rounded-pill bg-brand animate-pulse" aria-hidden="true" />
+                بانتظار موافقة المتجر
+              </span>
+            )}
             {isPaid && (
               <span className="inline-flex items-center gap-1.5 rounded-pill border border-success bg-surface-tint px-3 py-1 text-small font-semibold text-success">
                 <span className="size-2 rounded-pill bg-success" aria-hidden="true" />
@@ -188,7 +204,7 @@ export default function PayOrderPage() {
                 مرفوض
               </span>
             )}
-            {isExpired && !isPaid && (
+            {isExpired && !isPaid && !isAwaitingApproval && (
               <span className="inline-flex items-center gap-1.5 rounded-pill border border-danger bg-surface-tint px-3 py-1 text-small font-semibold text-danger">
                 <span className="size-2 rounded-pill bg-danger" aria-hidden="true" />
                 ملغي / انتهت المهلة
@@ -198,7 +214,7 @@ export default function PayOrderPage() {
         </div>
 
         {/* Deadline countdown */}
-        {order.payment_deadline && !isPaid && !isUnderReview && (
+        {effectiveDeadline && !isPaid && !isUnderReview && !isAwaitingApproval && (
           <div
             className={`flex items-center justify-between rounded-chip border p-4 text-small ${
               isExpired
@@ -220,113 +236,32 @@ export default function PayOrderPage() {
         {/* Total Amount Card */}
         <div className="flex items-center justify-between rounded-chip bg-surface-2 p-4">
           <span className="text-body font-medium text-text">المبلغ المطلوب بدقة:</span>
-          <span className="text-h3 font-bold text-brand">{formatEGP(order.total)}</span>
+          <span className="text-h3 font-bold text-brand">{formatEGP(effectiveTotal)}</span>
         </div>
       </div>
 
-      {/* Step by step instructions & QR details */}
-      <div className="rounded-card border border-border bg-surface p-6 sm:p-8 space-y-6">
-        <h2 className="text-h3 font-bold text-text">خطوات الدفع عبر إنستاباي</h2>
-
-        <ol className="space-y-3 text-body text-text-muted list-decimal list-inside">
-          <li>افتح تطبيق إنستاباي أو تطبيق البنك الخاص بك.</li>
-          <li>امسح رمز QR أدناه أو حوّل إلى معرّف إنستاباي الموضح.</li>
-          <li>
-            اكتب رقم الطلب <strong className="text-brand">#{order.id}</strong> في خانة ملاحظات
-            التحويل.
-          </li>
-          <li>التقط لقطة شاشة لإشعار نجاح التحويل وارفعها أدناه مع رقم العملية.</li>
-        </ol>
-
-        {/* QR Code and Handle Container */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 rounded-chip border border-border bg-surface-2 p-6">
-          <div className="relative size-48 shrink-0 overflow-hidden rounded-chip border border-border bg-bg p-2">
-            <img
-              src={qrImageUrl}
-              alt="رمز QR لإنستاباي"
-              className="size-full object-contain"
-              onError={(e) => {
-                e.currentTarget.src = '/placeholders/instapay-qr.svg'
-              }}
-            />
-          </div>
-
-          <div className="flex-1 space-y-4 w-full">
-            <div>
-              <span className="text-caption font-medium text-text-muted">
-                معرّف إنستاباي (IPA):
-              </span>
-              <div className="flex items-center gap-2 mt-1">
-                <code
-                  dir="ltr"
-                  className="flex-1 rounded-chip border border-border-input bg-bg px-3 py-2 font-mono text-small text-brand"
-                >
-                  {instapayHandle}
-                </code>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(instapayHandle, 'handle')}
-                  className="rounded-pill border border-border bg-surface px-3 py-2 text-caption font-semibold text-text transition-colors hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
-                >
-                  {copiedField === 'handle' ? 'تم النسخ ✓' : 'نسخ'}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <span className="text-caption font-medium text-text-muted">
-                رقم الطلب (يكتب في الملاحظات):
-              </span>
-              <div className="flex items-center gap-2 mt-1">
-                <code
-                  dir="ltr"
-                  className="flex-1 rounded-chip border border-border-input bg-bg px-3 py-2 font-mono text-small text-brand"
-                >
-                  {order.id}
-                </code>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(String(order.id), 'reference')}
-                  className="rounded-pill border border-border bg-surface px-3 py-2 text-caption font-semibold text-text transition-colors hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
-                >
-                  {copiedField === 'reference' ? 'تم النسخ ✓' : 'نسخ'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Proof upload or status banner */}
-      {isPaid ? (
-        <div className="rounded-card border border-success/30 bg-success/5 p-6 sm:p-8 text-center space-y-4">
-          <h2 className="text-h3 font-bold text-success">تم تأكيد الدفع بنجاح!</h2>
-          <p className="text-body text-text-muted">
-            طلبك مؤكد وجارٍ تحضيره للشحن والتوصيل. يمكنك متابعة حالة الشحن في صفحة طلباتك.
-          </p>
-          <div className="pt-2">
-            <Link
-              to="/account/orders"
-              className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
+      {isAwaitingApproval ? (
+        <div className="rounded-card border border-border bg-surface p-6 sm:p-8 text-center space-y-4">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-pill bg-surface-2 text-brand">
+            <svg
+              className="size-6 animate-pulse"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
             >
-              عرض طلباتي
-            </Link>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
           </div>
-        </div>
-      ) : isUnderReview ? (
-        <div className="rounded-card border border-caramel/30 bg-caramel/5 p-6 sm:p-8 space-y-4 text-center">
-          <h2 className="text-h3 font-bold text-caramel">إثبات التحويل قيد المراجعة</h2>
+          <h2 className="text-h3 font-bold font-accent text-brand">طلبك قيد المراجعة والموافقة</h2>
           <p className="text-body text-text-muted max-w-md mx-auto">
-            تم استلام إشعار التحويل ورقم العملية بنجاح. يقوم فريق العمل بمطابقة التحويل في أسرع وقت.
+            وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا.
           </p>
-          {order.payment_reference && (
-            <p className="text-caption text-text-muted">
-              رقم العملية المسجل:{' '}
-              <span dir="ltr" className="font-mono font-bold text-text">
-                {order.payment_reference}
-              </span>
-            </p>
-          )}
           <div className="pt-2">
             <Link
               to="/account/orders"
@@ -336,171 +271,295 @@ export default function PayOrderPage() {
             </Link>
           </div>
         </div>
-      ) : canUploadProof ? (
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-card border border-border bg-surface p-6 sm:p-8 space-y-6"
-        >
-          <div>
-            <h2 className="text-h3 font-bold text-text">رفع إثبات التحويل</h2>
-            <p className="text-caption text-text-muted mt-1">
-              الصور المقبولة: JPG أو PNG أو WebP بحجم 5 ميجابايت كحد أقصى.
-            </p>
-          </div>
-
-          {/* Rejection alert if prior proof was rejected */}
-          {isRejected && (
-            <div className="rounded-chip border border-danger/30 bg-danger/10 p-4 text-small text-danger space-y-1">
-              <p className="font-bold">تم رفض إثبات الدفع السابق.</p>
-              {order.payment_review_note ? (
-                <p>ملاحظة الإدارة: {order.payment_review_note}</p>
-              ) : (
-                <p>يرجى التأكد من صحة رقم العملية ووضوح إشعار التحويل قبل إعادة الرفع.</p>
-              )}
-            </div>
-          )}
-
-          {/* Reference Input */}
-          <div className="space-y-1.5">
-            <label
-              htmlFor="transfer-reference"
-              className="block text-small font-semibold text-text"
-            >
-              رقم عملية التحويل (Reference Number) <span className="text-danger">*</span>
-            </label>
-            <input
-              id="transfer-reference"
-              type="text"
-              required
-              value={referenceInput}
-              onChange={(e) => setReferenceInput(e.target.value)}
-              placeholder="مثال: 0123456789 أو Ref-987654"
-              className="h-11 w-full rounded-chip border border-border-input bg-bg px-3 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
-            />
-            <p className="text-caption text-text-muted">
-              الرقم الظاهر في إشعار التحويل من تطبيق إنستاباي أو البنك.
-            </p>
-          </div>
-
-          {/* File Upload Dropzone */}
-          <div className="space-y-2">
-            <label htmlFor="proof-file-input" className="block text-small font-semibold text-text">
-              صورة إشعار التحويل <span className="text-danger">*</span>
-            </label>
-
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  fileInputRef.current?.click()
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              className="flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-chip border-2 border-dashed border-border p-6 text-center transition-colors hover:border-brand hover:bg-surface-2 focus:outline-none focus:ring-2 focus:ring-focus"
-            >
-              <input
-                id="proof-file-input"
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0] || null
-                  void handleFileChange(file)
-                }}
-              />
-
-              {filePreviewUrl ? (
-                <div className="space-y-3">
-                  <img
-                    src={filePreviewUrl}
-                    alt="معاينة إشعار التحويل"
-                    className="max-h-40 rounded-chip object-contain mx-auto"
-                  />
-                  <p className="text-caption text-brand font-medium">
-                    {selectedFile?.name} (انقر للتغيير)
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <div className="size-10 rounded-pill bg-surface-2 mx-auto flex items-center justify-center text-brand">
-                    <svg
-                      className="size-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-body font-medium text-text">انقر لاختيار صورة إشعار التحويل</p>
-                  <p className="text-caption text-text-muted">JPG أو PNG أو WebP حتى 5 ميجابايت</p>
-                </div>
-              )}
-            </div>
-
-            {/* Validation Error Display */}
-            {validationError && (
-              <div className="pt-1">
-                <ErrorMessage code={validationError} />
-              </div>
-            )}
-          </div>
-
-          {/* Submission Error Display */}
-          {submitMutation.error && (
-            <div className="rounded-chip border border-danger/30 bg-danger/10 p-4">
-              <ErrorMessage error={submitMutation.error} />
-            </div>
-          )}
-
-          {/* Submit CTA */}
-          <div className="pt-2">
-            <button
-              type="submit"
-              disabled={
-                !selectedFile ||
-                !referenceInput.trim() ||
-                submitMutation.isPending ||
-                Boolean(validationError)
-              }
-              className="inline-flex h-12 w-full items-center justify-center rounded-pill bg-brand px-6 text-body font-semibold text-brand-contrast transition-opacity hover:opacity-90 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-focus"
-            >
-              {submitMutation.isPending
-                ? 'جارٍ رفع الإثبات وتأكيد الطلب...'
-                : 'تأكيد وإرسال إثبات التحويل'}
-            </button>
-          </div>
-        </form>
       ) : (
-        <div className="rounded-card border border-danger/30 bg-danger/5 p-6 sm:p-8 text-center space-y-4">
-          <h2 className="text-h3 font-bold text-danger">انتهت مهلة الدفع المحددة</h2>
-          <p className="text-body text-text-muted">
-            انتهت مهلة الدفع لهذا الطلب. تم إلغاء الطلب واسترجاع المنتجات إلى المخزون.
-          </p>
-          <div className="pt-2 flex justify-center gap-4">
-            <Link
-              to="/account/orders"
-              className="inline-flex h-11 items-center justify-center rounded-pill border border-border bg-surface px-6 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
-            >
-              متابعة طلباتي
-            </Link>
-            <Link
-              to="/"
-              className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
-            >
-              العودة للتسوق
-            </Link>
+        <>
+          {/* Step by step instructions & QR details */}
+          <div className="rounded-card border border-border bg-surface p-6 sm:p-8 space-y-6">
+            <h2 className="text-h3 font-bold text-text">خطوات الدفع عبر إنستاباي</h2>
+
+            <ol className="space-y-3 text-body text-text-muted list-decimal list-inside">
+              <li>افتح تطبيق إنستاباي أو تطبيق البنك الخاص بك.</li>
+              <li>امسح رمز QR أدناه أو حوّل إلى معرّف إنستاباي الموضح.</li>
+              <li>
+                اكتب رقم الطلب <strong className="text-brand">#{order.id}</strong> في خانة ملاحظات
+                التحويل.
+              </li>
+              <li>التقط لقطة شاشة لإشعار نجاح التحويل وارفعها أدناه مع رقم العملية.</li>
+            </ol>
+
+            {/* QR Code and Handle Container */}
+            <div className="flex flex-col sm:flex-row items-center gap-6 rounded-chip border border-border bg-surface-2 p-6">
+              <div className="relative size-48 shrink-0 overflow-hidden rounded-chip border border-border bg-bg p-2">
+                <img
+                  src={qrImageUrl}
+                  alt="رمز QR لإنستاباي"
+                  className="size-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholders/instapay-qr.svg'
+                  }}
+                />
+              </div>
+
+              <div className="flex-1 space-y-4 w-full">
+                <div>
+                  <span className="text-caption font-medium text-text-muted">
+                    معرّف إنستاباي (IPA):
+                  </span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <code
+                      dir="ltr"
+                      className="flex-1 rounded-chip border border-border-input bg-bg px-3 py-2 font-mono text-small text-brand"
+                    >
+                      {instapayHandle}
+                    </code>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(instapayHandle, 'handle')}
+                      className="rounded-pill border border-border bg-surface px-3 py-2 text-caption font-semibold text-text transition-colors hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
+                    >
+                      {copiedField === 'handle' ? 'تم النسخ ✓' : 'نسخ'}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-caption font-medium text-text-muted">
+                    رقم الطلب (يكتب في الملاحظات):
+                  </span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <code
+                      dir="ltr"
+                      className="flex-1 rounded-chip border border-border-input bg-bg px-3 py-2 font-mono text-small text-brand"
+                    >
+                      {order.id}
+                    </code>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(String(order.id), 'reference')}
+                      className="rounded-pill border border-border bg-surface px-3 py-2 text-caption font-semibold text-text transition-colors hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
+                    >
+                      {copiedField === 'reference' ? 'تم النسخ ✓' : 'نسخ'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+
+          {/* Proof upload or status banner */}
+          {isPaid ? (
+            <div className="rounded-card border border-success/30 bg-success/5 p-6 sm:p-8 text-center space-y-4">
+              <h2 className="text-h3 font-bold text-success">تم تأكيد الدفع بنجاح!</h2>
+              <p className="text-body text-text-muted">
+                طلبك مؤكد وجارٍ تحضيره للشحن والتوصيل. يمكنك متابعة حالة الشحن في صفحة طلباتك.
+              </p>
+              <div className="pt-2">
+                <Link
+                  to="/account/orders"
+                  className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
+                >
+                  عرض طلباتي
+                </Link>
+              </div>
+            </div>
+          ) : isUnderReview ? (
+            <div className="rounded-card border border-caramel/30 bg-caramel/5 p-6 sm:p-8 space-y-4 text-center">
+              <h2 className="text-h3 font-bold text-caramel">إثبات التحويل قيد المراجعة</h2>
+              <p className="text-body text-text-muted max-w-md mx-auto">
+                تم استلام إشعار التحويل ورقم العملية بنجاح. يقوم فريق العمل بمطابقة التحويل في أسرع
+                وقت.
+              </p>
+              {order.payment_reference && (
+                <p className="text-caption text-text-muted">
+                  رقم العملية المسجل:{' '}
+                  <span dir="ltr" className="font-mono font-bold text-text">
+                    {order.payment_reference}
+                  </span>
+                </p>
+              )}
+              <div className="pt-2">
+                <Link
+                  to="/account/orders"
+                  className="inline-flex h-11 items-center justify-center rounded-pill border border-border bg-surface px-6 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
+                >
+                  العودة إلى طلباتي
+                </Link>
+              </div>
+            </div>
+          ) : canUploadProof ? (
+            <form
+              onSubmit={handleSubmit}
+              className="rounded-card border border-border bg-surface p-6 sm:p-8 space-y-6"
+            >
+              <div>
+                <h2 className="text-h3 font-bold text-text">رفع إثبات التحويل</h2>
+                <p className="text-caption text-text-muted mt-1">
+                  الصور المقبولة: JPG أو PNG أو WebP بحجم 5 ميجابايت كحد أقصى.
+                </p>
+              </div>
+
+              {/* Rejection alert if prior proof was rejected */}
+              {isRejected && (
+                <div className="rounded-chip border border-danger/30 bg-danger/10 p-4 text-small text-danger space-y-1">
+                  <p className="font-bold">تم رفض إثبات الدفع السابق.</p>
+                  {order.payment_review_note ? (
+                    <p>ملاحظة الإدارة: {order.payment_review_note}</p>
+                  ) : (
+                    <p>يرجى التأكد من صحة رقم العملية ووضوح إشعار التحويل قبل إعادة الرفع.</p>
+                  )}
+                </div>
+              )}
+
+              {/* Reference Input */}
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="transfer-reference"
+                  className="block text-small font-semibold text-text"
+                >
+                  رقم عملية التحويل (Reference Number) <span className="text-danger">*</span>
+                </label>
+                <input
+                  id="transfer-reference"
+                  type="text"
+                  required
+                  value={referenceInput}
+                  onChange={(e) => setReferenceInput(e.target.value)}
+                  placeholder="مثال: 0123456789 أو Ref-987654"
+                  className="h-11 w-full rounded-chip border border-border-input bg-bg px-3 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
+                />
+                <p className="text-caption text-text-muted">
+                  الرقم الظاهر في إشعار التحويل من تطبيق إنستاباي أو البنك.
+                </p>
+              </div>
+
+              {/* File Upload Dropzone */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="proof-file-input"
+                  className="block text-small font-semibold text-text"
+                >
+                  صورة إشعار التحويل <span className="text-danger">*</span>
+                </label>
+
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      fileInputRef.current?.click()
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  className="flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-chip border-2 border-dashed border-border p-6 text-center transition-colors hover:border-brand hover:bg-surface-2 focus:outline-none focus:ring-2 focus:ring-focus"
+                >
+                  <input
+                    id="proof-file-input"
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null
+                      void handleFileChange(file)
+                    }}
+                  />
+
+                  {filePreviewUrl ? (
+                    <div className="space-y-3">
+                      <img
+                        src={filePreviewUrl}
+                        alt="معاينة إشعار التحويل"
+                        className="max-h-40 rounded-chip object-contain mx-auto"
+                      />
+                      <p className="text-caption text-brand font-medium">
+                        {selectedFile?.name} (انقر للتغيير)
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="size-10 rounded-pill bg-surface-2 mx-auto flex items-center justify-center text-brand">
+                        <svg
+                          className="size-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                          />
+                        </svg>
+                      </div>
+                      <p className="text-body font-medium text-text">
+                        انقر لاختيار صورة إشعار التحويل
+                      </p>
+                      <p className="text-caption text-text-muted">
+                        JPG أو PNG أو WebP حتى 5 ميجابايت
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Validation Error Display */}
+                {validationError && (
+                  <div className="pt-1">
+                    <ErrorMessage code={validationError} />
+                  </div>
+                )}
+              </div>
+
+              {/* Submission Error Display */}
+              {submitMutation.error && (
+                <div className="rounded-chip border border-danger/30 bg-danger/10 p-4">
+                  <ErrorMessage error={submitMutation.error} />
+                </div>
+              )}
+
+              {/* Submit CTA */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={
+                    !selectedFile ||
+                    !referenceInput.trim() ||
+                    submitMutation.isPending ||
+                    Boolean(validationError)
+                  }
+                  className="inline-flex h-12 w-full items-center justify-center rounded-pill bg-brand px-6 text-body font-semibold text-brand-contrast transition-opacity hover:opacity-90 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-focus"
+                >
+                  {submitMutation.isPending
+                    ? 'جارٍ رفع الإثبات وتأكيد الطلب...'
+                    : 'تأكيد وإرسال إثبات التحويل'}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="rounded-card border border-danger/30 bg-danger/5 p-6 sm:p-8 text-center space-y-4">
+              <h2 className="text-h3 font-bold text-danger">انتهت مهلة الدفع المحددة</h2>
+              <p className="text-body text-text-muted">
+                انتهت مهلة الدفع لهذا الطلب. تم إلغاء الطلب واسترجاع المنتجات إلى المخزون.
+              </p>
+              <div className="pt-2 flex justify-center gap-4">
+                <Link
+                  to="/account/orders"
+                  className="inline-flex h-11 items-center justify-center rounded-pill border border-border bg-surface px-6 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
+                >
+                  متابعة طلباتي
+                </Link>
+                <Link
+                  to="/"
+                  className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
+                >
+                  العودة للتسوق
+                </Link>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

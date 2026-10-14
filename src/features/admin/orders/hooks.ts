@@ -4,6 +4,8 @@ import {
   getAdminOrderById,
   updateAdminOrderStatus,
   updateAdminOrderFulfillment,
+  adminApproveOrder,
+  adminRejectOrder,
 } from './api'
 import type {
   AdminOrder,
@@ -47,6 +49,30 @@ export function useUpdateOrderFulfillment() {
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
       queryClient.setQueryData(['admin-order', updated.id], updated)
+    },
+  })
+}
+
+export function useAdminApproveOrder() {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, unknown, { id: number; note?: string | null }>({
+    mutationFn: ({ id, note }) => adminApproveOrder(id, note),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-order', id] })
+    },
+  })
+}
+
+export function useAdminRejectOrder() {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, unknown, { id: number; reason: string }>({
+    mutationFn: ({ id, reason }) => adminRejectOrder(id, reason),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-order', id] })
     },
   })
 }

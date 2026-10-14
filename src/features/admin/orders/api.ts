@@ -127,3 +127,29 @@ export async function updateAdminOrderFulfillment(
     throw toAppError(err)
   }
 }
+
+export async function adminApproveOrder(id: number, note?: string | null): Promise<void> {
+  try {
+    const { error } = await supabase.rpc('admin_approve_order', {
+      p_order_id: id,
+      p_note: (note ? note.trim() : null) as unknown as string,
+    })
+
+    if (error) throw toAppError(error)
+  } catch (err) {
+    throw toAppError(err)
+  }
+}
+
+export async function adminRejectOrder(id: number, reason: string): Promise<void> {
+  try {
+    const { error } = await supabase.rpc('admin_reject_order', {
+      p_order_id: id,
+      p_reason: reason.trim(),
+    })
+
+    if (error) throw toAppError(error)
+  } catch (err) {
+    throw toAppError(err)
+  }
+}

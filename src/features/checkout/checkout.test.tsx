@@ -224,6 +224,7 @@ describe('placeOrderApi', () => {
         governorate_id: 1,
         address: '15 شارع النصر',
       },
+      p_save_address: true,
     })
     expect(result).toBe(1045)
   })

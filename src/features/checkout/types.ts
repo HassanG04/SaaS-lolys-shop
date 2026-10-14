@@ -41,4 +41,5 @@ export interface PlaceOrderParams {
   delivery_method: DeliveryMethod
   payment_method: PaymentMethod
   ship: PlaceOrderShippingPayload
+  save_address?: boolean
 }

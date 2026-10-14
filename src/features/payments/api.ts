@@ -100,3 +100,30 @@ export async function submitPaymentProofApi(payload: SubmitProofPayload): Promis
     throw toAppError(err)
   }
 }
+
+export interface PaymentInstructions {
+  qr_path: string | null
+  handle: string | null
+  amount: number
+  deadline: string
+}
+
+/**
+ * Retrieves payment instructions (QR path, handle, amount, deadline) for approved orders.
+ * Raises PAY-007 before approval.
+ */
+export async function getPaymentInstructionsApi(orderId: number): Promise<PaymentInstructions> {
+  try {
+    const { data, error } = await supabase.rpc('get_payment_instructions', {
+      p_order_id: orderId,
+    })
+
+    if (error) {
+      throw toAppError(error)
+    }
+
+    return data as unknown as PaymentInstructions
+  } catch (err) {
+    throw toAppError(err)
+  }
+}
