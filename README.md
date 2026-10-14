@@ -46,3 +46,7 @@ npm run test:unit
 Other developers should install the version in `.nvmrc`. The portable directory
 is not committed. See [planned runbooks](docs/runbooks/README.md) and
 [shared progress](.agent-state/project-progress.md) before continuing work.
+
+## Operations
+
+For routine shop management, inventory reorder forecasts, audit log inspections, backup archiving, and emergency escalation, see the [Weekly Operations Runbook](docs/runbooks/weekly.md).
