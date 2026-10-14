@@ -1,5 +1,34 @@
 # Shared project progress
 
+Updated 2026-10-12 (Africa/Cairo). Codex isolated branch `agent/T-0.12-repository-security`.
+
+```yaml
+Current task: T-0.12 implemented in PR 18; owner workflow review pending.
+Completed:
+  - Private reporting policy and security.txt use the owner-approved temporary mailbox (H-14).
+  - CODEOWNERS protects sensitive paths, tooling, scanner exceptions and dependency manifests.
+  - Dependabot weekly npm/Actions/pip configuration parses and matches the required ecosystems.
+  - Read-only secrets CI job installs checksum-pinned Gitleaks 8.30.1 and scans full Git history.
+  - Three scanner tests pass: fake-token/history rejection with redacted output, environment-name rejection, and unavailable-scanner failure.
+  - Reviewed three historical mock-value false positives; exceptions use exact commit/file/rule/line fingerprints only.
+  - Remote rejection proved at 74cbc22 in run 38176155631: scanner installation and tests succeeded; only the history scan rejected the synthetic runner commit. The temporary probe is now removed.
+  - Recovery proved at b2da8dc: all five CI jobs passed in run 38176275898, including secrets. PR 18 is ready for owner review after this evidence update.
+Files changed:
+  - SECURITY.md, public/.well-known/security.txt, .github/CODEOWNERS, .github/dependabot.yml
+  - .github/workflows/ci.yml, .gitleaksignore, scripts/check-history-secrets.mjs, scripts/test-gitleaks.mjs
+  - roadmap.md, .agent-state/project-progress.md, HANDOVER_TO_ANTI_GRAVITY.md
+Tests executed:
+  - Real Windows Gitleaks rejection tests passed; archive checksum verified against official release metadata.
+  - Dependabot and CI YAML parsed with the installed js-yaml dependency; required settings validated.
+  - Full npm run verify passed: 55 app + 111 tooling tests, lint/format/types/build, migration/secret/bundle guards. Three additional real-scanner tests passed locally and on Linux CI.
+Problems found:
+  - Historical mock MFA and environment-validation values triggered generic-api-key; exact reviewed exclusions added.
+  - Owner workflow review remains pending; PR https://github.com/HassanG04/lolys/pull/18 is stacked on PR 17. No known implementation failure remains.
+Next action: Owner reviews the stacked PRs. The next independent task here is T-7.06 (Semgrep); Anti-Gravity retains application/backend work. Do not merge or deploy.
+```
+
+## Previous session
+
 Updated 2026-10-11 (Africa/Cairo). Codex working alongside Anti-Gravity.
 
 ```yaml

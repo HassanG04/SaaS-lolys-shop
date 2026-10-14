@@ -175,6 +175,7 @@ Visitors browse accessories by category, see stock status and fill a cart. Logge
 | H-11 | Native-speaker review of the Arabic copy | `src/i18n/ar.json` (T-7.01) |
 | H-12 | Privacy policy, terms and returns text, reviewed by a legal professional | Arabic pages (T-7.11) |
 | H-13 | Authenticator app on the owner's phone, plus a second device for each admin | admin onboarding (T-8.09) |
+| H-14 | Temporary security-report mailbox: hassangebrill2004@gmail.com, approved 2026-10-12 until the owner supplies a replacement | SECURITY.md and public/.well-known/security.txt |
 
 ### 2.5 Non-goals before launch
 
@@ -458,7 +459,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** open the preview URL
 
 #### T-0.12: Security basics in the repository
-`status: todo` `owner: agent` `needs: T-0.06` `size: M`
+`status: doing` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Add `SECURITY.md` (how to report a vulnerability privately), `public/.well-known/security.txt`, `.github/CODEOWNERS` assigning the owner (H-09) to `supabase/migrations/**`, `src/features/auth/**`, `src/features/admin/**`, `.github/workflows/**`, `public/_headers` and `docs/spec/security-model.md`, `.github/dependabot.yml` (npm, github-actions and pip for `analytics/`, weekly), a `secrets` CI job running gitleaks, and add `CLAUDE-SECURITY-*/` to `.gitignore`.
 - **Done when:** the files exist; the `secrets` job fails on a planted fake key and passes without it; the Dependabot config validates.
 - **Verify:** open a PR and read the checks
@@ -1317,6 +1318,10 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-0.09b | Codex | Added Vite chunk/module metadata and a 200,000-byte initial-JS gzip budget including all static dependencies once. Eager admin/Recharts code fails even inside shared chunks; lazy code is excluded. Four guard tests cover breach/recovery, attribution, invalid inputs and real eager/lazy builds. Full verify passes (55 app + 106 tooling tests); real build is 69,655 gzip bytes. All four checks pass at bf9a87d (run 38135767780). SEC-15/SEC-16/SEC-24 retained. Task remains doing pending owner workflow review; latest AGENTS instructions prohibit agent merges. | [#16](https://github.com/HassanG04/lolys/pull/16) |
 
 | 2026-10-11 | T-1.09b | Codex | Owner asked about cloud hosting and confirmed no Supabase project exists yet. Prepared the owner checklist; split independent migration protection from T-1.09 without waiving its database/type/PR gates. Guard rejects merged-file edits/deletion/renaming in HEAD/index/worktree, uses pre-push main on push events and fails on missing history. Five real-Git negative/recovery tests and full verify pass (55 app + 111 tooling tests); 121-task roadmap validates. All four PR checks pass at 697e8c5 (run 38137004058). SEC-16/SEC-20/SEC-24. No database/cloud commands; owner workflow review pending. | [#17](https://github.com/HassanG04/lolys/pull/17) |
+
+| 2026-10-12 | T-0.12 | Codex | Implemented private reporting with owner-approved temporary H-14 mailbox, security.txt, CODEOWNERS, weekly Dependabot and checksum-pinned Gitleaks history CI (SEC-15/SEC-16/SEC-24). Existing private-report ignore rule retained. Three exact historical mock-value fingerprints documented; no broad exception. Full verify passes (55 app + 111 tooling tests); three real-scanner tests pass. Run 38176155631 at 74cbc22 proves the secrets job rejects a runtime-only synthetic credential while all four other jobs pass; probe removed for recovery run. Doing until owner workflow review; no merge or dashboard changes. | [#18](https://github.com/HassanG04/lolys/pull/18) |
+
+| 2026-10-12 | T-0.12 | Codex | Rejection probe removed. Recovery run 38176275898 at b2da8dc passed all five jobs, including secrets. T-0.12 stays doing only for owner security/workflow review; no launch or dashboard setup claimed. | [#18](https://github.com/HassanG04/lolys/pull/18) |
 
 ### Open questions (agents add rows; the owner answers)
 
