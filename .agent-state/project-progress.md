@@ -232,3 +232,32 @@ for provenance; do not restore it over the newer implementation.
 ## Merge-day CI repair — 2026-10-14
 
 PR19's latest remote SAST job failed before scanning: setup-node could not execute the downloaded Node24 binary inside the scanner container (ENOENT). The workflow now runs Node on the Ubuntu host and invokes the unchanged digest-pinned Semgrep image through a read-only Docker wrapper. Both planted-violation tests and maintained/project scans remain mandatory. This is a CI compatibility repair, with no feature or scanner-rule changes. Remote rerun is required before merge; previous green jobs are not proof for the new head.
+
+## Merge-day preparation — 2026-10-14
+
+```yaml
+Current task: Merge-day preparation requested by owner; no feature code.
+Completed:
+  - Fetched all remotes with pruning; inventoried 91 existing local branch names, 45 published branches and five open PRs.
+  - Pushed WIP checkpoints ee22392 (security workflow, 8 files) and 745c787 (approval flow, 25 files).
+  - Fixed PR19 Node/scanner runtime boundary; retained pinned Semgrep image and mandatory rejection tests.
+  - Reviewed one historical localhost public anon-key finding; added an exact fingerprint exception to PR18 and PR19. New/privileged secrets remain blocked.
+  - PR15, PR16, PR17, PR18 and PR19 have green remote checks at the heads recorded in MERGE-PLAN.md.
+  - Rehearsed squash-dependent rebases in a detached checkout; all five resulting trees exactly equal their source PR heads.
+  - Restored the owner's payment amendment verbatim as docs/spec/payment-flow-change.md and held 39 payment branches/descendants.
+Files changed:
+  - docs/handoff/MERGE-PLAN.md
+  - docs/spec/payment-flow-change.md
+  - .agent-state/project-progress.md
+  - Existing PR18/19 fixes are recorded separately in the merge plan; no application feature changes.
+Tests executed:
+  - Full npm run verify for CI repair: 55 application and 111 tooling tests passed, build and guards passed.
+  - Real Gitleaks rejection/history, environment-file refusal and unavailable-scanner tests: all 3 passed; redacted full-history scan passed.
+  - GitHub current-head CI: all required jobs passed on PR15-19, including SAST and secrets on PR19 at 819ba69.
+  - Five dependency replay rehearsals: clean and tree-identical.
+Problems found:
+  - Squash-only policy means each child must be replayed after the preceding owner merge; the future main commit does not exist yet.
+  - Many branches have no PR or remote CI. A task marked done is not proof of merge readiness.
+  - Payment amendment was absent from all inventoried branches; competing approval implementations need reconciliation outside this no-feature-code task.
+Next action: Owner reviews the merge plan, merges PR15, then follows the recorded replay/verification steps for PR16-19. Do not merge payment branches yet.
+```
