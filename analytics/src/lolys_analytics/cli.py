@@ -39,6 +39,13 @@ def main(argv: list[str] | None = None) -> int:
         help="Run cleaning rules verification against deterministic synthetic data",
     )
 
+    # Subcommand: calendar-check
+    cal_parser = subparsers.add_parser(
+        "calendar-check",
+        help="Cross-check algorithmic calendar against committed official events table",
+    )
+    cal_parser.add_argument("--year", type=int, default=2026, help="Year to cross-check")
+
     args = parser.parse_args(argv)
     config = load_config()
 
@@ -84,6 +91,17 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Poisoned accounts detected: {len(results['poisoned_accounts_detected'])}")
         print(f"Winsorize clipped points: {results['winsorize_clipped_points']}")
         print(f"Stockout days flagged: {results['stockout_days_flagged']}")
+        return 0
+
+    if args.command == "calendar-check":
+        from lolys_analytics.calendar import cross_check_events
+
+        print(f"Cross-checking calendar events for {args.year} against official table...")
+        report = cross_check_events(args.year)
+        for ev, data in report.items():
+            align_str = "ALIGNED" if data["aligned"] else "MISALIGNED"
+            delta = data.get("delta_start_days", 0)
+            print(f"  [{align_str}] {ev}: official={data['official']} delta={delta}d")
         return 0
 
     return 0
