@@ -15,11 +15,12 @@ Version 1.1, 2026-10-07. Applies to roadmap v1.1. The six tested SQL files in `d
 | T-1.19 | Catalog admin support: category and product flags, safe delete functions, image path checks |
 | T-1.20 | Abuse controls: `rate_limits`, `check_rate_limit`, order caps |
 | T-1.21 | `stock_movements` ledger |
+| T-1.23 | Order approval, saved address, private InstaPay settings, S32-S37 |
 | T-9.01 | `analytics` schema and roles |
 
 ## 2. Enums
 
-`user_role` (customer, admin) | `order_status` (pending, confirmed, shipped, delivered, cancelled) | `delivery_method` (egypt_post, representative) | `payment_method` (cod, instapay_qr) | `payment_status` (unpaid, awaiting_proof, under_review, paid, rejected) | `stock_reason` (order, cancel, admin_adjust, restock, correction)
+`user_role` (customer, admin) | `order_status` (pending, confirmed, shipped, delivered, cancelled) | `delivery_method` (egypt_post, representative) | `payment_method` (cod, instapay_qr) | `payment_status` (unpaid, awaiting_approval, awaiting_proof, under_review, paid, rejected) | `stock_reason` (order, cancel, admin_adjust, restock, correction)
 
 ## 3. Tables (public), final shape
 
@@ -44,7 +45,8 @@ Length limits (check constraints): names 100, phone 20, address parts 150, landm
 | Payment | Start | Moves to |
 |---|---|---|
 | `cod` | `unpaid` | `paid` automatically when the order becomes `delivered` |
-| `instapay_qr` | `awaiting_proof` (with `payment_deadline` = created + window, default 24 h) | `under_review` when the customer submits a proof; `paid` or `rejected` when an admin reviews; a rejected order can be resubmitted before the deadline; unpaid orders past the deadline are cancelled and restocked by `expire_unpaid_orders()` |
+| `instapay_qr` (approval on) | `awaiting_approval` (no deadline, stock held) | `confirmed` and `awaiting_proof` with deadline set upon `admin_approve_order`; `cancelled` upon `admin_reject_order`; `under_review` when customer submits proof; `paid` or `rejected` when admin reviews; orders past approval window or payment deadline are cancelled and restocked by `expire_unpaid_orders()`. `shipped` and `delivered` are refused until `paid` (ORD-015). |
+| `instapay_qr` (approval off) | `awaiting_proof` (with `payment_deadline` = created + window, default 24 h) | `under_review` when customer submits proof; `paid` or `rejected` when admin reviews; unpaid orders past deadline are cancelled and restocked by `expire_unpaid_orders()`. `shipped` and `delivered` are refused until `paid` (ORD-015). |
 
 Revenue stays "orders that are `delivered`". The dashboard also shows `awaiting_review` count and `paid_total`.
 
@@ -56,18 +58,21 @@ All admin functions start with `require_admin()` (ADM-001 or ADM-002). All write
 |---|---|---|
 | `is_admin()` | all roles | true only if the role is `admin` **and** the JWT `aal` claim is `aal2` |
 | `require_admin()` | internal | raises ADM-002 if admin role at `aal1`, else ADM-001 |
-| `place_order(p_items jsonb, p_delivery_method, p_payment_method, p_ship jsonb) → bigint` | authenticated | Validates, rate-limits, enforces pending limit and caps, takes prices from the database, locks stock rows, writes order and items, sets `payment_status` and deadline. `p_items` = `[{"product_id": 12, "quantity": 2}]`. `p_ship` keys: `name, phone, alt_phone, governorate_id, city, district, address, floor, apartment, landmark, notes` |
+| `place_order(p_items jsonb, p_delivery_method, p_payment_method, p_ship jsonb) → bigint` | authenticated | Validates, rate-limits, enforces pending limit and caps, takes prices from the database, locks stock rows, writes order and items, sets `payment_status` (`awaiting_approval` if `require_order_approval` is on and payment is `instapay_qr`, else `awaiting_proof` or `unpaid`). Saves address to `profiles` if missing or if `p_ship ->> 'save_address'` is true. |
 | `cancel_my_order(p_order_id)` | authenticated | Own pending orders only; restocks |
-| `submit_payment_proof(p_order_id, p_reference, p_proof_path)` | authenticated | Own `instapay_qr` order awaiting proof or rejected, before the deadline; `p_proof_path` must start with `<uid>/<order_id>/`; sets `under_review` |
+| `admin_approve_order(p_order_id, p_note default null)` | admin | Requires `awaiting_approval`; sets status `confirmed`, `payment_status = awaiting_proof`, `payment_deadline = now() + payment window` |
+| `admin_reject_order(p_order_id, p_reason)` | admin | Requires `awaiting_approval`; cancels order (restocks through trigger) and stores reason |
+| `get_payment_instructions(p_order_id) → jsonb` | authenticated | Own order only; returns `{qr_path, instapay_handle, amount, deadline}` only while `awaiting_proof`, `under_review`, or `rejected`. Raises PAY-007 before approval. |
+| `submit_payment_proof(p_order_id, p_reference, p_proof_path)` | authenticated | Own `instapay_qr` order awaiting proof or rejected, before the deadline; refuses if awaiting approval (PAY-007); `p_proof_path` must start with `<uid>/<order_id>/`; sets `under_review` |
 | `admin_review_payment(p_order_id, p_approve, p_note)` | admin | `under_review` to `paid` or `rejected`; records reviewer and time |
-| `expire_unpaid_orders()` | cron / owner only | Cancels overdue unpaid `instapay_qr` orders (restock through the existing trigger); scheduled with `pg_cron` every 30 minutes *(verify availability)* |
+| `expire_unpaid_orders()` | cron / owner only | Cancels overdue unpaid `instapay_qr` orders and unapproved orders past `approval_window_hours` (restock through the existing trigger); scheduled with `pg_cron` every 30 minutes |
 | `admin_delete_product(p_id)` | admin | Deletes only if never in an order, else ADM-004 |
 | `admin_delete_category(p_id, p_move_to)` | admin | If products exist, moves them to `p_move_to` first (else ADM-005) |
 | `admin_update_setting(p_key, p_value)` | admin | Allow-listed keys only (below), typed validation |
 | `admin_dashboard(p_from, p_to)` | admin | JSON for the dashboard (shape in the tested SQL, plus `awaiting_review` and `paid_total` in `kpis`) |
-| `check_rate_limit(p_action, p_limit, p_window)` | internal | Counts by user id; also by client IP only if the trusted forwarded-address header is confirmed on staging *(verify)*; raises SYS-003 |
+| `check_rate_limit(p_action, p_limit, p_window)` | internal | Counts by user id; raises SYS-003 |
 
-`admin_dashboard` result: `range{from,to}`, `kpis{orders,pending,booked_total,delivered_total,avg_order,awaiting_review,paid_total}`, `daily[{day,orders,booked_total,delivered_total}]`, `by_status{status:n}`, `by_method[{method,orders,total}]`, `by_governorate[{governorate,orders,total}]`, `top_products[{product_id,name,units,sales}]`, `top_customers[{user_id,name,orders,total}]`, `low_stock[{product_id,name,stock}]`. The forecast and analytics screens use separate admin-only functions in `public` (for example `admin_get_forecasts`, `admin_get_insights`) that read the `analytics` schema; the schema itself is not exposed through the API.
+`admin_dashboard` result: `range{from,to}`, `kpis{orders,pending,booked_total,delivered_total,avg_order,awaiting_review,paid_total}`, `daily[{day,orders,booked_total,delivered_total}]`, `by_status{status:n}`, `by_method[{method,orders,total}]`, `by_governorate[{governorate,orders,total}]`, `top_products[{product_id,name,units,sales}]`, `top_customers[{user_id,name,orders,total}]`, `low_stock[{product_id,name,stock}]`.
 
 **Removed:** `admin_set_role`. Admins are created only by owner SQL (`docs/runbooks/first-admin.md`). A trigger blocks any change to `profiles.role` unless the session user is the database owner.
 
@@ -83,11 +88,13 @@ All admin functions start with `require_admin()` (ADM-001 or ADM-002). All write
 | `hero_title_ar`, `hero_subtitle_ar` | text, 120 / 240 | yes | from copy deck |
 | `sale_percent` | integer 0 to 90 | yes | 50 |
 | `payment_methods_enabled` | array of `cod`, `instapay_qr` | yes | both |
-| `instapay_qr_path` | storage path | yes | placeholder |
-| `instapay_handle` | text, 60 | yes | empty |
+| `instapay_qr_path` | storage path | no | placeholder |
+| `instapay_handle` | text, 60 | no | empty |
 | `returns_text_ar` | text, 2000 | yes | placeholder |
 | `payment_window_hours` | integer 1 to 72 | no | 24 |
 | `pending_order_limit` | integer 1 to 10 | no | 3 |
+| `require_order_approval` | boolean | yes | true |
+| `approval_window_hours` | integer 1 to 72 | no | 24 |
 
 ## 7. Storage
 

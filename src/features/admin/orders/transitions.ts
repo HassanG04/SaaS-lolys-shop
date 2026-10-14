@@ -81,6 +81,7 @@ export const ORDER_STATUS_COLORS: Record<
 
 export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
   unpaid: 'غير مدفوع',
+  awaiting_approval: 'بانتظار الموافقة',
   awaiting_proof: 'بانتظار الإثبات',
   under_review: 'قيد المراجعة',
   paid: 'مدفوع',

@@ -16,6 +16,11 @@ const BADGE_MAP: Record<PaymentStatus, BadgeConfig> = {
     className: 'border-border bg-surface-2 text-text-muted',
     dotClass: 'bg-text-muted',
   },
+  awaiting_approval: {
+    label: 'بانتظار موافقة المتجر',
+    className: 'border-warning bg-surface-tint text-warning',
+    dotClass: 'bg-warning',
+  },
   awaiting_proof: {
     label: 'بانتظار إيصال الدفع',
     className: 'border-warning bg-surface-tint text-warning',

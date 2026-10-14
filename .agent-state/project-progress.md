@@ -3,8 +3,9 @@
 Updated 2026-10-14 (Africa/Cairo). Active: Anti-Gravity, completed T-5.10.
 
 ```yaml
-Current task: T-5.10 done. Ready for next task (T-5.11 or user direction).
+Current task: T-1.23 done. Ready for UI updates (T-4.02, T-4.03, T-4.06, T-5.05) and next roadmap tasks.
 Completed:
+  - T-1.23: Implemented order approval and saved address migration in supabase/migrations/20261014023000_order_approval_and_saved_address.sql: awaiting_approval enum value, shop_settings require_order_approval & approval_window_hours (with instapay keys made private), orders_status_guard blocking shipped/delivered for unpaid InstaPay orders (ORD-015), place_order supporting approval-first flow and default address saving in profiles, admin_approve_order (AAL2, confirmed, awaiting_proof, deadline, audited), admin_reject_order (AAL2, cancelled, note, restocked, audited), get_payment_instructions (owner-only, PAY-007 before approval), submit_payment_proof (refused before approval, PAY-007), expire_unpaid_orders restock trigger. Added 36 pgTAP assertions in 15_order_approval.test.sql covering S32-S37. All tests and npm run verify pass (initial JS bundle 199,790 / 200,000 gzip bytes).
   - T-5.10: Implemented audit log viewer at /admin/audit in src/features/admin/audit/: read-only paginated table with filters (date range, entity, actor role, and action), readable before-and-after key diff comparison with modified keys highlighted, raw JSON view toggle, and reusable RecentSensitiveChangesPanel embedded in both /admin/audit and DashboardPage (/admin). Strictly read-only with no edit or delete controls. Enforced zero writes to public.audit_log across src/ with automated tooling test scripts/audit-log-guard.test.mjs in npm run test:tooling and verify. Initial bundle budget maintained (199,991 / 200,000 gzip bytes). Full verify passes (605 app + 143 tooling tests = 748 tests).
   - T-5.09: Implemented site settings administration at /admin/settings in src/features/admin/settings/: shop info and contact channels, storefront hero text, announcement bar and general sale discount percentage with live preview badge, payment methods toggles and InstaPay handle, Step-Up MFA-guarded InstaPay QR code image replacement with client re-encoding and automatic deletion of previous custom storage files (falling back to placeholder SVG), Step-Up MFA-guarded operational limits (pending order limit and payment window hours) and returns text, and recent settings audit log activity table. Client-side validators and RPC admin_update_setting mapping errors to ADM-007 and ADM-008. Initial bundle budget maintained (199,998 / 200,000 gzip bytes). Full verify passes (728 tests).
   - T-5.08: Implemented payment review and proof purging in src/features/admin/payments/: queue of orders under_review sorted oldest first (FIFO), amount formatted in EGP, copyable reference code, deadline and submission timestamps, customer details, and ephemeral 60-second signed URL generation via Storage API (never stored in database or persistent state); approve/reject review dialog wired to admin_review_payment RPC (AAL2 MFA enforced, audited) allowing customer resubmission on rejection; filters by payment status and search by #ID, customer name/phone, and reference; Step-Up MFA-guarded PurgeProofsDialog deleting proofs for orders delivered > 90 days ago through Storage API and clearing order paths. Optimized initial bundle to maintain budget (199,994 / 200,000 gzip bytes). Full verify passes (706 tests).
@@ -188,3 +189,24 @@ Read `.agent-state/anti-gravity-review.md` for concrete findings before resuming
 those tasks. `HANDOVER_TO_CODEX.md` is the preserved incoming report, not current
 verification evidence. The older `.tools/anti-gravity-t007-checkpoint/` is retained
 for provenance; do not restore it over the newer implementation.
+
+## Codex approval-flow checkpoint — 2026-10-14
+
+```yaml
+Current task: T-1.23 approval-first InstaPay and saved addresses, in progress in isolated checkout.
+Completed:
+  - Drafted append-only enum and order-approval migrations, including owner-only payment instructions, MFA approval/rejection, unpaid shipping guard, approval expiry and atomic address save.
+  - Customer and admin UI implementation is partially saved; it has not passed integration verification.
+  - Created a separate local database project lolys-approval-test so Anti-Gravity's running stack stays untouched.
+Files changed:
+  - See .agent-state/approval-flow-checkpoint.md for checkout, saved files and pending integration work.
+Tests executed:
+  - Isolated database initial startup succeeded before migration content was written.
+  - npm ci --ignore-scripts succeeded after repairing inherited lockfile inconsistency.
+  - Reset with actual migrations was started, but completion output could not be recovered; do not claim it passed.
+  - No approval-flow pgTAP, full verify or remote CI success yet.
+Problems found:
+  - Automatic approval review refused further escalated execution because its usage limit was reached; review could not complete, not a finding that the action was unsafe.
+  - Generated types, translations, new database tests and cross-feature integration remain pending.
+Next action: Resume isolated checkout after approval service is available, inspect status/diff including untracked files, then complete tests/types/translations and verify. Do not merge or deploy.
+```
