@@ -446,7 +446,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** attempt a push to `main`
 
 #### T-0.11: Cloudflare Pages project
-`status: todo` `owner: human` `needs: T-0.06` `size: S`
+`status: done` `owner: human` `needs: T-0.06` `size: S`
 - **Do:** Create the Pages project from the GitHub repo (Git integration): framework preset Vite, build command `npm run build`, output directory `dist`, production branch `main`, preview deployments on. Environment variables are added in T-1.11 and T-1.13.
 - **Done when:** a PR gets a preview URL and `main` deploys.
 - **Verify:** open the preview URL
@@ -1379,6 +1379,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-14 | T-8.11 | Anti-Gravity | Authored comprehensive weekly operations runbook in docs/runbooks/weekly.md: 1. Dashboard and financial review on /admin; 2. Pending and expired InstaPay orders review, WhatsApp customer outreach, payment review queue, and 24h expiration trigger; 3. Security audit log inspection for sensitive changes (INSTAPAY_QR_CHANGE, SETTING_UPDATE, CUSTOMER_ANONYMIZE); 4. Inventory low-stock identification and CSV reorder export; 5. Supabase platform resource monitoring against 80% plan limits; 6. Weekly backup checklist and BitLocker encrypted archiving; 7. Supply-chain Dependabot check; 8. What to do when something breaks (triage flowchart, SEV-1 escalation, maintenance mode). Linked runbook in README.md; added automated tooling test suite in scripts/weekly-runbook.test.mjs; all 194 tooling tests and full npm run verify pass cleanly. | pending |
 | 2026-10-14 | T-0.10 | Owner / Anti-Gravity | Configured GitHub Repository Ruleset on main requiring pull requests (1 approval, stale dismissal, Code Owners review, conversation resolution), passing CI checks (static, unit, build, roadmap, secrets, db, e2e, sast), disallowing deletions and force pushes, with empty bypass list. Repository converted to public to enable full ruleset enforcement under GitHub Free plan. Direct push to main rejected with GH013 repository rule violation. | verified |
 | 2026-10-14 | T-0.13 | Owner / Anti-Gravity | Enabled GitHub repository security settings under Advanced Security: secret scanning active, push protection enabled, Dependabot alerts and security updates enabled, private vulnerability reporting enabled, Code Owners review enforced via main ruleset, and account 2FA verified. | verified |
+| 2026-10-14 | T-0.11 | Owner / Anti-Gravity | Created Cloudflare Pages project connected to HassanG04/SaaS_Accessories Git repo with Vite framework preset, build command npm run build, output dist, production branch main, and preview deployments enabled. Initial deployment published to https://saas-accessories.pages.dev. | verified |
 
 ### Open questions (agents add rows; the owner answers)
 
