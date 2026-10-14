@@ -28,3 +28,8 @@ class names. The static CI job runs it; tests plant invalid JSX/CSS fixtures.
 `check:ui-build` checks production artifacts for development route, asset and
 Arabic/English preview markers. It runs after every production build, including
 CI. Keep preview translations in development-only imports when adding locales.
+
+`check:supply-chain` validates dependency security, registry URLs, permissive
+licenses, lifecycle script allowlists in `package-lock.json`, and SHA-pinned
+GitHub Actions in `.github/workflows/`. Its companion `audit:signatures` verifies
+cryptographic signatures of all packages against the npm registry.

@@ -26,8 +26,7 @@ import { useSeo } from '@/features/seo'
 
 export default function CheckoutPage() {
   const { t, lang } = useLanguage()
-  const { profile, refreshProfile } = useAuth()
-  const [saveAddress, setSaveAddress] = useState(true)
+  const { profile } = useAuth()
   const { lines, subtotal, clearCart } = useCart()
   const navigate = useNavigate()
 
@@ -50,6 +49,7 @@ export default function CheckoutPage() {
     landmark: profile?.landmark ?? '',
     notes: '',
   })
+  const [saveAddress, setSaveAddress] = useState(true)
 
   // Prefill synchronization when profile loads
   const [profileLoaded, setProfileLoaded] = useState(false)
@@ -88,6 +88,7 @@ export default function CheckoutPage() {
 
   const { data: deliveryFees, isLoading: loadingFees } = useDeliveryFees(selectedGovId)
   const { data: settings } = usePublicSettings()
+  const requireApproval = settings?.require_order_approval ?? true
 
   // Delivery methods available for the chosen governorate
   const availableDeliveryOptions = deliveryFees ?? []
@@ -113,9 +114,6 @@ export default function CheckoutPage() {
     selectedPaymentMethod && enabledPaymentMethods.includes(selectedPaymentMethod)
       ? selectedPaymentMethod
       : (enabledPaymentMethods[0] ?? '')
-
-  const requiresApproval =
-    activePaymentMethod === 'instapay_qr' && settings?.require_order_approval !== false
 
   // Selected Delivery Fee amount
   const selectedDeliveryFeeOption = availableDeliveryOptions.find(
@@ -172,18 +170,15 @@ export default function CheckoutPage() {
         quantity: line.quantity,
       }))
 
-      const shippingPayload = buildPlaceOrderShippingPayload(formData, saveAddress)
+      const shippingPayload = buildPlaceOrderShippingPayload(formData)
 
       const orderId = await placeOrderApi({
         items: payloadItems,
         delivery_method: activeDeliveryMethod,
         payment_method: activePaymentMethod,
         ship: shippingPayload,
+        save_address: saveAddress,
       })
-
-      // The database saves the address in the same transaction as the order.
-      // A profile refresh failure must not offer a second order submission.
-      void refreshProfile().catch(() => {})
 
       // Clear shopping cart on successful checkout
       clearCart()
@@ -213,6 +208,7 @@ export default function CheckoutPage() {
   const aptId = useId()
   const landmarkId = useId()
   const notesId = useId()
+  const saveAddressId = useId()
 
   if (lines.length === 0) {
     return (
@@ -495,18 +491,27 @@ export default function CheckoutPage() {
                   className="w-full rounded-image border border-border-input bg-surface p-3 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                 />
               </div>
+
+              {/* Save Address Checkbox */}
+              <div className="sm:col-span-2 pt-2">
+                <label
+                  htmlFor={saveAddressId}
+                  className="flex items-center gap-3 cursor-pointer select-none"
+                >
+                  <input
+                    id={saveAddressId}
+                    type="checkbox"
+                    checked={saveAddress}
+                    onChange={(e) => setSaveAddress(e.target.checked)}
+                    className="size-5 rounded-chip border-border-input text-brand focus:ring-focus"
+                  />
+                  <span className="text-small font-medium text-text">
+                    {t.checkout.save_address || 'احفظ هذا العنوان لطلباتي القادمة'}
+                  </span>
+                </label>
+              </div>
             </div>
           </Card>
-
-          <label className="flex min-h-11 cursor-pointer items-center gap-3 text-small text-text">
-            <input
-              type="checkbox"
-              checked={saveAddress}
-              onChange={(event) => setSaveAddress(event.target.checked)}
-              className="size-5 accent-brand focus:outline-none focus:ring-2 focus:ring-focus"
-            />
-            {t('checkout.save_address')}
-          </label>
 
           {/* 3. Delivery Method Cards */}
           <Card className="p-6 sm:p-8 space-y-4">
@@ -694,12 +699,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {requiresApproval && (
-              <p className="rounded-chip border border-border bg-surface-tint p-4 text-small text-text">
-                {t('checkout.approval_note')}
-              </p>
-            )}
-
             {/* Action Buttons */}
             <div className="space-y-3 pt-2">
               <button
@@ -709,10 +708,40 @@ export default function CheckoutPage() {
               >
                 {isSubmitting
                   ? t.checkout.submitting
-                  : requiresApproval
-                    ? t('checkout.submit_request')
+                  : activePaymentMethod === 'instapay_qr' && requireApproval
+                    ? t.checkout.submit_request || 'إرسال الطلب'
                     : t.checkout.submit}
               </button>
+
+              {activePaymentMethod === 'instapay_qr' && requireApproval && (
+                <p className="text-center text-caption text-text-muted">
+                  {t.checkout.approval_note || 'سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع.'}
+                </p>
+              )}
+
+              <p className="text-center text-caption text-text-muted leading-relaxed">
+                بإتمامك للطلب، فإنك توافق على{' '}
+                <Link to="/terms" target="_blank" className="text-brand underline hover:opacity-80">
+                  {t.footer.terms}
+                </Link>
+                {' و'}
+                <Link
+                  to="/privacy"
+                  target="_blank"
+                  className="text-brand underline hover:opacity-80"
+                >
+                  {t.footer.privacy}
+                </Link>
+                {' و'}
+                <Link
+                  to="/returns"
+                  target="_blank"
+                  className="text-brand underline hover:opacity-80"
+                >
+                  {t.footer.returns}
+                </Link>
+                .
+              </p>
 
               <Link
                 to="/cart"

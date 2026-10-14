@@ -1,5 +1,4 @@
 import { supabase } from '../../lib/supabase'
-import { getAuthMessage, mapAuthError } from './authErrors'
 import type {
   AalLevel,
   AuthActionResult,
@@ -12,6 +11,17 @@ import type {
   SignUpCredentials,
   UserProfile,
 } from './types'
+
+async function resolveAuthError(err: unknown): Promise<{ code: AuthErrorCode; message: string }> {
+  const { mapAuthError, getAuthMessage } = await import('./authErrors')
+  const code = mapAuthError(err)
+  return { code, message: getAuthMessage(code) }
+}
+
+async function resolveAuthMessage(code: AuthErrorCode): Promise<string> {
+  const { getAuthMessage } = await import('./authErrors')
+  return getAuthMessage(code)
+}
 
 /**
  * Signs in a user using email and password with generic, bot-resistant error masking.
@@ -27,14 +37,14 @@ export async function signInApi(credentials: SignInCredentials): Promise<AuthAct
     })
 
     if (error) {
-      const code = mapAuthError(error)
-      return { success: false, code, message: getAuthMessage(code) }
+      const { code, message } = await resolveAuthError(error)
+      return { success: false, code, message }
     }
 
     return { success: true }
   } catch (err) {
-    const code = mapAuthError(err)
-    return { success: false, code, message: getAuthMessage(code) }
+    const { code, message } = await resolveAuthError(err)
+    return { success: false, code, message }
   }
 }
 
@@ -45,7 +55,8 @@ export async function signUpApi(credentials: SignUpCredentials): Promise<AuthAct
   const { email, password, fullName, captchaToken } = credentials
 
   if (password.length < 10) {
-    return { success: false, code: 'AUTH-008', message: getAuthMessage('AUTH-008') }
+    const message = await resolveAuthMessage('AUTH-008')
+    return { success: false, code: 'AUTH-008', message }
   }
 
   try {
@@ -59,21 +70,24 @@ export async function signUpApi(credentials: SignUpCredentials): Promise<AuthAct
     })
 
     if (error) {
+      const { mapAuthError, getAuthMessage } = await import('./authErrors')
       const mapped = mapAuthError(error)
       if (mapped === 'AUTH-003') {
         return { success: false, code: 'AUTH-003', message: getAuthMessage('AUTH-003') }
       }
-      // Neutral response on existing email or standard sign-up outcome
       return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
     }
 
-    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    const message = await resolveAuthMessage('AUTH-010')
+    return { success: true, code: 'AUTH-010', message }
   } catch (err) {
+    const { mapAuthError, getAuthMessage } = await import('./authErrors')
     const mapped = mapAuthError(err)
     if (mapped === 'AUTH-003') {
       return { success: false, code: 'AUTH-003', message: getAuthMessage('AUTH-003') }
     }
-    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    const message = await resolveAuthMessage('AUTH-010')
+    return { success: true, code: 'AUTH-010', message }
   }
 }
 
@@ -97,19 +111,23 @@ export async function resetPasswordApi(
     })
 
     if (error) {
+      const { mapAuthError, getAuthMessage } = await import('./authErrors')
       const mapped = mapAuthError(error)
       if (mapped === 'AUTH-003') {
         return { success: false, code: 'AUTH-003', message: getAuthMessage('AUTH-003') }
       }
     }
 
-    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    const message = await resolveAuthMessage('AUTH-010')
+    return { success: true, code: 'AUTH-010', message }
   } catch (err) {
+    const { mapAuthError, getAuthMessage } = await import('./authErrors')
     const mapped = mapAuthError(err)
     if (mapped === 'AUTH-003') {
       return { success: false, code: 'AUTH-003', message: getAuthMessage('AUTH-003') }
     }
-    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    const message = await resolveAuthMessage('AUTH-010')
+    return { success: true, code: 'AUTH-010', message }
   }
 }
 
@@ -129,19 +147,23 @@ export async function resendConfirmationApi(
     })
 
     if (error) {
+      const { mapAuthError, getAuthMessage } = await import('./authErrors')
       const mapped = mapAuthError(error)
       if (mapped === 'AUTH-003') {
         return { success: false, code: 'AUTH-003', message: getAuthMessage('AUTH-003') }
       }
     }
 
-    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    const message = await resolveAuthMessage('AUTH-010')
+    return { success: true, code: 'AUTH-010', message }
   } catch (err) {
+    const { mapAuthError, getAuthMessage } = await import('./authErrors')
     const mapped = mapAuthError(err)
     if (mapped === 'AUTH-003') {
       return { success: false, code: 'AUTH-003', message: getAuthMessage('AUTH-003') }
     }
-    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    const message = await resolveAuthMessage('AUTH-010')
+    return { success: true, code: 'AUTH-010', message }
   }
 }
 
@@ -223,6 +245,7 @@ export async function enrollTotpApi(
       friendlyName,
     })
     if (error || !data) {
+      const { mapAuthError } = await import('./authErrors')
       const code = mapAuthError(error)
       return { error: code }
     }
@@ -238,6 +261,7 @@ export async function enrollTotpApi(
       },
     }
   } catch (err) {
+    const { mapAuthError } = await import('./authErrors')
     const code = mapAuthError(err)
     return { error: code }
   }
@@ -256,11 +280,13 @@ export async function challengeAndVerifyApi(
       code,
     })
     if (error) {
-      return { success: false, code: 'AUTH-006', message: getAuthMessage('AUTH-006') }
+      const message = await resolveAuthMessage('AUTH-006')
+      return { success: false, code: 'AUTH-006', message }
     }
     return { success: true }
   } catch {
-    return { success: false, code: 'AUTH-006', message: getAuthMessage('AUTH-006') }
+    const message = await resolveAuthMessage('AUTH-006')
+    return { success: false, code: 'AUTH-006', message }
   }
 }
 
@@ -271,13 +297,13 @@ export async function unenrollFactorApi(factorId: string): Promise<AuthActionRes
   try {
     const { error } = await supabase.auth.mfa.unenroll({ factorId })
     if (error) {
-      const code = mapAuthError(error)
-      return { success: false, code, message: getAuthMessage(code) }
+      const { code, message } = await resolveAuthError(error)
+      return { success: false, code, message }
     }
     return { success: true }
   } catch (err) {
-    const code = mapAuthError(err)
-    return { success: false, code, message: getAuthMessage(code) }
+    const { code, message } = await resolveAuthError(err)
+    return { success: false, code, message }
   }
 }
 
@@ -287,19 +313,20 @@ export async function unenrollFactorApi(factorId: string): Promise<AuthActionRes
  */
 export async function updatePasswordApi(password: string): Promise<AuthActionResult> {
   if (password.length < 10) {
-    return { success: false, code: 'AUTH-008', message: getAuthMessage('AUTH-008') }
+    const message = await resolveAuthMessage('AUTH-008')
+    return { success: false, code: 'AUTH-008', message }
   }
 
   try {
     const { error } = await supabase.auth.updateUser({ password })
     if (error) {
-      const code = mapAuthError(error)
-      return { success: false, code, message: getAuthMessage(code) }
+      const { code, message } = await resolveAuthError(error)
+      return { success: false, code, message }
     }
     return { success: true }
   } catch (err) {
-    const code = mapAuthError(err)
-    return { success: false, code, message: getAuthMessage(code) }
+    const { code, message } = await resolveAuthError(err)
+    return { success: false, code, message }
   }
 }
 
@@ -311,17 +338,19 @@ export async function updateEmailApi(email: string): Promise<AuthActionResult> {
   try {
     const { error } = await supabase.auth.updateUser({ email })
     if (error) {
-      const code = mapAuthError(error)
-      if (code === 'AUTH-007' || code === 'AUTH-002') {
-        return { success: false, code, message: getAuthMessage(code) }
+      const errorResult = await resolveAuthError(error)
+      if (errorResult.code === 'AUTH-007' || errorResult.code === 'AUTH-002') {
+        return { success: false, code: errorResult.code, message: errorResult.message }
       }
     }
-    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    const message = await resolveAuthMessage('AUTH-010')
+    return { success: true, code: 'AUTH-010', message }
   } catch (err) {
-    const code = mapAuthError(err)
-    if (code === 'AUTH-007' || code === 'AUTH-002') {
-      return { success: false, code, message: getAuthMessage(code) }
+    const errorResult = await resolveAuthError(err)
+    if (errorResult.code === 'AUTH-007' || errorResult.code === 'AUTH-002') {
+      return { success: false, code: errorResult.code, message: errorResult.message }
     }
-    return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    const message = await resolveAuthMessage('AUTH-010')
+    return { success: true, code: 'AUTH-010', message }
   }
 }

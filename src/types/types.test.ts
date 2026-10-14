@@ -16,6 +16,7 @@ describe('database types and helpers', () => {
     expect(Constants.public.Enums.payment_method).toEqual(['cod', 'instapay_qr'])
     expect(Constants.public.Enums.payment_status).toEqual([
       'unpaid',
+      'awaiting_approval',
       'awaiting_proof',
       'under_review',
       'paid',

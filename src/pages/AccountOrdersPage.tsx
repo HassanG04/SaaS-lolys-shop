@@ -50,7 +50,7 @@ export default function AccountOrdersPage() {
     return (
       <div
         role="status"
-        aria-label="جاري تحميل الطلبات"
+        aria-label="جارٍ تحميل الطلبات"
         className="flex min-h-[350px] w-full items-center justify-center text-brand"
       >
         <PearlLoader loading />
@@ -126,7 +126,6 @@ export default function AccountOrdersPage() {
           {orders.map((order) => {
             const isPostal = order.delivery_method === 'egypt_post'
             const showCancel = canCancelOrder(order)
-            const isAwaitingApproval = order.payment_status === 'awaiting_approval' && order.status === 'pending'
             const isInstaPayAwaiting =
               order.payment_method === 'instapay_qr' &&
               (order.payment_status === 'awaiting_proof' || order.payment_status === 'rejected') &&
@@ -173,17 +172,11 @@ export default function AccountOrdersPage() {
                 <div className="p-4 sm:p-6 space-y-6">
                   {/* Status Timeline */}
                   <div className="rounded-card border border-border bg-surface-2 p-4">
-                    <OrderStatusTimeline status={order.status} paymentMethod={order.payment_method} paymentStatus={order.payment_status} />
+                    <OrderStatusTimeline
+                      status={order.status}
+                      paymentStatus={order.payment_status}
+                    />
                   </div>
-
-                  {isAwaitingApproval && (
-                    <div className="rounded-card border border-border bg-surface-tint p-4 space-y-3">
-                      <p className="text-small text-text">{t('order.approval_wait')}</p>
-                      <Link to={`/pay/${order.id}`} className="inline-flex min-h-11 items-center rounded-pill border border-border bg-surface px-4 text-small font-semibold text-brand focus:outline-none focus:ring-2 focus:ring-focus">
-                        {t('order.follow_approval')}
-                      </Link>
-                    </div>
-                  )}
 
                   {/* Delivery & Shipping Information */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-card border border-border bg-surface-2 p-4">
@@ -214,7 +207,7 @@ export default function AccountOrdersPage() {
                               <Ltr>{order.tracking_number}</Ltr>
                             </span>
                           ) : (
-                            <span className="text-text-muted italic">جاري تعيين رقم الشحنة</span>
+                            <span className="text-text-muted italic">جارٍ تعيين رقم الشحنة</span>
                           )}
                         </div>
                       ) : (
@@ -223,7 +216,7 @@ export default function AccountOrdersPage() {
                             <span className="text-text-muted">مندوب التوصيل:</span>
                             <span className="font-medium text-text">
                               {order.rep_name ||
-                                (order.rep_phone ? 'مندوب لوليز' : 'جاري تعيين مندوب التوصيل')}
+                                (order.rep_phone ? 'مندوب لوليز' : 'جارٍ تعيين مندوب التوصيل')}
                             </span>
                           </div>
                           {order.rep_phone && (
@@ -353,6 +346,12 @@ export default function AccountOrdersPage() {
                         >
                           استكمال الدفع (إنستاباي)
                         </Link>
+                      )}
+
+                      {order.payment_status === 'awaiting_approval' && (
+                        <span className="text-caption text-text-muted bg-surface-2 px-3 py-1.5 rounded-pill border border-border">
+                          وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا.
+                        </span>
                       )}
 
                       {order.payment_status === 'under_review' && (

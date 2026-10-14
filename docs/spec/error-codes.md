@@ -55,6 +55,7 @@ Placeholders: `{name}` product name, `{left}` units left, `{ref}` reference id.
 | ORD-012 | بيانات العنوان غير صالحة. راجع الحقول وحاول مرة أخرى. | Length or format check failed |
 | ORD-013 | عدد المنتجات في الطلب أكبر من المسموح. | Too many lines |
 | ORD-014 | لا يمكن إعادة فتح طلب ملغي. | Admin tried to reopen a cancelled order |
+| ORD-015 | لا يمكن شحن الطلب قبل تأكيد الدفع. | Shipping an unpaid InstaPay order |
 
 ### PAY: payments
 
@@ -66,6 +67,8 @@ Placeholders: `{name}` product name, `{left}` units left, `{ref}` reference id.
 | PAY-004 | هذا الطلب لا ينتظر دفعًا الآن. | Wrong payment status for the action |
 | PAY-005 | رقم العملية مستخدم في طلب آخر. تأكد من الرقم. | Duplicate reference |
 | PAY-006 | لم نتمكن من تأكيد الدفع. يمكنك رفع إثبات جديد أو التواصل معنا. | Admin rejected the proof |
+| PAY-007 | هذا الطلب بانتظار موافقة المتجر. | Asking for payment details or sending a proof before approval |
+| PAY-008 | انتهت مهلة موافقة المتجر وتم إلغاء الطلب. | Approval window expired |
 
 ### UPL: uploads
 
@@ -137,8 +140,10 @@ Read `error.code` when present. Check these names against the current Supabase A
 | | pending limit / payment method off / address invalid / too many lines | ORD-010 / ORD-011 / ORD-012 / ORD-013 |
 | | rate limited | SYS-003 |
 | `cancel_my_order` | not owner or not pending | ORD-009 |
-| `orders_status_guard` (trigger) | reopen a cancelled order | ORD-014 |
-| `submit_payment_proof` | wrong status / expired / missing reference / duplicate reference | PAY-004 / PAY-001 / PAY-003 / PAY-005 |
+| `orders_status_guard` (trigger) | reopen a cancelled order / shipping unpaid InstaPay order | ORD-014 / ORD-015 |
+| `submit_payment_proof` | wrong status / expired / missing reference / duplicate reference / order awaiting approval | PAY-004 / PAY-001 / PAY-003 / PAY-005 / PAY-007 |
+| `get_payment_instructions` | not owner / awaiting approval | ORD-009 / PAY-007 |
+| `admin_approve_order` / `admin_reject_order` | not admin / not `aal2` / not awaiting approval | ADM-001 / ADM-002 / PAY-004 |
 | `admin_review_payment` | not admin / not `aal2` / already paid / wrong status | ADM-001 / ADM-002 / PAY-002 / PAY-004 |
 | `admin_delete_product` | ordered product | ADM-004 |
 | `admin_delete_category` | has products, no target | ADM-005 |

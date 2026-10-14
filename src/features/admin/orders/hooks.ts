@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  approveAdminOrder,
-  rejectAdminOrder,
   getAdminOrders,
   getAdminOrderById,
   updateAdminOrderStatus,
   updateAdminOrderFulfillment,
+  adminApproveOrder,
+  adminRejectOrder,
 } from './api'
 import type {
   AdminOrder,
@@ -53,18 +53,26 @@ export function useUpdateOrderFulfillment() {
   })
 }
 
-export function useReviewOrderRequest() {
+export function useAdminApproveOrder() {
   const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (request: { id: number; approve: boolean; note: string }) =>
-      request.approve
-        ? approveAdminOrder(request.id, request.note.trim() || null)
-        : rejectAdminOrder(request.id, request.note.trim()),
-    onSuccess: (_result, request) => {
-      void queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
-      void queryClient.invalidateQueries({ queryKey: ['admin-order', request.id] })
-      void queryClient.invalidateQueries({ queryKey: ['admin-payment-orders'] })
-      void queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] })
+
+  return useMutation<void, unknown, { id: number; note?: string | null }>({
+    mutationFn: ({ id, note }) => adminApproveOrder(id, note),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-order', id] })
+    },
+  })
+}
+
+export function useAdminRejectOrder() {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, unknown, { id: number; reason: string }>({
+    mutationFn: ({ id, reason }) => adminRejectOrder(id, reason),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-order', id] })
     },
   })
 }

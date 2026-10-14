@@ -1,0 +1,999 @@
+{
+  "source": "e2ff9dc329d192319ec88f3906aa32cf98bdd00a",
+  "previous": [
+    {
+      "id": "T-0.01",
+      "status": "done"
+    },
+    {
+      "id": "T-0.02",
+      "status": "done"
+    },
+    {
+      "id": "T-0.03",
+      "status": "done"
+    },
+    {
+      "id": "T-0.04",
+      "status": "done"
+    },
+    {
+      "id": "T-0.05",
+      "status": "done"
+    },
+    {
+      "id": "T-0.06",
+      "status": "done"
+    },
+    {
+      "id": "T-0.07",
+      "status": "done"
+    },
+    {
+      "id": "T-0.07b",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08b",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08f",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08c",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08g",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08d",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08e",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08h",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08i",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08j",
+      "status": "done"
+    },
+    {
+      "id": "T-0.09",
+      "status": "done"
+    },
+    {
+      "id": "T-0.10",
+      "status": "todo"
+    },
+    {
+      "id": "T-0.11",
+      "status": "todo"
+    },
+    {
+      "id": "T-0.12",
+      "status": "done"
+    },
+    {
+      "id": "T-0.13",
+      "status": "todo"
+    },
+    {
+      "id": "T-0.09b",
+      "status": "doing"
+    },
+    {
+      "id": "T-1.01",
+      "status": "done"
+    },
+    {
+      "id": "T-1.02",
+      "status": "done"
+    },
+    {
+      "id": "T-1.03",
+      "status": "done"
+    },
+    {
+      "id": "T-1.04",
+      "status": "done"
+    },
+    {
+      "id": "T-1.05",
+      "status": "done"
+    },
+    {
+      "id": "T-1.06",
+      "status": "done"
+    },
+    {
+      "id": "T-1.07",
+      "status": "done"
+    },
+    {
+      "id": "T-1.08",
+      "status": "done"
+    },
+    {
+      "id": "T-1.09",
+      "status": "done"
+    },
+    {
+      "id": "T-1.10",
+      "status": "done"
+    },
+    {
+      "id": "T-1.11",
+      "status": "todo"
+    },
+    {
+      "id": "T-1.12",
+      "status": "done"
+    },
+    {
+      "id": "T-1.13",
+      "status": "todo"
+    },
+    {
+      "id": "T-1.14",
+      "status": "done"
+    },
+    {
+      "id": "T-1.15",
+      "status": "done"
+    },
+    {
+      "id": "T-1.16",
+      "status": "done"
+    },
+    {
+      "id": "T-1.17",
+      "status": "done"
+    },
+    {
+      "id": "T-1.18",
+      "status": "done"
+    },
+    {
+      "id": "T-1.19",
+      "status": "done"
+    },
+    {
+      "id": "T-1.20",
+      "status": "done"
+    },
+    {
+      "id": "T-1.21",
+      "status": "done"
+    },
+    {
+      "id": "T-1.22",
+      "status": "done"
+    },
+    {
+      "id": "T-1.09b",
+      "status": "doing"
+    },
+    {
+      "id": "T-2.01",
+      "status": "done"
+    },
+    {
+      "id": "T-2.02",
+      "status": "done"
+    },
+    {
+      "id": "T-2.03",
+      "status": "done"
+    },
+    {
+      "id": "T-2.04",
+      "status": "done"
+    },
+    {
+      "id": "T-2.05",
+      "status": "done"
+    },
+    {
+      "id": "T-2.06",
+      "status": "done"
+    },
+    {
+      "id": "T-2.07",
+      "status": "done"
+    },
+    {
+      "id": "T-2.08",
+      "status": "done"
+    },
+    {
+      "id": "T-2.09",
+      "status": "done"
+    },
+    {
+      "id": "T-3.01",
+      "status": "done"
+    },
+    {
+      "id": "T-3.02",
+      "status": "done"
+    },
+    {
+      "id": "T-3.03",
+      "status": "done"
+    },
+    {
+      "id": "T-3.04",
+      "status": "done"
+    },
+    {
+      "id": "T-3.05",
+      "status": "done"
+    },
+    {
+      "id": "T-3.06",
+      "status": "done"
+    },
+    {
+      "id": "T-3.07",
+      "status": "done"
+    },
+    {
+      "id": "T-3.08",
+      "status": "done"
+    },
+    {
+      "id": "T-4.01",
+      "status": "done"
+    },
+    {
+      "id": "T-4.02",
+      "status": "done"
+    },
+    {
+      "id": "T-4.03",
+      "status": "done"
+    },
+    {
+      "id": "T-4.04",
+      "status": "done"
+    },
+    {
+      "id": "T-4.05",
+      "status": "done"
+    },
+    {
+      "id": "T-4.06",
+      "status": "done"
+    },
+    {
+      "id": "T-4.07",
+      "status": "done"
+    },
+    {
+      "id": "T-5.01",
+      "status": "done"
+    },
+    {
+      "id": "T-5.02",
+      "status": "done"
+    },
+    {
+      "id": "T-5.03",
+      "status": "done"
+    },
+    {
+      "id": "T-5.04",
+      "status": "done"
+    },
+    {
+      "id": "T-5.05",
+      "status": "done"
+    },
+    {
+      "id": "T-5.06",
+      "status": "done"
+    },
+    {
+      "id": "T-5.07",
+      "status": "done"
+    },
+    {
+      "id": "T-5.08",
+      "status": "done"
+    },
+    {
+      "id": "T-5.09",
+      "status": "done"
+    },
+    {
+      "id": "T-5.10",
+      "status": "todo"
+    },
+    {
+      "id": "T-5.11",
+      "status": "todo"
+    },
+    {
+      "id": "T-5.12",
+      "status": "todo"
+    },
+    {
+      "id": "T-6.01",
+      "status": "done"
+    },
+    {
+      "id": "T-6.02",
+      "status": "done"
+    },
+    {
+      "id": "T-6.03",
+      "status": "done"
+    },
+    {
+      "id": "T-7.01",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.02",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.03",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.04",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.05",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.06",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.07",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.08",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.09",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.10",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.11",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.01",
+      "status": "done"
+    },
+    {
+      "id": "T-8.02",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.03",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.04",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.05",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.06",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.07",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.08",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.09",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.10",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.11",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.01",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.02",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.03",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.04",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.05",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.06",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.07",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.08",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.09",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.10",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.11",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.12",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.13",
+      "status": "todo"
+    }
+  ],
+  "incoming": [
+    {
+      "id": "T-0.01",
+      "status": "done"
+    },
+    {
+      "id": "T-0.02",
+      "status": "done"
+    },
+    {
+      "id": "T-0.03",
+      "status": "done"
+    },
+    {
+      "id": "T-0.04",
+      "status": "done"
+    },
+    {
+      "id": "T-0.05",
+      "status": "done"
+    },
+    {
+      "id": "T-0.06",
+      "status": "done"
+    },
+    {
+      "id": "T-0.07",
+      "status": "done"
+    },
+    {
+      "id": "T-0.07b",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08b",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08f",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08c",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08g",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08d",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08e",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08h",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08i",
+      "status": "done"
+    },
+    {
+      "id": "T-0.08j",
+      "status": "done"
+    },
+    {
+      "id": "T-0.09",
+      "status": "done"
+    },
+    {
+      "id": "T-0.10",
+      "status": "todo"
+    },
+    {
+      "id": "T-0.11",
+      "status": "todo"
+    },
+    {
+      "id": "T-0.12",
+      "status": "done"
+    },
+    {
+      "id": "T-0.13",
+      "status": "todo"
+    },
+    {
+      "id": "T-1.01",
+      "status": "done"
+    },
+    {
+      "id": "T-1.02",
+      "status": "done"
+    },
+    {
+      "id": "T-1.03",
+      "status": "done"
+    },
+    {
+      "id": "T-1.04",
+      "status": "done"
+    },
+    {
+      "id": "T-1.05",
+      "status": "done"
+    },
+    {
+      "id": "T-1.06",
+      "status": "done"
+    },
+    {
+      "id": "T-1.07",
+      "status": "done"
+    },
+    {
+      "id": "T-1.08",
+      "status": "done"
+    },
+    {
+      "id": "T-1.09",
+      "status": "done"
+    },
+    {
+      "id": "T-1.10",
+      "status": "done"
+    },
+    {
+      "id": "T-1.11",
+      "status": "todo"
+    },
+    {
+      "id": "T-1.12",
+      "status": "done"
+    },
+    {
+      "id": "T-1.13",
+      "status": "todo"
+    },
+    {
+      "id": "T-1.14",
+      "status": "done"
+    },
+    {
+      "id": "T-1.15",
+      "status": "done"
+    },
+    {
+      "id": "T-1.16",
+      "status": "done"
+    },
+    {
+      "id": "T-1.17",
+      "status": "done"
+    },
+    {
+      "id": "T-1.18",
+      "status": "done"
+    },
+    {
+      "id": "T-1.19",
+      "status": "done"
+    },
+    {
+      "id": "T-1.20",
+      "status": "done"
+    },
+    {
+      "id": "T-1.21",
+      "status": "done"
+    },
+    {
+      "id": "T-1.22",
+      "status": "done"
+    },
+    {
+      "id": "T-1.23",
+      "status": "done"
+    },
+    {
+      "id": "T-2.01",
+      "status": "done"
+    },
+    {
+      "id": "T-2.02",
+      "status": "done"
+    },
+    {
+      "id": "T-2.03",
+      "status": "done"
+    },
+    {
+      "id": "T-2.04",
+      "status": "done"
+    },
+    {
+      "id": "T-2.05",
+      "status": "done"
+    },
+    {
+      "id": "T-2.06",
+      "status": "done"
+    },
+    {
+      "id": "T-2.07",
+      "status": "done"
+    },
+    {
+      "id": "T-2.08",
+      "status": "done"
+    },
+    {
+      "id": "T-2.09",
+      "status": "done"
+    },
+    {
+      "id": "T-3.01",
+      "status": "done"
+    },
+    {
+      "id": "T-3.02",
+      "status": "done"
+    },
+    {
+      "id": "T-3.03",
+      "status": "done"
+    },
+    {
+      "id": "T-3.04",
+      "status": "done"
+    },
+    {
+      "id": "T-3.05",
+      "status": "done"
+    },
+    {
+      "id": "T-3.06",
+      "status": "done"
+    },
+    {
+      "id": "T-3.07",
+      "status": "done"
+    },
+    {
+      "id": "T-3.08",
+      "status": "done"
+    },
+    {
+      "id": "T-4.01",
+      "status": "done"
+    },
+    {
+      "id": "T-4.02",
+      "status": "done"
+    },
+    {
+      "id": "T-4.03",
+      "status": "done"
+    },
+    {
+      "id": "T-4.04",
+      "status": "done"
+    },
+    {
+      "id": "T-4.05",
+      "status": "done"
+    },
+    {
+      "id": "T-4.06",
+      "status": "done"
+    },
+    {
+      "id": "T-4.07",
+      "status": "done"
+    },
+    {
+      "id": "T-5.01",
+      "status": "done"
+    },
+    {
+      "id": "T-5.02",
+      "status": "done"
+    },
+    {
+      "id": "T-5.03",
+      "status": "done"
+    },
+    {
+      "id": "T-5.04",
+      "status": "done"
+    },
+    {
+      "id": "T-5.05",
+      "status": "done"
+    },
+    {
+      "id": "T-5.06",
+      "status": "done"
+    },
+    {
+      "id": "T-5.07",
+      "status": "done"
+    },
+    {
+      "id": "T-5.08",
+      "status": "done"
+    },
+    {
+      "id": "T-5.09",
+      "status": "done"
+    },
+    {
+      "id": "T-5.10",
+      "status": "done"
+    },
+    {
+      "id": "T-5.11",
+      "status": "done"
+    },
+    {
+      "id": "T-5.12",
+      "status": "done"
+    },
+    {
+      "id": "T-6.01",
+      "status": "done"
+    },
+    {
+      "id": "T-6.02",
+      "status": "done"
+    },
+    {
+      "id": "T-6.03",
+      "status": "done"
+    },
+    {
+      "id": "T-7.01",
+      "status": "done"
+    },
+    {
+      "id": "T-7.02",
+      "status": "done"
+    },
+    {
+      "id": "T-7.03",
+      "status": "done"
+    },
+    {
+      "id": "T-7.04",
+      "status": "done"
+    },
+    {
+      "id": "T-7.05",
+      "status": "done"
+    },
+    {
+      "id": "T-7.06",
+      "status": "done"
+    },
+    {
+      "id": "T-7.07",
+      "status": "done"
+    },
+    {
+      "id": "T-7.08",
+      "status": "done"
+    },
+    {
+      "id": "T-7.09",
+      "status": "todo"
+    },
+    {
+      "id": "T-7.10",
+      "status": "done"
+    },
+    {
+      "id": "T-7.11",
+      "status": "done"
+    },
+    {
+      "id": "T-8.01",
+      "status": "done"
+    },
+    {
+      "id": "T-8.02",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.03",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.04",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.05",
+      "status": "done"
+    },
+    {
+      "id": "T-8.06",
+      "status": "done"
+    },
+    {
+      "id": "T-8.07",
+      "status": "done"
+    },
+    {
+      "id": "T-8.08",
+      "status": "done"
+    },
+    {
+      "id": "T-8.09",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.10",
+      "status": "todo"
+    },
+    {
+      "id": "T-8.11",
+      "status": "done"
+    },
+    {
+      "id": "T-9.01",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.02",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.03",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.04",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.05",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.06",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.07",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.08",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.09",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.10",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.11",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.12",
+      "status": "todo"
+    },
+    {
+      "id": "T-9.13",
+      "status": "todo"
+    }
+  ],
+  "draftFiles": [
+    "src/features/admin/orders/OrderApprovalDialog.tsx",
+    "src/features/admin/orders/api.ts",
+    "src/features/admin/orders/hooks.ts",
+    "src/features/admin/orders/orders.test.tsx",
+    "src/features/admin/orders/transitions.ts",
+    "src/features/admin/orders/types.ts",
+    "src/features/admin/orders/whatsapp.ts",
+    "src/features/checkout/types.ts",
+    "src/features/checkout/validation.ts",
+    "src/features/orders/components/OrderStatusTimeline.tsx",
+    "src/features/orders/components/PaymentStatusBadge.tsx",
+    "src/features/orders/hooks.ts",
+    "src/features/payments/api.ts",
+    "src/features/payments/hooks.ts",
+    "src/features/payments/types.ts",
+    "src/features/settings/types.ts",
+    "src/lib/errors.ts",
+    "src/pages/AccountOrdersPage.tsx",
+    "src/pages/CheckoutPage.tsx",
+    "src/pages/PayOrderPage.tsx"
+  ],
+  "decisions": [
+    "Completed approval API/UI supersedes unused WIP implementation; both retained in backup parents",
+    "Unmerged duplicate draft body removed; enum transaction retained before completed approval migration",
+    "Preserve stronger PR26 role and error-code tests, security scan coverage and both roadmap status histories",
+    "Database types must be regenerated; payment acceptance remains unproven until gates pass"
+  ]
+}

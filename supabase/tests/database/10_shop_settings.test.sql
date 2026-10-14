@@ -241,6 +241,8 @@ SELECT is(
 -- 5. Storage bucket product-images limits
 -- ============================================================================
 
+SELECT tests.authenticate_as_service_role();
+
 -- 25. product-images file_size_limit is 3 MB (3145728 bytes)
 SELECT is(
     (SELECT file_size_limit FROM storage.buckets WHERE id = 'product-images'),

@@ -135,13 +135,15 @@ export default function HomePage() {
                 <ProductImage
                   src="categories/earrings-cover.webp"
                   alt="Lolys Jewelry Hero"
+                  loading="eager"
+                  fetchPriority="high"
                   className="size-full rounded-arch"
                   imageClassName="size-full object-cover rounded-arch"
                 />
               </ArchFrame>
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -bottom-3 -right-3 rounded-pill bg-brand text-brand-contrast p-2 shadow-pill"
+                className="pointer-events-none absolute -bottom-3 -end-3 rounded-pill bg-brand text-brand-contrast p-2 shadow-pill"
               >
                 <RibbonBow className="size-6" />
               </div>

@@ -117,7 +117,10 @@
     "addressDetails": "Address details",
     "codDescription": "Cash on delivery",
     "instapayDescription": "Instant transfer via InstaPay QR",
-    "fastAndSecure": "Fast & Secure"
+    "fastAndSecure": "Fast & Secure",
+    "submit_request": "Submit Order",
+    "save_address": "Save this address for my next orders",
+    "approval_note": "We will review your order first, then send you the payment link."
   },
   "field": {
     "name": "Full Name",
@@ -145,6 +148,7 @@
     "deadline": "Payment expires in {{time}}"
   },
   "paystatus": {
+    "awaiting_approval": "Awaiting Store Approval",
     "awaiting": "Awaiting Payment",
     "review": "Under Review",
     "paid": "Payment Confirmed",
@@ -155,7 +159,8 @@
     "confirmed": "Confirmed",
     "shipped": "Shipped",
     "delivered": "Delivered",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "approval_wait": "Your order reached the shop. We will review it and send the payment link soon."
   },
   "auth": {
     "email": "Email Address",
@@ -352,7 +357,15 @@
     "confirmDelete": "Confirm Deletion",
     "categorySavedSuccess": "Category saved successfully",
     "categoryDeletedSuccess": "Category deleted successfully",
-    "categoryOrderSavedSuccess": "Category order updated successfully"
+    "categoryOrderSavedSuccess": "Category order updated successfully",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approve_whatsapp": "Approve & Send via WhatsApp",
+    "confirm_payment": "Confirm Payment",
+    "ship_blocked": "Cannot ship before payment is confirmed"
+  },
+  "whatsapp": {
+    "message": "Hello {{name}}, your order #{{order}} has been approved. Pay via the link and upload the transfer receipt: {{link}}"
   },
   "empty": {
     "search": "No results found. Try another word."
@@ -363,7 +376,8 @@
     "terms": "Terms & Conditions",
     "privacy": "Privacy Policy",
     "returns": "Return & Exchange Policy",
-    "shipping": "Shipping & Delivery"
+    "shipping": "Shipping & Delivery",
+    "contact": "Contact Us"
   },
   "seo": {
     "defaultTitle": "Lolys' Accessories & Home",
@@ -392,6 +406,7 @@
     "privacy": "Privacy Policy",
     "returns": "Return & Exchange Policy",
     "shipping": "Shipping & Delivery",
+    "contact": "Contact Us",
     "notFound": "Page Not Found"
   },
   "catalog": {

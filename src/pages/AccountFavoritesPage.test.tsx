@@ -121,7 +121,7 @@ describe('AccountFavoritesPage', () => {
 
     renderWithProviders(<AccountFavoritesPage />)
 
-    expect(screen.getByRole('status', { name: 'جاري تحميل المنتجات المفضلة' })).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: 'جارٍ تحميل المنتجات المفضلة' })).toBeInTheDocument()
   })
 
   it('renders empty state when customer has no favorites', async () => {

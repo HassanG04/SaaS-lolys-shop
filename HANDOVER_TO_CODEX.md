@@ -2,55 +2,67 @@
 
 ## Objective
 
-Completed task `T-5.09: Site settings` on branch `agent/T-5.09-admin-settings`.
+Completed roadmap task **`T-7.02: Accessibility pass`** (Phase 7, lane A, size M) on branch `agent/T-7.02-accessibility-pass`.
 
-## Completed Work in T-5.09
+---
 
-1. **Settings Types (`src/features/admin/settings/types.ts`)**:
-   - `ShopSettingsMap` defining all 16 allow-listed database settings keys: `shop_name_ar`, `shop_name_en`, `tagline_ar`, `phone`, `whatsapp`, `instagram`, `announcement_ar`, `hero_title_ar`, `hero_subtitle_ar`, `sale_percent`, `payment_methods_enabled`, `instapay_qr_path`, `instapay_handle`, `returns_text_ar`, `payment_window_hours`, `pending_order_limit`.
-   - `UpdateSettingPayload` discriminated union and `SettingsAuditEntry` schema.
-   - `SENSITIVE_SETTING_KEYS` identifying MFA Step-Up requirements.
+## Completed Architecture & Implementation (T-7.02)
 
-2. **Validators (`src/features/admin/settings/validators.ts`)**:
-   - Pure validation functions enforcing exact database contract constraints, character limits, number ranges, and regexes.
-   - `validateSettingValue` returning `{ valid: false, errorHint: 'ADM-008' }` for unknown keys and `ADM-007` for value violations.
+### 1. Playwright Axe Accessibility Audit Suite (`e2e/accessibility.spec.ts`)
 
-3. **API Layer (`src/features/admin/settings/api.ts`)**:
-   - `getAdminSettings`: queries `shop_settings` table and returns typed settings with `DEFAULT_SETTINGS` fallbacks.
-   - `updateAdminSetting`: pre-validates inputs and calls database RPC `admin_update_setting(p_key, p_value)` with Arabic error catalogue mapping (`toAppError`).
-   - `uploadInstaPayQrImage`: validates file magic bytes (JPEG/PNG/WebP <= 5 MB), resizes and re-encodes, uploads to `product-images` bucket under `settings/instapay-qr-${uuid}.${ext}`, persists path via RPC, and deletes previous custom QR image from storage (leaving default placeholder untouched).
-   - `getPublicQrUrl`: resolves public URL, falling back to `/placeholders/instapay-qr.svg` if empty or default.
-   - `getRecentSettingsAudit`: queries `audit_log` where `entity = 'shop_settings'` (latest 10 entries).
+- Created an automated axe-core audit test suite executing WCAG 2.1 Level AA and best-practice rule checks across all 9 core user views in both Light and Dark modes:
+  1. Home Page (`/`)
+  2. Category Page (`/category/all`)
+  3. Product Page (`/product/1`)
+  4. Cart Page (`/cart`)
+  5. Checkout Page (`/checkout`)
+  6. InstaPay Payment Screen (`/pay/:orderId`)
+  7. Orders Page (`/account/orders`)
+  8. Admin Products Page (`/admin/products`)
+  9. Admin Dashboard (`/admin`)
+- Verified **0 Critical** and **0 Serious** accessibility violations across all 9 pages in both themes.
+- Encapsulated reusable axe runner in `e2e/helpers/axe.ts` utilizing vendored `axe-core/axe.min.js` without adding unvetted runtime dependencies.
 
-4. **React Query Hooks (`src/features/admin/settings/hooks.ts`)**:
-   - `useAdminSettings`, `useUpdateAdminSetting`, `useUploadInstaPayQr`, and `useRecentSettingsAudit`.
-   - Invalidation synchronizes admin settings, public storefront settings (`['settings', 'public']`), and audit log query keys.
+### 2. Keyboard-Only Navigation & Modal Walkthrough
 
-5. **Settings Administration UI (`src/features/admin/settings/SettingsPage.tsx`)**:
-   - Organized into 5 tabbed sections:
-     - **معلومات المتجر والتواصل**: Names, tagline, phone, WhatsApp, Instagram link.
-     - **الواجهة الرئيسية والخصم والإعلانات**: Announcement bar, hero title, subtitle, sale discount percent, with live storefront hero badge preview.
-     - **طرق الدفع المفعلة وإنستاباي**: Payment method checkboxes, InstaPay IPA address, QR preview and replacement file picker.
-     - **الحدود التشغيلية والسياسات**: Pending order limit (1..10), InstaPay payment window (1..72 hours), returns text.
-     - **سجل تغييرات إعدادات المتجر**: Chronological audit log table with translated friendly setting names, old/new values, and actor roles.
-   - Step-Up MFA prompt integration (`useStepUp` / `StepUpDialog`) guarding payment methods, operational limits, and QR image replacement.
+- Implemented and verified comprehensive keyboard-only interaction test:
+  - Skip link (`#main-content`) focuses on initial `Tab` and jumps to `#main-content` on `Enter`.
+  - Product quantity stepper accessible via keyboard (`Enter` / `Space` on `+` increments count).
+  - "أضف إلى السلة" button focusable and activatable via `Enter`.
+  - Native HTML `<dialog>` in Admin Products traps focus via `.showModal()`, dismisses cleanly on `Escape`, and restores focus to the invoking button.
 
-6. **Route & Layout Wiring**:
-   - Added lazy route `{ path: 'settings', element: <AdminSettingsPage /> }` in `src/features/admin/AdminRoutes.tsx`.
-   - Added `'settings'` icon and navigation entry `{ to: '/admin/settings', label: t.admin.settings, icon: 'settings' }` in `src/features/admin/AdminSidebar.tsx` and `types.ts`.
+### 3. Launch Checklist & Operational Walkthrough Documentation
 
-7. **Verification & Quality**:
-   - 22 unit tests in `src/features/admin/settings/settings.test.tsx` (100% pass) testing validators, API functions, RPC calls, old QR file deletion, error mappings, step-up prompts, and UI interactions.
-   - Full test suite: **728 tests pass** (587 application tests + 141 tooling tests).
-   - Full `npm run verify` passed: `check:migrations`, `check:sql`, `check:tokens`, `check:i18n`, `lint`, `format:check`, `typecheck`, `test:unit`, `build`, `check:secrets`, and `check:bundle`.
-   - Initial JS bundle budget maintained: **199,998 / 200,000 gzip bytes** in 4 initial chunks.
-   - Roadmap updated: `T-5.09: done` (77/119 tasks completed, Phase 5: 9/12 completed).
+- Created `docs/launch-checklist.md` documenting:
+  - Automated axe audit matrix across light and dark themes.
+  - Step-by-step keyboard-only navigation walkthrough covering storefront, checkout, payments, account, and admin views.
+  - Color contrast, focus ring tokens, and form error accessibility compliance.
 
-## Next Task
+---
 
-- **T-5.10: Audit log viewer** (`/admin/audit`):
-  - Read-only table with filters (date, entity, actor, action).
-  - Readable before-and-after view.
-  - "Recent sensitive changes" panel for the dashboard.
-  - No edit or delete controls.
-  - Verification: `npm run verify`.
+## Verification Evidence
+
+- `npm run check:i18n`: PASSED (all translation keys valid, synchronized, and isolated).
+- `npm run test:e2e`: PASSED (all 36 tests pass: 10 a11y + 9 admin + 9 rtl-qa + 8 storefront).
+- `npm run verify`: PASSED cleanly:
+  - `check:migrations`: Existing migrations unchanged.
+  - `check:sql`: All migrations passed SQL guard rules.
+  - `check:tokens`: Documented colors, radii, and shadows validated.
+  - `check:i18n`: All translation keys valid and synchronized.
+  - `lint`: 0 errors.
+  - `format:check`: Prettier passed.
+  - `typecheck`: TypeScript passed with 0 errors.
+  - `test:unit`: **648 application tests + 143 tooling tests (791 total) passed**.
+  - `build`: Production build succeeded.
+  - `check:secrets`: Zero secrets leaked.
+  - `check:bundle`: **199,793 / 200,000 gzip bytes** in 4 initial chunks.
+
+---
+
+## Next Task (per Roadmap)
+
+- **T-7.03: Performance pass** (`size: M`, `owner: agent`):
+  - Meet the budgets: initial JS 200 KB gzip or less, largest contentful paint 2.5 s or less on throttled mobile for Home and Category (local preview), no image layout shift, route-level code splitting verified, fonts subset and preloaded.
+  - Document image guidelines (WebP, about 1200 px, about 200 KB).
+  - Done when: `check:bundle` enforces the JS budget; measurements are recorded in the PR.
+  - Verify: `npm run build && npm run check:bundle`

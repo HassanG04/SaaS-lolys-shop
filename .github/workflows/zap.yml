@@ -1,0 +1,71 @@
+name: OWASP ZAP Baseline Scan (Staging)
+
+on:
+  schedule:
+    # Run every Monday at 04:00 UTC
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: 'Target staging URL to scan (must be staging/preview, never production)'
+        required: false
+        default: 'https://staging.lolys.pages.dev'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zap-baseline-scan
+  cancel-in-progress: false
+
+jobs:
+  zap-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Validate Staging Target
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET="${{ inputs.target_url || vars.STAGING_SITE_URL || 'https://staging.lolys.pages.dev' }}"
+          echo "Evaluating target URL: $TARGET"
+
+          if [ -z "$TARGET" ]; then
+            echo "::error::Target URL is empty. Must provide a valid staging URL."
+            exit 1
+          fi
+
+          # Strictly reject production domains (lolys.com or root production pages.dev)
+          if echo "$TARGET" | grep -Ei '^(https?://)?(www\.)?lolys\.com' > /dev/null || \
+             ( echo "$TARGET" | grep -Ei 'lolys\.pages\.dev' > /dev/null && ! echo "$TARGET" | grep -Ei '(staging|preview|[a-f0-9]{8})' > /dev/null ); then
+            echo "::error::Target appears to be production! ZAP baseline scan is strictly prohibited against production."
+            exit 1
+          fi
+
+          echo "TARGET_URL=$TARGET" >> "$GITHUB_ENV"
+
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
+        with:
+          target: ${{ env.TARGET_URL }}
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+          allow_issue_writing: false
+          fail_action: true
+          artifact_name: 'zap-baseline-report'
+
+      - name: Upload ZAP Scan Reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: zap-scan-report
+          path: |
+            report_html.html
+            report_md.md
+            report_json.json
+          retention-days: 30
+          if-no-files-found: warn

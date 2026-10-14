@@ -2,12 +2,20 @@ import { useMemo, useState } from 'react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { PearlLoader } from '@/components/ui/PearlLoader'
+import { Ltr } from '@/components/ui/Ltr'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatEGP, formatNumber } from '@/lib/format'
+import {
+  ExportCsvButton,
+  formatCustomersCsv,
+  downloadCsv,
+  getExportFilename,
+} from '@/features/admin/export'
 import { useCustomerStats } from './hooks'
 
 export default function CustomersPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const isAr = lang === 'ar'
   const [searchQuery, setSearchQuery] = useState('')
   const { data: customers, isLoading, error, refetch } = useCustomerStats()
 
@@ -40,6 +48,18 @@ export default function CustomersPage() {
             )}
           </div>
           <p className="mt-1 text-body text-(--color-text-muted)">{t.admin.customersDesc}</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <ExportCsvButton
+            onExport={() => {
+              const filename = getExportFilename('customers')
+              const csv = formatCustomersCsv(customers || [], lang)
+              downloadCsv(csv, filename)
+            }}
+            successMessage={isAr ? 'تم تصدير ملف العملاء بنجاح' : 'Customers exported successfully'}
+            disabled={isLoading || !customers || customers.length === 0}
+          />
         </div>
       </div>
 
@@ -150,7 +170,7 @@ export default function CustomersPage() {
 
                   {/* Phone */}
                   <td className="px-4 py-4 text-(--color-text-muted)">
-                    {customer.phone ? <span dir="ltr">{customer.phone}</span> : '—'}
+                    {customer.phone ? <Ltr>{customer.phone}</Ltr> : '—'}
                   </td>
 
                   {/* Role (Read-only Badge: No create, promote or demote UI) */}

@@ -117,7 +117,10 @@
     "addressDetails": "تفاصيل العنوان",
     "codDescription": "الدفع نقدًا عند الاستلام",
     "instapayDescription": "تحويل فوري عبر إنستاباي (QR)",
-    "fastAndSecure": "سريع وآمن"
+    "fastAndSecure": "سريع وآمن",
+    "submit_request": "إرسال الطلب",
+    "save_address": "احفظ هذا العنوان لطلباتي القادمة",
+    "approval_note": "سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع."
   },
   "field": {
     "name": "الاسم الكامل",
@@ -145,6 +148,7 @@
     "deadline": "ينتهي وقت الدفع خلال {{time}}"
   },
   "paystatus": {
+    "awaiting_approval": "بانتظار موافقة المتجر",
     "awaiting": "بانتظار الدفع",
     "review": "قيد المراجعة",
     "paid": "تم تأكيد الدفع",
@@ -155,7 +159,8 @@
     "confirmed": "تم التأكيد",
     "shipped": "تم الشحن",
     "delivered": "تم التسليم",
-    "cancelled": "ملغي"
+    "cancelled": "ملغي",
+    "approval_wait": "وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا."
   },
   "auth": {
     "email": "البريد الإلكتروني",
@@ -278,7 +283,7 @@
     "noGovernorateData": "لا توجد بيانات محافظات",
     "noTopProducts": "لا توجد مبيعات منتجات في هذه الفترة",
     "noTopCustomers": "لا توجد طلبات عملاء في هذه الفترة",
-    "dashboardLoading": "جاري تحميل بيانات لوحة التحكم...",
+    "dashboardLoading": "جارٍ تحميل بيانات لوحة التحكم...",
     "dashboardError": "تعذر تحميل بيانات لوحة التحكم",
     "retry": "إعادة المحاولة",
     "exportCsv": "تصدير CSV",
@@ -352,7 +357,15 @@
     "confirmDelete": "تأكيد الحذف",
     "categorySavedSuccess": "تم حفظ القسم بنجاح",
     "categoryDeletedSuccess": "تم حذف القسم بنجاح",
-    "categoryOrderSavedSuccess": "تم تحديث ترتيب الأقسام"
+    "categoryOrderSavedSuccess": "تم تحديث ترتيب الأقسام",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "approve_whatsapp": "موافقة وإرسال عبر واتساب",
+    "confirm_payment": "تأكيد الدفع",
+    "ship_blocked": "لا يمكن الشحن قبل تأكيد الدفع"
+  },
+  "whatsapp": {
+    "message": "أهلًا {{name}}، تمت الموافقة على طلبك رقم {{order}}. ادفع عبر الرابط وارفع صورة التحويل: {{link}}"
   },
   "empty": {
     "search": "لا توجد نتائج. جرّب كلمة أخرى."
@@ -363,7 +376,8 @@
     "terms": "الشروط والأحكام",
     "privacy": "سياسة الخصوصية",
     "returns": "سياسة الاستبدال والاسترجاع",
-    "shipping": "الشحن والتوصيل"
+    "shipping": "الشحن والتوصيل",
+    "contact": "تواصل معنا"
   },
   "seo": {
     "defaultTitle": "Lolys' Accessories & Home",
@@ -392,6 +406,7 @@
     "privacy": "سياسة الخصوصية",
     "returns": "سياسة الاستبدال والاسترجاع",
     "shipping": "الشحن والتوصيل",
+    "contact": "تواصل معنا",
     "notFound": "الصفحة غير موجودة"
   },
   "catalog": {

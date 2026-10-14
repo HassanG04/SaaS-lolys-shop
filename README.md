@@ -116,3 +116,8 @@ acceptance criteria. The compatible toolchain is recorded in [ADR-0001](docs/adr
 - [Error catalogue](docs/spec/error-codes.md)
 - [Analytics plan](docs/spec/analytics-plan.md)
 - [Planned runbooks](docs/runbooks/README.md)
+
+## Operations references
+
+is not committed. See [planned runbooks](docs/runbooks/README.md) and
+For routine shop management, inventory reorder forecasts, audit log inspections, backup archiving, and emergency escalation, see the [Weekly Operations Runbook](docs/runbooks/weekly.md).

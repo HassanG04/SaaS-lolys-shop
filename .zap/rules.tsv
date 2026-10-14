@@ -1,0 +1,27 @@
+# OWASP ZAP Baseline Scan Rules Configuration
+# Format: <rule-id>\t<ACTION>\t<COMMENT>
+# Valid actions: IGNORE, INFO, WARN, FAIL, DEFAULT
+#
+# High-severity security controls (must FAIL on violation)
+10021	FAIL	(X-Content-Type-Options Header Missing) Strictly enforced as nosniff in _headers
+10035	FAIL	(Strict-Transport-Security Header Not Set) Strictly enforced HSTS in _headers
+10038	FAIL	(Content Security Policy (CSP) Header Not Set) Strictly enforced CSP in _headers
+10049	FAIL	(Content-Type Header Missing) All responses must declare Content-Type
+90022	FAIL	(Application Error Disclosure) Raw application error messages strictly forbidden (SEC-05 / T-2.08)
+
+# Warnings for security and privacy headers
+10063	WARN	(Permissions Policy Header Not Set) Documented in public/_headers
+10054	WARN	(Cookie Without SameSite Attribute) Monitored for third-party scripts (Cloudflare Turnstile)
+
+# Informational / Low-priority observations
+10015	INFO	(Re-examine Cache-control Directives) Static assets use Vite content hashes; API calls use Supabase SDK
+10027	INFO	(Information Disclosure - Suspicious Comments) Checked via check:secrets and Semgrep
+10037	INFO	(Server Leaks Information via "Server" HTTP Response Header Field) Managed by Cloudflare CDN edge
+10055	INFO	(CSP: CSP Header within <meta> tag) CSP is delivered via HTTP response headers
+10096	INFO	(Timestamp Disclosure) Benign build timestamps in static chunks
+10098	INFO	(Cross-Domain Misconfiguration) Cross-origin resources restricted by CSP
+10109	INFO	(Modern Web Application) Single Page Application (SPA) architecture
+
+# Triaged and ignored findings (with rationale)
+10020	IGNORE	(Anti-CSRF Tokens Check) SPA architecture using Supabase Bearer JWT tokens in Authorization headers; no cookie-based form submissions
+10202	IGNORE	(Absence of Anti-CSRF Tokens) Client-side React forms talk to API via Bearer token authorization; CSRF tokens not applicable

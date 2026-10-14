@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import * as authApi from './api'
-import { useAuth } from './AuthProvider'
+import { AuthContext } from './AuthProvider'
 import type { AuthActionResult, AuthErrorCode } from './types'
 
 // In-memory timestamp and callback storage only (NEVER written to localStorage, sessionStorage, or cookies)
@@ -24,7 +24,7 @@ export function clearStepUpMemory(): void {
 }
 
 export function useStepUp() {
-  const { factors, refreshFactors } = useAuth()
+  const authContext = useContext(AuthContext)
   const [isConfirmed, setIsConfirmed] = useState<boolean>(() => isStepUpActive())
   const [dialogOpen, setDialogOpen] = useState(false)
   const [errorCode, setErrorCode] = useState<AuthErrorCode | null>(null)
@@ -66,9 +66,9 @@ export function useStepUp() {
       setErrorCode(null)
 
       try {
-        let currentFactors = factors
-        if (currentFactors.length === 0) {
-          currentFactors = await refreshFactors()
+        let currentFactors = authContext?.factors ?? []
+        if (currentFactors.length === 0 && authContext?.refreshFactors) {
+          currentFactors = await authContext.refreshFactors()
         }
 
         const targetFactor =
@@ -106,7 +106,7 @@ export function useStepUp() {
         setSubmitting(false)
       }
     },
-    [factors, pendingAction, refreshFactors],
+    [authContext, pendingAction],
   )
 
   const withStepUp = useCallback(

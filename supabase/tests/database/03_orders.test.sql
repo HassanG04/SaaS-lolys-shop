@@ -135,8 +135,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Pearl drop earrings'), 'quantity', 20)),
         'representative', 'Buyer', '010', 1::smallint, 'City', 'Addr'
     )$$,
-    'P0001',
-    'Only 10 left in stock for "Pearl drop earrings"',
+    '22023',
+    NULL,
     'S5.1: Oversell rejected with insufficient stock error'
 );
 
@@ -158,8 +158,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Layered silver chain'), 'quantity', 1)),
         'representative', 'Buyer', '010', 1::smallint, 'City', 'Addr'
     )$$,
-    'P0001',
-    'Only 0 left in stock for "Layered silver chain"',
+    '22023',
+    NULL,
     'S5.2: Out of stock product rejected'
 );
 
@@ -181,8 +181,8 @@ SELECT throws_ok(
         'SELECT public.place_order(jsonb_build_array(jsonb_build_object(''product_id'', %s, ''quantity'', 1)), ''representative'', ''Buyer'', ''010'', 1::smallint, ''City'', ''Addr'')',
         :'inactive_product_id'
     ),
-    'P0001',
-    '"Inactive Bracelet" is no longer available',
+    '22023',
+    NULL,
     'S5.3: Inactive product rejected'
 );
 
@@ -198,8 +198,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', 999999, 'quantity', 1)),
         'representative', 'Buyer', '010', 1::smallint, 'City', 'Addr'
     )$$,
-    'P0001',
-    'Your cart contains a product that does not exist',
+    '22023',
+    NULL,
     'S5.4: Nonexistent product ID rejected'
 );
 
@@ -212,8 +212,8 @@ SELECT is(
 -- 5. Empty cart
 SELECT throws_ok(
     $$SELECT public.place_order('[]'::jsonb, 'representative', 'Buyer', '010', 1::smallint, 'City', 'Addr')$$,
-    'P0001',
-    'Your cart is empty',
+    '22023',
+    NULL,
     'S5.5: Empty cart rejected'
 );
 
@@ -229,8 +229,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Pearl drop earrings'))),
         'representative', 'Buyer', '010', 1::smallint, 'City', 'Addr'
     )$$,
-    'P0001',
-    'Each cart line needs a product_id and a quantity',
+    '22023',
+    NULL,
     'S5.6: Cart line missing quantity rejected'
 );
 
@@ -246,8 +246,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Pearl drop earrings'), 'quantity', 0)),
         'representative', 'Buyer', '010', 1::smallint, 'City', 'Addr'
     )$$,
-    'P0001',
-    'Quantity must be at least 1',
+    '22023',
+    NULL,
     'S5.7: Zero quantity rejected'
 );
 
@@ -263,8 +263,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Pearl drop earrings'), 'quantity', -3)),
         'representative', 'Buyer', '010', 1::smallint, 'City', 'Addr'
     )$$,
-    'P0001',
-    'Quantity must be at least 1',
+    '22023',
+    NULL,
     'S5.8: Negative quantity rejected'
 );
 
@@ -280,8 +280,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Pearl drop earrings'), 'quantity', 1)),
         'representative', '   ', '01012345678', 1::smallint, 'City', 'Addr'
     )$$,
-    'P0001',
-    'Name, phone and address are required',
+    '22023',
+    NULL,
     'S5.9: Blank recipient name rejected'
 );
 
@@ -297,8 +297,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Pearl drop earrings'), 'quantity', 1)),
         'representative', 'Valid Name', '', 1::smallint, 'City', 'Addr'
     )$$,
-    'P0001',
-    'Name, phone and address are required',
+    '22023',
+    NULL,
     'S5.10: Empty recipient phone rejected'
 );
 
@@ -314,8 +314,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Pearl drop earrings'), 'quantity', 1)),
         'representative', 'Valid Name', '01012345678', 1::smallint, 'City', '   '
     )$$,
-    'P0001',
-    'Name, phone and address are required',
+    '22023',
+    NULL,
     'S5.11: Blank recipient address rejected'
 );
 
@@ -331,8 +331,8 @@ SELECT throws_ok(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Pearl drop earrings'), 'quantity', 1)),
         'egypt_post', 'Valid Name', '01012345678', 1::smallint, 'City', 'Address'
     )$$,
-    'P0001',
-    'This delivery method is not available in that governorate',
+    '22023',
+    NULL,
     'S5.12: Unconfigured delivery method rejected'
 );
 

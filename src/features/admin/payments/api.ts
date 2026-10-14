@@ -85,7 +85,7 @@ export async function adminReviewPayment(payload: ReviewPaymentPayload): Promise
     const { error } = await supabase.rpc('admin_review_payment', {
       p_order_id: payload.orderId,
       p_approve: payload.approve,
-      p_note: payload.note ? payload.note.trim() : null,
+      p_note: (payload.note ? payload.note.trim() : null) as unknown as string,
     })
 
     if (error) {

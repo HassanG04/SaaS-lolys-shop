@@ -130,7 +130,7 @@ export async function deleteAdminCategory(
   try {
     const { error } = await supabase.rpc('admin_delete_category', {
       p_id: categoryId,
-      p_move_to: moveToId ?? null,
+      p_move_to: moveToId ?? undefined,
     })
 
     if (error) throw toAppError(error)

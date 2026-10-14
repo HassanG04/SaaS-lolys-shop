@@ -1,5 +1,4 @@
 import type { PaymentStatus } from '../types'
-import { useLanguage } from '@/i18n/LanguageProvider'
 
 interface PaymentStatusBadgeProps {
   status: PaymentStatus
@@ -12,15 +11,15 @@ interface BadgeConfig {
 }
 
 const BADGE_MAP: Record<PaymentStatus, BadgeConfig> = {
-  awaiting_approval: {
-    label: '',
-    className: 'border-warning bg-surface-tint text-warning',
-    dotClass: 'bg-warning',
-  },
   unpaid: {
     label: 'غير مدفوع',
     className: 'border-border bg-surface-2 text-text-muted',
     dotClass: 'bg-text-muted',
+  },
+  awaiting_approval: {
+    label: 'بانتظار موافقة المتجر',
+    className: 'border-warning bg-surface-tint text-warning',
+    dotClass: 'bg-warning',
   },
   awaiting_proof: {
     label: 'بانتظار إيصال الدفع',
@@ -45,7 +44,6 @@ const BADGE_MAP: Record<PaymentStatus, BadgeConfig> = {
 }
 
 export function PaymentStatusBadge({ status }: PaymentStatusBadgeProps) {
-  const { t } = useLanguage()
   const config = BADGE_MAP[status] || BADGE_MAP.unpaid
 
   return (
@@ -53,7 +51,7 @@ export function PaymentStatusBadge({ status }: PaymentStatusBadgeProps) {
       className={`inline-flex items-center gap-1.5 rounded-pill border px-2.5 py-0.5 text-caption font-semibold ${config.className}`}
     >
       <span className={`size-1.5 rounded-pill ${config.dotClass}`} aria-hidden="true" />
-      <span>{status === 'awaiting_approval' ? t('paystatus.awaiting_approval') : config.label}</span>
+      <span>{config.label}</span>
     </span>
   )
 }

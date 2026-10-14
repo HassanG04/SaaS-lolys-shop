@@ -5,7 +5,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '@/i18n/LanguageProvider'
 import { ToastProvider } from '@/components/ui/ToastProvider'
-import { getAllowedTransitions, isTransitionAllowed, ORDER_STATUS_LABELS } from './transitions'
+import {
+  getAllowedTransitions,
+  isTransitionAllowed,
+  ORDER_STATUS_LABELS,
+  formatEgyptianPhoneForWhatsApp,
+  getOrderWhatsAppApprovalUrl,
+} from './transitions'
 import * as api from './api'
 import OrdersPage from './OrdersPage'
 import { getSupabase } from '@/lib/supabase'
@@ -44,7 +50,6 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: null,
     paid_at: null,
-    approval_note: null,
     payment_review_note: null,
     order_items: [
       {
@@ -93,7 +98,6 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: '2026-10-11T15:00:00Z',
     paid_at: '2026-10-11T16:00:00Z',
-    approval_note: null,
     payment_review_note: 'Verified with bank SMS',
     order_items: [
       {
@@ -142,7 +146,6 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: '2026-10-10T10:00:00Z',
     paid_at: '2026-10-10T11:00:00Z',
-    approval_note: null,
     payment_review_note: null,
     order_items: [],
   },
@@ -177,7 +180,6 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: null,
     paid_at: '2026-10-09T18:00:00Z',
-    approval_note: null,
     payment_review_note: null,
     order_items: [],
   },
@@ -212,7 +214,74 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: null,
     paid_at: null,
-    approval_note: null,
+    payment_review_note: null,
+    order_items: [],
+  },
+  {
+    id: 106,
+    user_id: 'user-6',
+    created_at: '2026-10-12T11:00:00Z',
+    updated_at: '2026-10-12T11:00:00Z',
+    status: 'pending',
+    payment_status: 'awaiting_approval',
+    payment_method: 'instapay_qr',
+    delivery_method: 'egypt_post',
+    subtotal: 450,
+    shipping_fee: 50,
+    total: 500,
+    ship_name: 'ريم طارق',
+    ship_phone: '01011223344',
+    ship_alt_phone: null,
+    ship_governorate: 'القاهرة',
+    ship_city: 'المعادي',
+    ship_district: null,
+    ship_address: 'شارع النصر',
+    ship_floor: null,
+    ship_apartment: null,
+    ship_landmark: null,
+    notes: null,
+    tracking_number: null,
+    rep_name: null,
+    rep_phone: null,
+    payment_reference: null,
+    payment_proof_path: null,
+    payment_deadline: null,
+    payment_submitted_at: null,
+    paid_at: null,
+    payment_review_note: null,
+    order_items: [],
+  },
+  {
+    id: 107,
+    user_id: 'user-7',
+    created_at: '2026-10-12T11:30:00Z',
+    updated_at: '2026-10-12T11:30:00Z',
+    status: 'confirmed',
+    payment_status: 'awaiting_proof',
+    payment_method: 'instapay_qr',
+    delivery_method: 'egypt_post',
+    subtotal: 450,
+    shipping_fee: 50,
+    total: 500,
+    ship_name: 'هبة خالد',
+    ship_phone: '01122334455',
+    ship_alt_phone: null,
+    ship_governorate: 'الجيزة',
+    ship_city: 'الدقي',
+    ship_district: null,
+    ship_address: 'شارع التحرير',
+    ship_floor: null,
+    ship_apartment: null,
+    ship_landmark: null,
+    notes: null,
+    tracking_number: null,
+    rep_name: null,
+    rep_phone: null,
+    payment_reference: null,
+    payment_proof_path: null,
+    payment_deadline: new Date(Date.now() + 3600_000).toISOString(),
+    payment_submitted_at: null,
+    paid_at: null,
     payment_review_note: null,
     order_items: [],
   },
@@ -290,6 +359,73 @@ describe('T-5.05 Orders Administration', () => {
       expect(isTransitionAllowed('pending', 'pending')).toBe(false)
       expect(isTransitionAllowed('confirmed', 'confirmed')).toBe(false)
     })
+
+    it('enforces ORD-015 by blocking shipped/delivered for unpaid InstaPay orders', () => {
+      // Unpaid InstaPay cannot be shipped or delivered
+      expect(
+        getAllowedTransitions('confirmed', {
+          payment_method: 'instapay_qr',
+          payment_status: 'awaiting_proof',
+        }),
+      ).toEqual(['cancelled'])
+
+      expect(
+        isTransitionAllowed('confirmed', 'shipped', {
+          payment_method: 'instapay_qr',
+          payment_status: 'awaiting_proof',
+        }),
+      ).toBe(false)
+
+      // Paid InstaPay can proceed to shipped
+      expect(
+        getAllowedTransitions('confirmed', {
+          payment_method: 'instapay_qr',
+          payment_status: 'paid',
+        }),
+      ).toEqual(['shipped', 'cancelled'])
+
+      expect(
+        isTransitionAllowed('confirmed', 'shipped', {
+          payment_method: 'instapay_qr',
+          payment_status: 'paid',
+        }),
+      ).toBe(true)
+    })
+
+    it('blocks standard transitions when payment_status is awaiting_approval', () => {
+      expect(
+        getAllowedTransitions('pending', {
+          payment_method: 'instapay_qr',
+          payment_status: 'awaiting_approval',
+        }),
+      ).toEqual([])
+
+      expect(
+        isTransitionAllowed('pending', 'confirmed', {
+          payment_method: 'instapay_qr',
+          payment_status: 'awaiting_approval',
+        }),
+      ).toBe(false)
+    })
+
+    it('formats Egyptian phone numbers correctly for WhatsApp', () => {
+      expect(formatEgyptianPhoneForWhatsApp('01012345678')).toBe('201012345678')
+      expect(formatEgyptianPhoneForWhatsApp('+201012345678')).toBe('201012345678')
+      expect(formatEgyptianPhoneForWhatsApp('201012345678')).toBe('201012345678')
+      expect(formatEgyptianPhoneForWhatsApp('012-345-67890')).toBe('201234567890')
+    })
+
+    it('generates WhatsApp approval URL with customer phone, order #, and pay link', () => {
+      const url = getOrderWhatsAppApprovalUrl({
+        id: 106,
+        ship_name: 'ريم طارق',
+        ship_phone: '01011223344',
+      })
+      expect(url).toContain('https://wa.me/201011223344?text=')
+      expect(url).toContain(encodeURIComponent('ريم طارق'))
+      expect(url).toContain(encodeURIComponent('#106'))
+      expect(url).toContain(encodeURIComponent('/pay/106'))
+    })
   })
 
   describe('API Layer (api.ts)', () => {
@@ -300,7 +436,7 @@ describe('T-5.05 Orders Administration', () => {
       vi.spyOn(getSupabase(), 'from').mockReturnValue({ select: selectMock } as never)
 
       const result = await api.getAdminOrders()
-      expect(result).toHaveLength(5)
+      expect(result).toHaveLength(mockOrders.length)
       expect(getSupabase().from).toHaveBeenCalledWith('orders')
     })
 
@@ -383,6 +519,28 @@ describe('T-5.05 Orders Administration', () => {
         expect((err as AppError).message).toBe('لا يمكن إعادة فتح طلب ملغي.')
       }
     })
+
+    it('calls admin_approve_order RPC with order ID and note', async () => {
+      const rpcMock = vi.fn().mockResolvedValue({ error: null })
+      vi.spyOn(getSupabase(), 'rpc').mockImplementation(rpcMock as never)
+
+      await api.adminApproveOrder(106, 'Approved manually')
+      expect(rpcMock).toHaveBeenCalledWith('admin_approve_order', {
+        p_order_id: 106,
+        p_note: 'Approved manually',
+      })
+    })
+
+    it('calls admin_reject_order RPC with order ID and reason', async () => {
+      const rpcMock = vi.fn().mockResolvedValue({ error: null })
+      vi.spyOn(getSupabase(), 'rpc').mockImplementation(rpcMock as never)
+
+      await api.adminRejectOrder(106, 'Customer uncontactable')
+      expect(rpcMock).toHaveBeenCalledWith('admin_reject_order', {
+        p_order_id: 106,
+        p_reason: 'Customer uncontactable',
+      })
+    })
   })
 
   describe('OrdersPage UI Rendering & Interactions', () => {
@@ -393,7 +551,7 @@ describe('T-5.05 Orders Administration', () => {
 
       // Header and count
       expect(await screen.findByRole('heading', { name: 'إدارة الطلبات' })).toBeInTheDocument()
-      expect(await screen.findByText('5 طلب')).toBeInTheDocument()
+      expect(await screen.findByText(`${mockOrders.length} طلب`)).toBeInTheDocument()
 
       // Order IDs and customer names
       expect(screen.getByText('#101')).toBeInTheDocument()
@@ -626,6 +784,113 @@ describe('T-5.05 Orders Administration', () => {
           tracking_number: 'POST-123456',
         })
       })
+    })
+
+    it('approves order and opens WhatsApp with prefilled message', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(api, 'getAdminOrders').mockResolvedValue(mockOrders)
+      const approveSpy = vi.spyOn(api, 'adminApproveOrder').mockResolvedValue(undefined)
+      const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+
+      renderWithProviders(<OrdersPage />)
+      await screen.findByRole('heading', { name: 'إدارة الطلبات' })
+
+      // Order #106 has 'awaiting_approval' -> Action button is "مراجعة وموافقة"
+      const reviewBtn = await screen.findByRole('button', { name: 'مراجعة وموافقة' })
+      expect(reviewBtn).toBeInTheDocument()
+      await user.click(reviewBtn)
+
+      // Detail modal opens with approval options
+      expect(await screen.findByRole('heading', { name: 'تفاصيل الطلب #106' })).toBeInTheDocument()
+      expect(screen.getByText(/طلب إنستاباي جديد بانتظار موافقة المتجر/)).toBeInTheDocument()
+
+      const waBtn = screen.getByRole('button', { name: 'موافقة وإرسال عبر واتساب' })
+      await user.click(waBtn)
+
+      await waitFor(() => {
+        expect(approveSpy).toHaveBeenCalledWith(106, undefined)
+        expect(openSpy).toHaveBeenCalledWith(
+          expect.stringContaining('https://wa.me/201011223344?text='),
+          '_blank',
+        )
+      })
+    })
+
+    it('approves order without WhatsApp', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(api, 'getAdminOrders').mockResolvedValue(mockOrders)
+      const approveSpy = vi.spyOn(api, 'adminApproveOrder').mockResolvedValue(undefined)
+
+      renderWithProviders(<OrdersPage />)
+      await screen.findByRole('heading', { name: 'إدارة الطلبات' })
+
+      await user.click(await screen.findByText('#106'))
+      expect(await screen.findByRole('heading', { name: 'تفاصيل الطلب #106' })).toBeInTheDocument()
+
+      const approveOnlyBtn = screen.getByRole('button', { name: 'موافقة فقط' })
+      await user.click(approveOnlyBtn)
+
+      await waitFor(() => {
+        expect(approveSpy).toHaveBeenCalledWith(106, undefined)
+      })
+    })
+
+    it('rejects order with mandatory reason via OrderRejectDialog', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(api, 'getAdminOrders').mockResolvedValue(mockOrders)
+      const rejectSpy = vi.spyOn(api, 'adminRejectOrder').mockResolvedValue(undefined)
+
+      renderWithProviders(<OrdersPage />)
+      await screen.findByRole('heading', { name: 'إدارة الطلبات' })
+
+      await user.click(await screen.findByText('#106'))
+      expect(await screen.findByRole('heading', { name: 'تفاصيل الطلب #106' })).toBeInTheDocument()
+
+      const rejectBtn = screen.getByRole('button', { name: 'رفض الطلب' })
+      await user.click(rejectBtn)
+
+      // Reject dialog opens
+      expect(await screen.findByRole('heading', { name: 'رفض الطلب #106' })).toBeInTheDocument()
+      expect(
+        screen.getByText(/تنبيه: سيتم إلغاء الطلب واسترجاع المنتجات إلى المخزون/),
+      ).toBeInTheDocument()
+
+      const confirmBtn = screen.getByRole('button', { name: 'تأكيد الرفض والإلغاء' })
+      expect(confirmBtn).toBeDisabled()
+
+      // Fill reason
+      const reasonInput = screen.getByLabelText(/سبب الرفض/)
+      await user.type(reasonInput, 'تعذر التواصل مع العميل لتأكيد البيانات')
+      expect(confirmBtn).not.toBeDisabled()
+
+      await user.click(confirmBtn)
+
+      await waitFor(() => {
+        expect(rejectSpy).toHaveBeenCalledWith(106, 'تعذر التواصل مع العميل لتأكيد البيانات')
+      })
+    })
+
+    it('enforces ORD-015 in UI by hiding ship button and showing warning for unpaid InstaPay orders', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(api, 'getAdminOrders').mockResolvedValue(mockOrders)
+
+      renderWithProviders(<OrdersPage />)
+      await screen.findByRole('heading', { name: 'إدارة الطلبات' })
+
+      // Open Order #107 (confirmed, instapay_qr, awaiting_proof)
+      await user.click(await screen.findByText('#107'))
+      expect(await screen.findByRole('heading', { name: 'تفاصيل الطلب #107' })).toBeInTheDocument()
+
+      // Shows ORD-015 warning notice
+      expect(
+        screen.getByText(/تنبيه: لا يمكن شحن طلب إنستاباي قبل تأكيد استلام الدفع \(ORD-015\)\./),
+      ).toBeInTheDocument()
+
+      // "شحن الطلب" must not be present
+      expect(screen.queryByRole('button', { name: 'شحن الطلب' })).not.toBeInTheDocument()
+
+      // Cancellation is still permitted
+      expect(screen.getByRole('button', { name: 'إلغاء الطلب' })).toBeInTheDocument()
     })
   })
 })

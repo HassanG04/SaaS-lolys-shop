@@ -8,14 +8,19 @@ import type { Json } from '@/types/database.types'
  * Maps PostgREST errors and database exception hints (ORD-xxx, AUTH-xxx, SYS-xxx) through toAppError.
  */
 export async function placeOrderApi(params: PlaceOrderParams): Promise<number> {
-  const { items, delivery_method, payment_method, ship } = params
+  const { items, delivery_method, payment_method, ship, save_address } = params
 
   try {
+    const shipPayload = {
+      ...(typeof ship === 'object' && ship !== null ? ship : {}),
+      save_address: save_address ?? true,
+    }
+
     const { data, error } = await supabase.rpc('place_order', {
       p_items: items as unknown as Json,
       p_delivery_method: delivery_method,
       p_payment_method: payment_method,
-      p_ship: ship as unknown as Json,
+      p_ship: shipPayload as unknown as Json,
     })
 
     if (error) {

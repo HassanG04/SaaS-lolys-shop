@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { PaymentStatusBadge } from '@/features/orders/components/PaymentStatusBadge'
 import { formatEGP, formatDate } from '@/lib/format'
 import { useLanguage } from '@/i18n/LanguageProvider'
+import { Ltr } from '@/components/ui/Ltr'
 import { useAdminPaymentOrders } from './hooks'
 import { ProofViewerModal } from './ProofViewerModal'
 import { PaymentReviewDialog } from './PaymentReviewDialog'
@@ -214,7 +215,9 @@ export default function PaymentsPage() {
                     >
                       {/* Order ID & Date */}
                       <td className="px-4 py-3 font-semibold text-brand whitespace-nowrap">
-                        <div>#{order.id}</div>
+                        <div>
+                          <Ltr>#{order.id}</Ltr>
+                        </div>
                         <div className="text-caption font-normal text-text-muted">
                           {formatDate(order.created_at, undefined, lang)}
                         </div>
@@ -223,7 +226,9 @@ export default function PaymentsPage() {
                       {/* Customer Info */}
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="font-medium text-text">{order.ship_name}</div>
-                        <div className="text-caption text-text-muted">{order.ship_phone}</div>
+                        <div className="text-caption text-text-muted">
+                          <Ltr>{order.ship_phone}</Ltr>
+                        </div>
                       </td>
 
                       {/* Amount */}

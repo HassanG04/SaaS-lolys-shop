@@ -7,16 +7,24 @@ import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { PaymentStatusBadge } from '@/features/orders/components/PaymentStatusBadge'
 import { formatEGP, formatDate } from '@/lib/format'
 import { useLanguage } from '@/i18n/LanguageProvider'
+import { Ltr } from '@/components/ui/Ltr'
 import { useAdminOrders } from './hooks'
 import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, DELIVERY_METHOD_LABELS } from './transitions'
 import { OrderDetailModal } from './OrderDetailModal'
 import { OrderStatusDialog } from './OrderStatusDialog'
 import { OrderFulfillmentDialog } from './OrderFulfillmentDialog'
+import {
+  ExportCsvButton,
+  formatOrdersCsv,
+  downloadCsv,
+  getExportFilename,
+} from '@/features/admin/export'
 import type { AdminOrder, AdminOrderFilters } from './types'
 import type { OrderStatus, PaymentStatus } from '@/features/orders/types'
 
-const STATUS_TABS: Array<{ key: 'all' | OrderStatus; label: string }> = [
+const STATUS_TABS: Array<{ key: 'all' | OrderStatus | 'awaiting_approval'; label: string }> = [
   { key: 'all', label: 'الكل' },
+  { key: 'awaiting_approval', label: 'بانتظار الموافقة' },
   { key: 'pending', label: 'قيد الانتظار' },
   { key: 'confirmed', label: 'مؤكد' },
   { key: 'shipped', label: 'تم الشحن' },
@@ -26,6 +34,7 @@ const STATUS_TABS: Array<{ key: 'all' | OrderStatus; label: string }> = [
 
 const PAYMENT_STATUS_OPTIONS: Array<{ key: 'all' | PaymentStatus; label: string }> = [
   { key: 'all', label: 'كل حالات الدفع' },
+  { key: 'awaiting_approval', label: 'بانتظار الموافقة' },
   { key: 'unpaid', label: 'غير مدفوع' },
   { key: 'awaiting_proof', label: 'بانتظار الإثبات' },
   { key: 'under_review', label: 'قيد المراجعة' },
@@ -40,17 +49,26 @@ export default function OrdersPage() {
   const routeOrderId = params.id ? Number(params.id) : null
 
   const [search, setSearch] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState<'all' | OrderStatus>('all')
+  const [selectedTab, setSelectedTab] = useState<'all' | OrderStatus | 'awaiting_approval'>('all')
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<'all' | PaymentStatus>('all')
 
-  const filters: AdminOrderFilters = useMemo(
-    () => ({
+  const filters: AdminOrderFilters = useMemo(() => {
+    let status: 'all' | OrderStatus = 'all'
+    let payment_status: 'all' | PaymentStatus = selectedPaymentStatus
+
+    if (selectedTab === 'awaiting_approval') {
+      status = 'all'
+      payment_status = 'awaiting_approval'
+    } else {
+      status = selectedTab
+    }
+
+    return {
       search,
-      status: selectedStatus,
-      payment_status: selectedPaymentStatus,
-    }),
-    [search, selectedStatus, selectedPaymentStatus],
-  )
+      status,
+      payment_status,
+    }
+  }, [search, selectedTab, selectedPaymentStatus])
 
   const { data: orders = [], isLoading, error, refetch } = useAdminOrders(filters)
 
@@ -88,9 +106,20 @@ export default function OrdersPage() {
           </p>
         </div>
 
-        <span className="self-start sm:self-auto rounded-pill border border-border bg-surface-2 px-3 py-1 text-small font-semibold text-text">
-          {orders.length} {isAr ? 'طلب' : 'orders'}
-        </span>
+        <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
+          <span className="rounded-pill border border-border bg-surface-2 px-3 py-1 text-small font-semibold text-text">
+            {orders.length} {isAr ? 'طلب' : 'orders'}
+          </span>
+          <ExportCsvButton
+            onExport={() => {
+              const filename = getExportFilename('orders')
+              const csv = formatOrdersCsv(orders, lang)
+              downloadCsv(csv, filename)
+            }}
+            successMessage={isAr ? 'تم تصدير ملف الطلبات بنجاح' : 'Orders exported successfully'}
+            disabled={isLoading || orders.length === 0}
+          />
+        </div>
       </div>
 
       {/* Filters Toolbar */}
@@ -99,6 +128,7 @@ export default function OrdersPage() {
           {/* Search Input */}
           <div className="md:col-span-2">
             <Input
+              id="orders-search-input"
               label={isAr ? 'بحث في الطلبات' : 'Search Orders'}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -137,12 +167,19 @@ export default function OrdersPage() {
         <div>
           <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
             {STATUS_TABS.map((tab) => {
-              const isActive = selectedStatus === tab.key
+              const isActive = selectedTab === tab.key
               return (
                 <button
                   key={tab.key}
                   type="button"
-                  onClick={() => setSelectedStatus(tab.key)}
+                  onClick={() => {
+                    setSelectedTab(tab.key)
+                    if (tab.key === 'awaiting_approval') {
+                      setSelectedPaymentStatus('awaiting_approval')
+                    } else if (selectedPaymentStatus === 'awaiting_approval') {
+                      setSelectedPaymentStatus('all')
+                    }
+                  }}
                   className={`rounded-pill px-3 py-1.5 text-caption sm:text-small font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-focus ${
                     isActive
                       ? 'bg-brand text-brand-contrast'
@@ -180,7 +217,7 @@ export default function OrdersPage() {
             className="mt-4"
             onClick={() => {
               setSearch('')
-              setSelectedStatus('all')
+              setSelectedTab('all')
               setSelectedPaymentStatus('all')
             }}
           >
@@ -234,7 +271,9 @@ export default function OrdersPage() {
                       onClick={() => setSelectedOrderId(order.id)}
                     >
                       {/* Order ID */}
-                      <td className="px-4 py-3 font-mono font-bold text-brand">#{order.id}</td>
+                      <td className="px-4 py-3 font-mono font-bold text-brand">
+                        <Ltr>#{order.id}</Ltr>
+                      </td>
 
                       {/* Date */}
                       <td className="px-4 py-3 text-caption text-text-muted whitespace-nowrap">
@@ -245,7 +284,7 @@ export default function OrdersPage() {
                       <td className="px-4 py-3">
                         <div className="font-semibold text-text">{order.ship_name}</div>
                         <div className="text-caption font-mono text-text-muted">
-                          {order.ship_phone}
+                          <Ltr>{order.ship_phone}</Ltr>
                         </div>
                       </td>
 
@@ -298,11 +337,19 @@ export default function OrdersPage() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Button
-                          variant="ghost"
+                          variant={
+                            order.payment_status === 'awaiting_approval' ? 'primary' : 'ghost'
+                          }
                           size="default"
                           onClick={() => setSelectedOrderId(order.id)}
                         >
-                          {isAr ? 'عرض' : 'View'}
+                          {order.payment_status === 'awaiting_approval'
+                            ? isAr
+                              ? 'مراجعة وموافقة'
+                              : 'Review & Approve'
+                            : isAr
+                              ? 'عرض'
+                              : 'View'}
                         </Button>
                       </td>
                     </tr>

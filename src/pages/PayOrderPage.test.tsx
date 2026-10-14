@@ -37,6 +37,7 @@ vi.mock('@/features/payments/api', () => ({
   getOrderPaymentDetailsApi: vi.fn(),
   uploadPaymentProofApi: vi.fn(),
   submitPaymentProofApi: vi.fn(),
+  getPaymentInstructionsApi: vi.fn(),
 }))
 
 vi.mock('@/features/settings/api', () => ({
@@ -87,6 +88,12 @@ describe('PayOrderPage', () => {
     vi.mocked(settingsApi.getPublicSettings).mockResolvedValue({
       instapay_handle: 'lolys@instapay',
       instapay_qr_path: undefined,
+    })
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: 'lolys@instapay',
+      qr_path: null,
     })
 
     if (!globalThis.URL.createObjectURL) {
@@ -266,5 +273,23 @@ describe('PayOrderPage', () => {
 
     // Submit button remains disabled
     expect(screen.getByRole('button', { name: /تأكيد وإرسال إثبات التحويل/ })).toBeDisabled()
+  })
+
+  it('renders awaiting approval state and does not fetch instructions or show upload form', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue({
+      ...baseOrder,
+      payment_status: 'awaiting_approval',
+      payment_deadline: null,
+    })
+    renderComponent('101')
+
+    expect(await screen.findByText('بانتظار موافقة المتجر')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /طلبك قيد المراجعة والموافقة/ })).toBeInTheDocument()
+    expect(
+      screen.getByText(/وصل طلبك للمتجر\. سنراجعه ونرسل لك رابط الدفع قريبًا\./),
+    ).toBeInTheDocument()
+    expect(screen.queryByLabelText(/رقم عملية التحويل/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/خطوات الدفع عبر إنستاباي/)).not.toBeInTheDocument()
+    expect(paymentsApi.getPaymentInstructionsApi).not.toHaveBeenCalled()
   })
 })

@@ -147,7 +147,8 @@ export function setProductStock(productId: number, stock: number): void {
 export function expireOrderViaTestHook(orderId: number): void {
   queryDb(`
     UPDATE public.orders
-       SET payment_deadline = now() - interval '1 minute'
+       SET payment_deadline = now() - interval '1 minute',
+           created_at = now() - interval '48 hours'
      WHERE id = ${orderId};
   `)
   queryDb(`SELECT public.expire_unpaid_orders();`)
@@ -176,4 +177,47 @@ export function getOrderRow(orderId: number): {
     payment_status: rows[0].payment_status,
     payment_method: rows[0].payment_method,
   }
+}
+
+export function getLatestAuditLog(entity?: string): {
+  id: number
+  action: string
+  entity: string
+  entity_id: string | null
+  created_at: string
+} | null {
+  const filter = entity ? `WHERE entity = '${entity}'` : ''
+  const rows = queryDb<{
+    id: number | string
+    action: string
+    entity: string
+    entity_id: string | null
+    created_at: string
+  }>(`
+    SELECT id, action, entity, entity_id, created_at
+      FROM public.audit_log
+      ${filter}
+     ORDER BY id DESC
+     LIMIT 1;
+  `)
+  if (!rows[0]) return null
+  return {
+    id: Number(rows[0].id),
+    action: rows[0].action,
+    entity: rows[0].entity,
+    entity_id: rows[0].entity_id,
+    created_at: rows[0].created_at,
+  }
+}
+
+export function getAdminTotpSecret(): string | null {
+  const rows = queryDb<{ secret: string }>(`
+    SELECT f.secret
+      FROM auth.mfa_factors f
+      JOIN auth.users u ON u.id = f.user_id
+     WHERE u.email = 'admin@example.com'
+       AND f.status = 'verified'
+     LIMIT 1;
+  `)
+  return rows[0]?.secret ?? null
 }

@@ -26,6 +26,8 @@ In accordance with Section 3.2 and Section 3.3 of `roadmap.md` and `docs/spec/se
 | `STAGING_DB_PASSWORD`    | Database password set for staging database                           | `db-staging.yml`                      |
 | `PRODUCTION_PROJECT_REF` | Reference ID for the production Supabase project                     | `db-production.yml`                   |
 | `PRODUCTION_DB_PASSWORD` | Database password set for production database                        | `db-production.yml`                   |
+| `PRODUCTION_URL`         | Public API URL for production (e.g. `https://<ref>.supabase.co`)     | `keepalive.yml` (free tier only)      |
+| `PRODUCTION_ANON_KEY`    | Public anonymous API key for production                              | `keepalive.yml` (free tier only)      |
 
 ### Cloudflare Pages Environment Variables
 
@@ -41,10 +43,19 @@ In accordance with Section 3.2 and Section 3.3 of `roadmap.md` and `docs/spec/se
 ## 3. Important: Free-Tier Project Pausing
 
 > [!WARNING]
-> Free-tier Supabase projects automatically pause after 7 days of inactivity.
+> Free-tier Supabase projects automatically pause after 7 consecutive days of inactivity (no incoming database queries or REST calls).
 > A paused project **refuses connection** from GitHub Actions (`supabase link` and `supabase db push` will fail with network or connection timeout errors).
 
-Before triggering a migration run:
+### Automated Keep-Alive Workflow (`keepalive.yml`)
+
+For projects operating on the Supabase free tier, `.github/workflows/keepalive.yml` (T-8.05) runs on a weekly schedule (`cron: '0 5 * * 1'`) and sends an authenticated REST GET request to `/rest/v1/categories?select=id&limit=1` using `PRODUCTION_URL` and `PRODUCTION_ANON_KEY`. This weekly query registers database activity and prevents auto-pausing.
+
+> [!NOTE]
+> **Open Decision O-11:** If production uses a paid Supabase plan (Pro tier), databases never auto-pause and include automated daily backups. When on a paid plan, `keepalive.yml` can be skipped or disabled, and `PRODUCTION_URL` / `PRODUCTION_ANON_KEY` do not need to be configured in GitHub Secrets.
+
+### Manual Unpausing Procedure
+
+Before triggering a migration run if a project has paused:
 
 1. Open the [Supabase Dashboard](https://supabase.com/dashboard).
 2. Check the project status for the target environment (`shop-staging` or production).

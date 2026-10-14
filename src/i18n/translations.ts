@@ -23,6 +23,7 @@ import {
   footer as arFooter,
   seo as arSeo,
   catalog as arCatalog,
+  whatsapp as arWhatsapp,
 } from './ar.json'
 
 import {
@@ -49,6 +50,7 @@ import {
   footer as enFooter,
   seo as enSeo,
   catalog as enCatalog,
+  whatsapp as enWhatsapp,
 } from './en.json'
 
 export const translations = {
@@ -76,6 +78,7 @@ export const translations = {
     footer: arFooter,
     seo: arSeo,
     catalog: arCatalog,
+    whatsapp: arWhatsapp,
   },
   en: {
     theme: enTheme,
@@ -101,5 +104,6 @@ export const translations = {
     footer: enFooter,
     seo: enSeo,
     catalog: enCatalog,
+    whatsapp: enWhatsapp,
   },
 }

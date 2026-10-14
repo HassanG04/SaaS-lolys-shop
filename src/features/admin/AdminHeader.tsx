@@ -1,6 +1,7 @@
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { LanguageToggle } from '../../components/ui/LanguageToggle'
 import { ThemeToggle } from '../../components/ui/ThemeToggle'
+import { Ltr } from '../../components/ui/Ltr'
 import { useAuth } from '../auth/AuthProvider'
 
 interface AdminHeaderProps {
@@ -48,7 +49,7 @@ export function AdminHeader({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps
       <div className="flex items-center gap-2 sm:gap-3">
         {user?.email && (
           <span className="hidden md:inline-block text-caption text-(--color-text-muted) max-w-[150px] truncate">
-            {user.email}
+            <Ltr>{user.email}</Ltr>
           </span>
         )}
 

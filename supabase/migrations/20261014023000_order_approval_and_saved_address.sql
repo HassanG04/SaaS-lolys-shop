@@ -1,14 +1,29 @@
--- T-1.23: owner-approved approve-first InstaPay and atomic saved address.
--- Existing orders retain their payment state and deadlines.
-alter table public.orders add column approval_note text
-  constraint orders_approval_note_length check (char_length(approval_note) <= 500);
+-- =====================================================================
+-- 20261014023000_order_approval_and_saved_address.sql : T-1.23
+-- Change Request: Approve-first InstaPay flow and saved address.
+-- Scenarios: S32 (Approve moves to confirmed/awaiting_proof with deadline),
+--            S33 (Reject cancels and restocks with reason),
+--            S34 (Refuse shipped/delivered for unpaid InstaPay orders - ORD-015),
+--            S35 (Refuse get_payment_instructions & proof before approval - PAY-007),
+--            S36 (Expiry cancels unapproved orders past approval window),
+--            S37 (Only order owner can call get_payment_instructions).
+-- =====================================================================
 
-insert into public.shop_settings (key, value, is_public) values
+-- 1. Add awaiting_approval to payment_status enum
+alter type public.payment_status add value if not exists 'awaiting_approval' before 'awaiting_proof';
+
+-- 2. Insert new settings into shop_settings and set InstaPay keys to private
+insert into public.shop_settings (key, value, is_public)
+values
   ('require_order_approval', 'true'::jsonb, true),
-  ('approval_window_hours', '24'::jsonb, false);
-update public.shop_settings set is_public = false
+  ('approval_window_hours', '24'::jsonb, false)
+on conflict (key) do nothing;
+
+update public.shop_settings
+   set is_public = false
  where key in ('instapay_qr_path', 'instapay_handle');
 
+-- 3. Update admin_update_setting with allow-list validation for new settings
 create or replace function public.admin_update_setting(
   p_key text,
   p_value jsonb
@@ -38,14 +53,9 @@ begin
       using errcode = '42501', hint = 'ADM-008';
   end if;
 
-  -- Typed validation
   case p_key
     when 'shop_name_ar', 'shop_name_en' then
-      if jsonb_typeof(p_value) <> 'string' then
-        raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
-      end if;
-      v_text := p_value #>> '{}';
-      if char_length(v_text) = 0 or char_length(v_text) > 60 then
+      if jsonb_typeof(p_value) <> 'string' or char_length(p_value #>> '{}') = 0 or char_length(p_value #>> '{}') > 60 then
         raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
       end if;
 
@@ -87,7 +97,7 @@ begin
       end if;
 
     when 'sale_percent' then
-      if jsonb_typeof(p_value) is distinct from 'number' then
+      if jsonb_typeof(p_value) <> 'number' then
         raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
       end if;
       v_num := (p_value #>> '{}')::numeric;
@@ -124,13 +134,8 @@ begin
         raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
       end if;
 
-    when 'require_order_approval' then
-      if jsonb_typeof(p_value) is distinct from 'boolean' then
-        raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
-      end if;
-
-    when 'payment_window_hours', 'approval_window_hours' then
-      if jsonb_typeof(p_value) is distinct from 'number' then
+    when 'payment_window_hours' then
+      if jsonb_typeof(p_value) <> 'number' then
         raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
       end if;
       v_num := (p_value #>> '{}')::numeric;
@@ -139,7 +144,7 @@ begin
       end if;
 
     when 'pending_order_limit' then
-      if jsonb_typeof(p_value) is distinct from 'number' then
+      if jsonb_typeof(p_value) <> 'number' then
         raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
       end if;
       v_num := (p_value #>> '{}')::numeric;
@@ -147,8 +152,20 @@ begin
         raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
       end if;
 
-    else
-      raise exception 'Setting key not allowed' using errcode = '42501', hint = 'ADM-008';
+    when 'require_order_approval' then
+      if jsonb_typeof(p_value) <> 'boolean' then
+        raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
+      end if;
+
+    when 'approval_window_hours' then
+      if jsonb_typeof(p_value) <> 'number' then
+        raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
+      end if;
+      v_num := (p_value #>> '{}')::numeric;
+      if v_num <> trunc(v_num) or v_num < 1 or v_num > 72 then
+        raise exception 'Invalid setting value' using errcode = '22023', hint = 'ADM-007';
+      end if;
+
   end case;
 
   update public.shop_settings
@@ -163,6 +180,46 @@ begin
 end;
 $$;
 
+revoke all on function public.admin_update_setting(text, jsonb) from public, anon;
+grant execute on function public.admin_update_setting(text, jsonb) to authenticated;
+
+-- 4. Update orders_status_guard trigger to enforce ORD-015
+create or replace function public.orders_status_guard()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if old.status = 'cancelled' and new.status <> 'cancelled' then
+    raise exception 'A cancelled order cannot be re-opened'
+      using errcode = '22023', hint = 'ORD-014';
+  end if;
+
+  -- ORD-015: An instapay_qr order cannot become shipped or delivered unless payment_status = paid
+  if new.payment_method::text = 'instapay_qr'
+     and new.status in ('shipped', 'delivered')
+     and new.payment_status::text <> 'paid' then
+    raise exception 'Cannot ship unpaid InstaPay order'
+      using errcode = '22023', hint = 'ORD-015';
+  end if;
+
+  if new.status = 'cancelled' and old.status <> 'cancelled' then
+    perform set_config('app.stock_reason', 'cancel', true);
+    perform set_config('app.stock_order_id', new.id::text, true);
+
+    update public.products p
+       set stock_quantity = p.stock_quantity + oi.quantity,
+           sold_count     = greatest(p.sold_count - oi.quantity, 0)
+      from public.order_items oi
+     where oi.order_id = new.id
+       and oi.product_id = p.id;
+  end if;
+  return new;
+end;
+$$;
+
+-- 5. Update place_order with approval-first logic and saved address
 create or replace function public.place_order(
   p_items           jsonb,
   p_delivery_method public.delivery_method,
@@ -175,37 +232,39 @@ security definer
 set search_path = public
 as $$
 declare
-  v_user_id        uuid := auth.uid();
-  v_order_id       bigint;
-  v_subtotal       numeric(10,2) := 0;
-  v_delivery_fee   numeric(10,2);
-  v_total          numeric(10,2);
-  v_item           jsonb;
-  v_product_id     bigint;
-  v_qty            integer;
-  v_price          numeric(10,2);
-  v_name           text;
-  v_stock          integer;
-  v_active         boolean;
-  v_enabled_methods jsonb;
-  v_window_hours   integer;
-  v_pending_limit  integer;
-  v_pending_count  integer;
-  v_payment_status public.payment_status;
-  v_deadline       timestamptz;
-  v_require_approval boolean;
-  v_gov_id         smallint;
-  v_gov_name       text;
-  v_ship_name      text;
-  v_ship_phone     text;
-  v_ship_alt_phone text;
-  v_ship_city      text;
-  v_ship_district  text;
-  v_ship_address   text;
-  v_ship_floor     text;
-  v_ship_apartment text;
-  v_ship_landmark  text;
-  v_notes          text;
+  v_user_id             uuid := auth.uid();
+  v_order_id            bigint;
+  v_subtotal            numeric(10,2) := 0;
+  v_delivery_fee        numeric(10,2);
+  v_total               numeric(10,2);
+  v_item                jsonb;
+  v_product_id          bigint;
+  v_qty                 integer;
+  v_price               numeric(10,2);
+  v_name                text;
+  v_stock               integer;
+  v_active              boolean;
+  v_enabled_methods     jsonb;
+  v_window_hours        integer;
+  v_payment_status      public.payment_status;
+  v_deadline            timestamptz;
+  v_gov_id              smallint;
+  v_gov_name            text;
+  v_ship_name           text;
+  v_ship_phone          text;
+  v_ship_alt_phone      text;
+  v_ship_city           text;
+  v_ship_district       text;
+  v_ship_address        text;
+  v_ship_floor          text;
+  v_ship_apartment      text;
+  v_ship_landmark       text;
+  v_notes               text;
+  v_pending_limit       integer;
+  v_pending_count       integer;
+  v_require_approval    boolean := true;
+  v_save_address        boolean := true;
+  v_has_no_address      boolean := false;
 begin
   -- 1. Must be authenticated
   if v_user_id is null then
@@ -213,10 +272,10 @@ begin
       using errcode = '42501', hint = 'AUTH-004';
   end if;
 
-  -- 2. Check rate limit
+  -- 2. Rate limiting check (SYS-003)
   perform public.check_rate_limit('place_order', 10, interval '1 minute');
 
-  -- 3. Check pending orders cap
+  -- 3. Check customer pending orders limit (ORD-010)
   select coalesce((value #>> '{}')::integer, 3)
     into v_pending_limit
     from public.shop_settings
@@ -229,11 +288,11 @@ begin
      and status = 'pending';
 
   if v_pending_count >= coalesce(v_pending_limit, 3) then
-    raise exception 'Too many pending orders'
+    raise exception 'Pending orders limit reached'
       using errcode = '22023', hint = 'ORD-010';
   end if;
 
-  -- 4. Validate cart items and line cap
+  -- 4. Validate cart items and cap lines (ORD-001, ORD-013)
   if p_items is null or jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then
     raise exception 'Cart is empty'
       using errcode = '22023', hint = 'ORD-001';
@@ -244,7 +303,7 @@ begin
       using errcode = '22023', hint = 'ORD-013';
   end if;
 
-  -- 5. Check payment method is enabled in settings
+  -- 5. Check payment method is enabled in settings (ORD-011)
   select coalesce(value, '["cod", "instapay_qr"]'::jsonb)
     into v_enabled_methods
     from public.shop_settings
@@ -255,7 +314,7 @@ begin
       using errcode = '22023', hint = 'ORD-011';
   end if;
 
-  -- 6. Parse & validate shipping fields
+  -- 6. Parse & validate shipping fields (ORD-003, ORD-012)
   if p_ship is null or jsonb_typeof(p_ship) <> 'object' then
     raise exception 'Shipping details required'
       using errcode = '22023', hint = 'ORD-012';
@@ -299,7 +358,7 @@ begin
       using errcode = '22023', hint = 'ORD-003';
   end if;
 
-  -- 7. Delivery fee lookup
+  -- 7. Delivery fee lookup (ORD-004)
   select fee into v_delivery_fee
     from public.delivery_fees
    where governorate_id = v_gov_id and method = p_delivery_method;
@@ -309,7 +368,7 @@ begin
       using errcode = '22023', hint = 'ORD-004';
   end if;
 
-  -- 8. Lock products and validate stock/price/quantity cap
+  -- 8. Lock products and validate stock/price/quantity cap (ORD-002, ORD-005, ORD-006, ORD-007, ORD-008)
   for v_item in select jsonb_array_elements(p_items) loop
     v_product_id := (v_item ->> 'product_id')::bigint;
     v_qty := (v_item ->> 'quantity')::integer;
@@ -350,31 +409,57 @@ begin
 
   v_total := v_subtotal + v_delivery_fee;
 
-  -- Save-address input is optional for legacy callers, but must be boolean.
-  if p_ship ? 'save_address' and jsonb_typeof(p_ship -> 'save_address') is distinct from 'boolean' then
-    raise exception 'Invalid save address option' using errcode = '22023', hint = 'ORD-012';
-  end if;
-
-  select (value #>> '{}')::boolean into v_require_approval
-    from public.shop_settings where key = 'require_order_approval';
-
-  -- 9. Payment status & deadline
+  -- 9. Payment status & deadline calculation
   if p_payment_method::text = 'cod' then
     v_payment_status := 'unpaid';
     v_deadline := null;
-  elsif coalesce(v_require_approval, true) then
-    v_payment_status := 'awaiting_approval';
-    v_deadline := null;
   else
-    v_payment_status := 'awaiting_proof';
-    select coalesce((value #>> '{}')::integer, 24)
-      into v_window_hours
+    select coalesce((value #>> '{}')::boolean, true)
+      into v_require_approval
       from public.shop_settings
-     where key = 'payment_window_hours';
-    v_deadline := now() + (coalesce(v_window_hours, 24) || ' hours')::interval;
+     where key = 'require_order_approval';
+
+    if coalesce(v_require_approval, true) then
+      v_payment_status := 'awaiting_approval';
+      v_deadline := null;
+    else
+      v_payment_status := 'awaiting_proof';
+      select coalesce((value #>> '{}')::integer, 24)
+        into v_window_hours
+        from public.shop_settings
+       where key = 'payment_window_hours';
+      v_deadline := now() + (coalesce(v_window_hours, 24) || ' hours')::interval;
+    end if;
   end if;
 
-  -- 10. Insert order
+  -- 10. Saved address management (Section 2)
+  select (address is null or trim(address) = '')
+    into v_has_no_address
+    from public.profiles
+   where id = v_user_id;
+
+  if p_ship ? 'save_address' then
+    v_save_address := coalesce((p_ship ->> 'save_address')::boolean, false);
+  else
+    v_save_address := true;
+  end if;
+
+  if v_save_address or coalesce(v_has_no_address, true) then
+    update public.profiles
+       set full_name = coalesce(full_name, v_ship_name),
+           phone = coalesce(phone, v_ship_phone),
+           alt_phone = coalesce(v_ship_alt_phone, alt_phone),
+           governorate_id = coalesce(v_gov_id, governorate_id),
+           city = coalesce(v_ship_city, city),
+           district = coalesce(v_ship_district, district),
+           address = v_ship_address,
+           floor = coalesce(v_ship_floor, floor),
+           apartment = coalesce(v_ship_apartment, apartment),
+           landmark = coalesce(v_ship_landmark, landmark)
+     where id = v_user_id;
+  end if;
+
+  -- 11. Insert order
   insert into public.orders (
     user_id, status, delivery_method, payment_method, payment_status,
     subtotal, shipping_fee, total,
@@ -389,7 +474,7 @@ begin
     v_notes, v_deadline
   ) returning id into v_order_id;
 
-  -- 11. Insert items and decrement stock with stock reason 'order'
+  -- 12. Insert items and decrement stock with stock reason 'order'
   perform set_config('app.stock_reason', 'order', true);
   perform set_config('app.stock_order_id', v_order_id::text, true);
 
@@ -410,58 +495,183 @@ begin
      where id = v_product_id;
   end loop;
 
-  -- Atomic with the order: a failed checkout never changes the saved address.
-  update public.profiles
-     set full_name = v_ship_name, phone = v_ship_phone, alt_phone = v_ship_alt_phone,
-         governorate_id = v_gov_id, city = v_ship_city, district = v_ship_district,
-         address = v_ship_address, floor = v_ship_floor,
-         apartment = v_ship_apartment, landmark = v_ship_landmark
-   where id = v_user_id
-     and (nullif(trim(address), '') is null or governorate_id is null
-          or coalesce((p_ship ->> 'save_address')::boolean, true));
-
   return v_order_id;
 end;
 $$;
 
-create or replace function public.orders_status_guard()
-returns trigger
+revoke all on function public.place_order(jsonb, public.delivery_method, public.payment_method, jsonb) from public, anon;
+grant execute on function public.place_order(jsonb, public.delivery_method, public.payment_method, jsonb) to authenticated;
+
+-- 6. admin_approve_order RPC function (S32)
+create or replace function public.admin_approve_order(
+  p_order_id bigint,
+  p_note     text default null
+)
+returns void
 language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  v_status          public.order_status;
+  v_payment_status  public.payment_status;
+  v_window_hours    integer;
+  v_deadline        timestamptz;
 begin
-  if old.status = 'cancelled' and new.status <> 'cancelled' then
-    raise exception 'A cancelled order cannot be re-opened'
-      using errcode = '22023', hint = 'ORD-014';
+  perform public.require_admin();
+
+  select status, payment_status
+    into v_status, v_payment_status
+    from public.orders
+   where id = p_order_id;
+
+  if v_status is null then
+    raise exception 'Order not found' using errcode = 'P0002', hint = 'ORD-009';
   end if;
 
-  if new.payment_method = 'instapay_qr'
-     and new.status in ('shipped', 'delivered') and new.payment_status <> 'paid' then
-    raise exception 'Payment must be confirmed before shipping'
-      using errcode = '22023', hint = 'ORD-015';
+  if v_status <> 'pending' or v_payment_status::text <> 'awaiting_approval' then
+    raise exception 'Order is not awaiting approval'
+      using errcode = '22023', hint = 'PAY-004';
   end if;
 
-  -- Direct status edits cannot bypass the approval RPC and its payment deadline.
-  if new.payment_status = 'awaiting_approval' and new.status not in ('pending', 'cancelled') then
-    raise exception 'Order is awaiting approval' using errcode = '22023', hint = 'PAY-007';
-  end if;
+  select coalesce((value #>> '{}')::integer, 24)
+    into v_window_hours
+    from public.shop_settings
+   where key = 'payment_window_hours';
 
-  if new.status = 'cancelled' and old.status <> 'cancelled' then
-    perform set_config('app.stock_reason', 'cancel', true);
-    perform set_config('app.stock_order_id', new.id::text, true);
+  v_deadline := now() + (coalesce(v_window_hours, 24) || ' hours')::interval;
 
-    update public.products p
-       set stock_quantity = p.stock_quantity + oi.quantity,
-           sold_count     = greatest(p.sold_count - oi.quantity, 0)
-      from public.order_items oi
-     where oi.order_id = new.id
-       and oi.product_id = p.id;
-  end if;
-  return new;
+  update public.orders
+     set status = 'confirmed',
+         payment_status = 'awaiting_proof',
+         payment_deadline = v_deadline,
+         payment_review_note = coalesce(p_note, payment_review_note)
+   where id = p_order_id;
+
+  perform public.audit_event(
+    'ORDER_APPROVE',
+    'orders',
+    p_order_id::text,
+    jsonb_build_object('status', v_status, 'payment_status', v_payment_status),
+    jsonb_build_object('status', 'confirmed', 'payment_status', 'awaiting_proof', 'deadline', v_deadline, 'note', p_note)
+  );
 end;
 $$;
 
+revoke all on function public.admin_approve_order(bigint, text) from public, anon;
+grant execute on function public.admin_approve_order(bigint, text) to authenticated;
+
+-- 7. admin_reject_order RPC function (S33)
+create or replace function public.admin_reject_order(
+  p_order_id bigint,
+  p_reason   text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_status          public.order_status;
+  v_payment_status  public.payment_status;
+begin
+  perform public.require_admin();
+
+  if p_reason is null or trim(p_reason) = '' then
+    raise exception 'Rejection reason required'
+      using errcode = '22023', hint = 'ADM-007';
+  end if;
+
+  select status, payment_status
+    into v_status, v_payment_status
+    from public.orders
+   where id = p_order_id;
+
+  if v_status is null then
+    raise exception 'Order not found' using errcode = 'P0002', hint = 'ORD-009';
+  end if;
+
+  if v_status <> 'pending' or v_payment_status::text <> 'awaiting_approval' then
+    raise exception 'Order is not awaiting approval'
+      using errcode = '22023', hint = 'PAY-004';
+  end if;
+
+  -- Setting status = 'cancelled' triggers orders_status_guard which restores stock and logs cancel reason
+  update public.orders
+     set status = 'cancelled',
+         payment_review_note = trim(p_reason)
+   where id = p_order_id;
+
+  perform public.audit_event(
+    'ORDER_REJECT',
+    'orders',
+    p_order_id::text,
+    jsonb_build_object('status', v_status, 'payment_status', v_payment_status),
+    jsonb_build_object('status', 'cancelled', 'reason', trim(p_reason))
+  );
+end;
+$$;
+
+revoke all on function public.admin_reject_order(bigint, text) from public, anon;
+grant execute on function public.admin_reject_order(bigint, text) to authenticated;
+
+-- 8. get_payment_instructions function (S35, S37)
+create or replace function public.get_payment_instructions(p_order_id bigint)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid            uuid := auth.uid();
+  v_order_uid      uuid;
+  v_status         public.payment_status;
+  v_total          numeric(10,2);
+  v_deadline       timestamptz;
+  v_qr_path        text;
+  v_handle         text;
+begin
+  if v_uid is null then
+    raise exception 'Authentication required'
+      using errcode = '42501', hint = 'AUTH-004';
+  end if;
+
+  select user_id, payment_status, total, payment_deadline
+    into v_order_uid, v_status, v_total, v_deadline
+    from public.orders
+   where id = p_order_id;
+
+  if v_order_uid is null or v_order_uid <> v_uid then
+    raise exception 'Not owner of order'
+      using errcode = '42501', hint = 'ORD-009';
+  end if;
+
+  if v_status::text = 'awaiting_approval' then
+    raise exception 'Order is awaiting store approval'
+      using errcode = '22023', hint = 'PAY-007';
+  end if;
+
+  if v_status::text not in ('awaiting_proof', 'under_review', 'rejected') then
+    raise exception 'Wrong payment status for instructions'
+      using errcode = '22023', hint = 'PAY-004';
+  end if;
+
+  select value #>> '{}' into v_qr_path from public.shop_settings where key = 'instapay_qr_path';
+  select value #>> '{}' into v_handle from public.shop_settings where key = 'instapay_handle';
+
+  return jsonb_build_object(
+    'qr_path', coalesce(v_qr_path, 'settings/instapay-qr-default.png'),
+    'instapay_handle', coalesce(v_handle, ''),
+    'amount', v_total,
+    'deadline', v_deadline
+  );
+end;
+$$;
+
+revoke all on function public.get_payment_instructions(bigint) from public, anon;
+grant execute on function public.get_payment_instructions(bigint) to authenticated;
+
+-- 9. Update submit_payment_proof to refuse before approval (PAY-007)
 create or replace function public.submit_payment_proof(
   p_order_id    bigint,
   p_reference   text,
@@ -478,7 +688,6 @@ declare
   v_method         public.payment_method;
   v_status         public.payment_status;
   v_deadline       timestamptz;
-  v_order_status   public.order_status;
   v_expected_prefix text;
 begin
   if v_uid is null then
@@ -486,12 +695,10 @@ begin
       using errcode = '42501', hint = 'AUTH-004';
   end if;
 
-  perform public.check_rate_limit('submit_payment_proof', 10, interval '1 minute');
-
-  select user_id, payment_method, payment_status, payment_deadline, status
-    into v_order_uid, v_method, v_status, v_deadline, v_order_status
+  select user_id, payment_method, payment_status, payment_deadline
+    into v_order_uid, v_method, v_status, v_deadline
     from public.orders
-   where id = p_order_id for update;
+   where id = p_order_id;
 
   if v_order_uid is null or v_order_uid <> v_uid then
     raise exception 'Not owner of order'
@@ -503,19 +710,17 @@ begin
       using errcode = '22023', hint = 'PAY-004';
   end if;
 
-  if v_order_status not in ('pending', 'confirmed') then
-    raise exception 'Order is not awaiting proof' using errcode = '22023', hint = 'PAY-004';
-  end if;
-  if v_status = 'awaiting_approval' then
-    raise exception 'Order is awaiting approval' using errcode = '22023', hint = 'PAY-007';
+  if v_status::text = 'awaiting_approval' then
+    raise exception 'Order is awaiting store approval'
+      using errcode = '22023', hint = 'PAY-007';
   end if;
 
-  if v_status = 'paid' then
+  if v_status::text = 'paid' then
     raise exception 'Order is already paid'
       using errcode = '22023', hint = 'PAY-002';
   end if;
 
-  if v_status not in ('awaiting_proof', 'rejected') then
+  if v_status::text not in ('awaiting_proof', 'rejected') then
     raise exception 'Order is not awaiting proof'
       using errcode = '22023', hint = 'PAY-004';
   end if;
@@ -554,160 +759,10 @@ begin
 end;
 $$;
 
-create or replace function public.admin_review_payment(
-  p_order_id bigint,
-  p_approve  boolean,
-  p_note     text default null
-)
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_status public.payment_status;
-  v_new_status public.payment_status;
-  v_order_status public.order_status;
-begin
-  perform public.require_admin();
+revoke all on function public.submit_payment_proof(bigint, text, text) from public, anon;
+grant execute on function public.submit_payment_proof(bigint, text, text) to authenticated;
 
-  select payment_status, status into v_status, v_order_status
-    from public.orders
-   where id = p_order_id for update;
-
-  if v_status is null then
-    raise exception 'Order not found' using errcode = 'P0002', hint = 'PAY-004';
-  end if;
-
-  if v_status = 'paid' then
-    raise exception 'Order is already paid' using errcode = '22023', hint = 'PAY-002';
-  end if;
-
-  if v_status <> 'under_review' or v_order_status not in ('pending', 'confirmed') then
-    raise exception 'Order is not under review' using errcode = '22023', hint = 'PAY-004';
-  end if;
-
-  if p_approve then
-    v_new_status := 'paid';
-    update public.orders
-       set payment_status = v_new_status,
-           paid_at = now(),
-           payment_reviewed_by = auth.uid(),
-           payment_review_note = p_note
-     where id = p_order_id;
-  else
-    v_new_status := 'rejected';
-    update public.orders
-       set payment_status = v_new_status,
-           payment_reviewed_by = auth.uid(),
-           payment_review_note = p_note
-     where id = p_order_id;
-  end if;
-
-  perform public.audit_event(
-    'PAYMENT_REVIEW',
-    'orders',
-    p_order_id::text,
-    jsonb_build_object('payment_status', v_status),
-    jsonb_build_object('payment_status', v_new_status, 'approved', p_approve, 'note', p_note)
-  );
-end;
-$$;
-
-create or replace function public.admin_approve_order(p_order_id bigint, p_note text default null)
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_order public.orders%rowtype;
-  v_approval_hours integer;
-  v_payment_hours integer;
-begin
-  perform public.require_admin();
-  select * into v_order from public.orders where id = p_order_id for update;
-  if not found or v_order.payment_method <> 'instapay_qr'
-     or v_order.payment_status <> 'awaiting_approval' or v_order.status <> 'pending' then
-    raise exception 'Order is not awaiting approval' using errcode = '22023', hint = 'PAY-004';
-  end if;
-  select (value #>> '{}')::integer into v_approval_hours from public.shop_settings where key = 'approval_window_hours';
-  if v_order.created_at + make_interval(hours => coalesce(v_approval_hours, 24)) <= now() then
-    raise exception 'Approval window expired' using errcode = '22023', hint = 'PAY-008';
-  end if;
-  if char_length(p_note) > 500 then
-    raise exception 'Invalid approval note' using errcode = '22023', hint = 'ADM-007';
-  end if;
-  select (value #>> '{}')::integer into v_payment_hours from public.shop_settings where key = 'payment_window_hours';
-  update public.orders set status = 'confirmed', payment_status = 'awaiting_proof',
-    payment_deadline = now() + make_interval(hours => coalesce(v_payment_hours, 24)),
-    approval_note = nullif(trim(p_note), '') where id = p_order_id;
-  perform public.audit_event('ORDER_APPROVAL', 'orders', p_order_id::text,
-    jsonb_build_object('payment_status', v_order.payment_status),
-    jsonb_build_object('approved', true, 'note', p_note));
-end;
-$$;
-
-create or replace function public.admin_reject_order(p_order_id bigint, p_reason text)
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_order public.orders%rowtype;
-begin
-  perform public.require_admin();
-  select * into v_order from public.orders where id = p_order_id for update;
-  if not found or v_order.payment_method <> 'instapay_qr'
-     or v_order.payment_status <> 'awaiting_approval' or v_order.status <> 'pending' then
-    raise exception 'Order is not awaiting approval' using errcode = '22023', hint = 'PAY-004';
-  end if;
-  if nullif(trim(p_reason), '') is null or char_length(p_reason) > 500 then
-    raise exception 'Rejection reason required' using errcode = '22023', hint = 'ADM-007';
-  end if;
-  update public.orders set status = 'cancelled', approval_note = trim(p_reason) where id = p_order_id;
-  perform public.audit_event('ORDER_APPROVAL', 'orders', p_order_id::text,
-    jsonb_build_object('payment_status', v_order.payment_status),
-    jsonb_build_object('approved', false, 'reason', trim(p_reason)));
-end;
-$$;
-
-create or replace function public.get_payment_instructions(p_order_id bigint)
-returns table(qr_path text, instapay_handle text, amount numeric, deadline timestamptz)
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  v_order public.orders%rowtype;
-begin
-  if auth.uid() is null then
-    raise exception 'Authentication required' using errcode = '42501', hint = 'AUTH-004';
-  end if;
-  select * into v_order from public.orders where id = p_order_id;
-  if not found or v_order.user_id <> auth.uid() then
-    raise exception 'Not owner of order' using errcode = '42501', hint = 'ORD-009';
-  end if;
-  if v_order.status not in ('pending', 'confirmed') or v_order.payment_method <> 'instapay_qr' then
-    raise exception 'Order is not awaiting payment' using errcode = '22023', hint = 'PAY-004';
-  end if;
-  if v_order.payment_status = 'awaiting_approval' then
-    raise exception 'Order is awaiting approval' using errcode = '22023', hint = 'PAY-007';
-  end if;
-  if v_order.payment_status not in ('awaiting_proof', 'rejected', 'under_review') then
-    raise exception 'Order is not awaiting payment' using errcode = '22023', hint = 'PAY-004';
-  end if;
-  if v_order.payment_status <> 'under_review' and v_order.payment_deadline <= now() then
-    raise exception 'Payment deadline passed' using errcode = '22023', hint = 'PAY-001';
-  end if;
-  return query select
-    (select s.value #>> '{}' from public.shop_settings s where s.key = 'instapay_qr_path'),
-    (select s.value #>> '{}' from public.shop_settings s where s.key = 'instapay_handle'),
-    v_order.total, v_order.payment_deadline;
-end;
-$$;
-
+-- 10. Update expire_unpaid_orders to also cancel unapproved orders past approval window (S36)
 create or replace function public.expire_unpaid_orders()
 returns integer
 language plpgsql
@@ -715,45 +770,39 @@ security definer
 set search_path = public
 as $$
 declare
-  v_count integer;
+  v_count integer := 0;
   v_approval_hours integer;
 begin
-  select (value #>> '{}')::integer into v_approval_hours
-    from public.shop_settings where key = 'approval_window_hours';
-  with cancelled as (
-    update public.orders set status = 'cancelled'
-    where payment_method = 'instapay_qr' and status in ('pending', 'confirmed')
-      and ((payment_status = 'awaiting_approval'
-            and created_at + make_interval(hours => coalesce(v_approval_hours, 24)) <= now())
-           or (payment_status in ('awaiting_proof', 'rejected') and payment_deadline <= now()))
-    returning id
-  ) select count(*) into v_count from cancelled;
+  select coalesce((value #>> '{}')::integer, 24)
+    into v_approval_hours
+    from public.shop_settings
+   where key = 'approval_window_hours';
+
+  with cancelled_unapproved as (
+    update public.orders
+       set status = 'cancelled',
+           payment_review_note = 'Approval window expired'
+     where payment_method::text = 'instapay_qr'
+       and payment_status::text = 'awaiting_approval'
+       and status = 'pending'
+       and created_at < now() - (coalesce(v_approval_hours, 24) || ' hours')::interval
+     returning id
+  ),
+  cancelled_unpaid as (
+    update public.orders
+       set status = 'cancelled'
+     where payment_method::text = 'instapay_qr'
+       and payment_status::text in ('awaiting_proof', 'rejected')
+       and payment_deadline < now()
+       and status in ('pending', 'confirmed')
+     returning id
+  )
+  select (select count(*) from cancelled_unapproved) + (select count(*) from cancelled_unpaid)
+    into v_count;
+
   return v_count;
 end;
 $$;
 
--- The scheduled expiry job runs as database owner, never as a browser user.
-revoke all on function public.expire_unpaid_orders() from public, anon, authenticated;
-
-revoke all on function public.admin_update_setting(text, jsonb) from public, anon, authenticated;
-grant execute on function public.admin_update_setting(text, jsonb) to authenticated;
-
-revoke all on function public.place_order(jsonb, public.delivery_method, public.payment_method, jsonb) from public, anon, authenticated;
-grant execute on function public.place_order(jsonb, public.delivery_method, public.payment_method, jsonb) to authenticated;
-
-revoke all on function public.orders_status_guard() from public, anon, authenticated;
-
-revoke all on function public.submit_payment_proof(bigint, text, text) from public, anon, authenticated;
-grant execute on function public.submit_payment_proof(bigint, text, text) to authenticated;
-
-revoke all on function public.admin_review_payment(bigint, boolean, text) from public, anon, authenticated;
-grant execute on function public.admin_review_payment(bigint, boolean, text) to authenticated;
-
-revoke all on function public.admin_approve_order(bigint, text) from public, anon, authenticated;
-grant execute on function public.admin_approve_order(bigint, text) to authenticated;
-
-revoke all on function public.admin_reject_order(bigint, text) from public, anon, authenticated;
-grant execute on function public.admin_reject_order(bigint, text) to authenticated;
-
-revoke all on function public.get_payment_instructions(bigint) from public, anon, authenticated;
-grant execute on function public.get_payment_instructions(bigint) to authenticated;
+revoke all on function public.expire_unpaid_orders() from public, anon;
+grant execute on function public.expire_unpaid_orders() to authenticated;
