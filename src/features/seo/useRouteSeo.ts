@@ -30,6 +30,7 @@ export function getRouteMetadata(
     '/privacy': [s.privacy, false],
     '/returns': [s.returns, false],
     '/shipping': [s.shipping, false],
+    '/contact': [s.contact, false],
     '/account': [t.account.details, true],
     '/account/orders': [s.orders, true],
     '/account/favorites': [s.favorites, true],

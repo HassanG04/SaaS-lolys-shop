@@ -376,7 +376,8 @@
     "terms": "Terms & Conditions",
     "privacy": "Privacy Policy",
     "returns": "Return & Exchange Policy",
-    "shipping": "Shipping & Delivery"
+    "shipping": "Shipping & Delivery",
+    "contact": "Contact Us"
   },
   "seo": {
     "defaultTitle": "Lolys' Accessories & Home",
@@ -405,6 +406,7 @@
     "privacy": "Privacy Policy",
     "returns": "Return & Exchange Policy",
     "shipping": "Shipping & Delivery",
+    "contact": "Contact Us",
     "notFound": "Page Not Found"
   },
   "catalog": {

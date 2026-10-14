@@ -719,6 +719,30 @@ export default function CheckoutPage() {
                 </p>
               )}
 
+              <p className="text-center text-caption text-text-muted leading-relaxed">
+                بإتمامك للطلب، فإنك توافق على{' '}
+                <Link to="/terms" target="_blank" className="text-brand underline hover:opacity-80">
+                  {t.footer.terms}
+                </Link>
+                {' و'}
+                <Link
+                  to="/privacy"
+                  target="_blank"
+                  className="text-brand underline hover:opacity-80"
+                >
+                  {t.footer.privacy}
+                </Link>
+                {' و'}
+                <Link
+                  to="/returns"
+                  target="_blank"
+                  className="text-brand underline hover:opacity-80"
+                >
+                  {t.footer.returns}
+                </Link>
+                .
+              </p>
+
               <Link
                 to="/cart"
                 className="w-full h-11 flex items-center justify-center rounded-pill border border-border bg-surface-2 px-6 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"

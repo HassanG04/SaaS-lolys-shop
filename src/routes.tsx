@@ -29,6 +29,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const ReturnsPage = lazy(() => import('./pages/ReturnsPage'))
 const ShippingPage = lazy(() => import('./pages/ShippingPage'))
+const ContactPage = lazy(() => import('./pages/ContactPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const MfaEnrollPage = lazy(() => import('./pages/MfaEnrollPage'))
 const MfaChallengePage = lazy(() => import('./pages/MfaChallengePage'))
@@ -84,6 +85,7 @@ export const routes: RouteObject[] = [
       r('privacy', PrivacyPage),
       r('returns', ReturnsPage),
       r('shipping', ShippingPage),
+      r('contact', ContactPage),
       ...(KitPage ? [r('__kit', KitPage)] : []),
       r('*', NotFoundPage),
     ],

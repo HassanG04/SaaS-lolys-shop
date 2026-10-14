@@ -35,6 +35,7 @@ export function Footer() {
               ['/privacy', t.footer.privacy],
               ['/returns', t.footer.returns],
               ['/shipping', t.footer.shipping],
+              ['/contact', t.footer.contact],
             ].map(([to, label]) => (
               <Link
                 key={to}

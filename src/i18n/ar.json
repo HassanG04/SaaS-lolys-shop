@@ -376,7 +376,8 @@
     "terms": "الشروط والأحكام",
     "privacy": "سياسة الخصوصية",
     "returns": "سياسة الاستبدال والاسترجاع",
-    "shipping": "الشحن والتوصيل"
+    "shipping": "الشحن والتوصيل",
+    "contact": "تواصل معنا"
   },
   "seo": {
     "defaultTitle": "Lolys' Accessories & Home",
@@ -405,6 +406,7 @@
     "privacy": "سياسة الخصوصية",
     "returns": "سياسة الاستبدال والاسترجاع",
     "shipping": "الشحن والتوصيل",
+    "contact": "تواصل معنا",
     "notFound": "الصفحة غير موجودة"
   },
   "catalog": {

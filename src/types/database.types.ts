@@ -283,7 +283,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "admin_approve_order":
+            "admin_anonymize_customer":
+{ Args: { "p_user_id": string }; Returns: undefined
+                           },
+"admin_approve_order":
 { Args: { "p_note"?: string,"p_order_id": number }; Returns: undefined
                            },
 "admin_dashboard":
