@@ -1,5 +1,7 @@
 # Merge-day plan — Lolys' Accessories & Home
 
+> Historical preparation snapshot. The owner subsequently approved execution; PR15-19 are now merged and PR20 delivers the final record. See [MERGE-RESULTS.md](MERGE-RESULTS.md) and live PR20 status. Do not rerun the old rebase commands below.
+
 Prepared 2026-10-14 (Africa/Cairo); branch/CI snapshot at 15:16 Cairo (12:16 UTC), after the owner paused Anti-Gravity. **No feature code was authored and no branch was merged into main.** Main remains `6f33d5d17fa89e63a20e960f98f7df38e931e377`. Existing unfinished code was saved exactly as WIP checkpoints.
 
 ## Decision and scope

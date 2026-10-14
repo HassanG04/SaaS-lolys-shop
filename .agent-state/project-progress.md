@@ -287,3 +287,29 @@ Problems found:
   - T-7.08 is incomplete and contains an unscoped local MFA-fixture deletion; isolate and review fixtures before future execution.
 Next action: Owner reviews PR15, then follows MERGE-PLAN.md for PR16-20. Payment branches remain held. Main unchanged.
 ```
+
+## Owner-approved merge execution — 2026-10-14
+
+```yaml
+Current task: Execute the owner-approved PR15-20 merge sequence and cleanup; no feature implementation.
+Completed:
+  - Owner explicitly approved the recommended sequence after the preparation-only snapshot.
+  - PR15-19 squash-merged into main after current-head checks passed; each merged tree equals its verified source tree.
+  - PR16-19 rebased against the actual preceding squash with recorded cutoffs and exact force-with-lease pushes; all source trees preserved.
+  - Preserved all roadmap statuses and the union of prior shared changes; no lockfile, translation or migration conflict needed resolution.
+  - PR20 delivers the payment amendment, historical inventory and new execution record; its live PR records final checks, merge SHA and cleanup.
+Files changed:
+  - docs/handoff/MERGE-RESULTS.md
+  - docs/handoff/MERGE-PLAN.md
+  - .agent-state/project-progress.md
+Tests executed:
+  - Full local verify after each PR16-19 rebase: 161 tests for PR16; 166 each for PR17-19, plus build, lint, format, type checks and guards.
+  - All required fresh remote checks passed before each merge; real Gitleaks and Semgrep checks remained mandatory where present.
+  - Each GitHub squash commit's tree matched the verified PR head exactly.
+  - PR20 final verification is recorded in its live description; no shared database or unfinished security E2E execution.
+Problems found:
+  - Dependabot opened PR21-25 while the security configuration reached main; three have failing checks and none is in this approved merge sequence.
+  - Remaining development histories diverge before the earlier foundation squash and need dedicated integration PRs.
+  - Payment hold remains on 40 total branches, including 32 published branches. Nine other published development branches still need dependency preparation and remote checks.
+Next action: Finish PR20 checks and cleanup in this approved sequence, then use its live merged state and MERGE-RESULTS.md as the handoff. Next eligible preparation is the existing database foundation and T-1.09 CI chain; no payment merges or deployment.
+```
