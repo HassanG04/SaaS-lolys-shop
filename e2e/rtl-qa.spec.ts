@@ -231,7 +231,7 @@ test.describe.serial('RTL Visual QA and Screenshot Suite (T-7.01)', () => {
     await loginCustomer(page)
     await page.goto('/account/orders')
     await expect(page.getByRole('heading', { name: 'طلباتي' })).toBeVisible({ timeout: 10000 })
-    await expect(page.getByText('كابتن محمود')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('كابتن محمود').first()).toBeVisible({ timeout: 10000 })
 
     await setThemeAndCapture(page, '07-orders')
   })

@@ -37,6 +37,10 @@ async function loginCustomer(page: Page) {
 }
 
 test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
+  test.beforeAll(() => {
+    queryDb('DELETE FROM auth.mfa_factors;')
+  })
+
   test.beforeEach(async ({ page }) => {
     page.on('pageerror', (err) => console.log(`[BROWSER ERROR] ${err.message}`))
     page.on('response', async (res) => {
