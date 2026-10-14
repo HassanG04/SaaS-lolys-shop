@@ -5,3 +5,6 @@ d334e5738906cfaea4a859c0e27eddf0fe711c28:src/features/admin/admin.test.tsx:gener
 d334e5738906cfaea4a859c0e27eddf0fe711c28:src/features/admin/admin.test.tsx:generic-api-key:139
 # Environment-validation fixture: non-JWT test public key, not a credential.
 686cfe2a4db575ed3bddffdfd588ecb0456615b8:src/lib/env.test.ts:generic-api-key:11
+# Local Supabase CI public anon JWT, issuer supabase-demo, localhost endpoint.
+# Reviewed without printing token; this exact historical test occurrence only.
+b18aa57c7d0264f0840f3c4e65df7d64d6248ad7:.github/workflows/ci.yml:jwt:178
