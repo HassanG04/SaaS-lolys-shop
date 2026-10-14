@@ -5,6 +5,10 @@ from lolys_analytics.models.baselines import (
     MovingAverage28Model,
     SeasonalNaiveModel,
 )
+from lolys_analytics.models.gbm import (
+    LightGBMDirectModel,
+    check_readiness,
+)
 from lolys_analytics.models.intermittent import (
     ADIDAModel,
     CrostonSBAModel,
@@ -21,7 +25,9 @@ __all__ = [
     "AutoThetaModel",
     "CrostonSBAModel",
     "ForecastResult",
+    "LightGBMDirectModel",
     "MovingAverage28Model",
     "SeasonalNaiveModel",
     "TSBModel",
+    "check_readiness",
 ]

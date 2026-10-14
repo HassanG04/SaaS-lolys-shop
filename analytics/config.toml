@@ -46,3 +46,12 @@ black_friday_uplift = 1.10
 outlier_rate = 0.015
 stockout_probability = 0.03
 poisoned_accounts_count = 3
+
+[global_ml]
+# Gated Global ML model (ADR-0005, T-9.06)
+# Gated: requires >= 6 months of data and >= 30 active products
+enabled = false
+min_history_days = 180
+min_active_products = 30
+min_beat_percentage = 0.05
+direct_horizons = [7, 14, 21, 28]

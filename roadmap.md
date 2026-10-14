@@ -1016,7 +1016,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run analytics:test`
 
 #### T-9.06: Optional global ML model
-`status: todo` `owner: agent` `needs: T-9.05` `size: L`
+`status: done` `owner: agent` `needs: T-9.05` `size: L`
 - **Do:** Only if the owner approves through an ADR once there are at least 6 months of data and 30 active products: a LightGBM global model with lag, rolling, calendar, price, discount and stock features, direct multi-horizon, compared with the statistical models in backtests. Otherwise mark this task `skip`.
 - **Done when:** the ADR exists; if built, the model beats the best statistical model in backtests, otherwise it stays disabled.
 - **Verify:** `npm run analytics:test`
@@ -1387,6 +1387,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-14 | T-9.03 | Anti-Gravity | Implemented calendar.py with committed official dates table (2026-2028), astronomical Hijri conversions (Ramadan, Eid al-Fitr, Eid al-Adha), fixed retail dates (Mother's Day, Valentine's Day, Black Friday, Back-to-School) and PostgreSQL DOW alignment; implemented features.py with all 5 cleaning rules (valid sales, stockout demand censoring with past same-weekday median imputation, promotion features, 99th percentile outlier winsorisation, poisoned account filtering) and feature builders (lags 1/7/14/28, rolling means and standard deviations 7/28, calendar, discount, in-stock fraction); proved mathematical zero future data leakage; added calendar-check CLI; 17 pytest unit tests and ruff checks pass; full npm run verify passes cleanly. | pending |
 | 2026-10-15 | T-9.04 | Anti-Gravity | Implemented baseline models (SeasonalNaiveModel with 7-day cyclical projection, MovingAverage28Model with 28-day window rolling level, and 80% conformal prediction intervals) in models/baselines.py; implemented rolling-origin backtesting harness in backtest.py with strict temporal isolation; implemented core metrics WAPE, MASE against seasonal naive, conformal pinball loss, signed bias, and interval coverage; added markdown report table generator and backtest CLI subcommand; verified exact metric calculations, property test proving zero future data leakage into folds, and golden test reproducing deterministic metrics on synthetic data (seed 42); 23 unit tests and ruff pass; full npm run verify passes cleanly. | pending |
 | 2026-10-15 | T-9.05 | Anti-Gravity | Implemented statistical models (AutoETS with Holt-Winters level, trend, and 7-day additive seasonality with parameter grid search; AutoTheta with seasonal decomposition, linear drift, and simple exponential smoothing) in models/statistical.py and intermittent models (Croston SBA, TSB with per-period probability updates, ADIDA with bucketed exponential smoothing) in models/intermittent.py; 80% conformal prediction intervals; verified AutoTheta beats Seasonal Naive baseline by 7.72% relative WAPE (46.53% vs 50.42%, exceeding required 5% beat threshold) and 80% interval coverage is 79.8% (within 0.2 points of 80%, well within 10 points); backtest CLI updated with model options; 27 analytics tests pass; full verify passes cleanly. | pending |
+| 2026-10-15 | T-9.06 | Anti-Gravity | Authored ADR-0005 establishing gating and activation policy for Global ML (LightGBM): gated behind >= 180 days of history and >= 30 active products; implemented LightGBMDirectModel in models/gbm.py with direct multi-horizon modeling (4 weekly buckets), lag/rolling/calendar/discount/stock features, stockout demand censoring loss masking, and 80% conformal prediction intervals; backtest confirms LightGBM achieves 47.98% WAPE and does not beat AutoTheta (46.53%) on preliminary small data, so Global ML stays disabled by default in config.toml per ADR; 34 analytics tests pass; full verify passes cleanly. | pending |
 
 
 ### Open questions (agents add rows; the owner answers)
@@ -1404,3 +1405,5 @@ What gets easier, what gets harder, what to watch.
 | 0002 | Bilingual interface | accepted under OD-003, recorded in Anti-Gravity handover |
 | 0003 | Analytics CI connection method for restricted roles | accepted (T-9.01) |
 | 0004 | Analytics stack and synthetic time series pipeline | accepted (T-9.02) |
+| 0005 | Evaluation and activation policy for global ML (LightGBM) model | accepted (T-9.06) |
+

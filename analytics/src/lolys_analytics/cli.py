@@ -64,6 +64,7 @@ def main(argv: list[str] | None = None) -> int:
             "croston_sba",
             "tsb",
             "adida",
+            "lightgbm",
         ],
         help="Forecasting model to backtest",
     )
@@ -132,6 +133,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "backtest":
         from lolys_analytics.backtest import run_backtest
         from lolys_analytics.models.baselines import MovingAverage28Model, SeasonalNaiveModel
+        from lolys_analytics.models.gbm import LightGBMDirectModel
         from lolys_analytics.models.intermittent import ADIDAModel, CrostonSBAModel, TSBModel
         from lolys_analytics.models.statistical import AutoETSModel, AutoThetaModel
 
@@ -156,6 +158,7 @@ def main(argv: list[str] | None = None) -> int:
             "croston_sba": CrostonSBAModel(),
             "tsb": TSBModel(),
             "adida": ADIDAModel(),
+            "lightgbm": LightGBMDirectModel(),
         }
         model = models_map[args.model]
         report = run_backtest(daily_units, model, n_folds=args.folds, horizon=args.horizon)

@@ -58,12 +58,22 @@ class SyntheticConfig:
 
 
 @dataclass(frozen=True)
+class GlobalMLConfig:
+    enabled: bool = False
+    min_history_days: int = 180
+    min_active_products: int = 30
+    min_beat_percentage: float = 0.05
+    direct_horizons: tuple[int, ...] = (7, 14, 21, 28)
+
+
+@dataclass(frozen=True)
 class AnalyticsConfig:
     gates: GatesConfig
     reorder: ReorderConfig
     cleaning: CleaningConfig
     intervals: IntervalsConfig
     synthetic: SyntheticConfig
+    global_ml: GlobalMLConfig = GlobalMLConfig()
 
 
 def get_default_config_path() -> Path:
@@ -98,6 +108,7 @@ def load_config(path: str | Path | None = None) -> AnalyticsConfig:
     cleaning_data = data.get("cleaning", {})
     intervals_data = data.get("intervals", {})
     synthetic_data = data.get("synthetic", {})
+    global_ml_data = data.get("global_ml", {})
 
     return AnalyticsConfig(
         gates=GatesConfig(
@@ -140,5 +151,12 @@ def load_config(path: str | Path | None = None) -> AnalyticsConfig:
             outlier_rate=float(synthetic_data.get("outlier_rate", 0.015)),
             stockout_probability=float(synthetic_data.get("stockout_probability", 0.03)),
             poisoned_accounts_count=int(synthetic_data.get("poisoned_accounts_count", 3)),
+        ),
+        global_ml=GlobalMLConfig(
+            enabled=bool(global_ml_data.get("enabled", False)),
+            min_history_days=int(global_ml_data.get("min_history_days", 180)),
+            min_active_products=int(global_ml_data.get("min_active_products", 30)),
+            min_beat_percentage=float(global_ml_data.get("min_beat_percentage", 0.05)),
+            direct_horizons=tuple(global_ml_data.get("direct_horizons", (7, 14, 21, 28))),
         ),
     )
