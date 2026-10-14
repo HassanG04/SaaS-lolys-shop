@@ -58,7 +58,8 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run build
-      # T-0.09 adds check:bundle and check:secrets when the guards exist.
+      - run: npm run check:secrets
+      # T-0.09b adds the initial-route bundle guard.
 
   roadmap:
     runs-on: ubuntu-latest
