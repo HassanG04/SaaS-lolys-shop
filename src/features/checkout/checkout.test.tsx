@@ -223,8 +223,8 @@ describe('placeOrderApi', () => {
         phone: '01012345678',
         governorate_id: 1,
         address: '15 شارع النصر',
+        save_address: true,
       },
-      p_save_address: true,
     })
     expect(result).toBe(1045)
   })

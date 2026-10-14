@@ -23,10 +23,11 @@ export default function PayOrderPage() {
   const { user } = useAuth()
   const { success: toastSuccess } = useToast()
   const { data: order, isLoading, error, refetch } = useOrderPaymentDetails(parsedOrderId)
-  const isAwaitingApproval = order?.payment_status === 'awaiting_approval'
+  const isOrderAwaitingApproval =
+    order?.payment_status === 'awaiting_approval' && order?.status !== 'cancelled'
   const { data: instructions } = usePaymentInstructions(
     parsedOrderId,
-    !isAwaitingApproval && Boolean(order),
+    !isOrderAwaitingApproval && Boolean(order) && order?.status !== 'cancelled',
   )
   const { data: settings } = usePublicSettings()
 
@@ -150,6 +151,7 @@ export default function PayOrderPage() {
   const isUnderReview = order.payment_status === 'under_review'
   const isRejected = order.payment_status === 'rejected'
   const isAwaitingProof = order.payment_status === 'awaiting_proof'
+  const isAwaitingApproval = order.payment_status === 'awaiting_approval' && !isExpired
 
   const canUploadProof = (isAwaitingProof || isRejected) && !isExpired && !isAwaitingApproval
 
@@ -214,7 +216,7 @@ export default function PayOrderPage() {
         </div>
 
         {/* Deadline countdown */}
-        {effectiveDeadline && !isPaid && !isUnderReview && !isAwaitingApproval && (
+        {(effectiveDeadline || isExpired) && !isPaid && !isUnderReview && !isAwaitingApproval && (
           <div
             className={`flex items-center justify-between rounded-chip border p-4 text-small ${
               isExpired

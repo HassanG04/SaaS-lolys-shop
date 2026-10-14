@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { getProductStock, setProductStock, expireOrderViaTestHook } from './helpers/db'
+import { getProductStock, setProductStock, expireOrderViaTestHook, queryDb } from './helpers/db'
 
 async function loginCustomer(page: Page) {
   await page.goto('/login')
@@ -252,13 +252,27 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     await page.getByRole('radio', { name: /مندوب/ }).click()
     await page.getByRole('radio', { name: /إنستاباي/ }).click()
-    await page.getByRole('button', { name: 'تأكيد الطلب' }).click()
+    await page.getByRole('button', { name: /إرسال الطلب|تأكيد الطلب/ }).click()
 
     // Land on payment page
     await page.waitForURL('**/pay/*', { timeout: 15000 })
 
-    // Verify QR placeholder
-    const qrImg = page.locator('img[src*="instapay-qr.svg"]')
+    const orderIdMatch = page.url().match(/\/pay\/(\d+)/)
+    const orderId = Number(orderIdMatch?.[1])
+
+    // In approval-first flow, wait for approval screen and simulate shop approval
+    await expect(page.getByText('وصل طلبك للمتجر')).toBeVisible({ timeout: 10000 })
+    queryDb(`
+      UPDATE public.orders
+         SET status = 'confirmed',
+             payment_status = 'awaiting_proof',
+             payment_deadline = now() + interval '24 hours'
+       WHERE id = ${orderId};
+    `)
+    await page.reload()
+
+    // Verify QR placeholder / image
+    const qrImg = page.getByAltText('رمز QR لإنستاباي')
     await expect(qrImg).toBeVisible()
 
     // Test non-image file refusal: magic bytes check triggers UPL-001
@@ -324,7 +338,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     await page.getByRole('radio', { name: /مندوب/ }).click()
     await page.getByRole('radio', { name: /إنستاباي/ }).click()
-    await page.getByRole('button', { name: 'تأكيد الطلب' }).click()
+    await page.getByRole('button', { name: /إرسال الطلب|تأكيد الطلب/ }).click()
     await page.waitForURL('**/pay/*', { timeout: 15000 })
 
     // Extract created order ID

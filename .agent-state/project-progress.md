@@ -1,10 +1,11 @@
 # Shared project progress
 
-Updated 2026-10-14 (Africa/Cairo). Active: Anti-Gravity, completed T-5.11 (CSV export).
+Updated 2026-10-14 (Africa/Cairo). Active: Anti-Gravity, completed T-5.12 (Admin E2E).
 
 ```yaml
-Current task: T-5.11: CSV export completed and verified.
+Current task: T-5.12: Admin E2E completed and verified.
 Completed:
+  - T-5.12: Implemented comprehensive end-to-end admin test suite in e2e/admin.spec.ts covering 9 scenarios: (1) Admin at AAL1 cannot load admin data, enrolls TOTP MFA, and challenges fresh session to AAL2; (2) Non-admin users (customer) attempting to access /admin or /admin/* are blocked with AUTH-011; (3) Create category with tile image and product with main image, verify both appear on storefront (/, /category/:slug, /product/:id); (4) Inline stock update to 0 in admin renders sold-out badge and disables purchase button on storefront; (5) Product archiving, restoration, and deletion constraints (ADM-004 on ordered product with fallback archive button, ADM-005 on category with products); (6) Order fulfillment lifecycle (pending -> confirmed -> shipped with courier rep name & phone) visible to customer on /account/orders; (7) InstaPay flow (order in awaiting_approval, admin approval, proof upload, payment rejection, proof re-upload, payment confirmation, and ORD-015 shipping guard); (8) InstaPay QR replacement requires Step-Up MFA and records in public.audit_log; (9) CSV export enforces Step-Up MFA, prepends UTF-8 BOM (\uFEFF), and neutralizes formula injection (=cmd prefixed with '). Added TOTP helper in e2e/helpers/totp.ts and audit query helper in e2e/helpers/db.ts. Fixed PostgREST place_order RPC argument signature for save_address inside p_ship. All 17 E2E tests pass (9 admin + 8 storefront) and full npm run verify passes (791 tests, initial bundle 199,785 / 200,000 gzip bytes).
   - T-5.11: Implemented CSV export in src/features/admin/export/ (csv.ts, formatters.ts, ExportCsvButton.tsx) and wired export buttons into Products, Orders, Customers, and Audit Log admin pages. All exports prepend UTF-8 BOM (\uFEFF) for Arabic spreadsheet display, format dates in filenames (YYYY-MM-DD), and neutralize formula injection (SEC-14) by prefixing cells starting with =, +, -, @, \t, or \r with a single quote (including unit tests with =cmd). Enforced Step-Up MFA confirmation (via useStepUp / StepUpDialog with in-memory 5-minute validity) before export execution. Created 28 unit tests in export.test.tsx. Maintained initial bundle budget (199,787 / 200,000 gzip bytes). Full verify passes (648 app + 143 tooling tests = 791 tests).
   - Change Request UI (T-4.02, T-4.03, T-4.06, T-5.05):
     - T-4.02 (Checkout): Added "احفظ هذا العنوان لطلباتي القادمة" checkbox (default checked) passing p_save_address to place_order RPC; added approval note for InstaPay ("سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع"); changed submit button to "إرسال الطلب".
@@ -102,6 +103,7 @@ Completed:
   - Dialog handover e5d498b also passes all four jobs in run 38071760275.
   - Owner resolved OD-002: pearls bounce only while loading, static for reduced motion; design spec updated.
 Files changed:
+  - T-5.12: e2e/admin.spec.ts, e2e/helpers/totp.ts, e2e/helpers/db.ts, e2e/storefront-order.spec.ts, src/features/checkout/api.ts, src/features/checkout/checkout.test.tsx, src/features/admin/orders/OrdersPage.tsx, src/pages/PayOrderPage.tsx, supabase/config.toml, roadmap.md.
   - T-5.11: src/features/admin/export/types.ts, src/features/admin/export/csv.ts, src/features/admin/export/formatters.ts, src/features/admin/export/ExportCsvButton.tsx, src/features/admin/export/index.ts, src/features/admin/export/export.test.tsx, src/features/admin/audit/api.ts, src/features/admin/audit/AuditPage.tsx, src/features/admin/customers/CustomersPage.tsx, src/features/admin/orders/OrdersPage.tsx, src/features/admin/products/ProductsPage.tsx, src/features/auth/useStepUp.ts, roadmap.md.
   - T-5.02: src/features/admin/products/types.ts, src/features/admin/products/api.ts, src/features/admin/products/hooks.ts, src/features/admin/products/StockEditDialog.tsx, src/features/admin/products/ProductsPage.tsx, src/features/admin/products/index.ts, src/features/admin/products/products.test.tsx, src/routes.tsx, src/i18n/ar.json, src/i18n/en.json, vite.config.ts, roadmap.md, .agent-state/project-progress.md.
   - T-4.07: package.json, package-lock.json, scripts/pending.mjs, playwright.config.ts, e2e/global-setup.ts, e2e/helpers/db.ts, e2e/storefront-order.spec.ts, .github/workflows/ci.yml, roadmap.md.
@@ -127,6 +129,7 @@ Files changed:
   - Text fields add Field, Input, Select, Textarea, SearchInput, forms.test.tsx and FormExamples; update kit, CSS, Arabic copy and continuation/PR/roadmap docs.
   - Choice controls add Choice, Checkbox, Radio, choices.test.tsx and ChoiceExamples; update form preview, CSS, Arabic copy and continuation/PR/roadmap docs.
 Tests executed:
+  - T-5.12: npm run test:e2e passes all 17 end-to-end scenarios (9 admin + 8 storefront) in 2.0 minutes. npm run verify passes with 648 app + 143 tooling tests (791 total); initial JS bundle size is 199,785 gzip bytes <= 200,000 bytes.
   - T-5.11: npm run verify passes with 648 app + 143 tooling tests (791 total); check:migrations, check:sql, check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (UTF-8 BOM, formula neutralization =, +, -, @, \t, \r, =cmd product, whitespace handling, RFC 4180 escaping, filenames, entity formatters for products, orders, customers, and audit logs, Step-Up MFA prompt and in-memory cache, disabled states), production build, check:secrets, and check:bundle pass. Initial JS bundle size is 199,787 gzip bytes <= 200,000 bytes.
   - T-4.07: npm run test:e2e passes all 8 end-to-end scenarios (guest browsing + cart storage, registration & login, COD checkout & stock decrease, oversell error mapping, delivery method validation, order cancellation & stock restoral, InstaPay QR & proof upload with UPL-001 magic bytes validation, and unpaid order expiry with stock restoration) in 1.5 minutes. Full npm run verify passes (check:migrations, check:sql, check:tokens, check:i18n, lint, prettier check, typecheck, unit tests, production build, check:secrets, and check:bundle with 199,839 gzip bytes <= 200,000 bytes).
   - T-4.05: npm run verify passes with 442 app + 141 tooling tests (583 total); check:migrations, check:sql, check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (favorite button toggle, bow heart styling, guest prompt dialog, optimistic cache updates with rollback, favorites page empty/loading/error states, counter badges, item unfavorite), production build, check:secrets, and check:bundle pass. Initial JS bundle size is 199,997 gzip bytes <= 200,000 bytes.
@@ -167,7 +170,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: T-5.11 done. Ready for T-5.12: E2E: admin.
+Next action: T-5.12 done. Ready for T-7.01: Arabic copy review and RTL QA.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:

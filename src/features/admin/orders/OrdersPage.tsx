@@ -127,6 +127,7 @@ export default function OrdersPage() {
           {/* Search Input */}
           <div className="md:col-span-2">
             <Input
+              id="orders-search-input"
               label={isAr ? 'بحث في الطلبات' : 'Search Orders'}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
