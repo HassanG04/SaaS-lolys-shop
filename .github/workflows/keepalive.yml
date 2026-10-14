@@ -1,0 +1,82 @@
+name: Keep-Alive Free-Tier Supabase
+
+# ==============================================================================
+# Task T-8.05: Keep-alive workflow (only if staying on a free plan)
+#
+# Context & Purpose:
+# Supabase free-tier projects automatically pause after 7 consecutive days of
+# inactivity (no incoming database or REST API queries). When a project is paused,
+# all API endpoints return HTTP 503/timeout, and automated deployments (such as
+# supabase db push in db-production.yml or db-staging.yml) will fail.
+#
+# Open Decision O-11:
+# The recommended architecture for production is a paid Supabase plan (Pro tier),
+# which provides automated daily backups and never pauses. If the shop owner
+# chooses a paid production plan (O-11), this workflow is not needed and can be
+# skipped or disabled.
+#
+# This workflow sends a weekly lightweight GET request to the Supabase REST API
+# with the public anon key (secrets: PRODUCTION_URL, PRODUCTION_ANON_KEY).
+# If the secrets are not configured or empty, the workflow exits cleanly with an
+# informational message rather than failing.
+# ==============================================================================
+
+on:
+  schedule:
+    # Runs every Monday at 05:00 UTC (weekly keep-alive pulse)
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual keep-alive trigger'
+        required: false
+        default: 'Manual test of keep-alive ping'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    name: Ping Supabase REST API
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send keep-alive request
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+          PRODUCTION_ANON_KEY: ${{ secrets.PRODUCTION_ANON_KEY }}
+        run: |
+          set -eu
+
+          if [ -z "${PRODUCTION_URL:-}" ] || [ -z "${PRODUCTION_ANON_KEY:-}" ]; then
+            echo "::notice title=Keep-Alive Skipped::PRODUCTION_URL or PRODUCTION_ANON_KEY secrets are not configured. If production uses a paid plan (O-11), keep-alive is not required."
+            exit 0
+          fi
+
+          # Strip trailing slashes from the base URL if present
+          CLEAN_URL="${PRODUCTION_URL%/}"
+          TARGET_URL="${CLEAN_URL}/rest/v1/categories?select=id&limit=1"
+
+          echo "Pinging REST API endpoint: ${CLEAN_URL}/rest/v1/categories (limit=1)"
+
+          HTTP_STATUS=$(curl -s -S -o /dev/null -w "%{http_code}" \
+            --connect-timeout 15 \
+            --max-time 30 \
+            --retry 2 \
+            --retry-delay 5 \
+            -H "apikey: ${PRODUCTION_ANON_KEY}" \
+            -H "Authorization: Bearer ${PRODUCTION_ANON_KEY}" \
+            "${TARGET_URL}")
+
+          echo "Response HTTP status: ${HTTP_STATUS}"
+
+          if [ "${HTTP_STATUS}" -ge 200 ] && [ "${HTTP_STATUS}" -lt 400 ]; then
+            echo "Keep-alive ping successful. Project is active."
+          else
+            echo "::error title=Keep-Alive Failed::Received HTTP status ${HTTP_STATUS} from Supabase REST endpoint. The project may be paused or unresponsive."
+            exit 1
+          fi
