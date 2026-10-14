@@ -177,6 +177,8 @@ export default function CategoryPage() {
                 <ProductImage
                   src={category.image_url}
                   alt={categoryName}
+                  loading="eager"
+                  fetchPriority="high"
                   className="size-full rounded-arch"
                   imageClassName="size-full object-cover rounded-arch"
                 />

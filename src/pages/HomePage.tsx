@@ -135,6 +135,8 @@ export default function HomePage() {
                 <ProductImage
                   src="categories/earrings-cover.webp"
                   alt="Lolys Jewelry Hero"
+                  loading="eager"
+                  fetchPriority="high"
                   className="size-full rounded-arch"
                   imageClassName="size-full object-cover rounded-arch"
                 />

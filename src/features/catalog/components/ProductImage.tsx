@@ -20,7 +20,8 @@ export function ProductImage({
   ...props
 }: ProductImageProps) {
   const [hasError, setHasError] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
+  const isEager = loading === 'eager'
+  const [isLoaded, setIsLoaded] = useState(isEager)
 
   const resolvedUrl = publicImageUrl(src)
   const isAvailable = Boolean(resolvedUrl) && !hasError
@@ -39,7 +40,7 @@ export function ProductImage({
       {isAvailable ? (
         <>
           {/* Skeleton placeholder while loading to prevent layout shift */}
-          {!isLoaded && (
+          {!isLoaded && !isEager && (
             <div aria-hidden="true" className="absolute inset-0 animate-pulse bg-surface-2" />
           )}
           <img
@@ -49,8 +50,10 @@ export function ProductImage({
             loading={loading}
             onLoad={() => setIsLoaded(true)}
             onError={() => setHasError(true)}
-            className={`size-full object-cover rounded-image transition-opacity duration-300 ${
-              isLoaded ? 'opacity-100' : 'opacity-0'
+            className={`size-full object-cover rounded-image ${
+              isEager
+                ? 'opacity-100'
+                : `transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`
             } ${imageClassName}`}
           />
         </>
