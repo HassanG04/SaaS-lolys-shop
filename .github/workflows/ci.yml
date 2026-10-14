@@ -54,7 +54,7 @@ jobs:
       - name: Install Semgrep
         run: pip install semgrep==1.108.0
       - name: Verify Semgrep project rules against planted violations
-        run: node --test scripts/test-semgrep.mjs
+        run: node --test scripts/semgrep.test.mjs
       - name: Run Semgrep SAST scan
         run: semgrep scan --config p/typescript --config p/react --config .semgrep/ --error --severity ERROR
 

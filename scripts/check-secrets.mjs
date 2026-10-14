@@ -22,6 +22,7 @@ export function inspectText(source, file) {
     !file.startsWith('dist/') &&
     (file.endsWith('.md') ||
       file.startsWith('docs/') ||
+      file.startsWith('.semgrep/') ||
       /(^|\/)(?:tests|__tests__)\//.test(file) ||
       /\.(?:test|spec)\.(?:[cm]?[jt]sx?|sql)$/.test(file))
   if (!documentationOrTest && source.includes(privilegedRole)) findings.add('PRIVILEGED_ROLE')
