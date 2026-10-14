@@ -19,6 +19,13 @@ export interface OrderPaymentDetails {
   created_at: string
 }
 
+export interface PaymentInstructions {
+  qr_path: string | null
+  instapay_handle: string | null
+  amount: number
+  deadline: string | null
+}
+
 export type SupportedProofMime = 'image/jpeg' | 'image/png' | 'image/webp'
 export type SupportedProofExt = 'jpg' | 'png' | 'webp'
 

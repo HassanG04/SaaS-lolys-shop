@@ -162,6 +162,7 @@ export function validateShippingForm(
  */
 export function buildPlaceOrderShippingPayload(
   form: ShippingAddressForm,
+  saveAddress = true,
 ): PlaceOrderShippingPayload {
   const normPhone = normalizeEgyptianPhone(form.phone)
   const normAltPhone = form.alt_phone.trim() ? normalizeEgyptianPhone(form.alt_phone) : null
@@ -178,5 +179,6 @@ export function buildPlaceOrderShippingPayload(
     apartment: form.apartment.trim() || null,
     landmark: form.landmark.trim() || null,
     notes: form.notes.trim() || null,
+    save_address: saveAddress,
   }
 }

@@ -80,6 +80,7 @@ export const ORDER_STATUS_COLORS: Record<
 }
 
 export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  awaiting_approval: 'بانتظار موافقة المتجر',
   unpaid: 'غير مدفوع',
   awaiting_proof: 'بانتظار الإثبات',
   under_review: 'قيد المراجعة',
@@ -95,4 +96,12 @@ export const DELIVERY_METHOD_LABELS: Record<DeliveryMethod, string> = {
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   cod: 'الدفع عند الاستلام',
   instapay_qr: 'إنستاباي (InstaPay)',
+}
+
+/** UI guidance only; orders_status_guard enforces this in the database. */
+export function isPaymentBlockingFulfillment(order: {
+  payment_method: PaymentMethod
+  payment_status: PaymentStatus
+}): boolean {
+  return order.payment_method === 'instapay_qr' && order.payment_status !== 'paid'
 }

@@ -3,6 +3,7 @@ import { toAppError, AppError } from '@/lib/errors'
 import { generateProofStoragePath } from './fileValidation'
 import type {
   OrderPaymentDetails,
+  PaymentInstructions,
   SubmitProofPayload,
   SupportedProofExt,
   SupportedProofMime,
@@ -45,6 +46,21 @@ export async function getOrderPaymentDetailsApi(orderId: number): Promise<OrderP
     return data as unknown as OrderPaymentDetails
   } catch (err) {
     throw toAppError(err)
+  }
+}
+
+/** Fetches private payment instructions only after the database authorizes the owner. */
+export async function getPaymentInstructionsApi(orderId: number): Promise<PaymentInstructions> {
+  try {
+    const { data, error } = await supabase.rpc('get_payment_instructions', {
+      p_order_id: orderId,
+    })
+    if (error) throw toAppError(error)
+    const instructions = data?.[0]
+    if (!instructions) throw new AppError('PAY-004')
+    return instructions
+  } catch (error) {
+    throw toAppError(error)
   }
 }
 

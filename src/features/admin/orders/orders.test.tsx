@@ -44,6 +44,7 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: null,
     paid_at: null,
+    approval_note: null,
     payment_review_note: null,
     order_items: [
       {
@@ -92,6 +93,7 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: '2026-10-11T15:00:00Z',
     paid_at: '2026-10-11T16:00:00Z',
+    approval_note: null,
     payment_review_note: 'Verified with bank SMS',
     order_items: [
       {
@@ -140,6 +142,7 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: '2026-10-10T10:00:00Z',
     paid_at: '2026-10-10T11:00:00Z',
+    approval_note: null,
     payment_review_note: null,
     order_items: [],
   },
@@ -174,6 +177,7 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: null,
     paid_at: '2026-10-09T18:00:00Z',
+    approval_note: null,
     payment_review_note: null,
     order_items: [],
   },
@@ -208,6 +212,7 @@ const mockOrders: AdminOrder[] = [
     payment_deadline: null,
     payment_submitted_at: null,
     paid_at: null,
+    approval_note: null,
     payment_review_note: null,
     order_items: [],
   },

@@ -8,6 +8,10 @@ export function useMyOrders() {
     queryKey: ['my_orders'],
     queryFn: getMyOrdersApi,
     staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: (query) =>
+      query.state.data?.some((order) => order.status === 'pending' || order.status === 'confirmed')
+        ? 10_000
+        : false,
   })
 }
 

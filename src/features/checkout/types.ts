@@ -29,6 +29,7 @@ export type PlaceOrderShippingPayload = {
   apartment?: string | null
   landmark?: string | null
   notes?: string | null
+  save_address?: boolean
 }
 
 export type PlaceOrderItemPayload = {

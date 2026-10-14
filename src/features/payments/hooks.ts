@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getOrderPaymentDetailsApi, submitPaymentProofApi, uploadPaymentProofApi } from './api'
+import { getOrderPaymentDetailsApi, getPaymentInstructionsApi, submitPaymentProofApi, uploadPaymentProofApi } from './api'
 import { reencodeImage, validateProofFile } from './fileValidation'
 import { AppError } from '@/lib/errors'
-import type { OrderPaymentDetails, SupportedProofExt, SupportedProofMime } from './types'
+import type { OrderPaymentDetails, PaymentInstructions, SupportedProofExt, SupportedProofMime } from './types'
 
 export function useOrderPaymentDetails(orderId: number | undefined) {
   return useQuery<OrderPaymentDetails, AppError>({
@@ -19,8 +19,22 @@ export function useOrderPaymentDetails(orderId: number | undefined) {
     refetchInterval: (query) => {
       // Auto-poll while awaiting confirmation or under review
       const status = query.state.data?.payment_status
-      return status === 'awaiting_proof' || status === 'under_review' ? 10_000 : false
+      const active = query.state.data?.status !== 'cancelled'
+      return active && (status === 'awaiting_approval' || status === 'awaiting_proof' || status === 'rejected' || status === 'under_review') ? 10_000 : false
     },
+  })
+}
+
+export function usePaymentInstructions(orderId: number | undefined, enabled: boolean) {
+  return useQuery<PaymentInstructions, AppError>({
+    queryKey: ['payment-instructions', orderId],
+    queryFn: () => {
+      if (!orderId || !Number.isSafeInteger(orderId)) throw new AppError('ORD-009')
+      return getPaymentInstructionsApi(orderId)
+    },
+    enabled: enabled && Boolean(orderId),
+    staleTime: 0,
+    gcTime: 0,
   })
 }
 
@@ -65,7 +79,7 @@ export function useSubmitPaymentProof() {
     },
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({ queryKey: ['order-payment', variables.orderId] })
-      void queryClient.invalidateQueries({ queryKey: ['my-orders'] })
+      void queryClient.invalidateQueries({ queryKey: ['my_orders'] })
     },
   })
 }

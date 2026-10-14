@@ -26,7 +26,8 @@ import { useSeo } from '@/features/seo'
 
 export default function CheckoutPage() {
   const { t, lang } = useLanguage()
-  const { profile } = useAuth()
+  const { profile, refreshProfile } = useAuth()
+  const [saveAddress, setSaveAddress] = useState(true)
   const { lines, subtotal, clearCart } = useCart()
   const navigate = useNavigate()
 
@@ -113,6 +114,9 @@ export default function CheckoutPage() {
       ? selectedPaymentMethod
       : (enabledPaymentMethods[0] ?? '')
 
+  const requiresApproval =
+    activePaymentMethod === 'instapay_qr' && settings?.require_order_approval !== false
+
   // Selected Delivery Fee amount
   const selectedDeliveryFeeOption = availableDeliveryOptions.find(
     (opt) => opt.method === activeDeliveryMethod,
@@ -168,7 +172,7 @@ export default function CheckoutPage() {
         quantity: line.quantity,
       }))
 
-      const shippingPayload = buildPlaceOrderShippingPayload(formData)
+      const shippingPayload = buildPlaceOrderShippingPayload(formData, saveAddress)
 
       const orderId = await placeOrderApi({
         items: payloadItems,
@@ -176,6 +180,10 @@ export default function CheckoutPage() {
         payment_method: activePaymentMethod,
         ship: shippingPayload,
       })
+
+      // The database saves the address in the same transaction as the order.
+      // A profile refresh failure must not offer a second order submission.
+      void refreshProfile().catch(() => {})
 
       // Clear shopping cart on successful checkout
       clearCart()
@@ -490,6 +498,16 @@ export default function CheckoutPage() {
             </div>
           </Card>
 
+          <label className="flex min-h-11 cursor-pointer items-center gap-3 text-small text-text">
+            <input
+              type="checkbox"
+              checked={saveAddress}
+              onChange={(event) => setSaveAddress(event.target.checked)}
+              className="size-5 accent-brand focus:outline-none focus:ring-2 focus:ring-focus"
+            />
+            {t('checkout.save_address')}
+          </label>
+
           {/* 3. Delivery Method Cards */}
           <Card className="p-6 sm:p-8 space-y-4">
             <h2 className="text-h3 font-bold font-accent text-brand">{t.checkout.delivery}</h2>
@@ -676,6 +694,12 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            {requiresApproval && (
+              <p className="rounded-chip border border-border bg-surface-tint p-4 text-small text-text">
+                {t('checkout.approval_note')}
+              </p>
+            )}
+
             {/* Action Buttons */}
             <div className="space-y-3 pt-2">
               <button
@@ -683,7 +707,11 @@ export default function CheckoutPage() {
                 disabled={isSubmitting}
                 className="w-full h-12 flex items-center justify-center rounded-pill bg-brand px-6 text-body font-semibold text-brand-contrast transition-opacity hover:opacity-90 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-focus shadow-pill"
               >
-                {isSubmitting ? t.checkout.submitting : t.checkout.submit}
+                {isSubmitting
+                  ? t.checkout.submitting
+                  : requiresApproval
+                    ? t('checkout.submit_request')
+                    : t.checkout.submit}
               </button>
 
               <Link

@@ -34,7 +34,7 @@ SELECT tests.clear_authentication();
 SELECT cmp_ok(
     (SELECT count(*)::bigint FROM public.shop_settings),
     '>=',
-    14::bigint,
+    13::bigint,
     'S22: Anon can read public settings'
 );
 
@@ -50,7 +50,7 @@ SELECT tests.authenticate_as('customer_s22');
 SELECT cmp_ok(
     (SELECT count(*)::bigint FROM public.shop_settings),
     '>=',
-    14::bigint,
+    13::bigint,
     'S22: Customer can read public settings'
 );
 
@@ -81,8 +81,8 @@ SELECT is(
 SELECT tests.authenticate_as('admin_s22', 'aal2');
 SELECT is(
     (SELECT count(*)::bigint FROM public.shop_settings),
-    16::bigint,
-    'S22: Admin at aal2 can read all 16 settings including private'
+    18::bigint,
+    'S22: Admin at aal2 can read all 18 settings including private'
 );
 
 -- ============================================================================

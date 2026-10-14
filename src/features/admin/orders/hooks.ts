@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  approveAdminOrder,
+  rejectAdminOrder,
   getAdminOrders,
   getAdminOrderById,
   updateAdminOrderStatus,
@@ -47,6 +49,22 @@ export function useUpdateOrderFulfillment() {
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
       queryClient.setQueryData(['admin-order', updated.id], updated)
+    },
+  })
+}
+
+export function useReviewOrderRequest() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (request: { id: number; approve: boolean; note: string }) =>
+      request.approve
+        ? approveAdminOrder(request.id, request.note.trim() || null)
+        : rejectAdminOrder(request.id, request.note.trim()),
+    onSuccess: (_result, request) => {
+      void queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin-order', request.id] })
+      void queryClient.invalidateQueries({ queryKey: ['admin-payment-orders'] })
+      void queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] })
     },
   })
 }

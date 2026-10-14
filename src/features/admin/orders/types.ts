@@ -52,6 +52,7 @@ export interface AdminOrder {
   payment_deadline: string | null
   payment_submitted_at: string | null
   paid_at: string | null
+  approval_note: string | null
   payment_review_note: string | null
   order_items: AdminOrderItem[]
 }

@@ -10,8 +10,7 @@ export interface PublicShopSettings {
   hero_subtitle_ar?: string
   sale_percent?: number
   payment_methods_enabled?: string[]
-  instapay_qr_path?: string
-  instapay_handle?: string
+  require_order_approval?: boolean
   returns_text_ar?: string
   returns_days?: number
   delivery_notes_ar?: string

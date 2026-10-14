@@ -3,11 +3,12 @@ import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '@/features/auth/AuthProvider'
 import {
   useOrderPaymentDetails,
+  usePaymentInstructions,
   useSubmitPaymentProof,
   usePaymentCountdown,
   validateProofFile,
 } from '@/features/payments'
-import { usePublicSettings } from '@/features/settings'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { publicImageUrl } from '@/lib/images'
 import { formatEGP } from '@/lib/format'
 import { PearlLoader } from '@/components/ui/PearlLoader'
@@ -16,13 +17,28 @@ import { ErrorMessage } from '@/lib/errors'
 import { useToast } from '@/components/ui/ToastProvider'
 
 export default function PayOrderPage() {
+  const { t } = useLanguage()
   const { orderId } = useParams<{ orderId: string }>()
   const parsedOrderId = orderId ? parseInt(orderId, 10) : undefined
 
   const { user } = useAuth()
   const { success: toastSuccess } = useToast()
   const { data: order, isLoading, error, refetch } = useOrderPaymentDetails(parsedOrderId)
-  const { data: settings } = usePublicSettings()
+  const canReadInstructions = Boolean(
+    order &&
+      order.user_id === user?.id &&
+      order.payment_method === 'instapay_qr' &&
+      (order.status === 'pending' || order.status === 'confirmed') &&
+      (order.payment_status === 'under_review' ||
+        ((order.payment_status === 'awaiting_proof' || order.payment_status === 'rejected') &&
+          order.payment_deadline && new Date(order.payment_deadline).getTime() > Date.now())),
+  )
+  const {
+    data: instructions,
+    isLoading: instructionsLoading,
+    error: instructionsError,
+    refetch: refetchInstructions,
+  } = usePaymentInstructions(parsedOrderId, canReadInstructions)
 
   const [referenceInput, setReferenceInput] = useState('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -33,7 +49,7 @@ export default function PayOrderPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const submitMutation = useSubmitPaymentProof()
 
-  const countdown = usePaymentCountdown(order?.payment_deadline)
+  const countdown = usePaymentCountdown(instructions?.deadline ?? order?.payment_deadline)
 
   const handleCopy = (text: string, field: 'handle' | 'reference') => {
     if (!text) return
@@ -77,7 +93,7 @@ export default function PayOrderPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user || !order || !selectedFile || !referenceInput.trim()) return
+    if (!user || !order || !selectedFile || !referenceInput.trim() || !canReadInstructions || !instructions || countdown.isExpired) return
 
     try {
       await submitMutation.mutateAsync({
@@ -138,19 +154,30 @@ export default function PayOrderPage() {
     )
   }
 
+  if (order.payment_status === 'awaiting_approval' && order.status === 'pending') {
+    return (
+      <div className="mx-auto max-w-xl space-y-6 py-12">
+        <div role="status" className="rounded-card border border-border bg-surface p-6 sm:p-8 text-center space-y-4">
+          <h1 className="text-h2 font-bold font-accent text-brand">{t('paystatus.awaiting_approval')}</h1>
+          <p className="text-body text-text-muted">{t('order.approval_wait')}</p>
+          <Link to="/account/orders" className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast focus:outline-none focus:ring-2 focus:ring-focus">
+            {t.account.orders}
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   const isExpired = countdown.isExpired || order.status === 'cancelled'
   const isPaid = order.payment_status === 'paid'
   const isUnderReview = order.payment_status === 'under_review'
   const isRejected = order.payment_status === 'rejected'
   const isAwaitingProof = order.payment_status === 'awaiting_proof'
 
-  const canUploadProof = (isAwaitingProof || isRejected) && !isExpired
-
-  const qrImageUrl = settings?.instapay_qr_path
-    ? publicImageUrl(settings.instapay_qr_path) || '/placeholders/instapay-qr.svg'
-    : '/placeholders/instapay-qr.svg'
-
-  const instapayHandle = settings?.instapay_handle || 'lolys@instapay'
+  const qrImageUrl = instructions?.qr_path ? publicImageUrl(instructions.qr_path) : null
+  const instapayHandle = instructions?.instapay_handle ?? ''
+  const instructionsAvailable = canReadInstructions && Boolean(instructions && (qrImageUrl || instapayHandle))
+  const canUploadProof = (isAwaitingProof || isRejected) && !isExpired && instructionsAvailable
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 pb-12">
@@ -218,13 +245,26 @@ export default function PayOrderPage() {
         )}
 
         {/* Total Amount Card */}
-        <div className="flex items-center justify-between rounded-chip bg-surface-2 p-4">
-          <span className="text-body font-medium text-text">المبلغ المطلوب بدقة:</span>
-          <span className="text-h3 font-bold text-brand">{formatEGP(order.total)}</span>
-        </div>
+        {canReadInstructions && instructions && (
+          <div className="flex items-center justify-between rounded-chip bg-surface-2 p-4">
+            <span className="text-body font-medium text-text">المبلغ المطلوب بدقة:</span>
+            <span className="text-h3 font-bold text-brand">{formatEGP(instructions.amount)}</span>
+          </div>
+        )}
       </div>
 
+      {canReadInstructions && instructionsLoading && (
+        <div role="status" className="flex justify-center p-6"><PearlLoader loading /></div>
+      )}
+      {canReadInstructions && instructionsError && (
+        <ErrorPanel error={instructionsError} title={t('pay.instructions_unavailable')} onRetry={() => void refetchInstructions()} />
+      )}
+      {canReadInstructions && !instructionsLoading && !instructionsError && !instructionsAvailable && (
+        <p role="status" className="rounded-card border border-border bg-surface p-6 text-text-muted">{t('pay.instructions_missing')}</p>
+      )}
+
       {/* Step by step instructions & QR details */}
+      {instructionsAvailable && (
       <div className="rounded-card border border-border bg-surface p-6 sm:p-8 space-y-6">
         <h2 className="text-h3 font-bold text-text">خطوات الدفع عبر إنستاباي</h2>
 
@@ -240,19 +280,16 @@ export default function PayOrderPage() {
 
         {/* QR Code and Handle Container */}
         <div className="flex flex-col sm:flex-row items-center gap-6 rounded-chip border border-border bg-surface-2 p-6">
-          <div className="relative size-48 shrink-0 overflow-hidden rounded-chip border border-border bg-bg p-2">
+          {qrImageUrl && (<div className="relative size-48 shrink-0 overflow-hidden rounded-chip border border-border bg-bg p-2">
             <img
               src={qrImageUrl}
               alt="رمز QR لإنستاباي"
               className="size-full object-contain"
-              onError={(e) => {
-                e.currentTarget.src = '/placeholders/instapay-qr.svg'
-              }}
             />
-          </div>
+          </div>)}
 
           <div className="flex-1 space-y-4 w-full">
-            <div>
+            {instapayHandle && (<div>
               <span className="text-caption font-medium text-text-muted">
                 معرّف إنستاباي (IPA):
               </span>
@@ -271,7 +308,7 @@ export default function PayOrderPage() {
                   {copiedField === 'handle' ? 'تم النسخ ✓' : 'نسخ'}
                 </button>
               </div>
-            </div>
+            </div>)}
 
             <div>
               <span className="text-caption font-medium text-text-muted">
@@ -296,6 +333,8 @@ export default function PayOrderPage() {
           </div>
         </div>
       </div>
+
+      )}
 
       {/* Proof upload or status banner */}
       {isPaid ? (
@@ -480,7 +519,7 @@ export default function PayOrderPage() {
             </button>
           </div>
         </form>
-      ) : (
+      ) : isExpired ? (
         <div className="rounded-card border border-danger/30 bg-danger/5 p-6 sm:p-8 text-center space-y-4">
           <h2 className="text-h3 font-bold text-danger">انتهت مهلة الدفع المحددة</h2>
           <p className="text-body text-text-muted">
@@ -501,7 +540,7 @@ export default function PayOrderPage() {
             </Link>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

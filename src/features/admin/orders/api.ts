@@ -127,3 +127,28 @@ export async function updateAdminOrderFulfillment(
     throw toAppError(err)
   }
 }
+
+/** Database approval RPCs enforce MFA, status, deadlines, audit and restocking. */
+export async function approveAdminOrder(id: number, note: string | null): Promise<void> {
+  try {
+    const { error } = await supabase.rpc('admin_approve_order', {
+      p_order_id: id,
+      p_note: note,
+    })
+    if (error) throw toAppError(error)
+  } catch (error) {
+    throw toAppError(error)
+  }
+}
+
+export async function rejectAdminOrder(id: number, reason: string): Promise<void> {
+  try {
+    const { error } = await supabase.rpc('admin_reject_order', {
+      p_order_id: id,
+      p_reason: reason,
+    })
+    if (error) throw toAppError(error)
+  } catch (error) {
+    throw toAppError(error)
+  }
+}

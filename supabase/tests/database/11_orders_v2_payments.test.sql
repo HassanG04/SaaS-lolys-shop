@@ -1,6 +1,7 @@
 BEGIN;
 
 SELECT plan(37);
+UPDATE public.shop_settings SET value = 'false'::jsonb WHERE key = 'require_order_approval';
 
 -- ============================================================================
 -- Setup for T-1.18 Orders v2 and Payments (Scenarios S23, S24, S25)
@@ -437,6 +438,7 @@ SELECT throws_ok(
 -- 3. Scenario S25: expire_unpaid_orders cancels and restocks overdue orders
 -- ============================================================================
 
+RESET ROLE;
 -- Create an overdue order by updating payment_deadline into past
 UPDATE public.orders
    SET payment_deadline = now() - interval '1 hour'
@@ -450,7 +452,7 @@ SELECT is(
 );
 
 -- 34. Run expire_unpaid_orders as admin
-SELECT tests.authenticate_as('admin_s23', 'aal2');
+RESET ROLE;
 SELECT cmp_ok(
     public.expire_unpaid_orders(),
     '>=',
