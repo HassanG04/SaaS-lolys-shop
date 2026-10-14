@@ -93,7 +93,7 @@ jobs:
       - run: npm run check:tokens
       - run: npm run format:check
       - run: npm run typecheck
-      # T-2.03 adds check:i18n when the translation scanner exists.
+      - run: npm run check:i18n
 
   unit:
     runs-on: ubuntu-latest

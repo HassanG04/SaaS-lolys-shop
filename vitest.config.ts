@@ -10,6 +10,11 @@ export default mergeConfig(
       include: ['src/**/*.test.{ts,tsx}'],
       clearMocks: true,
       restoreMocks: true,
+      env: {
+        VITE_SUPABASE_URL: 'http://127.0.0.1:54321',
+        VITE_SUPABASE_ANON_KEY: 'test-anon-key-with-valid-format',
+        VITE_TURNSTILE_SITE_KEY: '1x00000000000000000000AA',
+      },
       coverage: {
         provider: 'v8',
         include: ['src/lib/**/*.{ts,tsx}'],

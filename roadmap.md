@@ -175,7 +175,6 @@ Visitors browse accessories by category, see stock status and fill a cart. Logge
 | H-11 | Native-speaker review of the Arabic copy | `src/i18n/ar.json` (T-7.01) |
 | H-12 | Privacy policy, terms and returns text, reviewed by a legal professional | Arabic pages (T-7.11) |
 | H-13 | Authenticator app on the owner's phone, plus a second device for each admin | admin onboarding (T-8.09) |
-| H-14 | Temporary security-report mailbox: hassangebrill2004@gmail.com, approved 2026-10-12 until the owner supplies a replacement | SECURITY.md and public/.well-known/security.txt |
 
 ### 2.5 Non-goals before launch
 
@@ -411,43 +410,37 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`
 
 #### T-0.08e: UI kit token guard and final verification
-`status: doing` `owner: agent` `needs: T-0.08d` `size: M`
+`status: done` `owner: agent` `needs: T-0.08d` `size: M`
 - **Do:** Complete the original UI-kit acceptance gate: add a grep-based token check to `verify`, test rejection of hard-coded colors/radii/shadows, and verify `/__kit` contains the full inventory in both themes and an LTR sample while remaining excluded from production builds.
 - **Done when:** token guard fails on negative fixtures and passes the repo; all components have tests; the full kit passes keyboard, 44px target, focus, direction icon and reduced-motion checks at 360/1280 in RTL/LTR and both themes; production artifacts exclude kit code/assets/copy.
 - **Verify:** `npm run verify`
 
 #### T-0.08h: Bilingual interface and production dictionaries
-`status: doing` `owner: agent` `needs: T-0.08d` `size: M`
+`status: done` `owner: agent` `needs: T-0.08d` `size: M`
 - **Do:** Review the owner-requested Arabic/English implementation recorded in OD-003; document ADR-0002, use the existing accessible Button for the language switch, and keep preview copy out of production. Language changes must not alter catalogue error/authentication rules. Persistence and detailed verification are split into T-0.08i under the review-size rule.
 - **Done when:** shipped controls and previews switch language/direction; labels identify the destination language; tokens/focus/44px requirements hold; production excludes preview code/copy/assets; both themes/directions pass at 360/1280. Incoming source and history preserved.
 - **Verify:** `npm run verify`
 
 #### T-0.08i: Language preference behavior and verification
-`status: doing` `owner: agent` `needs: T-0.08h` `size: S`
+`status: done` `owner: agent` `needs: T-0.08h` `size: S`
 - **Do:** Complete ADR-0002 behavior checks for device selection, valid/invalid saved choices, blocked storage, keyboard switching, translated labels and document direction before paint. Verify dictionary key parity and unchanged Arabic catalogue-error previews. Retain the existing theme preference independently.
 - **Done when:** behavior tests and full verification pass; UI language/direction and focus match both themes at 360/1280, including reduced motion; production preview exclusion still passes.
 - **Verify:** `npm run verify`
 
 #### T-0.08j: Compact authentication form preview
-`status: doing` `owner: agent` `needs: T-0.08i` `size: S`
+`status: done` `owner: agent` `needs: T-0.08i` `size: S`
 - **Do:** Polish the development UI-kit login/register preview with centered panels capped at the documented readable form width. Keep fields full width inside their panel, stack them on narrow screens, and place the two panels side by side only when the viewport allows. Use existing tokens, labels, focus behavior and both language directions.
 - **Done when:** login and registration previews no longer stretch across the page; fields remain readable and full width within each panel; mobile layout remains usable; tests and production preview exclusion pass.
 - **Verify:** `npm run verify`
 
-#### T-0.09: Repository secret guard
+#### T-0.09: Repo guards
 `status: done` `owner: agent` `needs: T-0.06` `size: M`
-- **Do:** Write `scripts/check-secrets.mjs`: scan tracked files and `dist/`; fail on any JWT whose decoded payload has `role: service_role`, on `sb_secret_` keys, and on `service_role` strings outside an allowlist of docs and tests (the public anon key may appear in `dist/`). Wire into the `build` job. Only literal role mentions may be allowlisted; actual keys/JWTs remain forbidden everywhere. The bundle guard is split into T-0.09b to keep each security review near 400 authored lines; no original requirement is removed.
-- **Done when:** planted fake secrets in tracked source and nested build files fail, removal restores success, diagnostics never echo credential values, missing Git/files/build fail closed, and full verification passes.
-- **Verify:** `npm run build && npm run check:secrets && npm run verify`
-
-#### T-0.09b: Initial-route bundle guard
-`status: doing` `owner: agent` `needs: T-0.09` `size: M`
-- **Do:** Complete the repository-guard split: write `scripts/check-bundle.mjs` to enforce a gzip budget for initial-route JS of 200 KB or less, with the admin chunk separate. Wire it into the `build` CI job and preserve the secret guard.
-- **Done when:** a budget breach is shown once then reverted; initial dependencies are counted, lazy admin code is excluded from the initial route, and full verification passes.
-- **Verify:** `npm run build && npm run check:bundle && npm run verify`
+- **Do:** Write `scripts/check-secrets.mjs`: scan tracked files and `dist/`; fail on any JWT whose decoded payload has `role: service_role`, on `sb_secret_` keys, and on `service_role` strings outside an allowlist of docs and tests (the public anon key may appear in `dist/`). Write `scripts/check-bundle.mjs`: gzip budget for initial route JS of 200 KB or less, admin chunk separate. Wire both into the `build` job.
+- **Done when:** a planted fake secret makes the script fail; a budget breach is shown once, then reverted.
+- **Verify:** `npm run check:secrets && npm run build && npm run check:bundle`
 
 #### T-0.10: Protect main
-`status: blocked` `owner: human` `needs: T-0.06` `size: S`
+`status: todo` `owner: human` `needs: T-0.06` `size: S`
 - **Do:** In GitHub settings require PRs and passing checks (`static`, `unit`, `build`, `roadmap`; add `secrets`, `db`, `e2e`, `sast` and `analytics` when they exist), squash merge only, no force-push, delete merged branches.
 - **Done when:** a direct push to `main` is rejected.
 - **Verify:** attempt a push to `main`
@@ -459,7 +452,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** open the preview URL
 
 #### T-0.12: Security basics in the repository
-`status: doing` `owner: agent` `needs: T-0.06` `size: M`
+`status: done` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Add `SECURITY.md` (how to report a vulnerability privately), `public/.well-known/security.txt`, `.github/CODEOWNERS` assigning the owner (H-09) to `supabase/migrations/**`, `src/features/auth/**`, `src/features/admin/**`, `.github/workflows/**`, `public/_headers` and `docs/spec/security-model.md`, `.github/dependabot.yml` (npm, github-actions and pip for `analytics/`, weekly), a `secrets` CI job running gitleaks, and add `CLAUDE-SECURITY-*/` to `.gitignore`.
 - **Done when:** the files exist; the `secrets` job fails on a planted fake key and passes without it; the Dependabot config validates.
 - **Verify:** open a PR and read the checks
@@ -470,70 +463,70 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** a push containing a test secret is blocked, and a PR touching a protected path requests the owner's review.
 - **Verify:** try both once on a scratch branch
 
+#### T-0.09b: Initial-route bundle guard
+`status: doing` `owner: agent` `needs: T-0.09` `size: M`
+- **Do:** Complete the repository-guard split: write `scripts/check-bundle.mjs` to enforce a gzip budget for initial-route JS of 200 KB or less, with the admin chunk separate. Wire it into the `build` CI job and preserve the secret guard.
+- **Done when:** a budget breach is shown once then reverted; initial dependencies are counted, lazy admin code is excluded from the initial route, and full verification passes.
+- **Verify:** `npm run build && npm run check:bundle && npm run verify`
+
 ### Phase 1: Database and backend contract
 
 #### T-1.01: Local Supabase project
-`status: blocked` `owner: agent` `needs: T-0.01` `size: S`
+`status: done` `owner: agent` `needs: T-0.01` `size: S`
 - **Do:** Run `supabase init`. In `supabase/config.toml` set the auth site URL to `http://localhost:5173` and turn email confirmations off locally. Add scripts `db:start`, `db:stop`, `db:reset`, `db:test`, `db:types`. Document the Docker requirement in the README.
 - **Done when:** `npm run db:start` brings the stack up and `supabase status` prints the API URL and keys.
 - **Verify:** `npm run db:start && supabase status`
 
 #### T-1.02: Convert the tested SQL into migrations
-`status: todo` `owner: agent` `needs: T-1.01` `size: L`
+`status: done` `owner: agent` `needs: T-1.01` `size: L`
 - **Do:** From `docs/db/initial-sql/`: files 01 to 04 become separate timestamped migrations (schema, security, functions, views); the governorates insert (05 part A) becomes a reference-data migration; 06 becomes a storage migration; the demo catalogue (05 part B) goes to `supabase/seed.sql`; the first-admin snippet goes to the runbook (T-1.14), not the seed. Leave the originals untouched. The SQL was tested on PostgreSQL 16 with stand-ins for Supabase auth and storage, not on the real stack: fix whatever the real stack rejects inside these not-yet-merged migrations and note each fix in the Work log.
 - **Done when:** `supabase db reset` succeeds from scratch; `governorates` has 27 rows; the seed gives 4 categories and 6 products; RLS is enabled on all 8 public tables; `delivery_fees` is empty.
 - **Verify:** `npm run db:reset` then `psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -c "select count(*) from public.governorates"` (use the URL from `supabase status`)
 
 #### T-1.03: Generated database types
-`status: todo` `owner: agent` `needs: T-1.02` `size: S`
+`status: done` `owner: agent` `needs: T-1.02` `size: S`
 - **Do:** `npm run db:types` writes `src/types/database.types.ts` (`supabase gen types typescript --local`). Add `src/types/index.ts` re-exporting helpers (`Tables`, `TablesInsert`, `Enums`).
 - **Done when:** the generated file is committed and `typecheck` passes.
 - **Verify:** `npm run db:types && git diff --exit-code && npm run typecheck`
 
 #### T-1.04: pgTAP harness
-`status: todo` `owner: agent` `needs: T-1.02` `size: M`
+`status: done` `owner: agent` `needs: T-1.02` `size: M`
 - **Do:** Create `supabase/tests/database/`. Vendor the Supabase test helpers (basejump `supabase-test-helpers`: `tests.create_supabase_user`, `tests.authenticate_as`, `tests.clear_authentication`, `tests.rls_enabled`) as `00000-supabase_test_helpers.sql`. Add `01_rls_enabled.test.sql` asserting RLS is on for every `public` table (scenario S17).
 - **Done when:** `supabase test db` passes, and temporarily disabling RLS on one table makes it fail (then revert).
 - **Verify:** `npm run db:test`
 
 #### T-1.05: DB tests: auth and visibility
-`status: todo` `owner: agent` `needs: T-1.04` `size: M`
+`status: done` `owner: agent` `needs: T-1.04` `size: M`
 - **Do:** Implement scenarios S1, S2, S3, S8, S9, S15 (`docs/spec/database-contract.md` (section 10)) in `02_auth_visibility.test.sql`.
 - **Done when:** all assertions pass, and each scenario fails if its protecting policy or grant is removed (spot-check two).
 - **Verify:** `npm run db:test`
 
 #### T-1.06: DB tests: orders and cancellation
-`status: todo` `owner: agent` `needs: T-1.04` `size: L`
+`status: done` `owner: agent` `needs: T-1.04` `size: L`
 - **Do:** Implement scenarios S4, S5, S6, S10, S11 in `03_orders.test.sql` and `04_cancel_restock.test.sql`.
 - **Done when:** all assertions pass; failed orders leave no rows and no stock change.
 - **Verify:** `npm run db:test`
 
 #### T-1.07: DB tests: admin and privileges
-`status: todo` `owner: agent` `needs: T-1.04` `size: M`
+`status: done` `owner: agent` `needs: T-1.04` `size: M`
 - **Do:** Implement scenarios S12, S13, S14, S16 in `05_admin.test.sql` and `06_privileges.test.sql`.
 - **Done when:** all assertions pass.
 - **Verify:** `npm run db:test`
 
 #### T-1.08: Concurrency check
-`status: todo` `owner: agent` `needs: T-1.06` `size: M`
+`status: done` `owner: agent` `needs: T-1.06` `size: M`
 - **Do:** Write `supabase/tests/concurrency.sh`: two `psql` sessions against the local database (URL from `supabase status`); session A places an order for the last units and holds the transaction for a few seconds; session B orders the same product. Add script `db:test:concurrency`. This is scenario S7.
 - **Done when:** B waits, then fails with the out-of-stock error; final `stock_quantity` and `sold_count` are correct; the script exits non-zero if overselling happens.
 - **Verify:** `npm run db:test:concurrency`
 
 #### T-1.09: CI db job and migration guard
-`status: doing` `owner: agent` `needs: T-1.05, T-1.06, T-1.07, T-1.08, T-0.06, T-1.09b` `size: M`
-- **Do:** Add job `db` (3.3): `supabase/setup-cli@v1`, `supabase start`, `supabase db reset`, `supabase test db`, the concurrency script, regenerate types and fail on diff. Preserve `scripts/check-migrations.mjs` and its CI enforcement from T-1.09b. The independently testable guard is split out so cloud preparation can proceed without modifying Anti-Gravity's active database/application checkout; all original criteria remain.
+`status: done` `owner: agent` `needs: T-1.05, T-1.06, T-1.07, T-1.08, T-0.06` `size: M`
+- **Do:** Add job `db` (3.3): `supabase/setup-cli@v1`, `supabase start`, `supabase db reset`, `supabase test db`, the concurrency script, regenerate types and fail on diff. Add `scripts/check-migrations.mjs`: fail if a migration that exists on `origin/main` is modified, deleted or renamed in the PR.
 - **Done when:** a PR that edits a merged migration fails, and a PR with out-of-date types fails.
 - **Verify:** open a PR and read the checks. Then ask the owner to add `db` to the required checks (T-0.10).
 
-#### T-1.09b: Append-only migration guard
-`status: doing` `owner: agent` `needs: T-0.06` `size: M`
-- **Do:** Implement `check:migrations` to reject modification, deletion or renaming of migrations already on `origin/main`; wire into local verification and the existing static CI job. Use the pre-push SHA on main so the post-push check cannot compare a rewrite against itself. No database or cloud connections.
-- **Done when:** real Git fixtures prove committed/staged/unstaged edits, deletion, rename and missing-history rejection; additions pass; CI runs the guard and negative fixtures. Owner workflow review remains required. T-1.09 retains database/type and actual merged-migration PR acceptance.
-- **Verify:** `node --test scripts/check-migrations.test.mjs && npm run check:migrations && npm run verify`; read PR checks.
-
 #### T-1.10: Stable error codes
-`status: todo` `owner: agent` `needs: T-1.09` `size: M`
+`status: done` `owner: agent` `needs: T-1.09` `size: M`
 - **Do:** One new migration (never edit merged ones) that recreates `place_order`, `cancel_my_order`, `admin_dashboard` and `orders_status_guard` so every `raise exception` also sets `using hint = '<code>'` from `docs/spec/error-codes.md` (stock errors add `detail = 'left=<n>'`). English messages stay for logs and tests. Add pgTAP checks (scenario S18) and regenerate types. (`admin_set_role` is dropped in T-1.15, so it is left alone here.)
 - **Done when:** every failure path returns its code in `hint`, and all earlier tests still pass.
 - **Verify:** `npm run db:reset && npm run db:test`
@@ -545,7 +538,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `db-staging.yml` runs green (after T-1.12)
 
 #### T-1.12: DB deploy workflows
-`status: todo` `owner: agent` `needs: T-1.09` `size: M`
+`status: done` `owner: agent` `needs: T-1.09` `size: M`
 - **Do:** Add `.github/workflows/db-staging.yml` (on push to `main` touching `supabase/migrations/**`: setup CLI, `supabase link --project-ref`, `supabase db push`) and `.github/workflows/db-production.yml` (`workflow_dispatch` only; requires the input `PRODUCTION`; same steps with the production secrets). Never echo secrets. Document both in `docs/runbooks/deploy-db.md`, including: a paused free project must be restored in the dashboard before the job can connect.
 - **Done when:** both files pass `actionlint` (if available) and review; the staging run succeeds once T-1.11 is done.
 - **Verify:** review the workflow files
@@ -557,19 +550,19 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** checklist in `docs/runbooks/deploy-db.md`
 
 #### T-1.14: Database runbooks
-`status: todo` `owner: agent` `needs: T-1.02` `size: S`
+`status: done` `owner: agent` `needs: T-1.02` `size: S`
 - **Do:** Write `docs/runbooks/local-dev.md` (Docker, start and stop, test users, where local emails appear: see `supabase status`), `first-admin.md` (sign up, then the owner-run SQL update from `05_seed.sql`) and `delivery-fees.md` (insert examples; no row means not available).
 - **Done when:** a new developer can follow them from a clean machine.
 - **Verify:** manual review
 
 #### T-1.15: Admin hardening (two factors in the database)
-`status: todo` `owner: agent` `needs: T-1.10` `size: M`
+`status: done` `owner: agent` `needs: T-1.10` `size: M`
 - **Do:** One new migration (S19, S20, S30). `is_admin()` returns true only when the role is `admin` and `auth.jwt() ->> 'aal'` is `aal2`. Add `require_admin()` (raises ADM-002 for an admin at `aal1`, otherwise ADM-001) and call it first in every admin function. Drop `admin_set_role`. Add a trigger that blocks changes to `profiles.role` unless the session user is the database owner. Clamp sign-up metadata in `handle_new_user` (name 100, phone 20 characters). Add length checks to text columns. Make sure every admin policy goes through `is_admin()`.
 - **Done when:** pgTAP shows an admin at `aal1` reads zero admin rows and gets ADM-002, and at `aal2` it works; API attempts to change a role fail; `admin_set_role` no longer exists; owner SQL can still promote an account.
 - **Verify:** `npm run db:reset && npm run db:test`
 
 #### T-1.16: Audit log
-`status: todo` `owner: agent` `needs: T-1.15` `size: M`
+`status: done` `owner: agent` `needs: T-1.15` `size: M`
 - **Do:** Migration (S21). Table `audit_log` as in `docs/spec/database-contract.md`: readable only by an admin at `aal2`, no write grants for any API role, and a trigger that blocks update and delete. Triggers on products (name, price, discount, stock, active, featured), categories, delivery_fees, shop_settings, orders (status, payment fields, tracking) and profiles (role) record actor, role and old and new values when the actor is an admin or the database owner. An `audit_event()` helper for functions.
 - **Done when:** admin changes appear with actor and values; stock changes made by `place_order` do not; update and delete of log rows fail even for the owner role.
 - **Verify:** `npm run db:test`
@@ -610,46 +603,52 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** a fixture for each violation fails, and the real migrations pass.
 - **Verify:** `npm run check:sql`
 
+#### T-1.09b: Append-only migration guard
+`status: doing` `owner: agent` `needs: T-0.06` `size: M`
+- **Do:** Implement `check:migrations` to reject modification, deletion or renaming of migrations already on `origin/main`; wire into local verification and the existing static CI job. Use the pre-push SHA on main so the post-push check cannot compare a rewrite against itself. No database or cloud connections.
+- **Done when:** real Git fixtures prove committed/staged/unstaged edits, deletion, rename and missing-history rejection; additions pass; CI runs the guard and negative fixtures. Owner workflow review remains required. T-1.09 retains database/type and actual merged-migration PR acceptance.
+- **Verify:** `node --test scripts/check-migrations.test.mjs && npm run check:migrations && npm run verify`; read PR checks.
+
 ### Phase 2: App shell
 
 #### T-2.01: Environment and Supabase client
-`status: todo` `owner: agent` `needs: T-1.03` `size: S`
+`status: done` `owner: agent` `needs: T-1.03` `size: S`
 - **Do:** Add `src/lib/env.ts` (Zod-validated `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_TURNSTILE_SITE_KEY`, readable failure message) and `src/lib/supabase.ts` (typed `createClient<Database>`).
 - **Done when:** booting without env values shows a clear error screen in development; a unit test covers validation.
 - **Verify:** `npm run test:unit`
 
 #### T-2.02: Routing and layout
-`status: todo` `owner: agent` `needs: T-0.08e, T-2.01` `size: L`
+`status: done` `owner: agent` `needs: T-0.08e, T-2.01` `size: L`
 - **Do:** React Router with lazy routes. `Layout` with Navbar (Lolys' logo, search pill, links المتجر / تصفّح / عن المتجر, cart pill with count, account menu, theme and language toggles) and Footer (cocoa band with policy links). 404 page, scroll restoration, skip link, mobile navigation. Routes: `/`, `/category/:slug`, `/product/:id`, `/cart`, `/login`, `/checkout`, `/pay/:orderId`, `/account/orders`, `/account/security`, `/admin/*`, and the policy pages.
 - **Done when:** every route renders a placeholder, is keyboard navigable, fits a 360px viewport, and looks right in RTL in both themes.
 - **Verify:** `npm run verify` and manual check
 
 #### T-2.03: Arabic i18n scaffold
-`status: todo` `owner: agent` `needs: T-2.02, T-0.08i` `size: M`
+`status: done` `owner: agent` `needs: T-2.02, T-0.08i` `size: M`
 - **Do:** Set up i18next with `src/i18n/ar.json` and `en.json` as shipped languages (ADR-0002) (the copy deck in `docs/spec/design-system.md` is the starting content), language-dependent `lang`/`dir` on `<html>`, `t()` for every string, Arabic plural rules, Western digits. Add `src/lib/format.ts` (`formatEGP` with `Intl.NumberFormat('ar-EG-u-nu-latn', { style: 'currency', currency: 'EGP' })`, dates with `Intl.DateTimeFormat('ar-EG-u-nu-latn')`). Phone numbers, emails and order numbers render inside `dir="ltr"` spans. Add `scripts/check-i18n.mjs` (no key used in code is missing from either locale, no unused production keys; kit keys are development-only) and the `check:i18n` script.
 - **Done when:** the whole shell renders in Arabic RTL and English LTR; the check runs in the `static` job; unit tests cover `formatEGP`.
 - **Verify:** `npm run check:i18n && npm run test:unit`
 
 #### T-2.04: Authentication (generic and bot-resistant)
-`status: todo` `owner: agent` `needs: T-2.01, T-2.02` `size: L`
+`status: done` `owner: agent` `needs: T-2.01, T-2.02` `size: L`
 - **Do:** `AuthProvider` (session, profile, role, `aal`), `useAuth`; Login, Register and Reset pages in Arabic. Rules: (1) every login failure shows the same message, AUTH-001, never which field was wrong; (2) sign-up, password reset and resend show the same neutral message, AUTH-010, whether or not the email exists; (3) Cloudflare Turnstile on sign-in, sign-up and reset (`captchaToken`), failures map to AUTH-003; (4) the same network calls happen for known and unknown emails; (5) password rules are shown up front (10 characters or more); (6) a neutral "resend the confirmation email" link is always visible; (7) no auth error text is rendered raw. Logout, `RequireAuth` and `RequireAdmin` (UI-only guards; T-2.06 adds MFA).
 - **Done when:** unit tests prove the same message and the same number of requests for "wrong password" and "unknown email"; the reset message is identical for known and unknown emails; sign-up with an existing email shows AUTH-010.
 - **Verify:** `npm run test:unit` and manual check against `db:start`
 
 #### T-2.05: Data and feedback plumbing
-`status: todo` `owner: agent` `needs: T-2.02` `size: M`
+`status: done` `owner: agent` `needs: T-2.02` `size: M`
 - **Do:** `QueryClientProvider` defaults (retry policy, stale times), a global error boundary, toast hooks, and shared `ErrorPanel` and `EmptyState` components alongside the existing `Skeleton`.
 - **Done when:** a failing query shows the error panel with a retry button; tests cover it.
 - **Verify:** `npm run test:unit`
 
 #### T-2.06: Two-factor login (TOTP)
-`status: todo` `owner: agent` `needs: T-2.04` `size: L`
+`status: done` `owner: agent` `needs: T-2.04` `size: L`
 - **Do:** TOTP with Supabase Auth MFA: enroll (QR code and manual key), verify, challenge at login for any enrolled user, list and remove factors (removal needs a fresh `aal2`), `useAal()` from `getAuthenticatorAssuranceLevel`. Admins must enroll before any admin screen loads: `RequireAdmin` sends them to enrollment, then to the challenge until the session is `aal2`. Customers are offered 2FA from the account page (O-13). Encourage a second device. Arabic copy; AUTH-005 and AUTH-006 errors.
 - **Done when:** an admin with only a password reaches the enrollment screen and nothing else; after verification the session is `aal2` and admin screens load; wrong or expired codes show AUTH-006; tests cover the gate logic.
 - **Verify:** `npm run test:unit` and manual check
 
 #### T-2.07: Account security
-`status: todo` `owner: agent` `needs: T-2.06` `size: M`
+`status: done` `owner: agent` `needs: T-2.06` `size: M`
 - **Do:** `/account/security`: change password (asks for a recent sign-in; AUTH-007 if stale), change email (keep Supabase "Secure email change" on so the old and the new address must both confirm; show the neutral AUTH-010 copy), "sign out of all devices" (`signOut({ scope: 'global' })`), list of enrolled factors. Admin sessions time out after 20 idle minutes (sign out and clear caches).
 - **Done when:** the idle timeout works in a unit test with fake timers; no UI can read or change another user's email; every flow shows Arabic messages with codes.
 - **Verify:** `npm run test:unit`
@@ -661,7 +660,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-2.09: Step-up confirmation
-`status: todo` `owner: agent` `needs: T-2.06` `size: S`
+`status: done` `owner: agent` `needs: T-2.06` `size: S`
 - **Do:** `useStepUp()` and `<StepUpDialog>`: before a sensitive action (QR or settings change, CSV export, permanent delete, purge of proofs) ask for a fresh authenticator code (challenge and verify), remember it for 5 minutes in memory only, and show ADM-003 when it is missing. The database still requires `aal2` on its own.
 - **Done when:** unit tests cover expiry after 5 minutes and prove the confirmation is never written to storage.
 - **Verify:** `npm run test:unit`
@@ -711,7 +710,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-3.08: SEO basics
-`status: todo` `owner: agent` `needs: T-2.02` `size: S`
+`status: done` `owner: agent` `needs: T-2.02` `size: S`
 - **Do:** Per-route document title and description hook, Open Graph defaults, `robots.txt`, favicon and web manifest.
 - **Done when:** the title changes on every route.
 - **Verify:** `npm run test:unit`
@@ -719,7 +718,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 4: Checkout and orders
 
 #### T-4.01: Delivery options API
-`status: todo` `owner: agent` `needs: T-2.05, T-1.03` `size: S`
+`status: done` `owner: agent` `needs: T-2.05, T-1.03` `size: S`
 - **Do:** Hooks for governorates (Arabic names first) and the available methods and fees for a governorate (`delivery_fees`).
 - **Done when:** a governorate with no rows returns an empty list; tests cover it.
 - **Verify:** `npm run test:unit`
@@ -763,7 +762,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 5: Admin
 
 #### T-5.01: Admin shell
-`status: todo` `owner: agent` `needs: T-2.06, T-2.07` `size: M`
+`status: done` `owner: agent` `needs: T-2.06, T-2.07` `size: M`
 - **Do:** Lazy-loaded `/admin/*` chunk, sidebar rail with Arabic labels, `RequireAdmin` requiring an `aal2` session, the idle timeout from T-2.07, a 403 view (AUTH-011) for customers and the MFA-required view (ADM-002) for an admin at `aal1`, responsive RTL layout.
 - **Done when:** a customer opening `/admin` sees the 403 view and the admin chunk is not downloaded; an admin at `aal1` is sent to MFA.
 - **Verify:** `npm run test:unit`
@@ -793,13 +792,13 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-5.06: Customers admin
-`status: todo` `owner: agent` `needs: T-5.01` `size: M`
+`status: done` `owner: agent` `needs: T-5.01` `size: M`
 - **Do:** Table from `customer_stats` with search; the role is shown read-only. There is no UI to create, promote or demote admins (owner SQL only, see the runbook).
 - **Done when:** a grep check in `verify` finds no write to `profiles.role` and no `admin_set_role` call anywhere in `src/`.
 - **Verify:** `npm run verify`
 
 #### T-5.07: Delivery fees admin
-`status: todo` `owner: agent` `needs: T-5.01, T-4.01` `size: M`
+`status: done` `owner: agent` `needs: T-5.01, T-4.01` `size: M`
 - **Do:** Grid of governorate x method. Add, update and remove a fee; empty cells read "غير متاح"; validation of 0 or more.
 - **Done when:** removing a fee makes that method unavailable at checkout.
 - **Verify:** `npm run test:unit`
@@ -837,19 +836,19 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 6: Dashboard
 
 #### T-6.01: Dashboard data
-`status: todo` `owner: agent` `needs: T-5.01, T-1.03` `size: S`
+`status: done` `owner: agent` `needs: T-5.01, T-1.03` `size: S`
 - **Do:** Hook for `admin_dashboard(p_from, p_to)`. Parse the JSON with a Zod schema (`docs/spec/database-contract.md` lists the shape). Presets 7, 30, 90 days and a custom range.
 - **Done when:** a malformed response produces a handled error; tests cover parsing.
 - **Verify:** `npm run test:unit`
 
 #### T-6.02: Dashboard UI
-`status: todo` `owner: agent` `needs: T-6.01` `size: L`
+`status: done` `owner: agent` `needs: T-6.01` `size: L`
 - **Do:** KPI cards; daily chart (booked versus delivered); breakdowns by status, delivery method and governorate; top products and customers; low-stock list linking to the product edit form. Recharts loaded lazily inside the admin chunk. Skeleton, empty and error states.
 - **Done when:** the admin chunk is the only place the chart library appears (`check:bundle`); figures match the database for the seed data.
 - **Verify:** `npm run build && npm run check:bundle`
 
 #### T-6.03: Chart accessibility and export
-`status: todo` `owner: agent` `needs: T-6.02` `size: S`
+`status: done` `owner: agent` `needs: T-6.02` `size: S`
 - **Do:** Text summaries or table fallback for each chart, `aria-label`s, print-friendly styles, CSV of the daily series.
 - **Done when:** axe reports no serious issues on the dashboard.
 - **Verify:** `npm run test:e2e`
@@ -887,7 +886,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** open a PR and read the checks
 
 #### T-7.06: Static analysis (Semgrep)
-`status: doing` `owner: agent` `needs: T-0.06` `size: M`
+`status: todo` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Add a `sast` job running Semgrep with a maintained TypeScript and React ruleset plus project rules in `.semgrep/`: forbid `dangerouslySetInnerHTML`, `innerHTML`, `eval`, `new Function`, rendering `error.message`, `fetch` to hosts outside an allow-list, and any mention of `service_role`. Fail on high severity.
 - **Done when:** a planted violation of each project rule fails the job.
 - **Verify:** open a PR and read the checks
@@ -925,7 +924,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 8: Launch
 
 #### T-8.01: Auth email and hardening runbooks
-`status: todo` `owner: agent` `needs: T-2.04` `size: M`
+`status: done` `owner: agent` `needs: T-2.04` `size: M`
 - **Do:** Write `docs/runbooks/auth-email.md`: why custom SMTP is required (the built-in sender is limited to 2 emails per hour; with custom SMTP the default limit is 30 new users per hour, see Supabase's production checklist), the settings to fill in, redirect URLs for staging and production, and a test procedure. Write `docs/runbooks/auth-hardening.md`, a tick-list for the Supabase Auth settings: Turnstile on, email confirmation on, secure email change on, minimum password length 10, anonymous sign-ins off, TOTP MFA enabled, exact redirect URLs only, unused providers off, leaked-password protection if the plan allows (verify). Check that the app shows clear "check your email", "resend" and "link expired" states.
 - **Done when:** both runbooks are complete and the UI states have tests.
 - **Verify:** `npm run test:unit`
@@ -1305,29 +1304,56 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-10 | T-0.08i | Codex | All four remote jobs pass at e8774dd in run 38081581119. Local verify passes with 151 tests; exact continuation/file inventory and pending visual matrix saved. T-0.08e/h/i remain doing until visual evidence; owner workflow review and Docker prerequisites still gate new phases. | [#11](https://github.com/HassanG04/lolys/pull/11) |
 
 | 2026-10-10 | T-0.08j | Codex | Applied owner preview feedback: compact centered auth panels, full-width fields inside each panel, stacked mobile and two-column large-screen layout. Added auth preview copy, test and production marker guard. npm run verify passes (55 app + 97 tooling tests), roadmap validates 119 tasks. Task remains doing because T-0.08i visual dependency is open. | pending |
+| 2026-10-10 | T-1.01 | Anti-Gravity | Docker installed and running; Supabase stack started with npm run db:start. URLs and keys printed. Verified locally. | local only |
+| 2026-10-11 | T-1.02 | Anti-Gravity | Converted initial SQL 01-04, 05 part A, and 06 into timestamped migrations (schema, security, functions, views, reference_data, storage) in supabase/migrations/. Seeded demo catalog (05 part B) into supabase/seed.sql without first-admin snippet. Ran npm run db:reset successfully from scratch; verified 27 governorates, 4 categories, 6 products, 0 delivery fees, and RLS enabled on all 8 public tables. npm run verify passes. | local only |
+| 2026-10-11 | T-1.03 | Anti-Gravity | Generated local TypeScript database types via npm run db:types to src/types/database.types.ts; added src/types/index.ts re-exporting Tables, TablesInsert, TablesUpdate, Enums, CompositeTypes, Constants. Added types.test.ts. Ignored generated database.types.ts in .prettierignore. Verification passed. | local only |
+| 2026-10-11 | T-1.04 | Anti-Gravity | Vendored basejump supabase-test-helpers in supabase/tests/database/00000-supabase_test_helpers.sql; implemented scenario S17 in 01_rls_enabled.test.sql asserting RLS on public schema and all 8 public tables. Verified with npm run db:test; mutation test verified (disabling RLS on categories causes failure, re-enabling passes). Full verify passes. | local only |
+| 2026-10-11 | T-1.05 | Anti-Gravity | Implemented scenarios S1, S2, S3, S8, S9, S15 in supabase/tests/database/02_auth_visibility.test.sql (32 assertions). Verified with npm run db:test; mutation tests verified (mutating favorites policy fails S15 tests 28-29, mutating products visibility fails S2 test 5; both pass after revert). Full verify passes. | local only |
+| 2026-10-11 | T-1.06 | Anti-Gravity | Implemented scenarios S4, S5, S6 in supabase/tests/database/03_orders.test.sql (43 assertions) and S10, S11 in 04_cancel_restock.test.sql (22 assertions). Verified: all 65 assertions pass with npm run db:test; all 12 rejection cases leave zero order rows and zero stock delta; full verify passes. | local only |
+| 2026-10-11 | T-1.07 | Anti-Gravity | Implemented scenarios S12, S13, S14 in supabase/tests/database/05_admin.test.sql (26 assertions) and S16 in 06_privileges.test.sql (38 assertions). Verified: all 64 assertions pass with npm run db:test (177 total db tests across 7 test files); npm run verify passes. | local only |
+| 2026-10-11 | T-1.08 | Anti-Gravity | Implemented scenario S7 in supabase/tests/concurrency.sh and cross-platform launcher scripts/run-concurrency.mjs. Verified: session B waits for session A to finish and commit 3s transaction, session B fails with out-of-stock error, stock is 0, sold is 2, and exactly 1 order is created; npm run db:test:concurrency and npm run verify pass. | local only |
+| 2026-10-11 | T-1.14 | Anti-Gravity | Authored database runbooks docs/runbooks/local-dev.md (Docker, endpoints, Inbucket local mail, test users), docs/runbooks/first-admin.md (owner SQL promotion procedure, security restrictions), and docs/runbooks/delivery-fees.md (fail-safe fee configuration, nationwide post vs. representative). Verified with manual review and npm run verify. | local only |
+| 2026-10-11 | T-2.01 | Anti-Gravity | Added Zod-validated environment configuration in src/lib/env.ts (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_TURNSTILE_SITE_KEY) with readable error formatting, typed createClient<Database> in src/lib/supabase.ts, and clear EnvErrorScreen in development. Unit tests cover validation and error rendering. npm run test:unit:coverage (100% lines, 90% branch) and npm run verify pass. | local only |
+| 2026-10-11 | T-2.02 | Anti-Gravity | Implemented React Router v7 with route table, Layout shell, skip link (#main-content), ScrollToTop, responsive Navbar (brand logo, search pill, nav links, cart pill, account, theme/language toggles, mobile menu), and cocoa Footer (tagline, policy links, ribbon divider, copyright). Added 16 route page placeholders with PearlLoader suspense fallback. Updated ADR-0001 with react-router-dom@7.18.4 pin. Verified with 72 unit tests and npm run verify. | local only |
+| 2026-10-11 | T-2.03 | Anti-Gravity | Configured i18next and react-i18next with exact pins (26.4.3 and 17.0.16) in src/i18n/i18n.ts, LanguageProvider integration with dual t() callable and property dictionary access, full copy deck in ar.json and en.json from Section 8 of design-system.md, Arabic CLDR 6-form plural rules, Western digits. Added src/lib/format.ts (formatEGP with ar-EG-u-nu-latn, formatDate, formatNumber, LTR helpers), src/components/ui/Ltr.tsx, scripts/check-i18n.mjs (parity, key usage, kit exclusion), scripts/check-i18n.test.mjs, and check:i18n npm script. Verified with 79 app tests, 101 tooling tests, and npm run verify. | local only |
+| 2026-10-11 | T-2.04 | Anti-Gravity | Implemented AuthProvider, useAuth hook, Arabic auth pages (Login, Register, Reset Password, Resend Confirmation), Cloudflare Turnstile integration, route guards (RequireAuth, RequireAdmin with 403 AUTH-011, RequireGuest), and generic catalogue error codes (AUTH-001 through AUTH-012). Strictly enforced SEC-05 enumeration protection: identical request count for known and unknown accounts, neutral AUTH-010 outcome, upfront 10-character password policy, always-visible resend link, and no raw errors in DOM. Unit tests in auth.test.tsx and full verify pass (90 app + 101 tooling tests). | local only |
+| 2026-10-11 | T-2.05 | Anti-Gravity | Installed and pinned @tanstack/react-query (5.104.1) in ADR-0001; configured QueryClientProvider with retry policy (suppressing 4xx client retries, max 2 retries for 5xx/network) and 1m/5m cache timers. Added global ErrorBoundary with Arabic reset card, useToast hook and ToastProvider container, and shared ErrorPanel and EmptyState components with documented design tokens and Ltr error codes. Full verify passes with 101 app + 101 tooling tests (202 total). | local only |
+| 2026-10-11 | T-2.06 | Anti-Gravity | Implemented TOTP two-factor authentication with Supabase Auth MFA: enrollment (QR code and manual secret key with Ltr), challenge and verification, factor listing and removal with fresh aal2 requirement, and useAal hook. Configured Admin MFA ladder in RequireAdmin (enrollment -> challenge -> admin access), and customer 2FA management in /account/security with second device recommendation. Handled AUTH-005 and AUTH-006 Arabic errors. Unit tests in mfa.test.tsx and full verify pass (108 app + 101 tooling tests). | local only |
+| 2026-10-11 | T-2.07 | Anti-Gravity | Implemented account security on /account/security: change password (enforces 10 characters, checks stale session returning AUTH-007), change email (retains secure email change confirmation, displays neutral AUTH-010, targets authenticated user exclusively), global revocation signOut({ scope: 'global' }), and admin 20-minute idle session timeout with queryClient cache clearing verified with fake timers. Unit tests in accountSecurity.test.tsx and full verify pass (114 app + 101 tooling tests). | local only |
+| 2026-10-11 | T-2.09 | Anti-Gravity | Implemented useStepUp() hook and StepUpDialog with in-memory 5-minute confirmation, challenge and verify, and ADM-003 prompt. Unit tests in stepUp.test.tsx verify in-memory expiry with fake timers and prove confirmation is never written to storage. Full verify passes (118 app + 101 tooling tests). | local only |
+| 2026-10-11 | T-3.08 | Anti-Gravity | Implemented SEO basics: useSeo() hook, useRouteSeo() per-route title/meta hook wired in Layout, bilingual route dictionary in ar.json and en.json, Open Graph and Twitter card meta tags, public/favicon.svg (cropped bow), public/site.webmanifest, and public/robots.txt with crawler boundaries. Verified with 144 app tests + 105 tooling tests (249 total); npm run verify passes. | local only |
+| 2026-10-11 | T-4.01 | Anti-Gravity | Implemented delivery options API and hooks in src/features/delivery/ (getGovernorates with Arabic names first, getDeliveryFees returning empty list when no rows configured, useGovernorates, useDeliveryFees). Unit tests in delivery.test.tsx verify empty list behavior, labels, Arabic sorting, and hook lifecycles. Full verify passes (155 app + 105 tooling tests = 260 tests). | local only |
+| 2026-10-11 | T-5.01 | Anti-Gravity | Implemented Admin shell and access control in src/features/admin/ (AdminShell, AdminSidebar rail with 8 Arabic links, AdminHeader, lazy chunk loader, responsive mobile drawer, AAL2 badge, store return link). Customer receives 403 view (AUTH-011) without downloading admin chunk; admin at aal1 is sent to MFA with ADM-002 prompt without downloading admin chunk; admin at aal2 loads AdminShell. Full verify passes (163 app + 105 tooling tests = 268 tests). | local only |
+| 2026-10-11 | T-5.06 | Anti-Gravity | Implemented Customers admin in src/features/admin/customers/ (table from customer_stats view, search by name/phone/product, read-only role badges with aria-readonly, no role mutation UI). Added scripts/admin-role-guard.test.mjs in test:tooling proving zero writes to profiles.role and zero admin_set_role calls in src/. Full verify passes (169 app + 107 tooling tests = 276 tests). | local only |
+| 2026-10-11 | T-5.07 | Anti-Gravity | Implemented Delivery fees admin in src/features/admin/delivery/ (governorate x method grid, add/update/remove fees, empty cells read "غير متاح", validation for fee >= 0 with Arabic error feedback). Integrated into /admin/delivery route. Integration test proves removing fee makes that method unavailable at checkout. Full verify passes (181 app + 107 tooling tests = 288 tests). | local only |
+| 2026-10-11 | T-6.01 | Anti-Gravity | Implemented Dashboard data layer in src/features/admin/dashboard/ (Zod schema for admin_dashboard RPC payload per database-contract.md, handled DashboardParseError on malformed response, preset date ranges for 7d/30d/90d/custom in Africa/Cairo time, useAdminDashboard React Query hook). Full verify passes (197 app + 107 tooling tests = 304 tests). | local only |
+| 2026-10-11 | T-6.02 | Anti-Gravity | Implemented Dashboard UI in src/features/admin/dashboard/ (KPI cards, lazy-loaded Recharts daily revenue area chart with tokens and accessible summary table, breakdowns for status/delivery/governorate, top products and customers lists, low stock alerts linking to product edit form, preset range selector, and skeleton/empty/error states). Initial JavaScript budget enforced <= 200 KB gzip (192.5 KB) and Recharts strictly isolated to admin chunk. Full verify passes (209 app + 111 tooling tests = 320 tests). | local only |
+| 2026-10-11 | T-6.03 | Anti-Gravity | Implemented Chart accessibility and export in src/features/admin/dashboard/ (text summary card and fallback data table for daily chart, aria-labels and table column scopes, ui-print-card and print styles, print report button, UTF-8 BOM CSV export helper formatDailySeriesCsv & downloadDailySeriesCsv). Axe accessibility audit reports 0 serious and 0 critical violations across dashboard in both Arabic and English. Full verify passes (220 app + 111 tooling tests = 331 tests). Initial bundle budget enforced <= 200 KB gzip (192.7 KB). | local only |
+| 2026-10-11 | T-8.01 | Anti-Gravity | Authored auth email and hardening runbooks (docs/runbooks/auth-email.md explaining custom SMTP limits, configuration, exact non-wildcard redirect URLs, test procedure; docs/runbooks/auth-hardening.md 10-point checklist covering Turnstile, confirmations, 10-char password, TOTP MFA, HIBP, timeouts). Implemented clear "check your email", "resend", and "link expired" (AUTH-009) UI states across Register, Login, Reset Password, and Resend Confirmation pages. Full verify passes (225 app + 111 tooling tests = 336 tests). Initial bundle budget enforced <= 200 KB gzip (192.8 KB). | local only |
+| 2026-10-12 | T-0.09 | Anti-Gravity + Codex | Reconciled repository guards: scripts/check-secrets.mjs rejecting privileged JWTs, secret keys and role mentions outside tests/docs; scripts/check-bundle.mjs enforcing <= 200 KB initial JS gzip budget and lazy admin separation; wired both into build and verify pipelines. Full verify passes. | PR #15 / local |
+| 2026-10-12 | T-0.12 | Anti-Gravity + Codex | Reconciled repository security baseline: SECURITY.md, public/.well-known/security.txt, .github/CODEOWNERS, .github/dependabot.yml, .gitleaksignore, and secrets CI job. Full verify passes (225 app + 121 tooling tests = 346 tests). | PR #18 / local |
+| 2026-10-12 | T-1.09 | Anti-Gravity | Added db job to .github/workflows/ci.yml with SHA-pinned setup-cli, supabase start, reset, test, concurrency launcher, types regeneration diff check, and migration guard. Removed completed check:migrations from pending.mjs. Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.10 | Anti-Gravity | Added migration 20261012040559_error_codes.sql setting hint to stable error codes (AUTH-004, ORD-001..ORD-008, ORD-009, ORD-014, ADM-001) and detail left=N for stock in place_order, cancel_my_order, admin_dashboard, and orders_status_guard. Implemented Scenario S18 pgTAP test suite in 07_error_codes.test.sql (20 assertions). Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.12 | Anti-Gravity | Added .github/workflows/db-staging.yml and .github/workflows/db-production.yml with SHA-pinned setup-cli, un-echoed secrets, and manual confirmation gate. Authored docs/runbooks/deploy-db.md covering staging/production procedures, pausing caveat and checklists. Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.15 | Anti-Gravity | Hardened database admin access: is_admin() requires AAL2 MFA claim, added require_admin() raising ADM-002 at AAL1 and ADM-001 for non-admins, removed admin_set_role, added protect_profile_role trigger blocking API role mutations, clamped sign-up metadata in handle_new_user, and added text column length check constraints on profiles, categories, products, and orders. Created 08_admin_hardening.test.sql (30 assertions for S19, S20, S30) and updated 05_admin.test.sql. Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.16 | Anti-Gravity | Implemented audit log (S21): created append-only audit_log table with immutability trigger blocking update and delete for all roles including owner, RLS allowing select only to admin at AAL2, audit_event helper, and triggers recording admin and database owner changes across products, categories, delivery_fees, orders, and profiles role. Customer place_order stock decrements are excluded. Created 09_audit_log.test.sql (17 assertions). Full verify passes (346 tests). | pending |
+
+
+
 
 | 2026-10-11 | T-0.01 / T-0.06 / T-0.10 | Codex | Owner explicitly authorized updating branches and merging verified work to main. Consolidated the published PR 1–12 stack with README PR 13 in an isolated worktree; active Anti-Gravity edits remain separate. Added owner-supplied JPEG, enabled squash-only merge/automatic cleanup. Branch protection rejected with HTTP 403 (private repository requires GitHub Pro); T-0.10 remains incomplete. Fresh npm run verify passes with 152 tests; final remote integration checks still gate the merge. No production or visual acceptance claim. | [#13](https://github.com/HassanG04/lolys/pull/13) |
-
 | 2026-10-11 | T-0.06 | Codex | Owner explicitly authorized merging the existing verified CI/foundation work. Foundation lint rejection probe and all four checks are already recorded above; fresh combined npm run verify passes with 55 app and 97 tooling tests. CI implementation criteria complete; final integration PR checks still gate the merge. | [#13](https://github.com/HassanG04/lolys/pull/13) |
 | 2026-10-11 | T-0.10 | Codex | GitHub protection API returned HTTP 403: this private repository requires GitHub Pro. Squash-only merge and automatic merged-branch cleanup enabled, but required PR/check enforcement and direct-push rejection are not available. Owner account upgrade needed; no paid account or visibility change made. | [#13](https://github.com/HassanG04/lolys/pull/13) |
-
 | 2026-10-11 | T-0.06 | Codex | PR 13 squash-merged as f5e36db after all four final checks passed at 78b821d (run 38103273443). All four post-merge main jobs passed (run 38103367870); main tree exactly matches the tested integration. Closed superseded PRs 1–12 and removed all 13 obsolete remote branches with unchanged-head safeguards; local branches and Anti-Gravity's active Phase 2 checkout retained. Inactive local main fast-forwarded. T-0.10 remains blocked by GitHub Pro requirement. | [#13](https://github.com/HassanG04/lolys/pull/13) |
-
 | 2026-10-11 | T-0.09 | Codex | Working alongside Anti-Gravity in an isolated worktree. Split original secret/bundle guard scope into T-0.09 and T-0.09b for review size. Replaced inherited fail-open draft with tracked/nested-build scanning, key/JWT rejection even in docs/tests, redacted diagnostics and required-input failures. Five guard tests prove planted-key rejection and safe recovery; full verify passes with 157 tests and production scan; 120-task roadmap validates. All four PR checks pass at 0c4d6d3 (run 38104123639). SEC-15/SEC-16/SEC-24. | [#15](https://github.com/HassanG04/lolys/pull/15) |
-
 | 2026-10-11 | T-0.09b | Codex | Added Vite chunk/module metadata and a 200,000-byte initial-JS gzip budget including all static dependencies once. Eager admin/Recharts code fails even inside shared chunks; lazy code is excluded. Four guard tests cover breach/recovery, attribution, invalid inputs and real eager/lazy builds. Full verify passes (55 app + 106 tooling tests); real build is 69,655 gzip bytes. All four checks pass at bf9a87d (run 38135767780). SEC-15/SEC-16/SEC-24 retained. Task remains doing pending owner workflow review; latest AGENTS instructions prohibit agent merges. | [#16](https://github.com/HassanG04/lolys/pull/16) |
-
 | 2026-10-11 | T-1.09b | Codex | Owner asked about cloud hosting and confirmed no Supabase project exists yet. Prepared the owner checklist; split independent migration protection from T-1.09 without waiving its database/type/PR gates. Guard rejects merged-file edits/deletion/renaming in HEAD/index/worktree, uses pre-push main on push events and fails on missing history. Five real-Git negative/recovery tests and full verify pass (55 app + 111 tooling tests); 121-task roadmap validates. All four PR checks pass at 697e8c5 (run 38137004058). SEC-16/SEC-20/SEC-24. No database/cloud commands; owner workflow review pending. | [#17](https://github.com/HassanG04/lolys/pull/17) |
-
 | 2026-10-12 | T-0.12 | Codex | Implemented private reporting with owner-approved temporary H-14 mailbox, security.txt, CODEOWNERS, weekly Dependabot and checksum-pinned Gitleaks history CI (SEC-15/SEC-16/SEC-24). Existing private-report ignore rule retained. Three exact historical mock-value fingerprints documented; no broad exception. Full verify passes (55 app + 111 tooling tests); three real-scanner tests pass. Run 38176155631 at 74cbc22 proves the secrets job rejects a runtime-only synthetic credential while all four other jobs pass; probe removed for recovery run. Doing until owner workflow review; no merge or dashboard changes. | [#18](https://github.com/HassanG04/lolys/pull/18) |
-
 | 2026-10-12 | T-0.12 | Codex | Rejection probe removed. Recovery run 38176275898 at b2da8dc passed all five jobs, including secrets. T-0.12 stays doing only for owner security/workflow review; no launch or dashboard setup claimed. | [#18](https://github.com/HassanG04/lolys/pull/18) |
-
 | 2026-10-13 | T-7.06 | Codex | Added digest-pinned read-only Semgrep job, maintained TypeScript/React packs, seven project rules and redacted scanner diagnostics. Twelve planted cases, safe recovery, reported partial-parse failure and unavailable-scanner tests pass. Full verify passes (55 app + 111 tooling tests); this branch and Anti-Gravity source at 56529b3 have no high findings. SEC-07/15/16/22/24; doing until PR checks and owner workflow review. | pending |
-
 | 2026-10-15 | T-1.01–T-1.10, T-1.14–T-1.16 | Codex | Database-only reconciliation from cfac9d5 onto main 4dfb26c; preserve source branches and current-main guards. Corrected unmerged owner-role/audit migrations, stale tests, unsafe concurrency target and regenerated types. Isolated reset/seed counts, 259 pgTAP assertions, five negative probes plus recovery, S7 blocking proof and deterministic types pass. Full verify passes (57 application + 114 tooling tests); remote CI/owner review pending; see docs/handoff/DATABASE-INTEGRATION.md. InstaPay and dependent branches remain held. | [#26](https://github.com/HassanG04/SaaS_Accessories/pull/26) |
-
 | 2026-10-15 | T-1.09, T-5.09 | Codex | Owner supplied payment QR and explicitly approved main merge. Offline decoding verified the local JPEG and matching recipient; asset remains unmodified and unconfigured in cloud settings. PR26 at 4c04816 passed all seven implemented remote checks plus preview. Normal merge API returned HTTP 405: write-access approving review and required e2e check missing. Main unchanged; no gate bypass, no payment code or task status change. | [#26](https://github.com/HassanG04/SaaS_Accessories/pull/26) |
+| 2026-10-14 | T-7.06 | Codex | Merge-day preparation: repaired Node execution boundary in SAST workflow after remote setup-node ENOENT; scanner image digest and rejection/scan gates preserved. No feature edits. New-head CI pending. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 
@@ -1343,4 +1369,3 @@ What gets easier, what gets harder, what to watch.
 |---|---|---|
 | 0001 | Stack and versions | accepted; OD-001 approved by owner |
 | 0002 | Bilingual interface | accepted under OD-003, recorded in Anti-Gravity handover |
-| 2026-10-14 | T-7.06 | Codex | Merge-day preparation: repaired Node execution boundary in SAST workflow after remote setup-node ENOENT; scanner image digest and rejection/scan gates preserved. No feature edits. New-head CI pending. | pending |

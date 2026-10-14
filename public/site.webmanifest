@@ -1,0 +1,24 @@
+{
+  "name": "Lolys' Accessories & Home",
+  "short_name": "Lolys'",
+  "description": "أشياء لطيفة لأسلوبك ومساحتك - إكسسوارات راقية ولمسات منزلية دافئة",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBF1E8",
+  "theme_color": "#5A3322",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/brand/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

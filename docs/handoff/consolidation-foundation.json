@@ -1,0 +1,1236 @@
+{
+  "source": "cfac9d5",
+  "mainStatuses": [
+    {
+      "id": "T-0.01",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.02",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.03",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.04",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.05",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.06",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.07",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.07b",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08b",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08f",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08c",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08g",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08d",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08e",
+      "status": "doing",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08h",
+      "status": "doing",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08i",
+      "status": "doing",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08j",
+      "status": "doing",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.09",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.09b",
+      "status": "doing",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.10",
+      "status": "blocked",
+      "owner": "human"
+    },
+    {
+      "id": "T-0.11",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-0.12",
+      "status": "doing",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.13",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-1.01",
+      "status": "blocked",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.09",
+      "status": "doing",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.09b",
+      "status": "doing",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.10",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.11",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-1.12",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.13",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-1.14",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.15",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.16",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.17",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.18",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.19",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.20",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.21",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.22",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.09",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.09",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.10",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.11",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.12",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-6.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-6.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-6.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.06",
+      "status": "doing",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.09",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-7.10",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.11",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.02",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.03",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.04",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.09",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.10",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.11",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.09",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.10",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.11",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.12",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.13",
+      "status": "todo",
+      "owner": "human"
+    }
+  ],
+  "incomingStatuses": [
+    {
+      "id": "T-0.01",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.02",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.03",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.04",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.05",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.06",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.07",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.07b",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08b",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08f",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08c",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08g",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08d",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08e",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08h",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08i",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.08j",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.09",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.10",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-0.11",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-0.12",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-0.13",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-1.01",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.02",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.03",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.04",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.05",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.06",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.07",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.08",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.09",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.10",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.11",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-1.12",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.13",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-1.14",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.15",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.16",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.17",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.18",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.19",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.20",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.21",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-1.22",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.01",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.02",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.03",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.04",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.05",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.06",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.07",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-2.09",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-3.08",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.01",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-4.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.01",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.06",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.07",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.09",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.10",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.11",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-5.12",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-6.01",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-6.02",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-6.03",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.09",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-7.10",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-7.11",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.01",
+      "status": "done",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.02",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.03",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.04",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-8.09",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.10",
+      "status": "todo",
+      "owner": "human"
+    },
+    {
+      "id": "T-8.11",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.01",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.02",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.03",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.04",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.05",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.06",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.07",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.08",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.09",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.10",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.11",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.12",
+      "status": "todo",
+      "owner": "agent"
+    },
+    {
+      "id": "T-9.13",
+      "status": "todo",
+      "owner": "human"
+    }
+  ],
+  "preserved": [
+    ".github/CODEOWNERS",
+    ".gitleaksignore",
+    ".prettierignore",
+    "README.md",
+    "docs/runbooks/first-admin.md",
+    "docs/runbooks/local-dev.md",
+    "scripts/check-secrets.mjs",
+    "scripts/check-secrets.test.mjs",
+    "scripts/run-concurrency.mjs",
+    "src/types/database.types.ts",
+    "supabase/config.toml",
+    "supabase/migrations/20261012041924_admin_hardening.sql",
+    "supabase/migrations/20261012043500_audit_log.sql",
+    "supabase/tests/concurrency.sh",
+    "supabase/tests/database/00000-supabase_test_helpers.sql",
+    "supabase/tests/database/02_auth_visibility.test.sql",
+    "supabase/tests/database/05_admin.test.sql",
+    "supabase/tests/database/06_privileges.test.sql",
+    "supabase/tests/database/07_error_codes.test.sql",
+    "supabase/tests/database/08_admin_hardening.test.sql",
+    "supabase/tests/database/09_audit_log.test.sql"
+  ],
+  "decisions": [
+    "package lock restored from main for regeneration against union manifest",
+    "roadmap incoming task blocks plus missing main tasks and both work logs; both statuses recorded here",
+    "database types retained provisionally and must be regenerated from consolidated schema",
+    "CI retains PR26 DB probes, history scanner and all main gates plus i18n"
+  ]
+}
