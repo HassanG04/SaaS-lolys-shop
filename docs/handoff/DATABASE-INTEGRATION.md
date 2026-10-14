@@ -52,7 +52,10 @@ Anti-Gravity's active checkout are preserved. No cloud database was changed.
 - Types regenerated from this exact schema and a second generation matched.
 - Full npm run verify passed: 57 application and 114 tooling tests, lint,
   formatting, strict TypeScript, production build and migration/token/secret/bundle guards.
-  Remote CI is recorded separately in the PR.
+  At `4c04816c719dd4473b34e567c077f501a21a1758`, GitHub static/unit/build/roadmap/secrets/db
+  passed in run 38645102090 and sast passed in run 38645101988. The Cloudflare
+  preview also passed. These results apply to that exact head; documentation
+  follow-ups require their own current-head CI results.
 - The first remote history scan found two JWT occurrences in Anti-Gravity's
   performance-test commit `7f05c3`. Both are local public demo keys (`anon`,
   `supabase-demo`), reviewed without printing values. Only their exact
@@ -70,8 +73,38 @@ It blocks deletion and force-pushes. The API reports Code Owner enforcement as
 false; CODEOWNERS and the repository instructions still require owner review of
 these sensitive changes. This batch adds `db`; `e2e` remains absent from main
 until application/test integration. Do not substitute a successful stub or
-disable the required gate. No merge or ruleset change is part of this batch.
+disable the required gate.
+
+The owner explicitly authorized the main merge on 2026-10-15. The normal
+squash-merge API was attempted against verified head `4c04816`; GitHub returned
+HTTP 405 with two violations: one approving review from a reviewer with write
+access is required, and status check `e2e` is expected. No review existed at the
+time of the attempt. Main remains `4dfb26c`; no merge or ruleset change occurred.
+Chat authorization is recorded, but is not a GitHub approving review. Retry only
+after the real E2E implementation and an eligible review satisfy the rules.
 
 Next prepare the existing auth/storefront/admin work against this verified
 database baseline. The owner approval-first payment amendment remains the gate
 for all InstaPay, payment review, payment settings and dependent checkout work.
+
+## Owner-supplied payment asset
+
+On 2026-10-15 the owner supplied an InstaPay recipient and authorized using the
+QR image in `ip/`. The actual local file is `ip/ip.jpeg`, not `ip/ip.png`.
+
+- JPEG signature and successful decode: 516 by 552 pixels, 56,906 bytes.
+- SHA-256: `B432667B3ACF96B8CBA2C48CAD0710486789DB0459BD223863B0E41D9B66F6AA`.
+- Offline zxing-cpp 2.3.0 decoding found one valid QR containing an HTTPS link on
+  `ipn.eg`; its recipient path matches the owner's supplied InstaPay address.
+  This verifies readability and the encoded recipient, not the bank signature
+  or ownership of the destination account. No payment link was opened.
+- Keep the supplied image; a generated per-order QR is unnecessary for the
+  documented static QR plus database-authoritative amount flow. No unsupported
+  InstaPay payload format was invented.
+- The original is unchanged in the root workspace and has not been committed,
+  uploaded, or configured in a cloud setting. Do not publish the image, recipient
+  or complete signed payload in source, seed data or frontend defaults.
+- After approval-first payment integration passes its tests, configure through
+  the reviewed AAL2 admin settings/upload flow. Customers must obtain payment
+  instructions through `get_payment_instructions` only after order approval.
+  The original image and recipient from the owner remain the setup inputs.
