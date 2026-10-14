@@ -56,7 +56,15 @@ def main(argv: list[str] | None = None) -> int:
         "--model",
         type=str,
         default="seasonal_naive",
-        choices=["seasonal_naive", "moving_average_28"],
+        choices=[
+            "seasonal_naive",
+            "moving_average_28",
+            "auto_ets",
+            "auto_theta",
+            "croston_sba",
+            "tsb",
+            "adida",
+        ],
         help="Forecasting model to backtest",
     )
     bt_parser.add_argument("--folds", type=int, default=3, help="Number of rolling-origin folds")
@@ -124,6 +132,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "backtest":
         from lolys_analytics.backtest import run_backtest
         from lolys_analytics.models.baselines import MovingAverage28Model, SeasonalNaiveModel
+        from lolys_analytics.models.intermittent import ADIDAModel, CrostonSBAModel, TSBModel
+        from lolys_analytics.models.statistical import AutoETSModel, AutoThetaModel
 
         print(
             f"Running rolling-origin backtest ({args.model}, {args.folds} folds, {args.horizon}d horizon)..."
@@ -138,11 +148,16 @@ def main(argv: list[str] | None = None) -> int:
 
         daily_units = [day_totals[d] for d in sorted(day_totals.keys())]
 
-        model: Any = (
-            SeasonalNaiveModel(seasonality=7)
-            if args.model == "seasonal_naive"
-            else MovingAverage28Model(window=28)
-        )
+        models_map: dict[str, Any] = {
+            "seasonal_naive": SeasonalNaiveModel(seasonality=7),
+            "moving_average_28": MovingAverage28Model(window=28),
+            "auto_ets": AutoETSModel(seasonality=7),
+            "auto_theta": AutoThetaModel(seasonality=7),
+            "croston_sba": CrostonSBAModel(),
+            "tsb": TSBModel(),
+            "adida": ADIDAModel(),
+        }
+        model = models_map[args.model]
         report = run_backtest(daily_units, model, n_folds=args.folds, horizon=args.horizon)
         print(report.to_markdown_table())
         return 0
