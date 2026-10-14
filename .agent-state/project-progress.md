@@ -1,10 +1,11 @@
 # Shared project progress
 
-Updated 2026-10-14 (Africa/Cairo). Active: Anti-Gravity, completed Change Request UI (T-4.02, T-4.03, T-4.06, T-5.05).
+Updated 2026-10-14 (Africa/Cairo). Active: Anti-Gravity, completed T-5.11 (CSV export).
 
 ```yaml
-Current task: Change request "approve-first InstaPay flow and saved address" (v1.0, 2026-10-12) fully implemented and verified (Database T-1.23 + UI across T-4.02, T-4.03, T-4.06, T-5.05).
+Current task: T-5.11: CSV export completed and verified.
 Completed:
+  - T-5.11: Implemented CSV export in src/features/admin/export/ (csv.ts, formatters.ts, ExportCsvButton.tsx) and wired export buttons into Products, Orders, Customers, and Audit Log admin pages. All exports prepend UTF-8 BOM (\uFEFF) for Arabic spreadsheet display, format dates in filenames (YYYY-MM-DD), and neutralize formula injection (SEC-14) by prefixing cells starting with =, +, -, @, \t, or \r with a single quote (including unit tests with =cmd). Enforced Step-Up MFA confirmation (via useStepUp / StepUpDialog with in-memory 5-minute validity) before export execution. Created 28 unit tests in export.test.tsx. Maintained initial bundle budget (199,787 / 200,000 gzip bytes). Full verify passes (648 app + 143 tooling tests = 791 tests).
   - Change Request UI (T-4.02, T-4.03, T-4.06, T-5.05):
     - T-4.02 (Checkout): Added "احفظ هذا العنوان لطلباتي القادمة" checkbox (default checked) passing p_save_address to place_order RPC; added approval note for InstaPay ("سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع"); changed submit button to "إرسال الطلب".
     - T-4.03 (Orders & Confirmation): Added awaiting_approval status timeline notice and badge; restricted payment action for awaiting approval orders.
@@ -101,6 +102,7 @@ Completed:
   - Dialog handover e5d498b also passes all four jobs in run 38071760275.
   - Owner resolved OD-002: pearls bounce only while loading, static for reduced motion; design spec updated.
 Files changed:
+  - T-5.11: src/features/admin/export/types.ts, src/features/admin/export/csv.ts, src/features/admin/export/formatters.ts, src/features/admin/export/ExportCsvButton.tsx, src/features/admin/export/index.ts, src/features/admin/export/export.test.tsx, src/features/admin/audit/api.ts, src/features/admin/audit/AuditPage.tsx, src/features/admin/customers/CustomersPage.tsx, src/features/admin/orders/OrdersPage.tsx, src/features/admin/products/ProductsPage.tsx, src/features/auth/useStepUp.ts, roadmap.md.
   - T-5.02: src/features/admin/products/types.ts, src/features/admin/products/api.ts, src/features/admin/products/hooks.ts, src/features/admin/products/StockEditDialog.tsx, src/features/admin/products/ProductsPage.tsx, src/features/admin/products/index.ts, src/features/admin/products/products.test.tsx, src/routes.tsx, src/i18n/ar.json, src/i18n/en.json, vite.config.ts, roadmap.md, .agent-state/project-progress.md.
   - T-4.07: package.json, package-lock.json, scripts/pending.mjs, playwright.config.ts, e2e/global-setup.ts, e2e/helpers/db.ts, e2e/storefront-order.spec.ts, .github/workflows/ci.yml, roadmap.md.
   - T-4.05: roadmap.md, src/features/favorites/types.ts, src/features/favorites/api.ts, src/features/favorites/hooks.ts, src/features/favorites/index.ts, src/features/favorites/favorites.test.tsx, src/features/favorites/components/BowHeartIcon.tsx, src/features/favorites/components/FavoriteButton.tsx, src/features/catalog/components/ProductCard.tsx, src/features/catalog/components/catalogUI.test.tsx, src/pages/ProductPage.tsx, src/pages/AccountFavoritesPage.tsx, src/pages/AccountFavoritesPage.test.tsx, src/pages/AccountPage.tsx, src/pages/AccountOrdersPage.tsx, src/routes.tsx, src/features/seo/useRouteSeo.ts, src/components/layout/Navbar.tsx, src/components/layout/Footer.tsx, vite.config.ts, src/i18n/ar.json, src/i18n/en.json, src/i18n/translations.ts.
@@ -125,6 +127,7 @@ Files changed:
   - Text fields add Field, Input, Select, Textarea, SearchInput, forms.test.tsx and FormExamples; update kit, CSS, Arabic copy and continuation/PR/roadmap docs.
   - Choice controls add Choice, Checkbox, Radio, choices.test.tsx and ChoiceExamples; update form preview, CSS, Arabic copy and continuation/PR/roadmap docs.
 Tests executed:
+  - T-5.11: npm run verify passes with 648 app + 143 tooling tests (791 total); check:migrations, check:sql, check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (UTF-8 BOM, formula neutralization =, +, -, @, \t, \r, =cmd product, whitespace handling, RFC 4180 escaping, filenames, entity formatters for products, orders, customers, and audit logs, Step-Up MFA prompt and in-memory cache, disabled states), production build, check:secrets, and check:bundle pass. Initial JS bundle size is 199,787 gzip bytes <= 200,000 bytes.
   - T-4.07: npm run test:e2e passes all 8 end-to-end scenarios (guest browsing + cart storage, registration & login, COD checkout & stock decrease, oversell error mapping, delivery method validation, order cancellation & stock restoral, InstaPay QR & proof upload with UPL-001 magic bytes validation, and unpaid order expiry with stock restoration) in 1.5 minutes. Full npm run verify passes (check:migrations, check:sql, check:tokens, check:i18n, lint, prettier check, typecheck, unit tests, production build, check:secrets, and check:bundle with 199,839 gzip bytes <= 200,000 bytes).
   - T-4.05: npm run verify passes with 442 app + 141 tooling tests (583 total); check:migrations, check:sql, check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (favorite button toggle, bow heart styling, guest prompt dialog, optimistic cache updates with rollback, favorites page empty/loading/error states, counter badges, item unfavorite), production build, check:secrets, and check:bundle pass. Initial JS bundle size is 199,997 gzip bytes <= 200,000 bytes.
   - T-4.04: npm run verify passes with 432 app + 141 tooling tests (573 total); check:migrations, check:sql, check:tokens, check:i18n, lint, prettier check, typecheck, unit tests (account hooks, profile updates, address fields, stats loading/error states, role immutability, Egyptian phone validation, security navigation), production build, check:secrets, and check:bundle pass. Initial JS bundle size is 199,904 gzip bytes <= 200,000 bytes.
@@ -164,7 +167,7 @@ Problems found:
   - Docker absent; do not claim database verification or production readiness.
   - Browser URL policy rejected the local preview during icon review; no workaround attempted. Prior screenshots show the text-toggle version.
   - Installed jsdom lacks native dialog methods. T-0.08g must not substitute mocked methods for focus/inert/Escape verification or fall back to a non-modal window.
-Next action: T-4.07 done. Ready for T-5.02: Products list.
+Next action: T-5.11 done. Ready for T-5.12: E2E: admin.
 ```
 
 Repository: https://github.com/HassanG04/lolys. Foundation PR:

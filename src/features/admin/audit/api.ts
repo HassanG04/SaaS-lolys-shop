@@ -90,3 +90,53 @@ export async function getRecentSensitiveAudit(limit = 5): Promise<AuditLogEntry[
     throw toAppError(err)
   }
 }
+
+/**
+ * Fetches all audit logs matching a filter for export (capped at limit, default 1000).
+ */
+export async function getAuditLogsForExport(
+  filter?: AuditLogFilter,
+  limit = 1000,
+): Promise<AuditLogEntry[]> {
+  try {
+    let query = supabase.from('audit_log').select('*')
+
+    if (filter?.entity && filter.entity !== 'all') {
+      query = query.eq('entity', filter.entity)
+    }
+
+    if (filter?.action && filter.action !== 'all') {
+      query = query.eq('action', filter.action)
+    }
+
+    if (filter?.from) {
+      query = query.gte('at', filter.from)
+    }
+
+    if (filter?.to) {
+      query = query.lte('at', `${filter.to}T23:59:59.999Z`)
+    }
+
+    const search = filter?.search?.trim()
+    if (search) {
+      const isNum = /^\d+$/.test(search)
+      if (isNum) {
+        query = query.or(`id.eq.${search},entity_id.ilike.%${search}%,actor_role.ilike.%${search}%`)
+      } else {
+        query = query.or(`entity_id.ilike.%${search}%,actor_role.ilike.%${search}%`)
+      }
+    }
+
+    query = query.order('at', { ascending: false }).limit(limit)
+
+    const { data, error } = await query
+
+    if (error) {
+      throw toAppError(error)
+    }
+
+    return (data ?? []) as unknown as AuditLogEntry[]
+  } catch (err) {
+    throw toAppError(err)
+  }
+}

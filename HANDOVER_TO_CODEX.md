@@ -3,16 +3,19 @@
 ## Objective
 
 Completed change request **"approve-first InstaPay flow and saved address"** (v1.0, 2026-10-12) across:
+
 1. **Database Migration (`T-1.23`)** on branch `agent/T-1.23-order-approval-migration` (commit `7ee2766`).
 2. **Full UI Flow (`T-4.02`, `T-4.03`, `T-4.06`, `T-5.05`)** on branch `agent/T-4.02-order-approval-ui` (commit `24314b0`).
+3. **CSV Export (`T-5.11`)** on branch `agent/T-5.11-csv-export`.
 
-Both branches have been pushed to remote `origin`.
+All branches have been pushed to remote `origin`.
 
 ---
 
 ## Completed Architecture & Implementation
 
 ### 1. Database (T-1.23)
+
 - **Migration:** `supabase/migrations/20261014023000_order_approval_and_saved_address.sql`.
 - **Enum:** Added `'awaiting_approval'` to `payment_status`.
 - **Settings:** Allow-listed `require_order_approval` (boolean, default true) and `approval_window_hours` (integer 1..72, default 24). Privacy hardened `instapay_qr_path` and `instapay_handle` to private.
@@ -31,28 +34,48 @@ Both branches have been pushed to remote `origin`.
 - **pgTAP Test Suite:** `supabase/tests/database/15_order_approval.test.sql` (36/36 assertions passing).
 
 ### 2. Checkout UI (T-4.02)
+
 - Added "احفظ هذا العنوان لطلباتي القادمة" checkbox (default checked).
-- When `require_order_approval` is active, displays notice: *"سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع."* and primary CTA *"إرسال الطلب"*.
+- When `require_order_approval` is active, displays notice: _"سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع."_ and primary CTA _"إرسال الطلب"_.
 - Passes `p_save_address` to `place_order`.
 
 ### 3. Order Details & History UI (T-4.03)
-- `OrderStatusTimeline`: renders notice *"وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا."* when `payment_status === 'awaiting_approval'`.
+
+- `OrderStatusTimeline`: renders notice _"وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا."_ when `payment_status === 'awaiting_approval'`.
 - `AccountOrdersPage`: shows badge for "بانتظار موافقة المتجر"; restricts direct payment link while awaiting approval.
 
 ### 4. Pay Order Page UI (T-4.06)
+
 - Integrates `usePaymentInstructions` polling with dynamic amount and deadline.
-- When `awaiting_approval`: hides QR code, handle, countdown, and proof upload dropzone; renders friendly review notice *"طلبك قيد المراجعة والموافقة"*.
+- When `awaiting_approval`: hides QR code, handle, countdown, and proof upload dropzone; renders friendly review notice _"طلبك قيد المراجعة والموافقة"_.
 
 ### 5. Orders Administration UI (T-5.05)
+
 - `OrdersPage`: added tab and dropdown filter for "بانتظار الموافقة" (`awaiting_approval`).
-- Actions: orders awaiting approval show primary CTA *"مراجعة وموافقة"*.
+- Actions: orders awaiting approval show primary CTA _"مراجعة وموافقة"_.
 - `OrderDetailModal`:
   - Approval actions:
-    - *"موافقة وإرسال عبر واتساب"*: approves order via `admin_approve_order` and opens prefilled WhatsApp link (`https://wa.me/20<phone>?text=<msg>`).
-    - *"موافقة فقط"*: approves order via `admin_approve_order`.
-    - *"رفض الطلب"*: launches rejection dialog.
+    - _"موافقة وإرسال عبر واتساب"_: approves order via `admin_approve_order` and opens prefilled WhatsApp link (`https://wa.me/20<phone>?text=<msg>`).
+    - _"موافقة فقط"_: approves order via `admin_approve_order`.
+    - _"رفض الطلب"_: launches rejection dialog.
   - `OrderRejectDialog`: requires a mandatory rejection reason; calls `admin_reject_order`; warns about irreversible stock return.
-  - Enforces `ORD-015`: hides *"شحن الطلب"* and displays warning banner for unpaid InstaPay orders.
+  - Enforces `ORD-015`: hides _"شحن الطلب"_ and displays warning banner for unpaid InstaPay orders.
+
+### 6. CSV Export (T-5.11)
+
+- **Engine (`src/features/admin/export/csv.ts`):**
+  - UTF-8 BOM (`\uFEFF`) prepended for Arabic Excel display without mojibake.
+  - Formula injection defense (SEC-14): prefixing any cell value starting with `=`, `+`, `-`, `@`, `\t`, or `\r` with single quote `'`.
+  - Compliant with RFC 4180: double quote escaping and newline quoting.
+  - Date format in filenames (`prefix-YYYY-MM-DD.csv`).
+- **Entity Formatters (`src/features/admin/export/formatters.ts`):**
+  - Products: Arabic/English names, category, price, discount percent, final price, stock, sold count, status, featured.
+  - Orders: ID, date, customer name, phone, alt phone, address fields, delivery method, payment method, order/payment statuses, subtotal, shipping fee, total, tracking, notes.
+  - Customers: ID, name, phone, role, orders count, total spent, favorite product.
+  - Audit logs: Log ID, timestamp, entity, entity ID, action, actor, actor role, changes diff summary.
+- **Step-Up Guarded UI (`ExportCsvButton.tsx`):**
+  - Integrates `useStepUp` and `<StepUpDialog>` to require MFA confirmation for customer data export, cached in memory for 5 minutes.
+  - Wired into `ProductsPage`, `OrdersPage`, `CustomersPage`, and `AuditPage`.
 
 ---
 
@@ -66,17 +89,23 @@ Both branches have been pushed to remote `origin`.
   - `lint`: 0 errors.
   - `format:check`: Prettier passed.
   - `typecheck`: TypeScript passed with 0 errors.
-  - `test:unit`: **620 application tests + 143 tooling tests (763 total) passed**.
+  - `test:unit`: **648 application tests + 143 tooling tests (791 total) passed**.
   - `build`: Production build succeeded.
   - `check:secrets`: Zero secrets leaked.
-  - `check:bundle`: **199,785 / 200,000 gzip bytes** in 4 initial chunks.
+  - `check:bundle`: **199,787 / 200,000 gzip bytes** in 4 initial chunks.
 
 ---
 
 ## Next Task (per Roadmap)
 
-- **T-5.11: CSV export** (`/admin/export` or export buttons across tables):
-  - Export products, orders, customers, and audit log.
-  - UTF-8 with BOM for Arabic Excel support.
-  - Formula injection defense: prefix `=`, `+`, `-`, `@`, tab, or `\r` with single quote `'`.
-  - Step-up confirmation for exporting customer data.
+- **T-5.12: E2E: admin**:
+  - Scenarios: admin at `aal1` cannot load admin data, and after MFA can;
+  - Create category with image, add product to it, see both on storefront;
+  - Set stock to 0 and see sold-out badge;
+  - Archive, restore and delete rules;
+  - Order lifecycle seen by customer;
+  - InstaPay payment approve and reject;
+  - QR replacement asks for step-up and leaves audit entry;
+  - Non-admins blocked;
+  - CSV export neutralises `=cmd` product name.
+

@@ -12,6 +12,13 @@ import { useAuditLogs } from './hooks'
 import { AuditDetailModal } from './AuditDetailModal'
 import { RecentSensitiveChangesPanel } from './RecentSensitiveChangesPanel'
 import {
+  ExportCsvButton,
+  formatAuditLogsCsv,
+  downloadCsv,
+  getExportFilename,
+} from '@/features/admin/export'
+import { getAuditLogsForExport } from './api'
+import {
   type AuditLogEntry,
   type AuditLogFilter,
   AUDIT_ENTITIES,
@@ -130,6 +137,21 @@ export default function AuditPage() {
               ? 'سجل غير قابل للتعديل يوثق جميع العمليات الإدارية وتغييرات النظام'
               : 'Immutable record of all administrative operations and system modifications'}
           </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <ExportCsvButton
+            onExport={async () => {
+              const filename = getExportFilename('audit-log')
+              const exportEntries = await getAuditLogsForExport(filter)
+              const csv = formatAuditLogsCsv(exportEntries, lang)
+              downloadCsv(csv, filename)
+            }}
+            successMessage={
+              isAr ? 'تم تصدير سجل العمليات بنجاح' : 'Audit log exported successfully'
+            }
+            disabled={isLoading || (data?.entries.length ?? 0) === 0}
+          />
         </div>
       </div>
 

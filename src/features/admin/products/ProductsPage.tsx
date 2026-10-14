@@ -14,6 +14,12 @@ import { useToast } from '@/components/ui/ToastProvider'
 import { useAdminProducts, useAdminCategories, useUpdateProductActive } from './hooks'
 import { StockEditDialog } from './StockEditDialog'
 import { DeleteProductDialog } from './DeleteProductDialog'
+import {
+  ExportCsvButton,
+  formatProductsCsv,
+  downloadCsv,
+  getExportFilename,
+} from '@/features/admin/export'
 import type { AdminProduct, ActiveFilterValue, StockFilterValue } from './types'
 
 export default function ProductsPage() {
@@ -153,10 +159,19 @@ export default function ProductsPage() {
           <h1 className="text-h1 font-bold font-accent text-brand">{t.admin.productsTitle}</h1>
           <p className="mt-2 text-body text-text-muted">{t.admin.productsDesc}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-pill bg-surface-tint border border-border px-3 py-1 text-small font-semibold text-brand">
             <Ltr>{filteredProducts.length}</Ltr> / <Ltr>{products?.length ?? 0}</Ltr> منتج
           </span>
+          <ExportCsvButton
+            onExport={() => {
+              const filename = getExportFilename('products')
+              const csv = formatProductsCsv(products || [], lang)
+              downloadCsv(csv, filename)
+            }}
+            successMessage={isAr ? 'تم تصدير ملف المنتجات بنجاح' : 'Products exported successfully'}
+            disabled={isLoadingProducts || !products || products.length === 0}
+          />
           <Link
             to="/admin/products/new"
             className="inline-flex items-center justify-center rounded-pill bg-brand px-4 py-2 text-small font-semibold text-brand-contrast shadow-card hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-focus"

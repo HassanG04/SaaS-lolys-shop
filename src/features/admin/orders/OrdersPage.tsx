@@ -12,6 +12,12 @@ import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, DELIVERY_METHOD_LABELS } from
 import { OrderDetailModal } from './OrderDetailModal'
 import { OrderStatusDialog } from './OrderStatusDialog'
 import { OrderFulfillmentDialog } from './OrderFulfillmentDialog'
+import {
+  ExportCsvButton,
+  formatOrdersCsv,
+  downloadCsv,
+  getExportFilename,
+} from '@/features/admin/export'
 import type { AdminOrder, AdminOrderFilters } from './types'
 import type { OrderStatus, PaymentStatus } from '@/features/orders/types'
 
@@ -99,9 +105,20 @@ export default function OrdersPage() {
           </p>
         </div>
 
-        <span className="self-start sm:self-auto rounded-pill border border-border bg-surface-2 px-3 py-1 text-small font-semibold text-text">
-          {orders.length} {isAr ? 'طلب' : 'orders'}
-        </span>
+        <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
+          <span className="rounded-pill border border-border bg-surface-2 px-3 py-1 text-small font-semibold text-text">
+            {orders.length} {isAr ? 'طلب' : 'orders'}
+          </span>
+          <ExportCsvButton
+            onExport={() => {
+              const filename = getExportFilename('orders')
+              const csv = formatOrdersCsv(orders, lang)
+              downloadCsv(csv, filename)
+            }}
+            successMessage={isAr ? 'تم تصدير ملف الطلبات بنجاح' : 'Orders exported successfully'}
+            disabled={isLoading || orders.length === 0}
+          />
+        </div>
       </div>
 
       {/* Filters Toolbar */}
