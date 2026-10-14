@@ -2,60 +2,76 @@
 
 ## Objective
 
-Completed task `T-5.10: Audit log viewer` on branch `agent/T-5.10-admin-audit`.
+Completed change request **"approve-first InstaPay flow and saved address"** (v1.0, 2026-10-12) across:
+1. **Database Migration (`T-1.23`)** on branch `agent/T-1.23-order-approval-migration` (commit `7ee2766`).
+2. **Full UI Flow (`T-4.02`, `T-4.03`, `T-4.06`, `T-5.05`)** on branch `agent/T-4.02-order-approval-ui` (commit `24314b0`).
 
-## Completed Work in T-5.10
+Both branches have been pushed to remote `origin`.
 
-1. **Audit Types (`src/features/admin/audit/types.ts`)**:
-   - `AuditLogEntry`, `AuditLogFilter`, `AuditLogResponse`.
-   - `AUDIT_ENTITIES` and `AUDIT_ACTIONS` enumerations.
-   - Arabic and English friendly entity and action dictionary labels (`ENTITY_LABELS`, `ACTION_LABELS`).
-   - `isSensitiveAuditEntry` classifier identifying high-impact events (role changes, shop settings modifications, delivery fees adjustments, and `PAYMENT_REVIEW` actions).
+---
 
-2. **API & Database Layer (`src/features/admin/audit/api.ts`)**:
-   - `getAuditLogs`: paginated query to append-only `public.audit_log` table with server-side filters for `entity`, `action`, date range (`from`, `to`), and text/numeric search (matching ID, entity ID, or actor role).
-   - `getRecentSensitiveAudit`: queries latest high-impact system events (`entity.in.(shop_settings,delivery_fees,profiles),action.eq.PAYMENT_REVIEW`).
-   - Strict adherence to database authority and zero mutations (`insert`, `update`, `upsert`, `delete` are completely absent).
+## Completed Architecture & Implementation
 
-3. **React Query Hooks (`src/features/admin/audit/hooks.ts`)**:
-   - `useAuditLogs`: paginated query with reactive filter dependencies.
-   - `useRecentSensitiveAudit`: reusable query for the sensitive changes dashboard card.
+### 1. Database (T-1.23)
+- **Migration:** `supabase/migrations/20261014023000_order_approval_and_saved_address.sql`.
+- **Enum:** Added `'awaiting_approval'` to `payment_status`.
+- **Settings:** Allow-listed `require_order_approval` (boolean, default true) and `approval_window_hours` (integer 1..72, default 24). Privacy hardened `instapay_qr_path` and `instapay_handle` to private.
+- **RPC `place_order`:**
+  - For `instapay_qr` with approval required: sets `payment_status = 'awaiting_approval'` with no deadline.
+  - Added `p_save_address boolean default true`: updates profile default address if true or if profile address was empty.
+- **RPC `admin_approve_order(p_order_id bigint, p_note text default null)`:**
+  - Requires admin at `aal2` (audited). Sets `status = 'confirmed'`, `payment_status = 'awaiting_proof'`, and computes `payment_deadline = now() + payment_window`.
+- **RPC `admin_reject_order(p_order_id bigint, p_reason text)`:**
+  - Requires admin at `aal2` (audited). Sets `status = 'cancelled'`, logs reason in `audit_log`, and automatically restocks held inventory via trigger.
+- **RPC `get_payment_instructions(p_order_id bigint)`:**
+  - Order owner only. Returns QR path, InstaPay handle, amount, and deadline only when order is in `awaiting_proof`, `under_review`, or `rejected`. Raises `PAY-007` before approval.
+- **RPC `submit_payment_proof`:** Refuses submissions while in `awaiting_approval` (`PAY-007`).
+- **Trigger `orders_status_guard`:** Enforces `ORD-015`: an `instapay_qr` order cannot transition to `shipped` or `delivered` unless `payment_status = 'paid'`.
+- **Automated Restock:** Overdue `awaiting_approval` orders (older than `approval_window_hours`) are automatically cancelled and restocked by `expire_unpaid_orders()`.
+- **pgTAP Test Suite:** `supabase/tests/database/15_order_approval.test.sql` (36/36 assertions passing).
 
-4. **Audit Detail Modal (`src/features/admin/audit/AuditDetailModal.tsx`)**:
-   - Compares previous (`old`) and current (`new`) states.
-   - Structured key-by-key comparison table highlighting changed fields with warning badge.
-   - Raw JSON view toggle for viewing complete database payloads.
-   - Strictly read-only; no edit or delete controls.
+### 2. Checkout UI (T-4.02)
+- Added "احفظ هذا العنوان لطلباتي القادمة" checkbox (default checked).
+- When `require_order_approval` is active, displays notice: *"سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع."* and primary CTA *"إرسال الطلب"*.
+- Passes `p_save_address` to `place_order`.
 
-5. **Recent Sensitive Changes Panel (`src/features/admin/audit/RecentSensitiveChangesPanel.tsx`)**:
-   - Card displaying recent sensitive actions with entity badges, action chips, timestamps, and actor role.
-   - One-click "Compare" / "عرض المقارنة" button opening the before/after detail modal.
-   - Reusable across both `/admin/audit` and the main admin dashboard (`/admin`).
+### 3. Order Details & History UI (T-4.03)
+- `OrderStatusTimeline`: renders notice *"وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا."* when `payment_status === 'awaiting_approval'`.
+- `AccountOrdersPage`: shows badge for "بانتظار موافقة المتجر"; restricts direct payment link while awaiting approval.
 
-6. **Audit Log Viewer Page (`src/features/admin/audit/AuditPage.tsx`)**:
-   - Located at `/admin/audit`.
-   - Includes `<RecentSensitiveChangesPanel />` at the top.
-   - Filter card with entity dropdown, action dropdown, date pickers, reset button, and search input.
-   - Tabular view with Western digit timestamps, action color chips, entity labels, diff summary, and detail modal launcher.
-   - Pagination controls with Previous/Next buttons.
+### 4. Pay Order Page UI (T-4.06)
+- Integrates `usePaymentInstructions` polling with dynamic amount and deadline.
+- When `awaiting_approval`: hides QR code, handle, countdown, and proof upload dropzone; renders friendly review notice *"طلبك قيد المراجعة والموافقة"*.
 
-7. **Dashboard Integration**:
-   - Embedded `<RecentSensitiveChangesPanel />` inside `src/features/admin/dashboard/DashboardPage.tsx`.
+### 5. Orders Administration UI (T-5.05)
+- `OrdersPage`: added tab and dropdown filter for "بانتظار الموافقة" (`awaiting_approval`).
+- Actions: orders awaiting approval show primary CTA *"مراجعة وموافقة"*.
+- `OrderDetailModal`:
+  - Approval actions:
+    - *"موافقة وإرسال عبر واتساب"*: approves order via `admin_approve_order` and opens prefilled WhatsApp link (`https://wa.me/20<phone>?text=<msg>`).
+    - *"موافقة فقط"*: approves order via `admin_approve_order`.
+    - *"رفض الطلب"*: launches rejection dialog.
+  - `OrderRejectDialog`: requires a mandatory rejection reason; calls `admin_reject_order`; warns about irreversible stock return.
+  - Enforces `ORD-015`: hides *"شحن الطلب"* and displays warning banner for unpaid InstaPay orders.
 
-8. **Route Wiring**:
-   - Added lazy route `{ path: 'audit', element: <AdminAuditPage /> }` in `src/features/admin/AdminRoutes.tsx`.
-   - Sidebar navigation icon and label (`t.admin.audit` -> "سجل العمليات") already wired in `AdminSidebar.tsx`.
+---
 
-9. **Security Immutability Guard (`scripts/audit-log-guard.test.mjs`)**:
-   - Automated Node test in `npm run test:tooling` and `npm run test:unit`.
-   - Greps `src/` to strictly verify zero write operations (`insert`, `update`, `upsert`, `delete`) against `audit_log`.
+## Verification Evidence
 
-10. **Verification & Quality**:
-    - 18 unit tests in `src/features/admin/audit/audit.test.tsx` (100% pass) testing types, helpers, API query builders, filtering, error mappings, modal key diffs, raw JSON toggle, panel, and page UI.
-    - Full test suite: **748 tests pass** (605 Vitest + 143 tooling tests).
-    - Full `npm run verify` passed: `check:migrations`, `check:sql`, `check:tokens`, `check:i18n`, `lint`, `format:check`, `typecheck`, `test:unit`, `build`, `check:secrets`, and `check:bundle`.
-    - Initial JS bundle budget maintained: **199,991 / 200,000 gzip bytes** in 4 initial chunks.
-    - Roadmap updated: `T-5.10: done` (78/119 tasks completed, Phase 5: 10/12 completed).
+- `npm run verify` passed cleanly:
+  - `check:migrations`: Existing migrations unchanged.
+  - `check:sql`: All migrations passed SQL guard rules.
+  - `check:tokens`: Documented colors, radii, and shadows validated.
+  - `check:i18n`: All translation keys valid and synchronized.
+  - `lint`: 0 errors.
+  - `format:check`: Prettier passed.
+  - `typecheck`: TypeScript passed with 0 errors.
+  - `test:unit`: **620 application tests + 143 tooling tests (763 total) passed**.
+  - `build`: Production build succeeded.
+  - `check:secrets`: Zero secrets leaked.
+  - `check:bundle`: **199,785 / 200,000 gzip bytes** in 4 initial chunks.
+
+---
 
 ## Next Task (per Roadmap)
 
