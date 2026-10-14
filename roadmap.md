@@ -1339,3 +1339,4 @@ What gets easier, what gets harder, what to watch.
 |---|---|---|
 | 0001 | Stack and versions | accepted; OD-001 approved by owner |
 | 0002 | Bilingual interface | accepted under OD-003, recorded in Anti-Gravity handover |
+| 2026-10-14 | T-7.06 | Codex | Merge-day preparation: repaired Node execution boundary in SAST workflow after remote setup-node ENOENT; scanner image digest and rejection/scan gates preserved. No feature edits. New-head CI pending. | pending |

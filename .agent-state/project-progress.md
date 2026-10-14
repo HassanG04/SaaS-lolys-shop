@@ -228,3 +228,7 @@ Read `.agent-state/anti-gravity-review.md` for concrete findings before resuming
 those tasks. `HANDOVER_TO_CODEX.md` is the preserved incoming report, not current
 verification evidence. The older `.tools/anti-gravity-t007-checkpoint/` is retained
 for provenance; do not restore it over the newer implementation.
+
+## Merge-day CI repair — 2026-10-14
+
+PR19's latest remote SAST job failed before scanning: setup-node could not execute the downloaded Node24 binary inside the scanner container (ENOENT). The workflow now runs Node on the Ubuntu host and invokes the unchanged digest-pinned Semgrep image through a read-only Docker wrapper. Both planted-violation tests and maintained/project scans remain mandatory. This is a CI compatibility repair, with no feature or scanner-rule changes. Remote rerun is required before merge; previous green jobs are not proof for the new head.
