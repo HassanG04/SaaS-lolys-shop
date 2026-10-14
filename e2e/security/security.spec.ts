@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, type Page, type Response } from '@playwright/test'
 import fs from 'node:fs'
 import path from 'node:path'
 import { createClient } from '@supabase/supabase-js'
@@ -16,6 +16,24 @@ async function loginUser(page: Page, email: string, password = 'Password123!') {
   await page.waitForTimeout(200)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
+}
+
+async function loginAdmin(page: Page) {
+  await page.goto('/login')
+  await page.locator('#email-input').fill('admin@example.com')
+  await page.locator('#password-input').fill('Password123!')
+  await page.waitForTimeout(200)
+  await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
+  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
+
+  await page.goto('/admin')
+  await page.waitForTimeout(500)
+  if (page.url().includes('/admin/mfa/challenge')) {
+    const code = generateTotp(adminTotpSecret)
+    await page.locator('input[name="totpCode"]').fill(code)
+    await page.getByRole('button', { name: 'تأكيد الرمز والمتابعة' }).click()
+    await page.waitForURL((url) => !url.pathname.includes('/mfa'), { timeout: 15000 })
+  }
 }
 
 test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
@@ -56,7 +74,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     let tokenRequests = 0
     let lastTokenStatus = 0
 
-    const tokenListener = (res: any) => {
+    const tokenListener = (res: Response) => {
       if (res.url().includes('/auth/v1/token')) {
         tokenRequests++
         lastTokenStatus = res.status()
@@ -119,9 +137,9 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     // Known email
     await page.locator('#email-input').fill('customer@example.com')
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
-    await expect(
-      page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
-    ).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
+      timeout: 10000,
+    })
     await expect(
       page.getByText(/إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة/),
     ).toBeVisible()
@@ -130,9 +148,9 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await page.goto('/reset-password')
     await page.locator('#email-input').fill('unknown-reset-target@example.com')
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
-    await expect(
-      page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
-    ).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
+      timeout: 10000,
+    })
     await expect(
       page.getByText(/إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة/),
     ).toBeVisible()
@@ -141,42 +159,33 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     // Attempt registration with already existing email
     await page.goto('/register')
     await page.locator('#name-input').fill('مستخدم مكرر')
-    await page.locator('#phone-input').fill('01099887766')
     await page.locator('#email-input').fill('customer@example.com')
     await page.locator('#password-input').fill('Password123!')
-    await page.locator('#confirm-password-input').fill('Password123!')
-    await page.getByRole('button', { name: 'إنشاء الحساب' }).click()
+    await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
-    await expect(
-      page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
-    ).toBeVisible({ timeout: 10000 })
-    await expect(
-      page.getByText(/إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة/),
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
+      timeout: 10000,
+    })
+    await expect(page.getByText(/إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة/)).toBeVisible()
 
     // New unique registration
     await page.goto('/register')
     const uniqueEmail = `sec-reg-${Date.now()}@example.com`
     await page.locator('#name-input').fill('مستخدم جديد')
-    await page.locator('#phone-input').fill('01055443322')
     await page.locator('#email-input').fill(uniqueEmail)
     await page.locator('#password-input').fill('Password123!')
-    await page.locator('#confirm-password-input').fill('Password123!')
-    await page.getByRole('button', { name: 'إنشاء الحساب' }).click()
+    await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
-    await expect(
-      page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
-    ).toBeVisible({ timeout: 10000 })
-    await expect(
-      page.getByText(/إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة/),
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
+      timeout: 10000,
+    })
+    await expect(page.getByText(/إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة/)).toBeVisible()
   })
 
   test('3. Admin without MFA cannot load admin data (SEC-01, SEC-02)', async ({ page }) => {
     // Guarantee no verified MFA factor exists for admin
     queryDb('DELETE FROM auth.mfa_factors;')
 
-    await page.evaluate(() => localStorage.clear())
     await page.goto('/login')
     await page.locator('#email-input').fill('admin@example.com')
     await page.locator('#password-input').fill('Password123!')
@@ -206,7 +215,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     })
     const { error: rpcError } = await client.rpc('admin_dashboard')
     expect(rpcError).toBeTruthy()
-    expect(rpcError?.message).toMatch(/ADM-002|42501|aal2/i)
+    expect(rpcError?.message).toMatch(/Two-factor authentication required|ADM-002|42501|aal2/i)
   })
 
   test('4. Customer cannot read another customer order or payment proof by ID (SEC-10, IDOR)', async ({
@@ -217,17 +226,16 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     queryDb(`
       INSERT INTO public.orders (
         id, user_id, status, payment_status, payment_method, delivery_method,
-        total_amount, subtotal, delivery_fee, governorate_id,
-        shipping_name, shipping_phone, shipping_address, shipping_city
-      ) VALUES (
+        total, subtotal, shipping_fee,
+        ship_name, ship_phone, ship_address, ship_governorate, ship_city
+      ) OVERRIDING SYSTEM VALUE VALUES (
         ${victimOrderId}, '${victimUserId}', 'pending', 'awaiting_proof', 'instapay_qr', 'representative',
-        450.00, 400.00, 50.00, 1,
-        'سعيد الحظ الضحية', '01011112222', 'شارع سري للغاية 15', 'القاهرة'
+        450.00, 400.00, 50.00,
+        'سعيد الحظ الضحية', '01011112222', 'شارع سري للغاية 15', 'القاهرة', 'القاهرة'
       ) ON CONFLICT (id) DO UPDATE SET user_id = '${victimUserId}';
     `)
 
     // Attacker logs in
-    await page.evaluate(() => localStorage.clear())
     await loginUser(page, 'attacker-sec@example.com')
 
     // Attacker navigates to /account/orders: Victim's order is completely absent
@@ -269,16 +277,17 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     queryDb(`
       INSERT INTO public.orders (
         id, user_id, status, payment_status, payment_method, delivery_method,
-        total_amount, subtotal, delivery_fee, governorate_id,
-        shipping_name, shipping_phone, shipping_address, shipping_city
-      ) VALUES (
-        ${attackOrderId}, '${attackerUserId}', 'pending', 'awaiting_proof', 'instapay_qr', 'representative',
-        200.00, 150.00, 50.00, 1,
-        'المهاجم الفضولي', '01033334444', 'شارع التحرير', 'القاهرة'
-      ) ON CONFLICT (id) DO UPDATE SET payment_status = 'awaiting_proof';
+        total, subtotal, shipping_fee,
+        ship_name, ship_phone, ship_address, ship_governorate, ship_city,
+        payment_deadline
+      ) OVERRIDING SYSTEM VALUE VALUES (
+        ${attackOrderId}, '${attackerUserId}', 'confirmed', 'awaiting_proof', 'instapay_qr', 'representative',
+        200.00, 150.00, 50.00,
+        'المهاجم الفضولي', '01033334444', 'شارع التحرير', 'القاهرة', 'القاهرة',
+        now() + interval '24 hours'
+      ) ON CONFLICT (id) DO UPDATE SET payment_status = 'awaiting_proof', status = 'confirmed', payment_deadline = now() + interval '24 hours';
     `)
 
-    await page.evaluate(() => localStorage.clear())
     await loginUser(page, 'attacker-sec@example.com')
 
     await page.goto(`/pay/${attackOrderId}`)
@@ -320,7 +329,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     queryDb(`
       INSERT INTO public.products (
         id, category_id, name, name_ar, description, description_ar, price, stock_quantity, is_active
-      ) VALUES (
+      ) OVERRIDING SYSTEM VALUE VALUES (
         99883, 1,
         '${maliciousPayload.replace(/'/g, "''")}',
         '${maliciousPayload.replace(/'/g, "''")}',
@@ -338,7 +347,9 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await expect(title).toContainText('<script>window.__XSS_EXEC__=true;</script>')
 
     // Verify script was never executed
-    const wasXssExecuted = await page.evaluate(() => Boolean((window as any).__XSS_EXEC__))
+    const wasXssExecuted = await page.evaluate(() =>
+      Boolean((window as unknown as { __XSS_EXEC__?: boolean }).__XSS_EXEC__),
+    )
     expect(wasXssExecuted).toBe(false)
 
     // Verify database orders table was not dropped
@@ -349,8 +360,10 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
   test('7. Admin enrolls MFA, accesses admin panel at AAL2, and sensitive actions ask for step-up (SEC-01)', async ({
     page,
   }) => {
+    // Reset any existing unverified factors so clean enrollment can proceed
+    queryDb('DELETE FROM auth.mfa_factors;')
+
     // Step A: Admin logs in and enrolls TOTP MFA
-    await page.evaluate(() => localStorage.clear())
     await page.goto('/login')
     await page.locator('#email-input').fill('admin@example.com')
     await page.locator('#password-input').fill('Password123!')
@@ -404,6 +417,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
       ON CONFLICT DO NOTHING;
     `)
 
+    await loginAdmin(page)
     await page.goto('/admin/products')
 
     const exportBtn = page.getByRole('button', { name: 'تصدير CSV' })
@@ -454,7 +468,10 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
     await page.addInitScript(() => {
       document.addEventListener('securitypolicyviolation', (e) => {
-        ;(window as any).onCspViolation({
+        const win = window as unknown as {
+          onCspViolation: (data: { blockedURI: string; violatedDirective: string }) => void
+        }
+        win.onCspViolation({
           blockedURI: e.blockedURI,
           violatedDirective: e.violatedDirective,
         })
