@@ -1,4 +1,63 @@
-# Current static-analysis handover — 2026-10-13
+# Database integration handover — 2026-10-15
+
+## Current Objective
+
+Prepare `agent/T-1.09-database-integration` from main `4dfb26c` in
+`D:/Projects/Programming/الاء/.tools/merge-day-plan`. Do not switch or reset the
+root analytics checkout. This supersedes the static-analysis continuation below.
+
+## Completed
+
+Database-only extraction through cfac9d5, owner-role/audit fixes, isolated local
+stack, DB CI, 259 passing pgTAP assertions, five negative probes and recovery,
+real blocked-buyer concurrency proof, deterministic regenerated types. Full verify passed: 57
+application tests and 114 tooling tests, plus lint, formatting, types, build and guards. Detailed files and
+evidence are in shared progress and `docs/handoff/DATABASE-INTEGRATION.md`.
+
+## Remaining
+
+At `4c04816`, all seven implemented checks and the preview passed. The owner
+explicitly authorized the main merge on 2026-10-15. The normal merge API refused
+it with HTTP 405: one approving review from a write-access reviewer is required,
+and required status check `e2e` is expected. Main remains `4dfb26c`; PR26 is open.
+Prepare the actual application/E2E integration and obtain an eligible GitHub
+review before retrying the authorized merge. Do not bypass or weaken gates, or
+import held payment branches before they satisfy the amendment.
+
+The owner's payment QR is `D:/Projects/Programming/الاء/ip/ip.jpeg`, not `ip.png`.
+Its QR payload decodes to an InstaPay link matching the supplied recipient.
+See the asset receipt in `docs/handoff/DATABASE-INTEGRATION.md`. It has not been
+uploaded or configured in cloud settings. Use the supplied QR through the
+reviewed admin settings flow; do not invent a per-order QR payload or publish
+payment details in frontend defaults.
+
+## Current Files
+
+The latest follow-up changes only `.agent-state/project-progress.md`, this
+handover, `docs/handoff/DATABASE-INTEGRATION.md` and `roadmap.md`. Earlier database
+implementation files are listed in shared progress. Preserve root analytics
+work and the owner's untracked `ip/` folder.
+
+## Current Error
+
+Error: GitHub merge API HTTP 405, repository rule violations.
+Expected: squash-merge verified PR26 after the owner's explicit authorization.
+Actual: no merge; one write-access approving review and the `e2e` check are missing.
+Cause: the rule requires application E2E before that implementation reaches this
+database-only branch; chat approval does not create a GitHub PR review.
+No known database test failure; all seven implemented remote checks passed.
+
+## Next Exact Command
+
+```powershell
+$env:Path='D:\Projects\Programming\الاء\.tools\node-v24.21.0-win-x64;'+$env:Path
+$env:npm_config_script_shell='C:\Windows\System32\cmd.exe'
+$env:VITEST_MAX_WORKERS='2'
+Set-Location -LiteralPath 'D:\Projects\Programming\الاء\.tools\merge-day-plan'
+npm run verify
+```
+
+## Historical handover — 2026-10-13
 
 ## Current Objective
 

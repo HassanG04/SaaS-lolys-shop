@@ -1,5 +1,49 @@
 # Shared project progress
 
+Updated 2026-10-15 (Africa/Cairo). Codex isolated checkout `.tools/merge-day-plan`,
+branch `agent/T-1.09-database-integration`. Anti-Gravity's active checkout is separate.
+
+```yaml
+Current task: Database integration PR 26 is verified but GitHub refused the owner-authorized merge on 2026-10-15; approving PR review and real E2E integration are still required.
+Completed:
+  - Extracted only database work through Anti-Gravity cfac9d5; retained current-main security tooling.
+  - Corrected owner-only role guard, internal audit writes, stale SQL tests and unsafe concurrency targeting.
+  - Pinned Supabase CLI 2.120.0, regenerated types, added local-only runners and the real db CI job.
+  - Local reset and seed/RLS counts passed; all 259 pgTAP assertions, S7 race and five rollback-only negative security probes passed.
+  - At 4c04816, all seven implemented GitHub checks passed (static, unit, build, roadmap, secrets, db, sast); Cloudflare preview also passed. CI run 38645102090 and SAST run 38645101988.
+  - Owner explicitly approved merging into main. Normal squash-merge API returned HTTP 405 because one write-access reviewer approval and the e2e check are missing. No merge or protection change occurred.
+  - Located the owner QR at root ip/ip.jpeg (JPEG, 516x552, 56906 bytes). Offline decoding confirms an InstaPay link whose recipient matches the owner's supplied address. Original asset remains unchanged and outside the published app.
+  - Type regeneration is deterministic. Full npm run verify passed: 57 application tests, 114 tooling tests, lint/format/types/build and all existing guards.
+Files changed:
+  - supabase configuration, nine migrations, seed, concurrency launcher, eleven database test files
+  - src/types/database.types.ts, src/types/index.ts, src/types/types.test.ts
+  - scripts/local-db.mjs, local-db.test.mjs, run-concurrency.mjs, test-db-guards.mjs
+  - scripts/check-secrets.mjs, check-secrets.test.mjs (literal SQL revocations only; all secret and browser checks retained)
+  - .github/workflows/ci.yml, package.json, package-lock.json, .prettierignore
+  - README.md, docs/adr/0001-stack.md, database runbooks, docs/handoff/DATABASE-INTEGRATION.md
+  - roadmap.md, shared progress, handover
+  - This follow-up changes only shared progress, HANDOVER_TO_ANTI_GRAVITY.md, docs/handoff/DATABASE-INTEGRATION.md and the roadmap work log.
+Tests executed:
+  - npm ci --ignore-scripts; npm run db:start; npm run db:reset; npm run db:test (259 pass)
+  - node scripts/test-db-guards.mjs (5 rejected mutations, rolled back); db:test recovery (259 pass)
+  - npm run db:test:concurrency; npm run db:types; npm run db:types:check
+  - npm run verify (57 application, 114 tooling); targeted secret guard tests (6 pass); staged source/build secret scan clean
+  - Read current GitHub rules, reviews (none), exact-head checks and PR state; attempted normal owner-authorized merge and received explicit rule violations.
+  - Read-only QR decoding using isolated zxing-cpp 2.3.0; SHA-256 B432667B3ACF96B8CBA2C48CAD0710486789DB0459BD223863B0E41D9B66F6AA.
+Problems found:
+  - Initial local Vitest worker launch timed out; rerun with VITEST_MAX_WORKERS=2 passed.
+  - Main ruleset requires one approval and e2e as well as db. This batch provides db; application/E2E integration remains required.
+  - T-1.09 actual merged-migration PR rejection/recovery acceptance remains pending; remote database/security tests themselves passed. Do not mark the task done prematurely.
+  - The supplied QR is verified as readable, not configured in any cloud payment setting. Payment UI/settings branches still need the approval-first amendment review. Do not expose the asset in public source, seed or frontend defaults.
+  - Development roadmap at Anti-Gravity a50e608 records 108/120 done; these are branch implementation claims, not main or launch completion.
+Next action: The owner's subsequent consolidation request supersedes merge authorization. Back up all branches, report topology, create integration from main, reconcile existing work, run every gate and audit done claims. Prepare a PR or phase slices; do not merge into main. Preserve the payment amendment, root analytics work and supplied QR.
+```
+
+See `docs/handoff/DATABASE-INTEGRATION.md` for source cutoffs, resolved conflicts,
+security corrections and the payment hold. Previous session records follow.
+
+## Previous session
+
 Updated 2026-10-13 (Africa/Cairo). Codex isolated branch `agent/T-7.06-semgrep`.
 
 ```yaml

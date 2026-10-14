@@ -13,6 +13,33 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  db:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1.7.2
+        with:
+          version: 2.120.0
+      - run: npm ci --ignore-scripts
+      - run: npm run db:start
+      - run: npm run db:reset
+      - run: npm run db:test
+      - name: Prove database security tests reject regressions
+        run: node scripts/test-db-guards.mjs
+      - run: npm run db:test:concurrency
+      - run: npm run db:types:check
+      - name: Stop this job's local database
+        if: always()
+        run: npm run db:stop
+
   secrets:
     runs-on: ubuntu-latest
     timeout-minutes: 10

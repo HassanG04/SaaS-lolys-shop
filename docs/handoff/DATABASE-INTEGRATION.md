@@ -1,0 +1,110 @@
+# Database integration — 2026-10-15
+
+## Scope and source
+
+Branch: `agent/T-1.09-database-integration`, based on main `4dfb26c`.
+Review: [PR 26](https://github.com/HassanG04/SaaS_Accessories/pull/26).
+Extracted only database, types, tests and database runbooks from Anti-Gravity's
+published history through `cfac9d5` (T-1.16). The source CI branch `53f5110`
+also contains older application/auth changes and duplicate guards, so its whole
+history must not be merged. Current main's security workflows and guards remain.
+
+This batch contains T-1.01–T-1.10, T-1.14–T-1.16 database work. T-1.09b was
+already integrated. It excludes cloud deployment workflows, settings, payments,
+checkout, application features and analytics. Original development branches and
+Anti-Gravity's active checkout are preserved. No cloud database was changed.
+
+## Corrections during reconciliation
+
+- `protect_profile_role` now runs as the caller and checks database ownership;
+  the old definer identity check could never reject an API caller. A separate
+  test temporarily grants role-column updates to prove the trigger itself works.
+  The service-role API is also rejected; owner SQL remains supported.
+- Audit writes are internal only. API roles cannot execute `audit_event`, write
+  the table, use its identity sequence, or truncate it. Real admin changes and
+  owner SQL are still logged; update/delete immutability remains enforced.
+- Tests now distinguish owner SQL from a service-role API, the removed role RPC
+  from a permissions failure, and an RPC guard from an earlier ACL rejection.
+  The length tests use the actual `shipping_fee` column and a valid user ID;
+  cancelled-order reopening is tested with an actor allowed to reach the trigger.
+- The concurrency runner no longer accepts an arbitrary database URL or chooses
+  the first Docker database. It targets `lolys-db-integration`, verifies a local
+  Docker endpoint, observes B actually blocked by A, checks ORD-007 and final
+  stock/order counts, and cleans up only its fixtures.
+- CLI 2.120.0 is pinned on main's lockfile. Generation validates CLI output before
+  replacing types and has a non-mutating drift check. Credentials from CLI
+  startup/reset are withheld from logs. Local ports are 5632x; TOTP is enabled.
+- The nine migrations are new to main, so corrections were made before their
+  first merge. Later branches must preserve these exact merged files and apply
+  any further changes in new migrations. Do not restore the defective originals.
+
+## Evidence
+
+- Clean local stack startup and reset succeeded on PostgreSQL 17.
+- Seed: 27 governorates, 4 categories, 6 products, zero delivery fees; all nine
+  public tables (including audit history) have RLS.
+- All 259 pgTAP assertions across 11 files passed.
+- Five deliberately weakened controls caused test failures: RLS, inactive
+  product visibility, favorite isolation, role-trigger identity, audit-helper
+  permissions. Each mutation rolled back; all 259 assertions passed afterward.
+- S7 passed: B blocked on A, A committed the last two units, B received ORD-007,
+  stock was zero, sold count two, and exactly one order item existed.
+- Types regenerated from this exact schema and a second generation matched.
+- Full npm run verify passed: 57 application and 114 tooling tests, lint,
+  formatting, strict TypeScript, production build and migration/token/secret/bundle guards.
+  At `4c04816c719dd4473b34e567c077f501a21a1758`, GitHub static/unit/build/roadmap/secrets/db
+  passed in run 38645102090 and sast passed in run 38645101988. The Cloudflare
+  preview also passed. These results apply to that exact head; documentation
+  follow-ups require their own current-head CI results.
+- The first remote history scan found two JWT occurrences in Anti-Gravity's
+  performance-test commit `7f05c3`. Both are local public demo keys (`anon`,
+  `supabase-demo`), reviewed without printing values. Only their exact
+  commit/file/rule/line fingerprints were added to `.gitleaksignore`.
+
+## Merge and follow-up gates
+
+T-1.09 remains doing until remote CI and its acceptance evidence are complete.
+Task statuses on Anti-Gravity's branch are implementation reports, not proof
+that those features reached main. Keep both histories when updating the roadmap.
+
+Main ruleset 25090411 currently requires one approving review, resolved review
+threads, a current base, and static/unit/build/roadmap/secrets/db/e2e/sast checks.
+It blocks deletion and force-pushes. The API reports Code Owner enforcement as
+false; CODEOWNERS and the repository instructions still require owner review of
+these sensitive changes. This batch adds `db`; `e2e` remains absent from main
+until application/test integration. Do not substitute a successful stub or
+disable the required gate.
+
+The owner explicitly authorized the main merge on 2026-10-15. The normal
+squash-merge API was attempted against verified head `4c04816`; GitHub returned
+HTTP 405 with two violations: one approving review from a reviewer with write
+access is required, and status check `e2e` is expected. No review existed at the
+time of the attempt. Main remains `4dfb26c`; no merge or ruleset change occurred.
+Chat authorization is recorded, but is not a GitHub approving review. Retry only
+after the real E2E implementation and an eligible review satisfy the rules.
+
+Next prepare the existing auth/storefront/admin work against this verified
+database baseline. The owner approval-first payment amendment remains the gate
+for all InstaPay, payment review, payment settings and dependent checkout work.
+
+## Owner-supplied payment asset
+
+On 2026-10-15 the owner supplied an InstaPay recipient and authorized using the
+QR image in `ip/`. The actual local file is `ip/ip.jpeg`, not `ip/ip.png`.
+
+- JPEG signature and successful decode: 516 by 552 pixels, 56,906 bytes.
+- SHA-256: `B432667B3ACF96B8CBA2C48CAD0710486789DB0459BD223863B0E41D9B66F6AA`.
+- Offline zxing-cpp 2.3.0 decoding found one valid QR containing an HTTPS link on
+  `ipn.eg`; its recipient path matches the owner's supplied InstaPay address.
+  This verifies readability and the encoded recipient, not the bank signature
+  or ownership of the destination account. No payment link was opened.
+- Keep the supplied image; a generated per-order QR is unnecessary for the
+  documented static QR plus database-authoritative amount flow. No unsupported
+  InstaPay payload format was invented.
+- The original is unchanged in the root workspace and has not been committed,
+  uploaded, or configured in a cloud setting. Do not publish the image, recipient
+  or complete signed payload in source, seed data or frontend defaults.
+- After approval-first payment integration passes its tests, configure through
+  the reviewed AAL2 admin settings/upload flow. Customers must obtain payment
+  instructions through `get_payment_instructions` only after order approval.
+  The original image and recipient from the owner remain the setup inputs.

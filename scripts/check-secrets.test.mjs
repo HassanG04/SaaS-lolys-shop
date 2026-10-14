@@ -40,6 +40,34 @@ test('environment example permits names only', () => {
   ])
 })
 
+test('only literal privilege revocations may name the privileged role in migrations', () => {
+  const file = 'supabase/migrations/20261012043500_audit_log.sql'
+  const revoke = `revoke all on function public.audit_event(text, text, text, jsonb, jsonb) from public, anon, authenticated, ${role};`
+  assert.deepEqual(inspectText(revoke, file), [])
+  for (const object of ['table public.audit_log', 'sequence public.audit_log_id_seq']) {
+    assert.deepEqual(
+      inspectText(`revoke all on ${object} from public, anon, authenticated, ${role};`, file),
+      [],
+    )
+  }
+  for (const value of [
+    `grant all on table public.audit_log to ${role};`,
+    `${revoke}\nselect '${role}';`,
+    `select '${revoke}';`,
+  ]) {
+    assert.deepEqual(inspectText(value, file), ['PRIVILEGED_ROLE'])
+  }
+  assert.ok(inspectText(`${revoke}\n${secret}`, file).includes('SECRET_KEY'))
+  assert.ok(inspectText(`${revoke}\n${token(role)}`, file).includes('PRIVILEGED_JWT'))
+  for (const path of [
+    'src/app.ts',
+    'dist/supabase/migrations/20261012043500_audit_log.sql',
+    'scripts/arbitrary.sql',
+  ]) {
+    assert.deepEqual(inspectText(revoke, path), ['PRIVILEGED_ROLE'])
+  }
+})
+
 test('CLI rejects staged source and nested build leaks without exposing their values', (t) => {
   const root = mkdtempSync(path.join(tmpdir(), 'lolys-secret-guard-'))
   t.after(() => rmSync(root, { recursive: true, force: true }))

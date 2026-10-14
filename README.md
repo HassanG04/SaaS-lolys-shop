@@ -71,11 +71,26 @@ by later tasks deliberately fail with their task ID until implemented.
 Read [AGENTS.md](AGENTS.md), the roadmap and shared progress before making changes.
 Use a separate worktree for simultaneous agent work. Submit changes through a
 pull request; the repository uses squash merging and automatic merged-branch
-cleanup. Branch protection for this private repository is currently blocked by
-the GitHub account plan, so passing checks still need to be verified before merging.
+cleanup. Main is protected by a repository ruleset requiring a pull-request
+approval and passing checks, including the database and end-to-end suites.
 
 Passing a local build does not establish production readiness. Launch also
 requires the roadmap's security, operational and owner approval gates.
+
+## Local database
+
+Install and start Docker, then run `npm ci --ignore-scripts` and `npm run db:start`.
+The isolated `lolys-db-integration` stack uses ports 56321–56329 so it can coexist
+with an older development checkout. `npm run db:reset` erases only that local
+stack's data and reapplies the migrations and demo seed. It never targets a cloud
+project. See the [local development runbook](docs/runbooks/local-dev.md),
+[owner admin provisioning](docs/runbooks/first-admin.md), and
+[delivery configuration](docs/runbooks/delivery-fees.md).
+
+Run `npm run db:test`, `npm run db:test:concurrency`, and `npm run db:types:check`
+alongside `npm run verify`. Database checks run in CI without cloud credentials.
+The integrated baseline supports cash on delivery; InstaPay and saved-address
+changes remain subject to the [approved payment amendment](docs/spec/payment-flow-change.md).
 
 ## Architecture
 

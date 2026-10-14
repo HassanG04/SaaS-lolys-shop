@@ -521,7 +521,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:test:concurrency`
 
 #### T-1.09: CI db job and migration guard
-`status: todo` `owner: agent` `needs: T-1.05, T-1.06, T-1.07, T-1.08, T-0.06, T-1.09b` `size: M`
+`status: doing` `owner: agent` `needs: T-1.05, T-1.06, T-1.07, T-1.08, T-0.06, T-1.09b` `size: M`
 - **Do:** Add job `db` (3.3): `supabase/setup-cli@v1`, `supabase start`, `supabase db reset`, `supabase test db`, the concurrency script, regenerate types and fail on diff. Preserve `scripts/check-migrations.mjs` and its CI enforcement from T-1.09b. The independently testable guard is split out so cloud preparation can proceed without modifying Anti-Gravity's active database/application checkout; all original criteria remain.
 - **Done when:** a PR that edits a merged migration fails, and a PR with out-of-date types fails.
 - **Verify:** open a PR and read the checks. Then ask the owner to add `db` to the required checks (T-0.10).
@@ -1324,6 +1324,10 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-0.12 | Codex | Rejection probe removed. Recovery run 38176275898 at b2da8dc passed all five jobs, including secrets. T-0.12 stays doing only for owner security/workflow review; no launch or dashboard setup claimed. | [#18](https://github.com/HassanG04/lolys/pull/18) |
 
 | 2026-10-13 | T-7.06 | Codex | Added digest-pinned read-only Semgrep job, maintained TypeScript/React packs, seven project rules and redacted scanner diagnostics. Twelve planted cases, safe recovery, reported partial-parse failure and unavailable-scanner tests pass. Full verify passes (55 app + 111 tooling tests); this branch and Anti-Gravity source at 56529b3 have no high findings. SEC-07/15/16/22/24; doing until PR checks and owner workflow review. | pending |
+
+| 2026-10-15 | T-1.01–T-1.10, T-1.14–T-1.16 | Codex | Database-only reconciliation from cfac9d5 onto main 4dfb26c; preserve source branches and current-main guards. Corrected unmerged owner-role/audit migrations, stale tests, unsafe concurrency target and regenerated types. Isolated reset/seed counts, 259 pgTAP assertions, five negative probes plus recovery, S7 blocking proof and deterministic types pass. Full verify passes (57 application + 114 tooling tests); remote CI/owner review pending; see docs/handoff/DATABASE-INTEGRATION.md. InstaPay and dependent branches remain held. | [#26](https://github.com/HassanG04/SaaS_Accessories/pull/26) |
+
+| 2026-10-15 | T-1.09, T-5.09 | Codex | Owner supplied payment QR and explicitly approved main merge. Offline decoding verified the local JPEG and matching recipient; asset remains unmodified and unconfigured in cloud settings. PR26 at 4c04816 passed all seven implemented remote checks plus preview. Normal merge API returned HTTP 405: write-access approving review and required e2e check missing. Main unchanged; no gate bypass, no payment code or task status change. | [#26](https://github.com/HassanG04/SaaS_Accessories/pull/26) |
 
 ### Open questions (agents add rows; the owner answers)
 
