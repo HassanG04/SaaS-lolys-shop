@@ -1,0 +1,77 @@
+name: Weekly Sales Forecast & Inventory Analytics
+
+on:
+  schedule:
+    # Runs weekly on Sunday night at 21:00 UTC (23:00 / midnight Cairo time)
+    - cron: '0 21 * * 0'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      use_synthetic:
+        description: 'Generate synthetic dataset (for staging verification or rehearsal)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: forecast-${{ github.workflow }}-${{ github.event.inputs.environment || 'staging' }}
+  cancel-in-progress: false
+
+jobs:
+  forecast:
+    name: Run Forecasting Pipeline (${{ github.event.inputs.environment || 'staging' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node environment
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'analytics/requirements-dev.txt'
+
+      - name: Install Node dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install analytics Python dependencies
+        run: npm run analytics:install
+
+      - name: Run sales forecast workflow
+        env:
+          TARGET_ENV: ${{ github.event.inputs.environment || 'staging' }}
+          USE_SYNTHETIC: ${{ github.event.inputs.use_synthetic || 'false' }}
+          ANALYTICS_DB_URL_STAGING: ${{ secrets.ANALYTICS_DB_URL_STAGING }}
+          ANALYTICS_DB_URL_PRODUCTION: ${{ secrets.ANALYTICS_DB_URL_PRODUCTION }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Starting forecast workflow for environment: $TARGET_ENV"
+
+          EXTRA_FLAGS=""
+          if [ "$USE_SYNTHETIC" = "true" ]; then
+            EXTRA_FLAGS="--synthetic"
+          fi
+
+          node scripts/run-analytics.mjs run --env "$TARGET_ENV" $EXTRA_FLAGS

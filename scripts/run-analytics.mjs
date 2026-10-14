@@ -86,7 +86,24 @@ if (command === 'install') {
 
   console.log('\n[ANALYTICS] All analytics tests, linting and formatting passed cleanly.')
   process.exitCode = 0
+} else if (command === 'run' || command === 'cli') {
+  const cliArgs = process.argv.slice(3)
+  const env = {
+    ...process.env,
+    PYTHONPATH:
+      analyticsSrc + (process.env.PYTHONPATH ? path.delimiter + process.env.PYTHONPATH : ''),
+  }
+  const fullArgs =
+    command === 'run'
+      ? ['-m', 'lolys_analytics.cli', 'run', ...cliArgs]
+      : ['-m', 'lolys_analytics.cli', ...cliArgs]
+  const res = spawnSync(pythonCmd, fullArgs, {
+    stdio: 'inherit',
+    cwd: rootDir,
+    env,
+  })
+  process.exitCode = res.status ?? 1
 } else {
-  console.error(`Unknown analytics command "${command}". Available: install, test`)
+  console.error(`Unknown analytics command "${command}". Available: install, test, run, cli`)
   process.exitCode = 1
 }

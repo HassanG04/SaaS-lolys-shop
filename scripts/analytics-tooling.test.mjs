@@ -71,3 +71,36 @@ test('Analytics ADR-0004 documentation integrity', () => {
   assert.ok(adrContent.includes('ADR-0004'), 'ADR-0004 header must exist')
   assert.ok(adrContent.includes('statsforecast'), 'ADR-0004 must document statsforecast')
 })
+
+test('Weekly forecast workflow and writes configuration (T-9.08)', () => {
+  const forecastYmlPath = path.join(rootDir, '.github', 'workflows', 'forecast.yml')
+  assert.ok(existsSync(forecastYmlPath), '.github/workflows/forecast.yml must exist')
+
+  const content = readFileSync(forecastYmlPath, 'utf-8')
+  assert.ok(content.includes('0 21 * * 0'), 'forecast.yml must schedule weekly run on Sunday night')
+  assert.ok(content.includes('workflow_dispatch:'), 'forecast.yml must support manual triggers')
+  assert.ok(content.includes('timeout-minutes: 30'), 'forecast.yml must enforce 30-minute timeout')
+  assert.ok(content.includes('ANALYTICS_DB_URL_STAGING'), 'forecast.yml must pass staging secret')
+  assert.ok(
+    content.includes('ANALYTICS_DB_URL_PRODUCTION'),
+    'forecast.yml must pass production secret',
+  )
+  assert.ok(content.includes('use_synthetic'), 'forecast.yml must support synthetic input option')
+
+  const writePyPath = path.join(rootDir, 'analytics', 'src', 'lolys_analytics', 'write.py')
+  assert.ok(existsSync(writePyPath), 'write.py must exist')
+  const writeContent = readFileSync(writePyPath, 'utf-8')
+  assert.ok(writeContent.includes('write_forecast_run'), 'write.py must define write_forecast_run')
+  assert.ok(
+    writeContent.includes('DELETE FROM analytics.forecast_runs'),
+    'write.py must implement idempotent delete',
+  )
+
+  const dbPyPath = path.join(rootDir, 'analytics', 'src', 'lolys_analytics', 'db.py')
+  assert.ok(existsSync(dbPyPath), 'db.py must exist')
+  const dbContent = readFileSync(dbPyPath, 'utf-8')
+  assert.ok(dbContent.includes('sslmode=require'), 'db.py must enforce TLS require')
+
+  const forecastPyPath = path.join(rootDir, 'analytics', 'src', 'lolys_analytics', 'forecast.py')
+  assert.ok(existsSync(forecastPyPath), 'forecast.py must exist')
+})

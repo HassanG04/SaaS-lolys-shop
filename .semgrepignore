@@ -8,6 +8,7 @@ node_modules/
 supabase/
 e2e/
 scripts/
+analytics/
 *.test.ts
 *.test.tsx
 *.test.mjs
