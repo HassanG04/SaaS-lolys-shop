@@ -54,6 +54,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci --ignore-scripts
+      - run: npm audit signatures
+      - run: npm run check:supply-chain
       - name: Protect merged migrations
         if: github.event_name == 'pull_request'
         run: npm run check:migrations
