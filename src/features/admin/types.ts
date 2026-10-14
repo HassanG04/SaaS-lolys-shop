@@ -9,6 +9,7 @@ export interface AdminNavItem {
     | 'customers'
     | 'payments'
     | 'delivery'
+    | 'settings'
     | 'audit'
     | 'analytics'
   end?: boolean

@@ -13,7 +13,21 @@ describe('database types and helpers', () => {
       'cancelled',
     ])
     expect(Constants.public.Enums.delivery_method).toEqual(['egypt_post', 'representative'])
-    expect(Constants.public.Enums.payment_method).toEqual(['cod'])
+    expect(Constants.public.Enums.payment_method).toEqual(['cod', 'instapay_qr'])
+    expect(Constants.public.Enums.payment_status).toEqual([
+      'unpaid',
+      'awaiting_proof',
+      'under_review',
+      'paid',
+      'rejected',
+    ])
+    expect(Constants.public.Enums.stock_reason).toEqual([
+      'order',
+      'cancel',
+      'admin_adjust',
+      'restock',
+      'correction',
+    ])
   })
 
   it('provides compile-time types for table rows and inserts', () => {
@@ -31,6 +45,7 @@ describe('database types and helpers', () => {
       in_stock: true,
       sold_count: 0,
       is_active: true,
+      is_featured: false,
       image_url: null,
       extra_images: [],
       created_at: '2026-10-11T00:00:00Z',

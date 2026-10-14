@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Button } from '../../components/ui/Button'
 import { Dialog } from '../../components/ui/Dialog'
 import { Input } from '../../components/ui/Input'
-import { AuthAlert } from './authErrors'
+import { AuthAlert } from './AuthAlert'
 import type { AuthErrorCode } from './types'
 import { useStepUp } from './useStepUp'
 

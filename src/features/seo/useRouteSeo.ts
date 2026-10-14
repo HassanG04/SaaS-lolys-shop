@@ -7,181 +7,45 @@ export function getRouteMetadata(
   pathname: string,
   t: ReturnType<typeof useLanguage>['t'],
 ): SeoOptions {
-  // Normalize trailing slashes
-  const path = pathname.replace(/\/+$/, '') || '/'
+  const p = pathname.replace(/\/+$/, '') || '/'
+  const s = t.seo
 
-  if (path === '/') {
-    return {
-      title: t.seo.home,
-      description: t.seo.defaultDescription,
-      noindex: false,
-    }
+  if (p === '/') return { title: s.home, description: s.defaultDescription, noindex: false }
+  if (p.startsWith('/category')) return { title: s.category, noindex: false }
+  if (p.startsWith('/product')) return { title: s.product, noindex: false }
+  if (p.startsWith('/pay')) return { title: s.pay, noindex: true }
+  if (p.startsWith('/admin')) {
+    if (p === '/admin/mfa/enroll') return { title: s.adminMfaEnroll, noindex: true }
+    if (p === '/admin/mfa/challenge') return { title: s.adminMfaChallenge, noindex: true }
+    return { title: s.admin, noindex: true }
   }
+  if (p === '/__kit' && import.meta.env.DEV) return { title: 'UI Kit', noindex: true }
 
-  if (path.startsWith('/category')) {
-    return {
-      title: t.seo.category,
-      noindex: false,
-    }
+  const map: Record<string, [string, boolean]> = {
+    '/cart': [s.cart, false],
+    '/login': [s.login, false],
+    '/register': [s.register, false],
+    '/about': [s.about, false],
+    '/terms': [s.terms, false],
+    '/privacy': [s.privacy, false],
+    '/returns': [s.returns, false],
+    '/shipping': [s.shipping, false],
+    '/account': [t.account.details, true],
+    '/account/orders': [s.orders, true],
+    '/account/favorites': [s.favorites, true],
+    '/account/security': [s.security, true],
+    '/account/mfa/enroll': [s.mfaEnroll, true],
+    '/mfa/challenge': [s.mfaChallenge, true],
+    '/checkout': [s.checkout, true],
+    '/reset-password': [s.resetPassword, true],
+    '/resend-confirmation': [s.resendConfirmation, true],
   }
-
-  if (path.startsWith('/product')) {
-    return {
-      title: t.seo.product,
-      noindex: false,
-    }
-  }
-
-  if (path === '/cart') {
-    return {
-      title: t.seo.cart,
-      noindex: false,
-    }
-  }
-
-  if (path === '/login') {
-    return {
-      title: t.seo.login,
-      noindex: false,
-    }
-  }
-
-  if (path === '/register') {
-    return {
-      title: t.seo.register,
-      noindex: false,
-    }
-  }
-
-  if (path === '/reset-password') {
-    return {
-      title: t.seo.resetPassword,
-      noindex: true,
-    }
-  }
-
-  if (path === '/resend-confirmation') {
-    return {
-      title: t.seo.resendConfirmation,
-      noindex: true,
-    }
-  }
-
-  if (path === '/checkout') {
-    return {
-      title: t.seo.checkout,
-      noindex: true,
-    }
-  }
-
-  if (path.startsWith('/pay')) {
-    return {
-      title: t.seo.pay,
-      noindex: true,
-    }
-  }
-
-  if (path === '/account/orders') {
-    return {
-      title: t.seo.orders,
-      noindex: true,
-    }
-  }
-
-  if (path === '/account/security') {
-    return {
-      title: t.seo.security,
-      noindex: true,
-    }
-  }
-
-  if (path === '/account/mfa/enroll') {
-    return {
-      title: t.seo.mfaEnroll,
-      noindex: true,
-    }
-  }
-
-  if (path === '/mfa/challenge') {
-    return {
-      title: t.seo.mfaChallenge,
-      noindex: true,
-    }
-  }
-
-  if (path === '/admin/mfa/enroll') {
-    return {
-      title: t.seo.adminMfaEnroll,
-      noindex: true,
-    }
-  }
-
-  if (path === '/admin/mfa/challenge') {
-    return {
-      title: t.seo.adminMfaChallenge,
-      noindex: true,
-    }
-  }
-
-  if (path === '/admin' || path.startsWith('/admin/')) {
-    return {
-      title: t.seo.admin,
-      noindex: true,
-    }
-  }
-
-  if (path === '/about') {
-    return {
-      title: t.seo.about,
-      noindex: false,
-    }
-  }
-
-  if (path === '/terms') {
-    return {
-      title: t.seo.terms,
-      noindex: false,
-    }
-  }
-
-  if (path === '/privacy') {
-    return {
-      title: t.seo.privacy,
-      noindex: false,
-    }
-  }
-
-  if (path === '/returns') {
-    return {
-      title: t.seo.returns,
-      noindex: false,
-    }
-  }
-
-  if (path === '/shipping') {
-    return {
-      title: t.seo.shipping,
-      noindex: false,
-    }
-  }
-
-  if (path === '/__kit' && import.meta.env.DEV) {
-    return {
-      title: 'UI Kit',
-      noindex: true,
-    }
-  }
-
-  return {
-    title: t.seo.notFound,
-    noindex: true,
-  }
+  const match = map[p]
+  return match ? { title: match[0], noindex: match[1] } : { title: s.notFound, noindex: true }
 }
 
 export function useRouteSeo() {
   const { pathname } = useLocation()
   const { t } = useLanguage()
-  const metadata = getRouteMetadata(pathname, t)
-
-  useSeo(metadata)
+  useSeo(getRouteMetadata(pathname, t))
 }

@@ -224,7 +224,7 @@ SELECT throws_ok(
 -- 5. Owner changes appear in audit_log
 -- ============================================================================
 
--- Switch to database owner (service_role) and promote target_s21
+-- Switch to database owner (postgres) and promote target_s21
 RESET ROLE;
 SELECT set_config('request.jwt.claims', '', true);
 

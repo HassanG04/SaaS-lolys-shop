@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useLanguage } from '../../i18n/LanguageProvider'
+import { AppError, ErrorMessage, toAppError } from '../../lib/errors'
 import { Button } from './Button'
 import { Ltr } from './Ltr'
 
@@ -7,6 +8,7 @@ export interface ErrorPanelProps {
   title?: string
   message?: ReactNode
   code?: string
+  error?: unknown
   onRetry?: () => void
   retryLabel?: string
   action?: ReactNode
@@ -17,6 +19,7 @@ export function ErrorPanel({
   title,
   message,
   code,
+  error,
   onRetry,
   retryLabel,
   action,
@@ -24,6 +27,9 @@ export function ErrorPanel({
 }: ErrorPanelProps) {
   const { t } = useLanguage()
   const ui = t.ui
+
+  const appError = error ? (error instanceof AppError ? error : toAppError(error)) : null
+  const displayCode = code || appError?.code
 
   return (
     <div
@@ -52,14 +58,14 @@ export function ErrorPanel({
       <h3 className="text-h3 font-bold text-brand">{title || ui.errorOccurred}</h3>
 
       <div className="mt-2 max-w-md text-small text-text-muted">
-        {message || ui.errorDescription}
+        {message ? message : appError ? <ErrorMessage error={appError} /> : ui.errorDescription}
       </div>
 
-      {code && (
+      {!appError && displayCode && (
         <div className="mt-3">
           <span className="inline-block rounded-chip bg-surface-tint px-3 py-1 text-caption font-mono font-medium text-danger">
             <Ltr>
-              {ui.errorCode} {code}
+              {ui.errorCode} {displayCode}
             </Ltr>
           </span>
         </div>

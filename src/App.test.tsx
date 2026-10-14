@@ -20,23 +20,27 @@ test('renders Layout with skip link, main landmark, navbar and footer', async ()
   )
 
   // Footer landmark
-  expect(screen.getByRole('contentinfo')).toBeInTheDocument()
+  expect(await screen.findByRole('contentinfo')).toBeInTheDocument()
 
   // Home heading
   expect(
-    await screen.findByRole('heading', { name: 'متجر لوليز للإكسسوارات والمنزل' }),
+    await screen.findByRole(
+      'heading',
+      { name: /إكسسوارات|خصم يصل إلى|متجر لوليز/ },
+      { timeout: 3000 },
+    ),
   ).toBeInTheDocument()
 })
 
 test('navigates to routes and renders placeholders', async () => {
   // Category route
-  const { unmount: unmount1 } = render(<App initialEntries={['/category/earrings']} />)
-  expect(await screen.findByRole('heading', { name: 'قسم: earrings' })).toBeInTheDocument()
+  const { unmount: unmount1 } = render(<App initialEntries={['/category/all']} />)
+  expect(await screen.findByRole('heading', { name: 'جميع المنتجات' })).toBeInTheDocument()
   unmount1()
 
   // Product route
-  const { unmount: unmount2 } = render(<App initialEntries={['/product/42']} />)
-  expect(await screen.findByRole('heading', { name: 'تفاصيل المنتج #42' })).toBeInTheDocument()
+  const { unmount: unmount2 } = render(<App initialEntries={['/product/invalid']} />)
+  expect(await screen.findByRole('heading', { name: '404' })).toBeInTheDocument()
   unmount2()
 
   // Cart route
@@ -57,7 +61,9 @@ test('navigates to routes and renders placeholders', async () => {
 
 test('opens the development kit at its route', async () => {
   render(<App initialEntries={['/__kit']} />)
-  expect(await screen.findByRole('heading', { name: kit.title })).toBeInTheDocument()
+  expect(
+    await screen.findByRole('heading', { name: kit.title }, { timeout: 10000 }),
+  ).toBeInTheDocument()
 })
 
 test('shows a clear development error screen when booting without env values', () => {

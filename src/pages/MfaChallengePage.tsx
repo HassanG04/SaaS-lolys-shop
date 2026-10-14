@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Input } from '../components/ui/Input'
-import { AuthAlert } from '../features/auth/authErrors'
+import { AuthAlert } from '../features/auth/AuthAlert'
 import { useAuth } from '../features/auth/AuthProvider'
 import type { AuthErrorCode } from '../features/auth/types'
 

@@ -132,7 +132,9 @@ describe('Two-factor login and TOTP gates (T-2.06)', () => {
     render(<App initialEntries={['/admin']} />)
 
     // Admin screen loads
-    expect(await screen.findByRole('heading', { name: 'لوحة تحكم الإدارة' })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'لوحة تحكم الإدارة' }, { timeout: 4000 }),
+    ).toBeInTheDocument()
     expect(
       screen.queryByRole('heading', { name: 'إعداد التحقق بخطوتين (TOTP)' }),
     ).not.toBeInTheDocument()

@@ -17,10 +17,12 @@ import {
   order as arOrder,
   auth as arAuth,
   account as arAccount,
+  favorites as arFavorites,
   admin as arAdmin,
   empty as arEmpty,
   footer as arFooter,
   seo as arSeo,
+  catalog as arCatalog,
 } from './ar.json'
 
 import {
@@ -41,10 +43,12 @@ import {
   order as enOrder,
   auth as enAuth,
   account as enAccount,
+  favorites as enFavorites,
   admin as enAdmin,
   empty as enEmpty,
   footer as enFooter,
   seo as enSeo,
+  catalog as enCatalog,
 } from './en.json'
 
 export const translations = {
@@ -66,10 +70,12 @@ export const translations = {
     order: arOrder,
     auth: arAuth,
     account: arAccount,
+    favorites: arFavorites,
     admin: arAdmin,
     empty: arEmpty,
     footer: arFooter,
     seo: arSeo,
+    catalog: arCatalog,
   },
   en: {
     theme: enTheme,
@@ -89,9 +95,11 @@ export const translations = {
     order: enOrder,
     auth: enAuth,
     account: enAccount,
+    favorites: enFavorites,
     admin: enAdmin,
     empty: enEmpty,
     footer: enFooter,
     seo: enSeo,
+    catalog: enCatalog,
   },
 }

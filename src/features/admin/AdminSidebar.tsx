@@ -126,6 +126,22 @@ function NavIcon({ type }: { type: AdminNavItem['icon'] }): ReactNode {
           <circle cx="7" cy="18" r="2" />
         </svg>
       )
+    case 'settings':
+      return (
+        <svg
+          className="size-5 shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      )
     case 'audit':
       return (
         <svg
@@ -178,6 +194,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     { to: '/admin/customers', label: t.admin.customers, icon: 'customers' },
     { to: '/admin/payments', label: t.admin.payments, icon: 'payments' },
     { to: '/admin/delivery', label: t.admin.delivery, icon: 'delivery' },
+    { to: '/admin/settings', label: t.admin.settings, icon: 'settings' },
     { to: '/admin/audit', label: t.admin.audit, icon: 'audit' },
     { to: '/admin/analytics', label: t.admin.analytics, icon: 'analytics' },
   ]

@@ -267,6 +267,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+export function useOptionalAuth(): AuthContextValue | null {
+  return useContext(AuthContext)
+}
+
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext)
   if (!context) {

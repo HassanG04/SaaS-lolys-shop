@@ -1,16 +1,46 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { ThemeToggle } from '../ui/ThemeToggle'
 import { LanguageToggle } from '../ui/LanguageToggle'
-import { RibbonBow } from '../ui/ornaments'
+import { useCart } from '../../features/cart'
+
+const NavbarMobileMenu = lazy(() => import('./NavbarMobileMenu'))
+
+function NavIcon({
+  children,
+  className = 'size-5',
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  )
+}
+
+const pillBtnClass =
+  'h-11 items-center rounded-pill border border-border bg-surface-2 px-3 py-1 text-small font-medium text-text transition-colors hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus'
 
 interface NavbarProps {
   cartCount?: number
 }
 
-export function Navbar({ cartCount = 0 }: NavbarProps) {
+export function Navbar({ cartCount }: NavbarProps) {
   const { t } = useLanguage()
+  const cart = useCart()
+  const displayCartCount = cartCount ?? cart.totalCount
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
@@ -24,22 +54,22 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      navigate(`/category/all?q=${encodeURIComponent(searchQuery.trim())}`)
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
       setSearchQuery('')
       setMobileMenuOpen(false)
     }
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-(--color-border) bg-(--color-surface)/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-surface/95 backdrop-blur-md">
       <div className="mx-auto flex h-20 max-w-(--container-layout) items-center justify-between gap-4 px-4 sm:px-6">
         {/* Brand Logo & Wordmark */}
         <Link
           to="/"
-          className="group flex items-center gap-3 text-(--color-brand) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-focus) rounded-(--radius-pill) p-1"
+          className="group flex items-center gap-3 text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-pill p-1"
           aria-label="Lolys' Accessories & Home"
         >
-          <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-(--radius-pill) border border-(--color-border) bg-(--color-bg)">
+          <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-pill border border-border bg-bg">
             <img
               src="/brand/logo.png"
               alt=""
@@ -50,13 +80,16 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
                 e.currentTarget.style.display = 'none'
               }}
             />
-            <RibbonBow className="size-6 text-(--color-brand)" />
+            <NavIcon className="size-6 text-brand">
+              <path d="M11 10C4 2 1 5 3 10s6 4 8 2m2-2c7-8 10-5 8 0s-6 4-8 2M10 13l-4 8 4-2 2 2 2-8m-1 0 5 8-1-5 4 1-6-5" />
+              <rect x="10" y="9" width="4" height="5" />
+            </NavIcon>
           </div>
           <div className="flex flex-col">
-            <span className="font-accent text-h3 font-bold leading-tight tracking-normal text-(--color-brand)">
+            <span className="font-accent text-h3 font-bold leading-tight tracking-normal text-brand">
               Lolys&apos;
             </span>
-            <span className="text-caption text-(--color-text-muted)">{t.footer.tagline}</span>
+            <span className="text-caption text-text-muted">{t.footer.tagline}</span>
           </div>
         </Link>
 
@@ -72,26 +105,16 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.search.placeholder}
-              className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) ps-4 pe-11 text-small text-(--color-text) placeholder:text-(--color-text-muted) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+              className="w-full h-11 rounded-pill border border-border-input bg-bg ps-4 pe-11 text-small text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
             />
             <button
               type="submit"
               aria-label={t.ui.search}
-              className="absolute end-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-(--radius-pill) bg-(--color-brand) text-(--color-brand-contrast) transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+              className="absolute end-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-pill bg-brand text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
             >
-              <svg
-                className="size-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-              </svg>
+              <NavIcon className="size-4">
+                <path d="M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16m10 18-4.3-4.3" />
+              </NavIcon>
             </button>
           </div>
         </form>
@@ -103,8 +126,8 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `text-small font-medium transition-colors hover:text-(--color-brand) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--color-focus) rounded-(--radius-chip) px-2 py-1 ${
-                  isActive ? 'text-(--color-brand) font-bold' : 'text-(--color-text)'
+                `text-small font-medium transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-chip px-2 py-1 ${
+                  isActive ? 'text-brand font-bold' : 'text-text'
                 }`
               }
             >
@@ -118,45 +141,28 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
           {/* Cart Pill */}
           <Link
             to="/cart"
-            className="flex h-11 items-center gap-2 rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) px-3 py-1 text-small font-medium text-(--color-text) transition-colors hover:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-            aria-label={`${t.nav.cart} (${cartCount})`}
+            onClick={(e) => {
+              e.preventDefault()
+              cart.openDrawer()
+            }}
+            className={`flex gap-2 ${pillBtnClass}`}
+            aria-label={`${t.nav.cart} (${displayCartCount})`}
           >
-            <svg
-              className="size-5 text-(--color-brand)"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-              <path d="M3 6h18" />
-              <path d="M16 10a4 4 0 0 1-8 0" />
-            </svg>
-            <span className="font-semibold text-(--color-brand)">{cartCount}</span>
+            <NavIcon className="size-5 text-brand">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0" />
+            </NavIcon>
+            <span className="font-semibold text-brand">{displayCartCount}</span>
           </Link>
 
           {/* Account Link */}
           <Link
-            to="/account/orders"
-            className="hidden sm:flex h-11 items-center justify-center rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) px-3 py-1 text-small font-medium text-(--color-text) transition-colors hover:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+            to="/account"
+            className={`hidden sm:flex justify-center ${pillBtnClass}`}
             aria-label={t.nav.account}
           >
-            <svg
-              className="size-5 text-(--color-brand)"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="8" r="5" />
-              <path d="M20 21a8 8 0 1 0-16 0" />
-            </svg>
+            <NavIcon className="size-5 text-brand">
+              <path d="M12 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10m8 18a8 8 0 1 0-16 0" />
+            </NavIcon>
           </Link>
 
           {/* Theme & Language Toggles */}
@@ -167,105 +173,32 @@ export function Navbar({ cartCount = 0 }: NavbarProps) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex lg:hidden h-11 w-11 items-center justify-center rounded-(--radius-pill) border border-(--color-border) bg-(--color-surface-2) text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+            className="flex lg:hidden h-11 w-11 items-center justify-center rounded-pill border border-border bg-surface-2 text-text focus:outline-none focus:ring-2 focus:ring-focus"
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? t.nav.closeMenu : t.nav.openMenu}
           >
-            {mobileMenuOpen ? (
-              <svg
-                className="size-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
+            <NavIcon className="size-5">
+              {mobileMenuOpen ? (
                 <path d="M18 6 6 18M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg
-                className="size-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <line x1="4" x2="20" y1="12" y2="12" />
-                <line x1="4" x2="20" y1="6" y2="6" />
-                <line x1="4" x2="20" y1="18" y2="18" />
-              </svg>
-            )}
+              ) : (
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </NavIcon>
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer / Dropdown */}
       {mobileMenuOpen && (
-        <div className="border-t border-(--color-border) bg-(--color-surface) px-4 py-4 lg:hidden">
-          {/* Mobile Search */}
-          <form role="search" onSubmit={handleSearchSubmit} className="mb-4">
-            <div className="relative">
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t.search.placeholder}
-                className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) ps-4 pe-11 text-small text-(--color-text) placeholder:text-(--color-text-muted) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-              />
-              <button
-                type="submit"
-                aria-label={t.ui.search}
-                className="absolute end-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-(--radius-pill) bg-(--color-brand) text-(--color-brand-contrast)"
-              >
-                <svg
-                  className="size-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.3-4.3" />
-                </svg>
-              </button>
-            </div>
-          </form>
-
-          {/* Mobile Links */}
-          <nav className="flex flex-col gap-2" aria-label="Mobile Navigation">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `flex h-11 items-center px-4 rounded-(--radius-chip) text-body font-medium transition-colors ${
-                    isActive
-                      ? 'bg-(--color-surface-tint) text-(--color-brand) font-bold'
-                      : 'text-(--color-text) hover:bg-(--color-surface-2)'
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-            <Link
-              to="/account/orders"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex h-11 items-center px-4 rounded-(--radius-chip) text-body font-medium text-(--color-text) hover:bg-(--color-surface-2)"
-            >
-              {t.nav.account}
-            </Link>
-          </nav>
-        </div>
+        <Suspense fallback={null}>
+          <NavbarMobileMenu
+            navLinks={navLinks}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+            onSearchSubmit={handleSearchSubmit}
+            onClose={() => setMobileMenuOpen(false)}
+          />
+        </Suspense>
       )}
     </header>
   )

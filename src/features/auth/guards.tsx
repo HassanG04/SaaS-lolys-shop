@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { PearlLoader } from '../../components/ui/PearlLoader'
-import { AuthAlert } from './authErrors'
+import { AuthAlert } from './AuthAlert'
 import { useAuth } from './AuthProvider'
 
 export function RequireAuth({ children }: { children: ReactNode }) {

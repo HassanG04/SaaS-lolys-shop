@@ -105,11 +105,7 @@ export default function CustomersPage() {
           <PearlLoader loading />
         </div>
       ) : error ? (
-        <ErrorPanel
-          message={error.message}
-          onRetry={() => void refetch()}
-          retryLabel="إعادة المحاولة"
-        />
+        <ErrorPanel error={error} onRetry={() => void refetch()} retryLabel="إعادة المحاولة" />
       ) : filteredCustomers.length === 0 ? (
         <EmptyState
           title={t.admin.noCustomers}

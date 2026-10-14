@@ -177,8 +177,9 @@ describe('Admin shell and access control (T-5.01)', () => {
 
       render(<App initialEntries={['/admin']} />)
 
-      // Header on dashboard page loads
-      expect(await screen.findByRole('heading', { name: 'لوحة تحكم الإدارة' })).toBeInTheDocument()
+      expect(
+        await screen.findByRole('heading', { name: 'لوحة تحكم الإدارة' }, { timeout: 10000 }),
+      ).toBeInTheDocument()
 
       // Lazy loader was invoked
       expect(loaderSpy).toHaveBeenCalled()

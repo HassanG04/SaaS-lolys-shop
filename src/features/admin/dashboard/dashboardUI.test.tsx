@@ -271,7 +271,8 @@ describe('Dashboard UI components (T-6.02)', () => {
       renderWithProviders(<DashboardPage />)
 
       expect(screen.getByText('تعذر تحميل بيانات لوحة التحكم')).toBeInTheDocument()
-      expect(screen.getByText('Network connection lost')).toBeInTheDocument()
+      expect(screen.getByText(/تعذّر الاتصال بالإنترنت/)).toBeInTheDocument()
+      expect(screen.getByText(/رمز الخطأ:\s*SYS-002/)).toBeInTheDocument()
 
       const retryBtn = screen.getByRole('button', { name: 'إعادة المحاولة' })
       await user.click(retryBtn)

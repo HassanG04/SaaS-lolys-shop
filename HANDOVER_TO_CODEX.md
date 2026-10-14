@@ -2,55 +2,55 @@
 
 ## Objective
 
-Completed task `T-8.01: Auth email and hardening runbooks` on branch `agent/T-8.01-auth-email-hardening-runbooks`.
+Completed task `T-5.09: Site settings` on branch `agent/T-5.09-admin-settings`.
 
-## Completed Work in T-8.01
+## Completed Work in T-5.09
 
-1. **Auth Email Runbook (`docs/runbooks/auth-email.md`)**:
-   - Rationale for custom SMTP (built-in sender capped at 2 emails/hour; custom SMTP default is 30 signups/hour per Supabase production checklist).
-   - SMTP configuration guidance (Host, Port, User, Pass, Sender Name/Email, Encryption) across Resend, SendGrid, and AWS SES.
-   - Exact redirect URLs for production (`https://lolys.eg/*`), staging, and local development (strictly prohibiting wildcards `*`).
-   - Comprehensive test procedures covering registration confirmation, password reset, link expiration, and rate-limiting enumeration protection.
+1. **Settings Types (`src/features/admin/settings/types.ts`)**:
+   - `ShopSettingsMap` defining all 16 allow-listed database settings keys: `shop_name_ar`, `shop_name_en`, `tagline_ar`, `phone`, `whatsapp`, `instagram`, `announcement_ar`, `hero_title_ar`, `hero_subtitle_ar`, `sale_percent`, `payment_methods_enabled`, `instapay_qr_path`, `instapay_handle`, `returns_text_ar`, `payment_window_hours`, `pending_order_limit`.
+   - `UpdateSettingPayload` discriminated union and `SettingsAuditEntry` schema.
+   - `SENSITIVE_SETTING_KEYS` identifying MFA Step-Up requirements.
 
-2. **Auth Hardening Runbook (`docs/runbooks/auth-hardening.md`)**:
-   - 10-point tick-list covering:
-     1. Cloudflare Turnstile CAPTCHA enabled.
-     2. Email confirmations required.
-     3. Secure email change enabled with double verification.
-     4. Minimum password length set to 10 characters.
-     5. Anonymous sign-ins disabled.
-     6. TOTP two-factor authentication enabled (`aal2`).
-     7. Exact allow-listed redirect URLs only (no wildcards).
-     8. Unused external OAuth providers disabled.
-     9. Leaked-password protection enabled (HaveIBeenPwned).
-     10. JWT expiry / 20-minute admin session idle timeouts enforced.
-   - Pre-launch verification procedure and incident response guide for compromised credentials.
+2. **Validators (`src/features/admin/settings/validators.ts`)**:
+   - Pure validation functions enforcing exact database contract constraints, character limits, number ranges, and regexes.
+   - `validateSettingValue` returning `{ valid: false, errorHint: 'ADM-008' }` for unknown keys and `ADM-007` for value violations.
 
-3. **UI States and Error Handling**:
-   - Extended `src/features/auth/authErrors.tsx` to map Supabase token expiration errors (`otp_expired`, `token_expired`, `link is invalid`, `link has expired`) to catalogue error code `AUTH-009` ("الرابط غير صالح أو انتهت صلاحيته. اطلب رابطًا جديدًا.").
-   - Implemented dedicated "تحقق من بريدك الإلكتروني" (Check your email) status cards across `RegisterPage`, `ResetPasswordPage`, and `ResendConfirmationPage` with envelope icon and spam/junk guidance when `statusMessage === 'AUTH-010'`.
-   - Derived URL error codes via `useMemo` in `LoginPage` and `ResetPasswordPage` to gracefully handle expired redirects with one-click recovery links (`/resend-confirmation` and `/reset-password`).
+3. **API Layer (`src/features/admin/settings/api.ts`)**:
+   - `getAdminSettings`: queries `shop_settings` table and returns typed settings with `DEFAULT_SETTINGS` fallbacks.
+   - `updateAdminSetting`: pre-validates inputs and calls database RPC `admin_update_setting(p_key, p_value)` with Arabic error catalogue mapping (`toAppError`).
+   - `uploadInstaPayQrImage`: validates file magic bytes (JPEG/PNG/WebP <= 5 MB), resizes and re-encodes, uploads to `product-images` bucket under `settings/instapay-qr-${uuid}.${ext}`, persists path via RPC, and deletes previous custom QR image from storage (leaving default placeholder untouched).
+   - `getPublicQrUrl`: resolves public URL, falling back to `/placeholders/instapay-qr.svg` if empty or default.
+   - `getRecentSettingsAudit`: queries `audit_log` where `entity = 'shop_settings'` (latest 10 entries).
 
-4. **Testing and Verification**:
-   - Added 5 unit tests in `src/features/auth/auth.test.tsx` verifying registration check-email state, password reset check-email state, resend confirmation flow, and expired link URL handling on login and reset pages.
-   - All 225 application tests and 111 tooling tests (336 total) pass.
-   - Bundle size verified at 192.8 KB gzip <= 200 KB.
-   - `npm run verify` passed completely.
-   - Committed and pushed to `origin/agent/T-8.01-auth-email-hardening-runbooks`.
+4. **React Query Hooks (`src/features/admin/settings/hooks.ts`)**:
+   - `useAdminSettings`, `useUpdateAdminSetting`, `useUploadInstaPayQr`, and `useRecentSettingsAudit`.
+   - Invalidation synchronizes admin settings, public storefront settings (`['settings', 'public']`), and audit log query keys.
 
-## Current Roadmap State
+5. **Settings Administration UI (`src/features/admin/settings/SettingsPage.tsx`)**:
+   - Organized into 5 tabbed sections:
+     - **معلومات المتجر والتواصل**: Names, tagline, phone, WhatsApp, Instagram link.
+     - **الواجهة الرئيسية والخصم والإعلانات**: Announcement bar, hero title, subtitle, sale discount percent, with live storefront hero badge preview.
+     - **طرق الدفع المفعلة وإنستاباي**: Payment method checkboxes, InstaPay IPA address, QR preview and replacement file picker.
+     - **الحدود التشغيلية والسياسات**: Pending order limit (1..10), InstaPay payment window (1..72 hours), returns text.
+     - **سجل تغييرات إعدادات المتجر**: Chronological audit log table with translated friendly setting names, old/new values, and actor roles.
+   - Step-Up MFA prompt integration (`useStepUp` / `StepUpDialog`) guarding payment methods, operational limits, and QR image replacement.
 
-`npm run roadmap:next` reports:
+6. **Route & Layout Wiring**:
+   - Added lazy route `{ path: 'settings', element: <AdminSettingsPage /> }` in `src/features/admin/AdminRoutes.tsx`.
+   - Added `'settings'` icon and navigation entry `{ to: '/admin/settings', label: t.admin.settings, icon: 'settings' }` in `src/features/admin/AdminSidebar.tsx` and `types.ts`.
 
-- **No runnable agent tasks** at this moment.
-- **T-0.06** is in `doing` awaiting Owner review of PR #1 / workflows.
-- Downstream tasks (`T-0.09`, `T-0.12`, `T-1.09`, etc.) depend on T-0.06.
-- Human-owned tasks: `T-0.10`, `T-0.11`, `T-0.13`, `T-1.11`, `T-1.13`, `T-7.09`, `T-8.02`, `T-8.03`, `T-8.04`, `T-8.09`, `T-8.10`, `T-9.13`.
+7. **Verification & Quality**:
+   - 22 unit tests in `src/features/admin/settings/settings.test.tsx` (100% pass) testing validators, API functions, RPC calls, old QR file deletion, error mappings, step-up prompts, and UI interactions.
+   - Full test suite: **728 tests pass** (587 application tests + 141 tooling tests).
+   - Full `npm run verify` passed: `check:migrations`, `check:sql`, `check:tokens`, `check:i18n`, `lint`, `format:check`, `typecheck`, `test:unit`, `build`, `check:secrets`, and `check:bundle`.
+   - Initial JS bundle budget maintained: **199,998 / 200,000 gzip bytes** in 4 initial chunks.
+   - Roadmap updated: `T-5.09: done` (77/119 tasks completed, Phase 5: 9/12 completed).
 
-## Verification Command
+## Next Task
 
-To verify the repository state locally:
-
-```bash
-npm run verify
-```
+- **T-5.10: Audit log viewer** (`/admin/audit`):
+  - Read-only table with filters (date, entity, actor, action).
+  - Readable before-and-after view.
+  - "Recent sensitive changes" panel for the dashboard.
+  - No edit or delete controls.
+  - Verification: `npm run verify`.

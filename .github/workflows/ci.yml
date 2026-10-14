@@ -138,3 +138,31 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run roadmap:check
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1.7.2
+        with:
+          version: 2.120.0
+      - run: npm ci --ignore-scripts
+      - name: Start local Supabase stack
+        run: supabase start
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+      - name: Build storefront
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: http://127.0.0.1:54321
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+          VITE_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+      - name: Run E2E test suite
+        run: npm run test:e2e

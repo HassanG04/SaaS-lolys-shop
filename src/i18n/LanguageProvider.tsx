@@ -27,8 +27,20 @@ export interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null)
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export function LanguageProvider({
+  children,
+  initialLanguage,
+}: {
+  children: ReactNode
+  initialLanguage?: Language
+}) {
   const [lang, setLang] = useState<Language>(() => {
+    if (initialLanguage) {
+      if (i18n.language !== initialLanguage) {
+        void i18n.changeLanguage(initialLanguage)
+      }
+      return initialLanguage
+    }
     let initialLang: Language = 'ar'
     try {
       const saved = localStorage.getItem('app-lang')

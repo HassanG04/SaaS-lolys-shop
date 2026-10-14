@@ -2,7 +2,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
-
+  
   "graphql_public": {
           Tables: {
             [_ in never]: never
@@ -24,32 +24,55 @@ export type Database = {
         },"public": {
           Tables: {
             "audit_log": {
+              Row: {
+                "action": string;
+                "actor": string | null;
+                "actor_role": string;
+                "at": string;
+                "entity": string;
+                "entity_id": string;
+                "id": number;
+                "new": Json | null;
+                "old": Json | null;
+              };
+              ComputedFields: never;
+              Insert: {
+                "action": string;
+                "actor"?: string | null;
+                "actor_role": string;
+                "at"?: string;
+                "entity": string;
+                "entity_id": string;
+                "id"?: never;
+                "new"?: Json | null;
+                "old"?: Json | null;
+              };
+              Update: {
+                "action"?: string;
+                "actor"?: string | null;
+                "actor_role"?: string;
+                "at"?: string;
+                "entity"?: string;
+                "entity_id"?: string;
+                "id"?: never;
+                "new"?: Json | null;
+                "old"?: Json | null;
+              };
+              Relationships: [];
+            };
+            "categories": {
                   Row: {
-                    "action": string,"actor": string | null,"actor_role": string,"at": string,"entity": string,"entity_id": string,"id": number,"new": Json | null,"old": Json | null
+                    "created_at": string,"id": number,"image_url": string | null,"is_active": boolean,"name": string,"name_ar": string | null,"show_on_home": boolean,"slug": string,"sort_order": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "action": string,"actor"?: string | null,"actor_role": string,"at"?: string,"entity": string,"entity_id": string,"id"?: never,"new"?: Json | null,"old"?: Json | null
+                    "created_at"?: string,"id"?: never,"image_url"?: string | null,"is_active"?: boolean,"name": string,"name_ar"?: string | null,"show_on_home"?: boolean,"slug": string,"sort_order"?: number
                   }
                   Update: {
-                    "action"?: string,"actor"?: string | null,"actor_role"?: string,"at"?: string,"entity"?: string,"entity_id"?: string,"id"?: never,"new"?: Json | null,"old"?: Json | null
+                    "created_at"?: string,"id"?: never,"image_url"?: string | null,"is_active"?: boolean,"name"?: string,"name_ar"?: string | null,"show_on_home"?: boolean,"slug"?: string,"sort_order"?: number
                   }
                   Relationships: [
-
-                  ]
-                },"categories": {
-                  Row: {
-                    "created_at": string,"id": number,"image_url": string | null,"name": string,"name_ar": string | null,"slug": string,"sort_order": number
-                  }
-                  ComputedFields: never
-                  Insert: {
-                    "created_at"?: string,"id"?: never,"image_url"?: string | null,"name": string,"name_ar"?: string | null,"slug": string,"sort_order"?: number
-                  }
-                  Update: {
-                    "created_at"?: string,"id"?: never,"image_url"?: string | null,"name"?: string,"name_ar"?: string | null,"slug"?: string,"sort_order"?: number
-                  }
-                  Relationships: [
-
+                    
                   ]
                 },"delivery_fees": {
                   Row: {
@@ -115,7 +138,7 @@ isOneToOne: false
                     "id"?: number,"name_ar"?: string,"name_en"?: string
                   }
                   Relationships: [
-
+                    
                   ]
                 },"order_items": {
                   Row: {
@@ -145,14 +168,14 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "created_at": string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id": number,"notes": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"rep_name": string | null,"rep_phone": string | null,"ship_address": string,"ship_city": string | null,"ship_governorate": string,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number": string | null,"updated_at": string,"user_id": string
+                    "created_at": string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id": number,"notes": string | null,"paid_at": string | null,"payment_deadline": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"payment_proof_path": string | null,"payment_reference": string | null,"payment_review_note": string | null,"payment_reviewed_by": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"payment_submitted_at": string | null,"rep_name": string | null,"rep_phone": string | null,"ship_address": string,"ship_alt_phone": string | null,"ship_apartment": string | null,"ship_city": string | null,"ship_district": string | null,"ship_floor": string | null,"ship_governorate": string,"ship_landmark": string | null,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number": string | null,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address": string,"ship_city"?: string | null,"ship_governorate": string,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status"?: Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id": string
+                    "created_at"?: string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"paid_at"?: string | null,"payment_deadline"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"payment_proof_path"?: string | null,"payment_reference"?: string | null,"payment_review_note"?: string | null,"payment_reviewed_by"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"payment_submitted_at"?: string | null,"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address": string,"ship_alt_phone"?: string | null,"ship_apartment"?: string | null,"ship_city"?: string | null,"ship_district"?: string | null,"ship_floor"?: string | null,"ship_governorate": string,"ship_landmark"?: string | null,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status"?: Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "created_at"?: string,"delivery_method"?: Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address"?: string,"ship_city"?: string | null,"ship_governorate"?: string,"ship_name"?: string,"ship_phone"?: string,"shipping_fee"?: number,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string
+                    "created_at"?: string,"delivery_method"?: Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"paid_at"?: string | null,"payment_deadline"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"payment_proof_path"?: string | null,"payment_reference"?: string | null,"payment_review_note"?: string | null,"payment_reviewed_by"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"payment_submitted_at"?: string | null,"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address"?: string,"ship_alt_phone"?: string | null,"ship_apartment"?: string | null,"ship_city"?: string | null,"ship_district"?: string | null,"ship_floor"?: string | null,"ship_governorate"?: string,"ship_landmark"?: string | null,"ship_name"?: string,"ship_phone"?: string,"shipping_fee"?: number,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -171,14 +194,14 @@ isOneToOne: false
                   ]
                 },"products": {
                   Row: {
-                    "category_id": number,"created_at": string,"description": string | null,"description_ar": string | null,"discount_percent": number,"extra_images": (string)[],"final_price": number | null,"id": number,"image_url": string | null,"in_stock": boolean | null,"is_active": boolean,"name": string,"name_ar": string | null,"price": number,"sold_count": number,"stock_quantity": number,"updated_at": string
+                    "category_id": number,"created_at": string,"description": string | null,"description_ar": string | null,"discount_percent": number,"extra_images": (string)[],"final_price": number | null,"id": number,"image_url": string | null,"in_stock": boolean | null,"is_active": boolean,"is_featured": boolean,"name": string,"name_ar": string | null,"price": number,"sold_count": number,"stock_quantity": number,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "category_id": number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"name": string,"name_ar"?: string | null,"price": number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
+                    "category_id": number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"is_featured"?: boolean,"name": string,"name_ar"?: string | null,"price": number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
                   }
                   Update: {
-                    "category_id"?: number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"name"?: string,"name_ar"?: string | null,"price"?: number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
+                    "category_id"?: number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"is_featured"?: boolean,"name"?: string,"name_ar"?: string | null,"price"?: number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -191,14 +214,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "address": string | null,"city": string | null,"created_at": string,"full_name": string,"governorate_id": number | null,"id": string,"phone": string | null,"role": Database["public"]['Enums']["user_role"]
+                    "address": string | null,"alt_phone": string | null,"apartment": string | null,"city": string | null,"created_at": string,"district": string | null,"floor": string | null,"full_name": string,"governorate_id": number | null,"id": string,"landmark": string | null,"phone": string | null,"role": Database["public"]['Enums']["user_role"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"city"?: string | null,"created_at"?: string,"full_name"?: string,"governorate_id"?: number | null,"id": string,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id": string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Update: {
-                    "address"?: string | null,"city"?: string | null,"created_at"?: string,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Relationships: [
                     {
@@ -209,6 +232,93 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"shop_settings": {
+                  Row: {
+                    "is_public": boolean;
+                    "key": string;
+                    "updated_at": string;
+                    "updated_by": string | null;
+                    "value": Json;
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "is_public"?: boolean;
+                    "key": string;
+                    "updated_at"?: string;
+                    "updated_by"?: string | null;
+                    "value": Json;
+                  }
+                  Update: {
+                    "is_public"?: boolean;
+                    "key"?: string;
+                    "updated_at"?: string;
+                    "updated_by"?: string | null;
+                    "value"?: Json;
+                  }
+                  Relationships: [
+                    {
+                      foreignKeyName: "shop_settings_updated_by_fkey"
+                      columns: ["updated_by"]
+                      isOneToOne: false
+                      referencedRelation: "users"
+                      referencedColumns: ["id"]
+                    }
+                  ]
+                },"stock_movements": {
+                  Row: {
+                    "actor": string | null;
+                    "at": string;
+                    "delta": number;
+                    "id": number;
+                    "new_quantity": number;
+                    "order_id": number | null;
+                    "product_id": number;
+                    "reason": Database["public"]["Enums"]["stock_reason"];
+                  };
+                  ComputedFields: never;
+                  Insert: {
+                    "actor"?: string | null;
+                    "at"?: string;
+                    "delta": number;
+                    "id"?: never;
+                    "new_quantity": number;
+                    "order_id"?: number | null;
+                    "product_id": number;
+                    "reason": Database["public"]["Enums"]["stock_reason"];
+                  };
+                  Update: {
+                    "actor"?: string | null;
+                    "at"?: string;
+                    "delta"?: number;
+                    "id"?: never;
+                    "new_quantity"?: number;
+                    "order_id"?: number | null;
+                    "product_id"?: number;
+                    "reason"?: Database["public"]["Enums"]["stock_reason"];
+                  };
+                  Relationships: [
+                    {
+                      foreignKeyName: "stock_movements_actor_fkey";
+                      columns: ["actor"];
+                      isOneToOne: false;
+                      referencedRelation: "users";
+                      referencedColumns: ["id"];
+                    },
+                    {
+                      foreignKeyName: "stock_movements_order_id_fkey";
+                      columns: ["order_id"];
+                      isOneToOne: false;
+                      referencedRelation: "orders";
+                      referencedColumns: ["id"];
+                    },
+                    {
+                      foreignKeyName: "stock_movements_product_id_fkey";
+                      columns: ["product_id"];
+                      isOneToOne: false;
+                      referencedRelation: "products";
+                      referencedColumns: ["id"];
+                    }
+                  ];
                 }
           }
           Views: {
@@ -229,27 +339,92 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "admin_dashboard":
-{ Args: { "p_from"?: string,"p_to"?: string }; Returns: Json
-                           },
-"audit_event":
-{ Args: { "p_action": string,"p_entity": string,"p_entity_id": string,"p_new"?: Json,"p_old"?: Json }; Returns: undefined
-                           },
-"cancel_my_order":
-{ Args: { "p_order_id": number }; Returns: undefined
-                           },
-"is_admin":
-{ Args: Record<PropertyKey, never>; Returns: boolean
-                           },
-"place_order":
-{ Args: { "p_delivery_method": Database["public"]['Enums']["delivery_method"],"p_governorate_id": number,"p_items": Json,"p_notes"?: string,"p_ship_address": string,"p_ship_city": string,"p_ship_name": string,"p_ship_phone": string }; Returns: number
-                           },
-"require_admin":
-{ Args: Record<PropertyKey, never>; Returns: undefined
-                           }
+            "check_rate_limit": {
+              Args: {
+                "p_action": string;
+                "p_limit": number;
+                "p_window": unknown;
+              };
+              Returns: undefined;
+            };
+            "admin_delete_product": {
+              Args: {
+                "p_id": number;
+              };
+              Returns: undefined;
+            };
+            "admin_delete_category": {
+              Args: {
+                "p_id": number;
+                "p_move_to"?: number | null;
+              };
+              Returns: undefined;
+            };
+            "admin_update_setting": {
+              Args: {
+                "p_key": string;
+                "p_value": Json;
+              };
+              Returns: undefined;
+            };
+            "audit_event": {
+              Args: {
+                "p_action": string;
+                "p_entity": string;
+                "p_entity_id": string;
+                "p_new"?: Json | null;
+                "p_old"?: Json | null;
+              };
+              Returns: undefined;
+            };
+            "admin_dashboard": {
+              Args: { "p_from"?: string; "p_to"?: string };
+              Returns: Json;
+            };
+            "cancel_my_order": {
+              Args: { "p_order_id": number };
+              Returns: undefined;
+            };
+            "is_admin": {
+              Args: Record<PropertyKey, never>;
+              Returns: boolean;
+            };
+            "require_admin": {
+              Args: Record<PropertyKey, never>;
+              Returns: undefined;
+            };
+            "submit_payment_proof": {
+              Args: {
+                "p_order_id": number;
+                "p_proof_path": string;
+                "p_reference": string;
+              };
+              Returns: undefined;
+            };
+            "admin_review_payment": {
+              Args: {
+                "p_approve": boolean;
+                "p_note"?: string | null;
+                "p_order_id": number;
+              };
+              Returns: undefined;
+            };
+            "expire_unpaid_orders": {
+              Args: Record<PropertyKey, never>;
+              Returns: number;
+            };
+            "place_order": {
+              Args: {
+                "p_delivery_method": Database["public"]["Enums"]["delivery_method"];
+                "p_items": Json;
+                "p_payment_method": Database["public"]["Enums"]["payment_method"];
+                "p_ship": Json;
+              };
+              Returns: number;
+            };
           }
           Enums: {
-            "delivery_method": "egypt_post"|"representative","order_status": "pending"|"confirmed"|"shipped"|"delivered"|"cancelled","payment_method": "cod","user_role": "customer"|"admin"
+            "delivery_method": "egypt_post"|"representative","order_status": "pending"|"confirmed"|"shipped"|"delivered"|"cancelled","payment_method": "cod"|"instapay_qr","payment_status": "unpaid"|"awaiting_proof"|"under_review"|"paid"|"rejected","stock_reason": "order"|"cancel"|"admin_adjust"|"restock"|"correction","user_role": "customer"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -365,11 +540,11 @@ export type CompositeTypes<
 export const Constants = {
   "graphql_public": {
           Enums: {
-
+            
           }
         },"public": {
           Enums: {
-            "delivery_method": ["egypt_post", "representative"],"order_status": ["pending", "confirmed", "shipped", "delivered", "cancelled"],"payment_method": ["cod"],"user_role": ["customer", "admin"]
+            "delivery_method": ["egypt_post", "representative"],"order_status": ["pending", "confirmed", "shipped", "delivered", "cancelled"],"payment_method": ["cod", "instapay_qr"],"payment_status": ["unpaid", "awaiting_proof", "under_review", "paid", "rejected"],"stock_reason": ["order", "cancel", "admin_adjust", "restock", "correction"],"user_role": ["customer", "admin"]
           }
         }
 } as const

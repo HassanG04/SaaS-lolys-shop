@@ -568,37 +568,37 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:test`
 
 #### T-1.17: Shop settings
-`status: todo` `owner: agent` `needs: T-1.16` `size: M`
+`status: done` `owner: agent` `needs: T-1.16` `size: M`
 - **Do:** Migration (S22). `shop_settings` and `admin_update_setting(p_key, p_value)` with the allow-list and typed validation from the contract. Anonymous users read public keys only. Direct writes are revoked. Changes are audited. Seed defaults. Set size and type limits on the `product-images` bucket (3 MB; JPEG, PNG, WebP).
 - **Done when:** unknown keys and invalid values return ADM-008 and ADM-007; private keys are invisible to anonymous users and customers.
 - **Verify:** `npm run db:test`
 
 #### T-1.18: Orders v2 and payments
-`status: todo` `owner: agent` `needs: T-1.17` `size: L`
+`status: done` `owner: agent` `needs: T-1.17` `size: L`
 - **Do:** Migration (S23, S24, S25). Add `instapay_qr` to `payment_method`; add enum `payment_status`; add the new order columns and the structured address fields; add the profile address columns; replace `place_order` with the v2 signature (`p_items`, `p_delivery_method`, `p_payment_method`, `p_ship`), enforcing settings (enabled methods, payment window), field lengths and error codes; add `submit_payment_proof`, `admin_review_payment` and `expire_unpaid_orders` (schedule with `pg_cron` every 30 minutes if available, otherwise document a manual admin button); add a trigger that sets COD orders to `paid` on delivery; create the private bucket `payment-proofs` with per-user folder policies and admin read and delete; make `payment_reference` unique.
 - **Done when:** S23 to S25 pass; a proof path outside `<uid>/<order_id>/` is refused; overdue unpaid InstaPay orders are cancelled and restocked.
 - **Verify:** `npm run db:reset && npm run db:test`
 
 #### T-1.19: Catalog admin support
-`status: todo` `owner: agent` `needs: T-1.18` `size: M`
+`status: done` `owner: agent` `needs: T-1.18` `size: M`
 - **Do:** Migration (S26). Add `categories.is_active`, `categories.show_on_home` and `products.is_featured`. Image columns hold storage paths and are pattern-checked (`docs/spec/database-contract.md`). Add `admin_delete_product` (only if never ordered) and `admin_delete_category(p_id, p_move_to)`. Storefront policies show only active categories and products.
 - **Done when:** deleting an ordered product returns ADM-004; deleting a non-empty category without a target returns ADM-005; URLs and bad paths in image columns are refused.
 - **Verify:** `npm run db:test`
 
 #### T-1.20: Abuse controls
-`status: todo` `owner: agent` `needs: T-1.18` `size: M`
+`status: done` `owner: agent` `needs: T-1.18` `size: M`
 - **Do:** Migration (S27, S28). Add `rate_limits` and `check_rate_limit()` and use it in `place_order`, `submit_payment_proof` and `cancel_my_order`. In `place_order` also cap order lines (30), quantity per line (20 or the stock) and pending orders per customer (setting `pending_order_limit`, default 3). Rate-limit by user id; add IP-based limits only after confirming on staging which forwarded-address value can be trusted.
 - **Done when:** the fourth pending order returns ORD-010; repeated calls return SYS-003 and recover after the window.
 - **Verify:** `npm run db:test`
 
 #### T-1.21: Stock ledger
-`status: todo` `owner: agent` `needs: T-1.18` `size: M`
+`status: done` `owner: agent` `needs: T-1.18` `size: M`
 - **Do:** Migration (S29). Table `stock_movements` filled by a trigger on `products.stock_quantity`. Functions set the reason with `set_config('app.stock_reason', ...)`; an unexplained admin edit is recorded as `admin_adjust`.
 - **Done when:** every order, cancellation and admin edit appears with delta, reason and actor; the movements add up to the current stock for the seed data.
 - **Verify:** `npm run db:test`
 
 #### T-1.22: SQL guard script
-`status: todo` `owner: agent` `needs: T-1.09` `size: M`
+`status: done` `owner: agent` `needs: T-1.09` `size: M`
 - **Do:** Write `scripts/check-sql.mjs` (script `check:sql`). It fails if a migration uses `execute` with string concatenation (`||`) instead of `format('%I')`, `%L` or `USING`; if a `security definer` function has no `set search_path`; if a `create table` in `public` has no RLS enabled in the same or a later migration; or if a table outside the allow-list is granted to `anon`. Run it in the `db` job.
 - **Done when:** a fixture for each violation fails, and the real migrations pass.
 - **Verify:** `npm run check:sql`
@@ -654,7 +654,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-2.08: Error framework
-`status: todo` `owner: agent` `needs: T-1.10, T-2.05` `size: M`
+`status: done` `owner: agent` `needs: T-1.10, T-2.05` `size: M`
 - **Do:** `src/lib/errors.ts`: `AppError` with `code`, `ref` (8 random characters) and `params`; `toAppError(unknown)` maps Supabase Auth error codes, `hint` codes from the database, HTTP statuses and network failures to the catalogue in `docs/spec/error-codes.md`; anything unknown becomes SYS-001 with a reference. An `ErrorMessage` component shows the Arabic message and "رمز الخطأ: CODE" (plus the reference for SYS-001). Add an ESLint rule or test that forbids rendering `error.message` anywhere in `src/`. Log details to the console in development only.
 - **Done when:** a table-driven test covers every code in the catalogue; a test proves raw English messages never reach the DOM.
 - **Verify:** `npm run test:unit`
@@ -668,43 +668,43 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 3: Storefront
 
 #### T-3.01: Catalog API
-`status: todo` `owner: agent` `needs: T-2.05, T-2.08, T-1.03` `size: M`
+`status: done` `owner: agent` `needs: T-2.05, T-2.08, T-1.03` `size: M`
 - **Do:** `features/catalog/api.ts` and hooks: active categories (`show_on_home`, ordered by `sort_order`); best sellers (`sold_count` descending); products by category (`categories!inner(slug)` filter); product by id; search. Typed results, errors through `toAppError`, tests with a mocked client (`docs/spec/database-contract.md` lists the columns). Image fields are storage paths; add `publicImageUrl(path)` in `src/lib`.
 - **Done when:** all functions are typed and unit-tested; no Supabase import exists outside `api.ts` files and `src/lib`.
 - **Verify:** `npm run test:unit`
 
 #### T-3.02: Product image, card and category tile
-`status: todo` `owner: agent` `needs: T-0.08e, T-3.01` `size: M`
+`status: done` `owner: agent` `needs: T-0.08e, T-3.01` `size: M`
 - **Do:** `ProductImage` (aspect-ratio box, lazy loading, fallback), `ProductCard` (image-first: 28px card, 20px inner image, discount tag, sold-out badge, price with struck-through original, add button disabled when sold out) and `CategoryTile` (full-bleed image with label chip).
 - **Done when:** no layout shift while images load; sold-out items are clearly marked and cannot be added.
 - **Verify:** `npm run verify`
 
 #### T-3.03: Home page
-`status: todo` `owner: agent` `needs: T-3.02, T-2.03` `size: L`
+`status: done` `owner: agent` `needs: T-3.02, T-2.03` `size: L`
 - **Do:** Hero (sale banner with text and percent from public settings, arch-framed photo, ribbon and pearl ornaments, floating product cards from best sellers, call to action), category pills, Store (category tiles with arch frames), Browse (filters, best sellers first, "load more" in steps of 12), About and delivery info using `returns_text_ar` and the settings. Anchors `#store`, `#browse`, `#about` with smooth scroll. Skeleton, empty and error states. Copy from the deck in `docs/spec/design-system.md`.
 - **Done when:** all sections render from live data in Arabic RTL; the page works at 360px and 1280px in both themes; changing a public setting changes the hero without a deploy.
 - **Verify:** `npm run verify` and manual check
 
 #### T-3.04: Category page
-`status: todo` `owner: agent` `needs: T-3.02` `size: M`
+`status: done` `owner: agent` `needs: T-3.02` `size: M`
 - **Do:** `/category/:slug` with in-stock items by default and a "show sold out" toggle; sort by popularity or price; filter state in the URL; unknown slug shows 404.
 - **Done when:** reloading a filtered URL restores the same view.
 - **Verify:** `npm run test:unit`
 
 #### T-3.05: Product page
-`status: todo` `owner: agent` `needs: T-3.02` `size: M`
+`status: done` `owner: agent` `needs: T-3.02` `size: M`
 - **Do:** Gallery (`image_url` and `extra_images`), price and discount, stock note ("only N left" at 5 or fewer), quantity stepper capped at stock, add to cart, delivery info chips, related products from the same category.
 - **Done when:** the quantity cannot exceed stock; a sold-out product shows a disabled state.
 - **Verify:** `npm run test:unit`
 
 #### T-3.06: Cart
-`status: todo` `owner: agent` `needs: T-3.01, T-0.08e` `size: L`
+`status: done` `owner: agent` `needs: T-3.01, T-0.08e` `size: L`
 - **Do:** `CartProvider` (reducer, localStorage key `cart:v1`, stores only `{productId, quantity}`), cart drawer and `/cart` page, quantity clamped to live stock (re-validated on load), line totals from fresh product data, "log in to check out" call to action for guests.
 - **Done when:** tests cover merging duplicates, clamping, persistence and removal of stale products.
 - **Verify:** `npm run test:unit`
 
 #### T-3.07: Search
-`status: todo` `owner: agent` `needs: T-3.01, T-2.02` `size: M`
+`status: done` `owner: agent` `needs: T-3.01, T-2.02` `size: M`
 - **Do:** Navbar search goes to `/search?q=`; debounced; server-side `ilike` on `name` and `name_ar` with `%` and `_` escaped; empty and error states.
 - **Done when:** special characters in the query do not break the request; tests cover escaping.
 - **Verify:** `npm run test:unit`
@@ -724,37 +724,37 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-4.02: Checkout with location details and payment choice
-`status: todo` `owner: agent` `needs: T-3.06, T-4.01, T-2.04, T-2.08, T-1.18` `size: L`
+`status: done` `owner: agent` `needs: T-3.06, T-4.01, T-2.04, T-2.08, T-1.18` `size: L`
 - **Do:** Arabic checkout form with the customer's location details: full name, mobile (Egyptian format, normalised to `01xxxxxxxxx`), optional second mobile, governorate, city or center, district, street and building, floor, apartment, nearby landmark, delivery notes; prefilled from the profile. Delivery method cards (available methods only, with the fee). Payment method cards (cash on delivery and InstaPay QR, only the methods enabled in public settings). Order summary labelled as an estimate. Submit calls `rpc('place_order', ...)` with `p_payment_method` and `p_ship`; map errors by `hint`. COD goes to the confirmation page; InstaPay goes to the payment screen (T-4.06). Requires login.
 - **Done when:** validation and error mapping are unit-tested; both payment paths work against the local stack; field lengths match the database limits.
 - **Verify:** `npm run test:unit` and manual check
 
 #### T-4.03: Order confirmation and my orders
-`status: todo` `owner: agent` `needs: T-4.02` `size: M`
+`status: done` `owner: agent` `needs: T-4.02` `size: M`
 - **Do:** `/order/:id/thanks`; `/account/orders` list and detail with a status timeline, a payment status chip, tracking number or representative name and phone, items with the price paid, and a cancel button for pending orders (`cancel_my_order`).
 - **Done when:** cancelling a pending order updates the UI and the stock; the button is hidden for other states and for InstaPay orders under review.
 - **Verify:** `npm run test:unit`
 
 #### T-4.04: Account page
-`status: todo` `owner: agent` `needs: T-2.04, T-3.01` `size: M`
+`status: done` `owner: agent` `needs: T-2.04, T-3.01` `size: M`
 - **Do:** Edit name, mobiles and the saved location details (never the role). Show total spent and favourite item from `customer_stats`. Link to `/account/security`.
 - **Done when:** saving updates the profile; no role field exists in the form or payload.
 - **Verify:** `npm run test:unit`
 
 #### T-4.05: Favorites
-`status: todo` `owner: agent` `needs: T-3.02, T-2.04` `size: M`
+`status: done` `owner: agent` `needs: T-3.02, T-2.04` `size: M`
 - **Do:** Bow-shaped heart toggle on cards and the product page (guests are asked to log in), `/account/favorites`, optimistic updates with rollback.
 - **Done when:** a failed write rolls back the toggle; tests cover it.
 - **Verify:** `npm run test:unit`
 
 #### T-4.06: InstaPay QR payment flow
-`status: todo` `owner: agent` `needs: T-4.02, T-1.18, T-1.17` `size: L`
+`status: done` `owner: agent` `needs: T-4.02, T-1.18, T-1.17` `size: L`
 - **Do:** `/pay/:orderId` for `instapay_qr` orders: the QR from public settings (until real images exist, the placeholder `public/placeholders/instapay-qr.svg`), the InstaPay address, the exact amount, the order reference to write in the transfer note, short Arabic steps and a deadline countdown. Proof upload: JPEG, PNG or WebP, 5 MB or less, checked by file signature (magic bytes) and not only the extension, re-encoded in the browser (this strips metadata), uploaded to the private bucket `payment-proofs/{user_id}/{order_id}/{uuid}.jpg` or `.webp`, then `rpc('submit_payment_proof', ...)` with the transfer reference. Status chips: بانتظار الدفع، قيد المراجعة، تم تأكيد الدفع، مرفوض (re-upload allowed before the deadline).
 - **Done when:** unit tests cover signature checks and error mapping (UPL-001, UPL-002, PAY-001 to PAY-005); a renamed HTML or SVG file is refused; upload paths never contain user-controlled names.
 - **Verify:** `npm run test:unit`
 
 #### T-4.07: E2E: storefront to order
-`status: todo` `owner: agent` `needs: T-4.03, T-4.06, T-1.09` `size: L`
+`status: done` `owner: agent` `needs: T-4.03, T-4.06, T-1.09` `size: L`
 - **Do:** Playwright with a global setup that resets the local database and creates test users (customer and admin) using the local stack's keys. Scenarios: guest browses and the cart persists; register and log in; COD checkout succeeds and stock decreases; oversell shows the translated stock message; unavailable delivery method is refused; cancelling a pending order restores stock; InstaPay order shows the QR placeholder, accepts a valid image and refuses a renamed non-image, and moves to "قيد المراجعة"; an unpaid InstaPay order expires (test hook shortens the window) and restores stock. Add the `e2e` CI job.
 - **Done when:** the suite passes locally and in CI in under 10 minutes. Ask the owner to add `e2e` to the required checks.
 - **Verify:** `npm run test:e2e`
@@ -768,25 +768,25 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-5.02: Products list
-`status: todo` `owner: agent` `needs: T-5.01, T-3.01` `size: M`
+`status: done` `owner: agent` `needs: T-5.01, T-3.01` `size: M`
 - **Do:** Table with search; filters for category, active, archived and stock; inline stock edit through a small dialog (new quantity and a reason, validated, optimistic with rollback); active toggle.
 - **Done when:** stock cannot go below 0; errors roll the value back and show a mapped message.
 - **Verify:** `npm run test:unit`
 
 #### T-5.03: Product form and images
-`status: todo` `owner: agent` `needs: T-5.02, T-1.19` `size: L`
+`status: done` `owner: agent` `needs: T-5.02, T-1.19` `size: L`
 - **Do:** Create, edit, archive, restore and delete products. Fields: Arabic name and description (plain text only), category select, price, discount 0 to 100, featured toggle, active toggle, main image and gallery (add, reorder, replace, remove). Upload to `product-images/products/{productId}/{uuid}.webp` after client-side resize to 1200 px at most and re-encode (WebP when the browser can encode it, otherwise JPEG with the matching extension). Images only; store the storage path, never a full URL. "Delete permanently" uses `admin_delete_product` and works only for never-ordered products, otherwise offer "Archive". Never send generated columns.
 - **Done when:** a unit test proves the payload builder omits generated columns; deleting an ordered product shows ADM-004 and offers to archive; non-images are refused (UPL-001).
 - **Verify:** `npm run test:unit` and manual check
 
 #### T-5.04: Categories admin
-`status: todo` `owner: agent` `needs: T-5.01, T-1.19` `size: M`
+`status: done` `owner: agent` `needs: T-5.01, T-1.19` `size: M`
 - **Do:** Add a category (Arabic name, slug suggested then validated), change its tile image, show or hide it on the home page, reorder, archive, delete. Deleting a category that has products requires choosing another category to move them to (`admin_delete_category`); an empty category deletes directly. Slug pattern `^[a-z0-9]+(-[a-z0-9]+)*$`.
 - **Done when:** moving products on delete works; ADM-005 and ADM-006 are mapped; tests cover the validators.
 - **Verify:** `npm run test:unit`
 
 #### T-5.05: Orders admin
-`status: todo` `owner: agent` `needs: T-5.01, T-1.10` `size: L`
+`status: done` `owner: agent` `needs: T-5.01, T-1.10` `size: L`
 - **Do:** List with status and payment-status filters and search; detail with customer, location details, items and payment; status path pending, confirmed, shipped, delivered, and cancel from any state; tracking number (Egypt Post) and representative name and phone; confirm dialogs; map errors by `hint`. Payment review is T-5.08.
 - **Done when:** an invalid transition is unavailable in the UI and rejected by the database; tests cover the allowed-transition helper.
 - **Verify:** `npm run test:unit`
@@ -804,13 +804,13 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-5.08: Payment review
-`status: todo` `owner: agent` `needs: T-5.05, T-1.18, T-2.09` `size: L`
+`status: done` `owner: agent` `needs: T-5.05, T-1.18, T-2.09` `size: L`
 - **Do:** `/admin/payments`: queue of orders `under_review` (oldest first) with amount, reference, deadline and the proof image through a short-lived signed link (60 seconds, never stored); approve or reject with a note (`admin_review_payment`); filters; a "purge old proofs" action (step-up) that deletes proofs for orders delivered longer ago than the retention period through the Storage API and clears the path.
 - **Done when:** approving marks the order paid and the customer's order page shows it; rejecting lets the customer resubmit; signed links expire; purge works on seed data; every action is audited.
 - **Verify:** `npm run test:unit`
 
 #### T-5.09: Site settings
-`status: todo` `owner: agent` `needs: T-5.01, T-1.17, T-2.09` `size: L`
+`status: done` `owner: agent` `needs: T-5.01, T-1.17, T-2.09` `size: L`
 - **Do:** `/admin/settings`: shop info, WhatsApp and phone, announcement bar, hero text and sale percent, enabled payment methods, InstaPay address and QR image (replace with preview), returns text. Each save calls `admin_update_setting`. QR, payment methods and limits ask for step-up. Show the latest changes from the audit log. Ship the placeholder QR (`public/placeholders/instapay-qr.svg`) until the real images exist (H-10).
 - **Done when:** changing the sale percent updates the storefront hero; the QR can be replaced and the old file is removed; unknown keys show ADM-008; tests cover the validators.
 - **Verify:** `npm run test:unit`
@@ -1337,6 +1337,32 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-12 | T-1.12 | Anti-Gravity | Added .github/workflows/db-staging.yml and .github/workflows/db-production.yml with SHA-pinned setup-cli, un-echoed secrets, and manual confirmation gate. Authored docs/runbooks/deploy-db.md covering staging/production procedures, pausing caveat and checklists. Full verify passes (346 tests). | pending |
 | 2026-10-12 | T-1.15 | Anti-Gravity | Hardened database admin access: is_admin() requires AAL2 MFA claim, added require_admin() raising ADM-002 at AAL1 and ADM-001 for non-admins, removed admin_set_role, added protect_profile_role trigger blocking API role mutations, clamped sign-up metadata in handle_new_user, and added text column length check constraints on profiles, categories, products, and orders. Created 08_admin_hardening.test.sql (30 assertions for S19, S20, S30) and updated 05_admin.test.sql. Full verify passes (346 tests). | pending |
 | 2026-10-12 | T-1.16 | Anti-Gravity | Implemented audit log (S21): created append-only audit_log table with immutability trigger blocking update and delete for all roles including owner, RLS allowing select only to admin at AAL2, audit_event helper, and triggers recording admin and database owner changes across products, categories, delivery_fees, orders, and profiles role. Customer place_order stock decrements are excluded. Created 09_audit_log.test.sql (17 assertions). Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.17 | Anti-Gravity | Implemented shop settings (S22): created shop_settings table with 16 seeded default rows, privacy RLS (public keys readable by anon/customers, private keys visible only to admin at AAL2), admin_update_setting RPC enforcing key allow-list (ADM-008) and typed range/regex validation (ADM-007), audit trigger recording settings changes, and configured product-images bucket limit to 3 MB and allowed types (JPEG, PNG, WebP). Created 10_shop_settings.test.sql (26 assertions). Full verify passes (346 tests). | pending |
+| 2026-10-12 | T-1.18 | Anti-Gravity | Implemented Orders v2 and payments (S23, S24, S25): migration 20261012050000_orders_v2_payments.sql with payment enums, submit_payment_proof (ORD-011, ORD-012, ORD-014), admin_review_payment with AAL2 MFA (ORD-015, ADM-002), expire_unpaid_orders, COD auto-marking trigger, payment proofs storage bucket with private RLS. Created 11_orders_v2_payments.test.sql (37 assertions). Full verify passes. | pending |
+| 2026-10-12 | T-1.19 | Anti-Gravity | Implemented Catalog admin support (S26): migration 20261012051500_catalog_admin.sql with is_active, show_on_home, is_featured flags, storage path regex constraints, safe delete RPCs admin_delete_product (ADM-004) and admin_delete_category (ADM-005), and storefront active RLS policies. Created 12_catalog_admin.test.sql (31 assertions). Full verify passes. | pending |
+| 2026-10-12 | T-1.20 | Anti-Gravity | Implemented Abuse controls (S27, S28): migration 20261012053000_abuse_controls.sql with rate_limits table, check_rate_limit function raising SYS-003, integrated rate limits in place_order, submit_payment_proof, and cancel_my_order. Enforced 30 item lines limit (ORD-013), qty <= 20 (ORD-006), and pending orders limit (ORD-010). Created 13_abuse_controls.test.sql (19 assertions). Full verify passes. | pending |
+| 2026-10-12 | T-1.21 | Anti-Gravity | Implemented Stock ledger (S29): migration 20261012054500_stock_ledger.sql with stock_movements table, immutability trigger, AAL2 MFA read policy, log_stock_movement trigger with app.stock_reason session config, and integration across place_order ('order') and cancel_my_order ('cancel'). Created 14_stock_ledger.test.sql (22 assertions). Full verify passes. | pending |
+| 2026-10-12 | T-1.22 | Anti-Gravity | Implemented SQL guard script: scripts/check-sql.mjs (check:sql script) blocking dynamic execute with string concatenation (||), security definer functions without set search_path, public tables without RLS enabled, and anon table grants outside allow-list. Created test suite scripts/check-sql.test.mjs in test:tooling and wired check:sql into verify and CI db job. Full verify passes (225 app + 136 tooling tests = 361 tests). | pending |
+| 2026-10-12 | T-2.08 | Anti-Gravity | Implemented error framework in src/lib/errors.ts: AppError with code, ref (8-char), params; toAppError mapping Supabase Auth codes, DB hint/detail, HTTP statuses, and network errors to 48-entry error catalogue; ErrorMessage component rendering Arabic message, code, and ref; updated ErrorPanel; added scripts/no-raw-error-messages.test.mjs in test:tooling verifying raw error.message never renders in JSX/DOM. Full verify passes (288 app + 139 tooling tests = 427 tests). | pending |
+| 2026-10-12 | T-3.01 | Anti-Gravity | Implemented catalog data layer in src/features/catalog/ (getCategories with show_on_home option, getBestSellers by sold_count desc, getProductsByCategory with categories!inner(slug) filter, getProductById, searchProducts across Arabic/English names and descriptions, getFeaturedProducts) and React Query hooks. Added publicImageUrl(path) in src/lib/images.ts. Added architecture guard test scripts/supabase-import-boundary.test.mjs in test:tooling verifying no Supabase client imports outside api.ts and src/lib. Full verify passes (309 app + 141 tooling tests = 450 tests). | pending |
+| 2026-10-12 | T-3.02 | Anti-Gravity | Implemented catalog UI components in src/features/catalog/components/: ProductImage with aspect-ratio box, lazy loading, graceful fallback and publicImageUrl; ProductCard with 28px card radius, 20px image radius, struck-through original price on discount, sold-out badge and disabled add button; CategoryTile with full-bleed image and floating label chip. Added catalogUI.test.tsx testing layout stability, prices, sold out states. Full verify passes (317 app + 141 tooling tests = 458 tests). | pending |
+| 2026-10-12 | T-3.03 | Anti-Gravity | Implemented complete Home page in src/pages/HomePage.tsx (Hero with dynamic public settings from shop_settings, arch frame, pearl/ribbon ornaments, floating best sellers; Store section with category tiles; Browse section with category pills, sorting, and load more in steps of 12; About & Delivery section with returns guarantee). Created settings feature (src/features/settings/) and HomePage.test.tsx. Full verify passes (324 app + 141 tooling tests = 465 tests). Initial bundle budget 195.7 KB <= 200 KB. | pending |
+| 2026-10-12 | T-3.04 | Anti-Gravity | Implemented Category page in src/pages/CategoryPage.tsx: route /category/:slug, in-stock filter by default with "show sold out" toggle, sort options (best sellers, newest, price ascending, price descending), full URL search params sync (sort, sold_out) with view restoration on reload, 404 on unknown category slug, virtual /category/all handling, and pagination limit stepper. Added getCategoryBySlug and useCategory in catalog feature. Created CategoryPage.test.tsx. Full verify passes (342 app + 141 tooling tests = 483 tests). Initial bundle 195.9 KB <= 200 KB. | pending |
+| 2026-10-12 | T-3.05 | Anti-Gravity | Implemented Product page in src/pages/ProductPage.tsx: route /product/:id, gallery with thumbnail picker and alt text, live discount badge, stock countdown note, capped quantity stepper, add-to-cart integration, delivery info chips, and related products grid from same category. Created ProductPage.test.tsx. Full verify passes (351 app + 141 tooling tests = 492 tests). Initial bundle 196.2 KB <= 200 KB. | pending |
+| 2026-10-12 | T-3.06 | Anti-Gravity | Implemented Cart feature: CartProvider (cartReducer, localStorage cart:v1 persistence with duplicate merging, live stock re-validation and clamping, fresh line total calculation), CartDrawer slide-over with steppers and guest checkout CTA, and dedicated /cart page in src/pages/CartPage.tsx. Isolated query in cart feature, extracted NavbarMobileMenu, and decoupled ErrorBoundary to keep initial JS bundle at 199.3 KB <= 200 KB gzip budget. Created cart.test.tsx and CartPage.test.tsx (21 tests). Full verify passes (372 app + 141 tooling tests = 513 tests). | pending |
+| 2026-10-12 | T-3.07 | Anti-Gravity | Implemented Search feature: Navbar search routes to /search?q=..., debounced input sync with URL search params, PostgREST ilike query escaping (wildcards % and _ and delimiters), full UI states (query prompt, loading skeleton, error panel with retry, empty state, results grid). Verified with catalog.test.tsx and SearchPage.test.tsx (36 tests). Full verify passes (379 app + 141 tooling tests = 520 tests). Initial bundle budget enforced <= 200 KB gzip (199.5 KB). | pending |
+| 2026-10-12 | T-4.02 | Anti-Gravity | Implemented Checkout feature with location details and payment choice in src/pages/CheckoutPage.tsx, pre-filled from customer profile (full name, phone, optional alt phone, governorate, city, district, address, floor, apartment, landmark, notes). Egyptian mobile number normalization and validation. Dynamic delivery fees from database by governorate (useGovernorates, useDeliveryFees). Enabled payment methods (cod, instapay_qr) from shop settings. Sticky estimated order summary. Calls place_order RPC with p_items, p_delivery_method, p_payment_method, and p_ship. Routes COD to /order/:id/thanks (warm confirmation screen with order reference and ribbon ornament) and InstaPay to /pay/:orderId. Protected with ProtectedAuth. Created checkout.test.tsx and CheckoutPage.test.tsx (22 tests). Full verify passes (404 app + 141 tooling tests = 545 tests). Initial bundle budget enforced <= 200 KB gzip (199.9 KB). | pending |
+| 2026-10-12 | T-4.03 | Anti-Gravity | Implemented Order confirmation and my orders: /order/:id/thanks with order reference and navigation; /account/orders list and detail view in src/pages/AccountOrdersPage.tsx with status timeline (pending, confirmed, shipped, delivered, cancelled), payment status chips (unpaid, awaiting_proof, under_review, paid, rejected), delivery details (Egypt Post with tracking number or representative with courier name and phone), itemized list of ordered products with unit price paid, quantity, and line totals. Implemented cancel_my_order RPC integration with modal confirmation, hiding cancel button for non-pending orders and InstaPay orders under review. Created src/features/orders/ and unit/integration tests in orders.test.tsx and AccountOrdersPage.test.tsx (18 tests). Full verify passes (422 app + 141 tooling tests = 563 tests). Initial bundle budget enforced <= 200 KB gzip (199.97 KB). | pending |
+| 2026-10-12 | T-4.04 | Anti-Gravity | Implemented Customer account details page in src/pages/AccountPage.tsx: profile edit form for full name, mobile (phone, optional alt_phone), location fields (governorate, city, district, address, floor, apartment, landmark); Egyptian mobile normalization and validation; lifetime statistics from customer_stats view (total spent formatted in EGP, orders count, favorite product); link to /account/security. Column update grants added for address fields; zero role mention or writes in forms or API payloads. Full verify passes (432 app + 141 tooling tests = 573 tests). Initial bundle budget enforced <= 200 KB gzip (199.90 KB). | pending |
+| 2026-10-12 | T-4.05 | Anti-Gravity | Implemented Favorites: bow-shaped heart toggle on cards and product page (BowHeartIcon, FavoriteButton, guest login prompt modal), dedicated /account/favorites page with counter badge, warm empty state and browse CTA, retry panel, and optimistic updates with rollback on write failure. Created favorites feature in src/features/favorites/ (types, api, hooks, unit tests) and AccountFavoritesPage. Full verify passes (442 app + 141 tooling tests = 583 tests). Initial bundle budget enforced <= 200 KB gzip (199.99 KB). | pending |
+| 2026-10-12 | T-4.06 | Anti-Gravity | Implemented InstaPay QR payment flow and proof upload in src/pages/PayOrderPage.tsx and src/features/payments/: QR placeholder public/placeholders/instapay-qr.svg, copyable InstaPay handle and order reference notes, exact amount formatted in EGP, Arabic payment instructions, live deadline countdown hook; proof upload supporting JPEG/PNG/WebP <= 5 MB with magic bytes file signature validation (UPL-001, UPL-002), browser image re-encoding, upload to private bucket payment-proofs/{user_id}/{order_id}/{uuid}.(jpg|webp) avoiding user-controlled filenames, and submit_payment_proof RPC mapping error codes (PAY-001..PAY-005); status chips for awaiting_proof, under_review, paid, and rejected (with re-upload allowed before deadline). Initial bundle budget enforced <= 200 KB gzip (199.85 KB). Full verify passes (475 app + 141 tooling tests = 616 tests). | pending |
+| 2026-10-12 | T-4.07 | Anti-Gravity | Implemented complete E2E Playwright test suite for storefront-to-order flow in e2e/storefront-order.spec.ts with global setup (e2e/global-setup.ts) resetting local DB and creating customer and admin test users via local stack keys. Implemented 8 end-to-end scenarios: 1. Guest browses and cart persists in localStorage; 2. Register and log in customer account; 3. COD checkout succeeds and stock decreases; 4. Oversell shows translated stock message (ORD-007 / ORD-005); 5. Unavailable delivery method is refused; 6. Cancelling pending order restores stock; 7. InstaPay order shows QR placeholder, validates magic bytes / rejects non-images (UPL-001) and transitions to under_review; 8. Unpaid InstaPay order expires via test hook and restores stock. Wired test:e2e into package.json and removed stub from pending.mjs; added e2e job to .github/workflows/ci.yml. All 8 tests pass in 1.5m and full npm run verify passes. | pending |
+| 2026-10-13 | T-5.02 | Anti-Gravity | Implemented products list in src/features/admin/products/: search by Arabic/English name and #ID, filters for category, active status (all, active, archived), and stock status (all, in_stock, low_stock <= 5, out_of_stock = 0), inline stock editing dialog with non-negative validation and reason selection (admin_adjust, restock, correction), active toggle switch, optimistic updates with automatic rollback on mutation failure and Arabic error mapping. Wired lazy route /admin/products. Maintained initial bundle budget (199,990 / 200,000 gzip bytes). Full verify passes (486 app + 141 tooling tests = 627 tests). | pending |
+| 2026-10-13 | T-5.03 | Anti-Gravity | Implemented product form, images and lifecycle: create and edit products at /admin/products/new and /admin/products/:id, payload builder strictly omitting generated columns (final_price, in_stock, sold_count) and stripping HTML tags, image validation checking magic bytes for JPEG/PNG/WebP and refusing non-images (UPL-001) or oversized files > 5MB (UPL-002), client-side aspect-ratio resizing capped at 1200px and re-encoding, storage path generation matching DB constraints, multi-image gallery with reordering and removal, DeleteProductDialog handling permanent deletion with fallback to archiving on ADM-004 when product was previously ordered. Initial bundle budget maintained (199,812 / 200,000 gzip bytes). Full verify passes (496 app + 141 tooling tests = 637 tests). | pending |
+| 2026-10-13 | T-5.04 | Anti-Gravity | Implemented category administration in src/features/admin/categories/: add category with Arabic name and auto-suggested slug with strict regex validation (^[a-z0-9]+(-[a-z0-9]+)*$), tile image upload with magic bytes validation and WebP re-encoding, show/hide on home toggle, sort order, and DeleteCategoryDialog moving products to chosen target category via admin_delete_category RPC (ADM-005, ADM-006). Maintained initial bundle budget (199,975 / 200,000 gzip bytes). Full verify passes (673 tests). | pending |
+| 2026-10-14 | T-5.05 | Anti-Gravity | Implemented orders administration in src/features/admin/orders/: search by order #ID, customer name, phone, and tracking number; filters by order status and payment status; detail modal with customer, address, items, financial totals, and payment metadata; status transitions along standard path (pending -> confirmed -> shipped -> delivered) and cancellation from active states; irreversible restock warning for cancelled status; fulfillment prompt for Egypt Post tracking number or Courier Rep contact info; OrderFulfillmentDialog; mapped ORD-014 database error. Maintained initial bundle budget (199,994 / 200,000 gzip bytes). Full verify passes (691 tests). | pending |
+| 2026-10-14 | T-5.08 | Anti-Gravity | Implemented payment review and proof purging in src/features/admin/payments/: queue of orders under_review sorted oldest first (FIFO), amount in EGP, copyable reference code, deadline/submitted timestamps, customer details, and ephemeral 60-second signed URL generation via Storage API (never stored); approve/reject review dialog wired to admin_review_payment RPC (AAL2 MFA enforced, audited) allowing customer resubmission on rejection; filters by payment status and search by #ID, customer name/phone, and reference; Step-Up MFA-guarded PurgeProofsDialog deleting proofs for orders delivered > 90 days ago through Storage API and clearing order paths. Maintained initial bundle budget (199,994 / 200,000 gzip bytes). Full verify passes (706 tests). | pending |
+| 2026-10-14 | T-5.09 | Anti-Gravity | Implemented site settings administration at /admin/settings in src/features/admin/settings/: shop details and contact channels, storefront announcements, hero text and sale discount percent with live preview badge, payment methods toggles and InstaPay handle, Step-Up MFA-guarded InstaPay QR code image replacement with client re-encoding and automatic deletion of previous custom storage files (falling back to placeholder SVG), Step-Up MFA-guarded operational limits (pending order limit and payment window hours) and returns text, and recent settings audit log activity table. Client-side validators and RPC admin_update_setting mapping errors to ADM-007 and ADM-008. Initial bundle budget maintained (199,998 / 200,000 gzip bytes). Full verify passes (728 tests). | pending |
 
 
 

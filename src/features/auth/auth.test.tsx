@@ -6,7 +6,8 @@ import App from '../../App'
 import { supabase } from '../../lib/supabase'
 import * as api from './api'
 import { resendConfirmationApi, resetPasswordApi, signInApi, signUpApi } from './api'
-import { AuthAlert, getAuthMessage, mapAuthError } from './authErrors'
+import { AuthAlert } from './AuthAlert'
+import { getAuthMessage, mapAuthError } from './authErrors'
 
 describe('Authentication unit tests (T-2.04)', () => {
   beforeEach(() => {

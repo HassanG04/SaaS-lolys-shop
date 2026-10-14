@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { AuthAlert } from '../features/auth/authErrors'
+import { AuthAlert } from '../features/auth/AuthAlert'
 import { useAuth } from '../features/auth/AuthProvider'
 import { Turnstile } from '../features/auth/Turnstile'
 import type { AuthErrorCode } from '../features/auth/types'

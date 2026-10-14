@@ -33,14 +33,7 @@ export function RibbonBow({ className = 'size-6' }: OrnamentProps) {
   )
 }
 
-export function RibbonDivider({ className = 'h-8 w-full text-pink-line' }: OrnamentProps) {
-  return (
-    <Ornament className={className} viewBox="0 0 240 24">
-      <path d="M2 12Q55 22 105 12m30 0q50 10 103 0M118 10c-14-12-18-1-10 3l10-1m4-2c14-12 18-1 10 3l-10-1m-4 2-6 8 7-3 3 3 2-8" />
-      <rect x="118" y="8" width="4" height="7" rx="1" />
-    </Ornament>
-  )
-}
+export { RibbonDivider } from './RibbonDivider'
 
 export function Sparkle({ className = 'size-4' }: OrnamentProps) {
   return (
@@ -53,5 +46,24 @@ export function Sparkle({ className = 'size-4' }: OrnamentProps) {
 export function ArchFrame({ className = '', ...props }: ComponentPropsWithRef<'div'>) {
   return (
     <div {...props} className={`overflow-hidden rounded-arch border border-current ${className}`} />
+  )
+}
+
+export function PearlOrnament({ className = 'text-sand' }: OrnamentProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 120 24"
+      className={className}
+      fill="currentColor"
+    >
+      <circle cx="12" cy="12" r="5" className="opacity-70" />
+      <circle cx="28" cy="12" r="7" className="opacity-90" />
+      <circle cx="48" cy="12" r="9" />
+      <circle cx="72" cy="12" r="9" />
+      <circle cx="92" cy="12" r="7" className="opacity-90" />
+      <circle cx="108" cy="12" r="5" className="opacity-70" />
+    </svg>
   )
 }
