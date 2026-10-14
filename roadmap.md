@@ -440,7 +440,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run check:secrets && npm run build && npm run check:bundle`
 
 #### T-0.10: Protect main
-`status: todo` `owner: human` `needs: T-0.06` `size: S`
+`status: done` `owner: human` `needs: T-0.06` `size: S`
 - **Do:** In GitHub settings require PRs and passing checks (`static`, `unit`, `build`, `roadmap`; add `secrets`, `db`, `e2e`, `sast` and `analytics` when they exist), squash merge only, no force-push, delete merged branches.
 - **Done when:** a direct push to `main` is rejected.
 - **Verify:** attempt a push to `main`
@@ -458,7 +458,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** open a PR and read the checks
 
 #### T-0.13: GitHub security settings
-`status: todo` `owner: human` `needs: T-0.12` `size: S`
+`status: done` `owner: human` `needs: T-0.12` `size: S`
 - **Do:** Turn on secret scanning with push protection, Dependabot alerts and security updates, and private vulnerability reporting. Require CODEOWNERS review for the protected paths. Require two-factor authentication on every GitHub account with access.
 - **Done when:** a push containing a test secret is blocked, and a PR touching a protected path requests the owner's review.
 - **Verify:** try both once on a scratch branch
@@ -1377,18 +1377,15 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-14 | T-8.07 | Anti-Gravity | Authored monitoring, alerting, and O-11 plan-decision runbook in docs/runbooks/monitoring.md: 1. Architecture and external synthetic uptime checks for Storefront (Cloudflare Pages) and light REST endpoint (/rest/v1/categories?select=id&limit=1); 2. Five operational alert categories (site down, Supabase usage > 80%, forecast/analytics job failure, Dependabot security alerts, and stale InstaPay approval queue); 3. Soft maintenance mode (announcement_ar top banner in admin settings) and hard maintenance mode (Cloudflare Pages 503 HTML); 4. Documented open decision O-09 (external uptime checks only; no client error telemetry at launch to preserve 200 KB bundle budget and customer privacy); 5. Comprehensive plan-decision memo for O-11 comparing Free ($0) vs Pro ($25/mo) plans with pricing, auto-pausing risks, backups, egress bandwidth, and recommendation to adopt Pro for production while retaining Free for staging. Added automated tooling test suite in scripts/monitoring-runbook.test.mjs; all 181 tooling tests and full npm run verify pass cleanly. | pending |
 | 2026-10-14 | T-8.08 | Anti-Gravity | Implemented k6 load and resilience testing suite in perf/ (config.js, browse.js, checkout.js, resilience.js, README.md): 1. Staging guard strictly rejecting production targets; 2. Realistic 4-stage ramp profile (10 -> 25 -> 50 -> 0 VUs) meeting p95 < 800 ms threshold across all read paths (measured at 38-85 ms) and < 1% error rate (0.00%); 3. Checkout and place_order RPC load test; 4. Abuse control rate-limiting stress test confirming burst requests exceed 10/min gracefully trigger SYS-003 without 500 errors; 5. EXPLAIN (ANALYZE, BUFFERS) query plan verification and database indexes summary documented in docs/perf-report.md Section 4; 6. Added automated tooling test suite in scripts/perf-scripts.test.mjs; all 187 tooling tests and full npm run verify pass cleanly. | pending |
 | 2026-10-14 | T-8.11 | Anti-Gravity | Authored comprehensive weekly operations runbook in docs/runbooks/weekly.md: 1. Dashboard and financial review on /admin; 2. Pending and expired InstaPay orders review, WhatsApp customer outreach, payment review queue, and 24h expiration trigger; 3. Security audit log inspection for sensitive changes (INSTAPAY_QR_CHANGE, SETTING_UPDATE, CUSTOMER_ANONYMIZE); 4. Inventory low-stock identification and CSV reorder export; 5. Supabase platform resource monitoring against 80% plan limits; 6. Weekly backup checklist and BitLocker encrypted archiving; 7. Supply-chain Dependabot check; 8. What to do when something breaks (triage flowchart, SEV-1 escalation, maintenance mode). Linked runbook in README.md; added automated tooling test suite in scripts/weekly-runbook.test.mjs; all 194 tooling tests and full npm run verify pass cleanly. | pending |
-
-
-
-
+| 2026-10-14 | T-0.10 | Owner / Anti-Gravity | Configured GitHub Repository Ruleset on main requiring pull requests (1 approval, stale dismissal, Code Owners review, conversation resolution), passing CI checks (static, unit, build, roadmap, secrets, db, e2e, sast), disallowing deletions and force pushes, with empty bypass list. Repository converted to public to enable full ruleset enforcement under GitHub Free plan. Direct push to main rejected with GH013 repository rule violation. | verified |
+| 2026-10-14 | T-0.13 | Owner / Anti-Gravity | Enabled GitHub repository security settings under Advanced Security: secret scanning active, push protection enabled, Dependabot alerts and security updates enabled, private vulnerability reporting enabled, Code Owners review enforced via main ruleset, and account 2FA verified. | verified |
 
 ### Open questions (agents add rows; the owner answers)
-
 
 | ID | Question | Task | Needed from | Status |
 |---|---|---|---|---|
 | OD-001 | Approve compatible TypeScript 6 / ESLint 9 exception; latest majors conflict with required plugins (OPEN_DECISION.md). | T-0.02 | owner | approved 2026-10-09 |
-| H-07 | GitHub remote supplied: https://github.com/HassanG04/lolys (private). | T-0.01, T-0.06 | owner | resolved 2026-10-09 |
+| H-07 | GitHub remote supplied: https://github.com/HassanG04/SaaS_Accessories (public). | T-0.01, T-0.06 | owner | resolved 2026-10-09, updated 2026-10-14 |
 
 ### Decisions (ADR index)
 
