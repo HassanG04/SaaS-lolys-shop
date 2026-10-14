@@ -6,6 +6,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 from lolys_analytics.config import load_config
 from lolys_analytics.synthetic import apply_cleaning_rules, generate_synthetic_data
@@ -45,6 +46,22 @@ def main(argv: list[str] | None = None) -> int:
         help="Cross-check algorithmic calendar against committed official events table",
     )
     cal_parser.add_argument("--year", type=int, default=2026, help="Year to cross-check")
+
+    # Subcommand: backtest
+    bt_parser = subparsers.add_parser(
+        "backtest",
+        help="Run rolling-origin backtest on synthetic data",
+    )
+    bt_parser.add_argument(
+        "--model",
+        type=str,
+        default="seasonal_naive",
+        choices=["seasonal_naive", "moving_average_28"],
+        help="Forecasting model to backtest",
+    )
+    bt_parser.add_argument("--folds", type=int, default=3, help="Number of rolling-origin folds")
+    bt_parser.add_argument("--horizon", type=int, default=28, help="Forecast horizon (days)")
+    bt_parser.add_argument("--seed", type=int, default=42, help="Random seed for synthetic data")
 
     args = parser.parse_args(argv)
     config = load_config()
@@ -102,6 +119,32 @@ def main(argv: list[str] | None = None) -> int:
             align_str = "ALIGNED" if data["aligned"] else "MISALIGNED"
             delta = data.get("delta_start_days", 0)
             print(f"  [{align_str}] {ev}: official={data['official']} delta={delta}d")
+        return 0
+
+    if args.command == "backtest":
+        from lolys_analytics.backtest import run_backtest
+        from lolys_analytics.models.baselines import MovingAverage28Model, SeasonalNaiveModel
+
+        print(
+            f"Running rolling-origin backtest ({args.model}, {args.folds} folds, {args.horizon}d horizon)..."
+        )
+        dataset = generate_synthetic_data(days=180, seed=args.seed, config=config.synthetic)
+
+        # Aggregate product sales to daily shop total
+        day_totals: dict[str, float] = {}
+        for row in dataset.daily_sales:
+            day_str = row.day.isoformat()
+            day_totals[day_str] = day_totals.get(day_str, 0.0) + float(row.units)
+
+        daily_units = [day_totals[d] for d in sorted(day_totals.keys())]
+
+        model: Any = (
+            SeasonalNaiveModel(seasonality=7)
+            if args.model == "seasonal_naive"
+            else MovingAverage28Model(window=28)
+        )
+        report = run_backtest(daily_units, model, n_folds=args.folds, horizon=args.horizon)
+        print(report.to_markdown_table())
         return 0
 
     return 0
