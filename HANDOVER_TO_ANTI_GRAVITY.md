@@ -1,4 +1,47 @@
-# Current static-analysis handover — 2026-10-13
+# Database integration handover — 2026-10-15
+
+## Current Objective
+
+Prepare `agent/T-1.09-database-integration` from main `4dfb26c` in
+`D:/Projects/Programming/الاء/.tools/merge-day-plan`. Do not switch or reset the
+root analytics checkout. This supersedes the static-analysis continuation below.
+
+## Completed
+
+Database-only extraction through cfac9d5, owner-role/audit fixes, isolated local
+stack, DB CI, 259 passing pgTAP assertions, five negative probes and recovery,
+real blocked-buyer concurrency proof, deterministic regenerated types. Full verify passed: 57
+application tests and 114 tooling tests, plus lint, formatting, types, build and guards. Detailed files and
+evidence are in shared progress and `docs/handoff/DATABASE-INTEGRATION.md`.
+
+## Remaining
+
+Complete remote CI, record exact-head results and publish/update
+the integration PR. Main requires owner review plus a real e2e job still to be
+integrated. Do not merge, weaken that rule, or import held payment branches.
+
+## Current Files
+
+Run `git status --short` in this isolated checkout for the exact pending list.
+All changes are database integration, scripts, types, CI and its documentation;
+the shared progress file lists their paths. Preserve all root analytics work.
+
+## Current Error
+
+No known database test failure. Initial Vitest worker startup timed out locally;
+the two-worker rerun passed. Full verify passed; remote review gates are pending.
+
+## Next Exact Command
+
+```powershell
+$env:Path='D:\Projects\Programming\الاء\.tools\node-v24.21.0-win-x64;'+$env:Path
+$env:npm_config_script_shell='C:\Windows\System32\cmd.exe'
+$env:VITEST_MAX_WORKERS='2'
+Set-Location -LiteralPath 'D:\Projects\Programming\الاء\.tools\merge-day-plan'
+npm run verify
+```
+
+## Historical handover — 2026-10-13
 
 ## Current Objective
 

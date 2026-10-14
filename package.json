@@ -20,12 +20,12 @@
     "check:ui-build": "node scripts/check-ui-build.mjs",
     "verify": "npm run check:migrations && npm run check:tokens && npm run lint && npm run format:check && npm run typecheck && npm run test:unit && npm run build && npm run check:secrets && npm run check:bundle",
     "test:e2e": "node scripts/pending.mjs test:e2e",
-    "db:start": "node scripts/pending.mjs db:start",
-    "db:stop": "node scripts/pending.mjs db:stop",
-    "db:reset": "node scripts/pending.mjs db:reset",
-    "db:test": "node scripts/pending.mjs db:test",
-    "db:types": "node scripts/pending.mjs db:types",
-    "db:test:concurrency": "node scripts/pending.mjs db:test:concurrency",
+    "db:start": "node scripts/local-db.mjs start",
+    "db:stop": "node scripts/local-db.mjs stop",
+    "db:reset": "node scripts/local-db.mjs reset",
+    "db:test": "node scripts/local-db.mjs test",
+    "db:types": "node scripts/local-db.mjs types",
+    "db:test:concurrency": "node scripts/run-concurrency.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
     "check:bundle": "node scripts/check-bundle.mjs",
     "check:i18n": "node scripts/pending.mjs check:i18n",
@@ -34,7 +34,8 @@
     "analytics:install": "node scripts/pending.mjs analytics:install",
     "analytics:test": "node scripts/pending.mjs analytics:test",
     "analytics:forecast": "node scripts/pending.mjs analytics:forecast",
-    "test:unit:coverage": "vitest run --coverage && npm run test:tooling"
+    "test:unit:coverage": "vitest run --coverage && npm run test:tooling",
+    "db:types:check": "node scripts/local-db.mjs check-types"
   },
   "dependencies": {
     "react": "19.3.0",
@@ -61,7 +62,8 @@
     "typescript": "6.0.3",
     "typescript-eslint": "8.71.1",
     "vite": "8.3.4",
-    "vitest": "5.0.3"
+    "vitest": "5.0.3",
+    "supabase": "2.120.0"
   },
   "engines": {
     "node": "24.x",

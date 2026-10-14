@@ -24,7 +24,19 @@ export function inspectText(source, file) {
       file.startsWith('docs/') ||
       /(^|\/)(?:tests|__tests__)\//.test(file) ||
       /\.(?:test|spec)\.(?:[cm]?[jt]sx?|sql)$/.test(file))
-  if (!documentationOrTest && source.includes(privilegedRole)) findings.add('PRIVILEGED_ROLE')
+  // Database hardening must name a role to revoke its privileges. Permit only
+  // these complete, literal revocations in migrations; keys are still scanned
+  // above, and grants, other SQL, frontend code and build output remain rejected.
+  const roleSource = /^supabase\/migrations\/\d{14}_[a-z0-9_]+\.sql$/.test(file)
+    ? source.replace(
+        new RegExp(
+          `^revoke all on (?:function public\\.[a-z_]+\\([a-z0-9_, ]*\\)|(?:table|sequence) public\\.[a-z_]+) from public, anon, authenticated, ${privilegedRole};\\r?$`,
+          'gm',
+        ),
+        '',
+      )
+    : source
+  if (!documentationOrTest && roleSource.includes(privilegedRole)) findings.add('PRIVILEGED_ROLE')
   if (
     path.posix.basename(file) === '.env.example' &&
     source.split(/\r?\n/).some((line) => !/^(?:#.*|[A-Z][A-Z0-9_]*=?)?$/.test(line.trim()))

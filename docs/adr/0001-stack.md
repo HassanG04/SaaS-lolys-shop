@@ -30,6 +30,7 @@ Use Node 24.21.0 LTS (.nvmrc), npm 11.19.0 from that official runtime, exact dir
 | globals                     | 17.13.0       |
 | jsdom                       | 30.1.2        |
 | prettier                    | 3.9.9         |
+| supabase (CLI)              | 2.120.0       |
 | react                       | 19.3.0        |
 | react-dom                   | 19.3.0        |
 | tailwindcss                 | 4.3.3         |
