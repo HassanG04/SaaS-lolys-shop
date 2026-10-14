@@ -1,0 +1,71 @@
+rules:
+  - id: lolys-no-react-html
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: SEC-07 Render plain text through React escaping.
+    pattern-either:
+      - pattern: <$TAG dangerouslySetInnerHTML={$VALUE} ... />
+      - pattern: '{dangerouslySetInnerHTML: $VALUE}'
+  - id: lolys-no-inner-html
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: SEC-07 Do not use innerHTML.
+    pattern: $ELEMENT.innerHTML
+  - id: lolys-no-eval
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: SEC-07 Do not evaluate code strings.
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: $GLOBAL.eval(...)
+  - id: lolys-no-function-constructor
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: SEC-07 Do not construct functions from strings.
+    pattern-either:
+      - pattern: new Function(...)
+      - pattern: Function(...)
+      - pattern: new $GLOBAL.Function(...)
+  - id: lolys-no-raw-error-render
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: SEC-22 Render the Arabic AppError catalogue and code.
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern: $ERROR.message
+          - metavariable-regex:
+              metavariable: $ERROR
+              regex: (?i)^(e|err|error|\w*error|\w*_err)$
+      - patterns:
+          - pattern-inside: try { ... } catch ($CAUGHT) { ... }
+          - pattern: $CAUGHT.message
+    pattern-sinks:
+      - patterns:
+          - pattern: <$TAG ...>{$VALUE}</$TAG>
+          - focus-metavariable: $VALUE
+      - patterns:
+          - pattern: <$TAG ... $ATTR={$VALUE} ... />
+          - focus-metavariable: $VALUE
+      - patterns:
+          - pattern-either:
+              - pattern: $ELEMENT.textContent = $VALUE
+              - pattern: $ELEMENT.innerText = $VALUE
+          - focus-metavariable: $VALUE
+  - id: lolys-fetch-allowlist
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: SEC-07 Fetch only literal same-origin paths; use the configured Supabase client for its API.
+    patterns:
+      - pattern-either:
+          - pattern: fetch($URL, ...)
+          - pattern: $GLOBAL.fetch($URL, ...)
+      - metavariable-regex:
+          metavariable: $URL
+          regex: ^(?!['"]/(?![/\\])[^\\]*['"]$)
+  - id: lolys-no-service-role
+    languages: [generic]
+    severity: ERROR
+    message: SEC-15 Browser source must never reference the privileged role.
+    # Match the forbidden literal without embedding it in scanner configuration.
+    pattern-regex: (?i)service[_]role

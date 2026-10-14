@@ -887,7 +887,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** open a PR and read the checks
 
 #### T-7.06: Static analysis (Semgrep)
-`status: todo` `owner: agent` `needs: T-0.06` `size: M`
+`status: doing` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Add a `sast` job running Semgrep with a maintained TypeScript and React ruleset plus project rules in `.semgrep/`: forbid `dangerouslySetInnerHTML`, `innerHTML`, `eval`, `new Function`, rendering `error.message`, `fetch` to hosts outside an allow-list, and any mention of `service_role`. Fail on high severity.
 - **Done when:** a planted violation of each project rule fails the job.
 - **Verify:** open a PR and read the checks
@@ -1323,6 +1323,8 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-12 | T-0.12 | Codex | Rejection probe removed. Recovery run 38176275898 at b2da8dc passed all five jobs, including secrets. T-0.12 stays doing only for owner security/workflow review; no launch or dashboard setup claimed. | [#18](https://github.com/HassanG04/lolys/pull/18) |
 
+| 2026-10-13 | T-7.06 | Codex | Added digest-pinned read-only Semgrep job, maintained TypeScript/React packs, seven project rules and redacted scanner diagnostics. Twelve planted cases, safe recovery, reported partial-parse failure and unavailable-scanner tests pass. Full verify passes (55 app + 111 tooling tests); this branch and Anti-Gravity source at 56529b3 have no high findings. SEC-07/15/16/22/24; doing until PR checks and owner workflow review. | pending |
+
 ### Open questions (agents add rows; the owner answers)
 
 
@@ -1337,3 +1339,4 @@ What gets easier, what gets harder, what to watch.
 |---|---|---|
 | 0001 | Stack and versions | accepted; OD-001 approved by owner |
 | 0002 | Bilingual interface | accepted under OD-003, recorded in Anti-Gravity handover |
+| 2026-10-14 | T-7.06 | Codex | Merge-day preparation: repaired Node execution boundary in SAST workflow after remote setup-node ENOENT; scanner image digest and rejection/scan gates preserved. No feature edits. New-head CI pending. | pending |

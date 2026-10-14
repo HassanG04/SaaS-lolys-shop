@@ -1,0 +1,1 @@
+# Scan all browser source; the runner explicitly excludes unit tests and environment files.

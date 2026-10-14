@@ -7,6 +7,8 @@
 /docs/spec/security-model.md @HassanG04
 /scripts/** @HassanG04
 /.gitleaks* @HassanG04
+/.semgrep/** @HassanG04
+/.semgrepignore @HassanG04
 /package*.json @HassanG04
 /SECURITY.md @HassanG04
 /public/.well-known/security.txt @HassanG04
