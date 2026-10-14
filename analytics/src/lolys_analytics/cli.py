@@ -1,0 +1,93 @@
+"""Command-line interface for Lolys' Accessories & Home Analytics."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from lolys_analytics.config import load_config
+from lolys_analytics.synthetic import apply_cleaning_rules, generate_synthetic_data
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="lolys-analytics",
+        description="Lolys' Accessories & Home: Analytics and Sales Forecasting CLI",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # Subcommand: info
+    subparsers.add_parser(
+        "info", help="Display current analytics configuration and readiness gates"
+    )
+
+    # Subcommand: generate-synthetic
+    gen_parser = subparsers.add_parser(
+        "generate-synthetic", help="Generate deterministic synthetic retail time-series"
+    )
+    gen_parser.add_argument("--days", type=int, default=180, help="Number of days to simulate")
+    gen_parser.add_argument("--seed", type=int, default=42, help="Random generator seed")
+    gen_parser.add_argument(
+        "--output", type=str, default=None, help="Optional output JSON filepath"
+    )
+
+    # Subcommand: test-cleaning
+    subparsers.add_parser(
+        "test-cleaning",
+        help="Run cleaning rules verification against deterministic synthetic data",
+    )
+
+    args = parser.parse_args(argv)
+    config = load_config()
+
+    if args.command == "info":
+        print("=== Lolys Analytics Configuration ===")
+        print(
+            f"Shop Readiness: {config.gates.shop_min_days} days / {config.gates.shop_min_orders} orders"
+        )
+        print(
+            f"Category Readiness: {config.gates.category_min_days} days / {config.gates.category_min_units} units"
+        )
+        print(
+            f"Product Readiness: {config.gates.product_min_weeks} weeks / {config.gates.product_min_nonzero_weeks} non-zero weeks"
+        )
+        print(
+            f"Reorder Lead Time: {config.reorder.default_lead_time_days} days (Z={config.reorder.default_service_z})"
+        )
+        print(f"Winsorize Percentile: {config.cleaning.winsorize_percentile * 100}%")
+        return 0
+
+    if args.command == "generate-synthetic":
+        print(f"Generating synthetic data: {args.days} days, seed={args.seed}...")
+        dataset = generate_synthetic_data(days=args.days, seed=args.seed, config=config.synthetic)
+        print(f"Total simulated orders: {dataset.summary['total_orders']}")
+        print(f"Daily sales rows: {dataset.summary['valid_sales_rows']}")
+        print(f"Outlier orders: {dataset.summary['outlier_orders_count']}")
+        print(f"Stockout events: {dataset.summary['stockout_events_count']}")
+
+        if args.output:
+            out_path = Path(args.output)
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(out_path, "w", encoding="utf-8") as f:
+                json.dump(dataset.to_dict(), f, indent=2)
+            print(f"Saved dataset to {out_path}")
+        return 0
+
+    if args.command == "test-cleaning":
+        print("Testing cleaning rules against synthetic dataset...")
+        dataset = generate_synthetic_data(days=180, seed=42, config=config.synthetic)
+        results = apply_cleaning_rules(dataset, config.cleaning)
+        print(f"Raw orders: {results['total_raw_orders']}")
+        print(f"Excluded sales orders: {results['excluded_sales_orders']}")
+        print(f"Poisoned accounts detected: {len(results['poisoned_accounts_detected'])}")
+        print(f"Winsorize clipped points: {results['winsorize_clipped_points']}")
+        print(f"Stockout days flagged: {results['stockout_days_flagged']}")
+        return 0
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

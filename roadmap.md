@@ -992,7 +992,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:test`
 
 #### T-9.02: Python project and synthetic data
-`status: todo` `owner: agent` `needs: T-0.06` `size: L`
+`status: done` `owner: agent` `needs: T-0.06` `size: L`
 - **Do:** Create `analytics/` as laid out in `docs/spec/analytics-plan.md` section 11: `pyproject.toml`, lockfile, ruff, pytest, `config.toml` (gates and defaults), CLI skeleton, and `synthetic.py` generating realistic shop data (trend, weekly pattern, Ramadan and Eid bumps, promotions, intermittent items, stock-outs, fake-order noise) with a fixed seed. Add the `analytics` CI job and the scripts `analytics:install`, `analytics:test`.
 - **Done when:** `npm run analytics:test` passes; the generator is deterministic and its output exercises every cleaning rule.
 - **Verify:** `npm run analytics:test`
@@ -1383,6 +1383,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-14 | T-1.11 | Owner / Anti-Gravity | Created staging Supabase project shop-staging. Configured GitHub Actions repository secrets SUPABASE_ACCESS_TOKEN, STAGING_PROJECT_REF, and STAGING_DB_PASSWORD. Added Cloudflare Pages Preview environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. | verified |
 | 2026-10-14 | T-1.13 | Owner / Anti-Gravity | Configured production Supabase project Lolys. Added GitHub Actions repository secrets PRODUCTION_PROJECT_REF, PRODUCTION_DB_PASSWORD, PRODUCTION_URL, and PRODUCTION_ANON_KEY. Configured Cloudflare Pages Production environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. Phase 1 is 100% complete (23/23 tasks). | verified |
 | 2026-10-14 | T-9.01 | Anti-Gravity | Implemented analytics database foundation in supabase/migrations/20261014230000_analytics_foundation.sql: analytics schema with aggregate views sales_daily and stock_daily, tables calendar (seeded 2026-2028 with Egyptian & Hijri events), forecast_runs, sales_forecasts, forecast_metrics, basket_pairs, cohort_retention, and view forecast_accuracy; restricted database roles analytics_reader and analytics_writer with zero public table access (Scenario S31, zero PII); public admin functions admin_get_forecasts, admin_get_reorder_list, admin_get_analytics_insights (guarded by require_admin at AAL2); authored ADR-0003 in docs/adr/0003-analytics-ci-connection.md; 37 pgTAP assertions in 17_analytics_foundation.test.sql pass (475 total db tests pass); regenerated TypeScript types; full npm run verify passes cleanly. | pending |
+| 2026-10-14 | T-9.02 | Anti-Gravity | Created analytics/ Python project (pyproject.toml, config.toml, requirements.txt, requirements-dev.txt, README.md, ruff, pytest) per analytics-plan.md Section 11; implemented config loader (config.py), deterministic retail synthetic data generator (synthetic.py) covering trends, weekend peaks, calendar event uplifts, promotions, fast-moving vs intermittent items, stock-outs, wholesale outliers, and poisoned accounts; implemented all 5 cleaning rules; implemented CLI (cli.py); authored unit tests in tests/ (6 tests pass); added scripts/run-analytics.mjs runner and wired analytics:install and analytics:test into package.json; added Node tooling test scripts/analytics-tooling.test.mjs (198 tooling tests pass); added analytics CI job with SHA-pinned setup-python; authored ADR-0004 in docs/adr/0004-analytics-stack.md; full npm run verify and npm run analytics:test pass cleanly. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 
@@ -1398,3 +1399,4 @@ What gets easier, what gets harder, what to watch.
 | 0001 | Stack and versions | accepted; OD-001 approved by owner |
 | 0002 | Bilingual interface | accepted under OD-003, recorded in Anti-Gravity handover |
 | 0003 | Analytics CI connection method for restricted roles | accepted (T-9.01) |
+| 0004 | Analytics stack and synthetic time series pipeline | accepted (T-9.02) |

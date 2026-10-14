@@ -1,0 +1,48 @@
+# Lolys' Accessories & Home: Analytics & Forecasting Configuration
+# Reference: docs/spec/analytics-plan.md
+
+[gates]
+# Data readiness gates before showing model forecasts to owner
+shop_min_days = 56
+shop_min_orders = 30
+category_min_days = 84
+category_min_units = 40
+product_min_weeks = 12
+product_min_nonzero_weeks = 6
+
+[reorder]
+# Reorder point and suggested restock quantities
+default_lead_time_days = 7
+default_service_z = 1.28      # ~90% service level
+review_cycle_days = 7
+
+[cleaning]
+# Outlier winsorization (clipping wholesale anomalies)
+winsorize_percentile = 0.99
+
+# Poisoned account filtering (repeated expirations / rejections)
+poison_threshold_rejected_or_expired = 3
+poison_window_days = 30
+
+# Stock-out handling
+mask_stockout_days = true
+
+[intervals]
+confidence_level = 0.80       # 80% prediction interval (10th to 90th percentile)
+min_coverage_threshold = 0.70 # widen interval if backtest coverage drops below 70%
+
+[synthetic]
+default_days = 180
+default_seed = 42
+num_categories = 5
+num_products = 25
+base_daily_orders = 15
+trend_daily_growth = 0.0015
+ramadan_uplift = 0.45
+eid_uplift = 0.75
+mothers_day_uplift = 0.85
+valentines_uplift = 0.40
+black_friday_uplift = 1.10
+outlier_rate = 0.015
+stockout_probability = 0.03
+poisoned_accounts_count = 3
