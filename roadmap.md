@@ -538,7 +538,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** review the workflow files
 
 #### T-1.13: Production Supabase project
-`status: todo` `owner: human` `needs: T-1.11` `size: S`
+`status: done` `owner: human` `needs: T-1.11` `size: S`
 - **Do:** Create the first Supabase project for production. Add GitHub secrets `PRODUCTION_PROJECT_REF`, `PRODUCTION_DB_PASSWORD`. Set the Cloudflare **Production** environment variables. Push nothing yet.
 - **Done when:** secrets and variables exist.
 - **Verify:** checklist in `docs/runbooks/deploy-db.md`
@@ -1381,6 +1381,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-14 | T-0.13 | Owner / Anti-Gravity | Enabled GitHub repository security settings under Advanced Security: secret scanning active, push protection enabled, Dependabot alerts and security updates enabled, private vulnerability reporting enabled, Code Owners review enforced via main ruleset, and account 2FA verified. | verified |
 | 2026-10-14 | T-0.11 | Owner / Anti-Gravity | Created Cloudflare Pages project connected to HassanG04/SaaS_Accessories Git repo with Vite framework preset, build command npm run build, output dist, production branch main, and preview deployments enabled. Initial deployment published to https://saas-accessories.pages.dev. | verified |
 | 2026-10-14 | T-1.11 | Owner / Anti-Gravity | Created staging Supabase project shop-staging. Configured GitHub Actions repository secrets SUPABASE_ACCESS_TOKEN, STAGING_PROJECT_REF, and STAGING_DB_PASSWORD. Added Cloudflare Pages Preview environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. | verified |
+| 2026-10-14 | T-1.13 | Owner / Anti-Gravity | Configured production Supabase project Lolys. Added GitHub Actions repository secrets PRODUCTION_PROJECT_REF, PRODUCTION_DB_PASSWORD, PRODUCTION_URL, and PRODUCTION_ANON_KEY. Configured Cloudflare Pages Production environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. Phase 1 is 100% complete (23/23 tasks). | verified |
 
 ### Open questions (agents add rows; the owner answers)
 
