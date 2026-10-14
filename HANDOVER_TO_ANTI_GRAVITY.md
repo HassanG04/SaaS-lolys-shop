@@ -1,4 +1,41 @@
-# Current guard handover — 2026-10-11
+# Current cloud-prerequisite handover — 2026-10-11
+
+## Current Objective
+
+T-1.09b migration protection on `agent/T-1.09b-migration-guard`, stacked on PR 16.
+The owner confirmed there is no cloud project yet. Setup checklist and remaining
+cloud gates are in `.agent-state/cloud-database.md`. Your newer T-8.01 stack at
+7986020 is published and remains separate from this older application tree.
+
+## Completed / Remaining
+
+Git-based append-only guard and five rejection/recovery tests are implemented.
+PR 17: all four checks passed at 697e8c5, run 38137004058; 166 local tests pass.
+Local/CI wiring preserves existing checks. Full verification and publication are
+recorded in project-progress.md. Owner workflow review remains necessary.
+T-1.09 still owns database CI and type checks; T-1.12 still owns deployment
+workflows. No schema, Supabase commands, resets or cloud deployment were run.
+
+## Current Files
+
+`scripts/check-migrations.mjs`, `scripts/check-migrations.test.mjs`,
+`scripts/pending.mjs`, `package.json`, `.github/workflows/ci.yml`, `roadmap.md`,
+`.agent-state/project-progress.md`, `.agent-state/cloud-database.md`,
+`HANDOVER_TO_ANTI_GRAVITY.md`; the original checkout's coordination notice only.
+
+## Current Error
+
+No known implementation failure. Cloud remains unprovisioned; expected next is
+owner-created staging plus reviewed database CI/deployment workflows.
+The approval-service usage-limit failure was retried successfully; no bypass.
+
+## Next Exact Command
+
+`git status --short --branch` — read progress before any branch integration.
+Preserve your newer dependencies and migrations; never replace them with this
+older app tree. Main merges and cloud deployment remain owner-controlled.
+
+# Previous guard handover — 2026-10-11
 
 ## Current Objective
 

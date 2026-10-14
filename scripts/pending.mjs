@@ -7,7 +7,6 @@ const tasks = {
   'db:types': 'T-1.03',
   'db:test:concurrency': 'T-1.08',
   'check:i18n': 'T-2.03',
-  'check:migrations': 'T-1.09',
   'check:sql': 'T-1.22',
   'analytics:install': 'T-9.02',
   'analytics:test': 'T-9.02',

@@ -520,10 +520,16 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:test:concurrency`
 
 #### T-1.09: CI db job and migration guard
-`status: todo` `owner: agent` `needs: T-1.05, T-1.06, T-1.07, T-1.08, T-0.06` `size: M`
-- **Do:** Add job `db` (3.3): `supabase/setup-cli@v1`, `supabase start`, `supabase db reset`, `supabase test db`, the concurrency script, regenerate types and fail on diff. Add `scripts/check-migrations.mjs`: fail if a migration that exists on `origin/main` is modified, deleted or renamed in the PR.
+`status: todo` `owner: agent` `needs: T-1.05, T-1.06, T-1.07, T-1.08, T-0.06, T-1.09b` `size: M`
+- **Do:** Add job `db` (3.3): `supabase/setup-cli@v1`, `supabase start`, `supabase db reset`, `supabase test db`, the concurrency script, regenerate types and fail on diff. Preserve `scripts/check-migrations.mjs` and its CI enforcement from T-1.09b. The independently testable guard is split out so cloud preparation can proceed without modifying Anti-Gravity's active database/application checkout; all original criteria remain.
 - **Done when:** a PR that edits a merged migration fails, and a PR with out-of-date types fails.
 - **Verify:** open a PR and read the checks. Then ask the owner to add `db` to the required checks (T-0.10).
+
+#### T-1.09b: Append-only migration guard
+`status: doing` `owner: agent` `needs: T-0.06` `size: M`
+- **Do:** Implement `check:migrations` to reject modification, deletion or renaming of migrations already on `origin/main`; wire into local verification and the existing static CI job. Use the pre-push SHA on main so the post-push check cannot compare a rewrite against itself. No database or cloud connections.
+- **Done when:** real Git fixtures prove committed/staged/unstaged edits, deletion, rename and missing-history rejection; additions pass; CI runs the guard and negative fixtures. Owner workflow review remains required. T-1.09 retains database/type and actual merged-migration PR acceptance.
+- **Verify:** `node --test scripts/check-migrations.test.mjs && npm run check:migrations && npm run verify`; read PR checks.
 
 #### T-1.10: Stable error codes
 `status: todo` `owner: agent` `needs: T-1.09` `size: M`
@@ -1309,6 +1315,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-11 | T-0.09 | Codex | Working alongside Anti-Gravity in an isolated worktree. Split original secret/bundle guard scope into T-0.09 and T-0.09b for review size. Replaced inherited fail-open draft with tracked/nested-build scanning, key/JWT rejection even in docs/tests, redacted diagnostics and required-input failures. Five guard tests prove planted-key rejection and safe recovery; full verify passes with 157 tests and production scan; 120-task roadmap validates. All four PR checks pass at 0c4d6d3 (run 38104123639). SEC-15/SEC-16/SEC-24. | [#15](https://github.com/HassanG04/lolys/pull/15) |
 
 | 2026-10-11 | T-0.09b | Codex | Added Vite chunk/module metadata and a 200,000-byte initial-JS gzip budget including all static dependencies once. Eager admin/Recharts code fails even inside shared chunks; lazy code is excluded. Four guard tests cover breach/recovery, attribution, invalid inputs and real eager/lazy builds. Full verify passes (55 app + 106 tooling tests); real build is 69,655 gzip bytes. All four checks pass at bf9a87d (run 38135767780). SEC-15/SEC-16/SEC-24 retained. Task remains doing pending owner workflow review; latest AGENTS instructions prohibit agent merges. | [#16](https://github.com/HassanG04/lolys/pull/16) |
+
+| 2026-10-11 | T-1.09b | Codex | Owner asked about cloud hosting and confirmed no Supabase project exists yet. Prepared the owner checklist; split independent migration protection from T-1.09 without waiving its database/type/PR gates. Guard rejects merged-file edits/deletion/renaming in HEAD/index/worktree, uses pre-push main on push events and fails on missing history. Five real-Git negative/recovery tests and full verify pass (55 app + 111 tooling tests); 121-task roadmap validates. All four PR checks pass at 697e8c5 (run 38137004058). SEC-16/SEC-20/SEC-24. No database/cloud commands; owner workflow review pending. | [#17](https://github.com/HassanG04/lolys/pull/17) |
 
 ### Open questions (agents add rows; the owner answers)
 
