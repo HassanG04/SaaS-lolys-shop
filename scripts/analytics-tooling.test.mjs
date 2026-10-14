@@ -104,3 +104,40 @@ test('Weekly forecast workflow and writes configuration (T-9.08)', () => {
   const forecastPyPath = path.join(rootDir, 'analytics', 'src', 'lolys_analytics', 'forecast.py')
   assert.ok(existsSync(forecastPyPath), 'forecast.py must exist')
 })
+
+test('Accuracy tracking and drift alert configuration (T-9.09)', () => {
+  const accuracyPyPath = path.join(rootDir, 'analytics', 'src', 'lolys_analytics', 'accuracy.py')
+  assert.ok(existsSync(accuracyPyPath), 'accuracy.py must exist')
+
+  const accContent = readFileSync(accuracyPyPath, 'utf-8')
+  assert.ok(accContent.includes('compute_wape'), 'accuracy.py must define compute_wape')
+  assert.ok(
+    accContent.includes('evaluate_accuracy_window'),
+    'accuracy.py must define evaluate_accuracy_window',
+  )
+  assert.ok(accContent.includes('evaluate_drift'), 'accuracy.py must define evaluate_drift')
+  assert.ok(
+    accContent.includes('simulate_drift_and_recovery_timeline'),
+    'accuracy.py must define simulate_drift_and_recovery_timeline',
+  )
+
+  const configPath = path.join(rootDir, 'analytics', 'config.toml')
+  const config = readFileSync(configPath, 'utf-8')
+  assert.ok(config.includes('[monitoring]'), 'config.toml must define [monitoring] section')
+  assert.ok(
+    config.includes('rolling_window_days = 28'),
+    'config.toml must define rolling_window_days = 28',
+  )
+  assert.ok(
+    config.includes('drift_relative_wape_threshold = 0.20'),
+    'config.toml must define drift threshold',
+  )
+  assert.ok(
+    config.includes('consecutive_drift_weeks_to_alert = 2'),
+    'config.toml must define consecutive drift alert requirement',
+  )
+
+  const cliPath = path.join(rootDir, 'analytics', 'src', 'lolys_analytics', 'cli.py')
+  const cliContent = readFileSync(cliPath, 'utf-8')
+  assert.ok(cliContent.includes('check-drift'), 'cli.py must register check-drift subcommand')
+})

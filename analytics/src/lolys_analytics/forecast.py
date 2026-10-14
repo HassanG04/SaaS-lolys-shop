@@ -13,6 +13,7 @@ import hashlib
 import logging
 import subprocess
 
+from lolys_analytics.accuracy import DriftCheckResult
 from lolys_analytics.backtest import BacktestReport, run_backtest
 from lolys_analytics.config import AnalyticsConfig, load_config
 from lolys_analytics.models.baselines import (
@@ -84,6 +85,7 @@ def run_forecast_pipeline(
     stock_rows: list[DailyStockRecord] | None = None,
     run_date: dt.date | None = None,
     config: AnalyticsConfig | None = None,
+    drift_status: DriftCheckResult | None = None,
 ) -> ForecastRunPayload:
     """Execute the full weekly forecasting pipeline.
 
@@ -252,6 +254,16 @@ def run_forecast_pipeline(
         "lightgbm": LightGBMDirectModel(),
     }
     shop_model = models_dict.get(shop_selection.chosen_model.lower(), shop_baseline_model)
+
+    active_shop_model_name = shop_selection.chosen_model
+    if drift_status and drift_status.drift_alert:
+        logger.warning(
+            "Drift alert active: switching shop forecast display to %s fallback",
+            drift_status.active_display_model,
+        )
+        active_shop_model_name = drift_status.active_display_model
+        shop_model = shop_baseline_model
+
     shop_fc = shop_model.fit(dense_shop_units).predict(horizon=28)
 
     val_res = validate_forecast(shop_fc, dense_shop_units)
@@ -399,7 +411,7 @@ def run_forecast_pipeline(
                 predicted_revenue=pt_r,
                 lower_80=lo,
                 upper_80=hi,
-                model_name=shop_selection.chosen_model,
+                model_name=active_shop_model_name,
             )
         )
 
@@ -572,6 +584,9 @@ def run_forecast_pipeline(
         "hierarchy_discrepancy_max_pct": round(reconciled.discrepancy_max_pct, 4),
         "history_days": history_days,
         "total_units_sold": round(total_units_sold, 2),
+        "drift_alert": drift_status.drift_alert if drift_status else False,
+        "display_fallback": drift_status.display_fallback if drift_status else False,
+        "drift_details": drift_status.to_dict() if drift_status else None,
     }
 
     return ForecastRunPayload(

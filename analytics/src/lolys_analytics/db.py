@@ -151,6 +151,88 @@ def fetch_calendar(conn: Any) -> list[dict[str, Any]]:
         return [dict(r) for r in rows]
 
 
+def fetch_forecast_accuracy(
+    conn: Any,
+    series_type: str = "shop",
+    series_id: int | None = None,
+    days: int = 28,
+) -> list[dict[str, Any]]:
+    """Query recent forecast accuracy records from analytics.forecast_accuracy view.
+
+    Zero personal data (Scenario S31).
+    """
+    if series_id is not None:
+        query = """
+            SELECT
+                run_id,
+                series_type,
+                series_id,
+                forecast_date,
+                horizon_step,
+                model_name,
+                predicted_units,
+                actual_units,
+                unit_error,
+                absolute_error,
+                predicted_revenue,
+                actual_revenue,
+                in_interval_80
+            FROM analytics.forecast_accuracy
+            WHERE series_type = %s AND series_id = %s
+              AND forecast_date >= CURRENT_DATE - (%s || ' days')::interval
+            ORDER BY forecast_date ASC;
+        """
+        params: tuple[Any, ...] = (series_type, series_id, days)
+    else:
+        query = """
+            SELECT
+                run_id,
+                series_type,
+                series_id,
+                forecast_date,
+                horizon_step,
+                model_name,
+                predicted_units,
+                actual_units,
+                unit_error,
+                absolute_error,
+                predicted_revenue,
+                actual_revenue,
+                in_interval_80
+            FROM analytics.forecast_accuracy
+            WHERE series_type = %s AND series_id IS NULL
+              AND forecast_date >= CURRENT_DATE - (%s || ' days')::interval
+            ORDER BY forecast_date ASC;
+        """
+        params = (series_type, days)
+
+    with conn.cursor() as cur:
+        cur.execute(query, params)
+        rows = cur.fetchall()
+        return [dict(r) for r in rows]
+
+
+def fetch_past_forecast_runs(conn: Any, limit: int = 5) -> list[dict[str, Any]]:
+    """Fetch recent completed forecast runs from analytics.forecast_runs."""
+    query = """
+        SELECT
+            id,
+            run_at,
+            git_commit,
+            model_version,
+            notes,
+            status
+        FROM analytics.forecast_runs
+        WHERE status = 'completed'
+        ORDER BY run_at DESC
+        LIMIT %s;
+    """
+    with conn.cursor() as cur:
+        cur.execute(query, (limit,))
+        rows = cur.fetchall()
+        return [dict(r) for r in rows]
+
+
 class MockCursor:
     """Mock database cursor for testing without a live Postgres instance."""
 
@@ -192,6 +274,7 @@ class MockAnalyticsDb:
         self.sales_daily: list[dict[str, Any]] = []
         self.stock_daily: list[dict[str, Any]] = []
         self.calendar: list[dict[str, Any]] = []
+        self.forecast_accuracy: list[dict[str, Any]] = []
 
         self._in_transaction = False
         self._next_run_id = 1
@@ -313,4 +396,12 @@ class MockAnalyticsDb:
             return
         if "FROM analytics.calendar" in q:
             self.last_fetch = self.calendar
+            return
+        if "FROM analytics.forecast_accuracy" in q:
+            self.last_fetch = self.forecast_accuracy
+            return
+        if "FROM analytics.forecast_runs" in q:
+            limit = params[0] if params else 5
+            sorted_runs = sorted(self.forecast_runs, key=lambda r: str(r["run_at"]), reverse=True)
+            self.last_fetch = sorted_runs[:limit]
             return

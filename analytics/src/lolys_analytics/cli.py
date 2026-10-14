@@ -8,6 +8,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from lolys_analytics.accuracy import (
+    ForecastAccuracyPoint,
+    evaluate_drift,
+    simulate_drift_and_recovery_timeline,
+)
 from lolys_analytics.config import load_config
 from lolys_analytics.synthetic import apply_cleaning_rules, generate_synthetic_data
 
@@ -117,6 +122,30 @@ def main(argv: list[str] | None = None) -> int:
         "--dry-run",
         action="store_true",
         help="Execute pipeline and output validation without writing to database",
+    )
+
+    # Subcommand: check-drift
+    drift_parser = subparsers.add_parser(
+        "check-drift",
+        help="Evaluate 4-week rolling accuracy and drift alerts",
+    )
+    drift_parser.add_argument(
+        "--env",
+        type=str,
+        default="staging",
+        choices=["staging", "production"],
+        help="Target environment (staging or production)",
+    )
+    drift_parser.add_argument(
+        "--db-url",
+        type=str,
+        default=None,
+        help="Optional database URL override",
+    )
+    drift_parser.add_argument(
+        "--simulate",
+        action="store_true",
+        help="Run simulated multi-week drift and recovery lifecycle",
     )
 
     args = parser.parse_args(argv)
@@ -242,6 +271,8 @@ def main(argv: list[str] | None = None) -> int:
             try:
                 sales_raw = db.fetch_sales_daily(conn)
                 stock_raw = db.fetch_stock_daily(conn)
+                acc_raw = db.fetch_forecast_accuracy(conn, series_type="shop")
+                past_runs = db.fetch_past_forecast_runs(conn, limit=5)
             finally:
                 conn.close()
 
@@ -279,6 +310,59 @@ def main(argv: list[str] | None = None) -> int:
                 for r in stock_raw
             ]
 
+        drift_status = None
+        if not args.synthetic and acc_raw:
+            cand_pts = [
+                ForecastAccuracyPoint(
+                    forecast_date=(
+                        r["forecast_date"]
+                        if isinstance(r["forecast_date"], dt.date)
+                        else dt.date.fromisoformat(str(r["forecast_date"]))
+                    ),
+                    predicted_units=float(r["predicted_units"]),
+                    actual_units=float(r["actual_units"]),
+                    model_name=r["model_name"],
+                    lower_80=0.0,
+                    upper_80=float(r["predicted_units"]) * 2.0,
+                )
+                for r in acc_raw
+                if r["model_name"] != "SeasonalNaive"
+            ]
+            base_pts = [
+                ForecastAccuracyPoint(
+                    forecast_date=(
+                        r["forecast_date"]
+                        if isinstance(r["forecast_date"], dt.date)
+                        else dt.date.fromisoformat(str(r["forecast_date"]))
+                    ),
+                    predicted_units=float(r["predicted_units"]),
+                    actual_units=float(r["actual_units"]),
+                    model_name="SeasonalNaive",
+                    lower_80=0.0,
+                    upper_80=float(r["predicted_units"]) * 2.0,
+                )
+                for r in acc_raw
+                if r["model_name"] == "SeasonalNaive"
+            ]
+            prior_consecutive = 0
+            if past_runs and isinstance(past_runs[0].get("notes"), dict):
+                prior_consecutive = int(
+                    past_runs[0]["notes"].get("drift_details", {}).get("consecutive_drift_weeks", 0)
+                )
+
+            if cand_pts and base_pts:
+                drift_status = evaluate_drift(
+                    candidate_points=cand_pts,
+                    baseline_points=base_pts,
+                    prior_consecutive_drift_weeks=prior_consecutive,
+                    threshold=config.monitoring.drift_relative_wape_threshold,
+                    min_consecutive_weeks=config.monitoring.consecutive_drift_weeks_to_alert,
+                    window_days=config.monitoring.rolling_window_days,
+                    as_of_date=target_date,
+                )
+                if drift_status.drift_alert:
+                    print(f"[ANALYTICS] WARNING: {drift_status.message_en}")
+
         print(f"[ANALYTICS] Loaded {len(sales_rows)} sales records across shop.")
         print(
             "[ANALYTICS] Running model selection, readiness gates, and hierarchical reconciliation..."
@@ -288,6 +372,7 @@ def main(argv: list[str] | None = None) -> int:
             stock_rows=stock_rows,
             run_date=target_date,
             config=config,
+            drift_status=drift_status,
         )
 
         print(
@@ -296,6 +381,11 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(f"[ANALYTICS] Series summary: {payload.notes.get('series_counts', {})}")
         print(f"[ANALYTICS] Readiness summary: {payload.notes.get('readiness_summary', {})}")
+        if payload.notes.get("drift_alert"):
+            print(
+                f"[ANALYTICS] ALERT: Drift active. Display fallback model is "
+                f"{payload.notes.get('drift_details', {}).get('active_display_model', 'SeasonalNaive')}."
+            )
 
         if args.dry_run:
             print("[ANALYTICS] Dry run complete. Database write skipped.")
@@ -310,6 +400,88 @@ def main(argv: list[str] | None = None) -> int:
             )
         finally:
             conn.close()
+        return 0
+
+    if args.command == "check-drift":
+        if args.simulate:
+            print("[ANALYTICS] Running simulated multi-week drift and recovery timeline...")
+            results = simulate_drift_and_recovery_timeline()
+            header = f"{'Week':<6} | {'Model WAPE':<10} | {'Base WAPE':<10} | {'Ratio':<8} | {'Streak':<6} | {'Alert':<6} | {'Display Model':<15}"
+            print(header)
+            print("-" * len(header))
+            for i, r in enumerate(results, start=1):
+                print(
+                    f"{i:<6} | {r.model_wape:<10.2%} | {r.baseline_wape:<10.2%} | {r.relative_ratio:<8.2f} | {r.consecutive_drift_weeks:<6} | {str(r.drift_alert):<6} | {r.active_display_model:<15}"
+                )
+            print("\n[ANALYTICS] Simulation finished.")
+            return 0
+
+        print(f"[ANALYTICS] Querying forecast accuracy from {args.env} database...")
+        from lolys_analytics import db
+
+        conn = db.connect(db_url=args.db_url, env=args.env)
+        try:
+            acc_raw = db.fetch_forecast_accuracy(conn, series_type="shop")
+            past_runs = db.fetch_past_forecast_runs(conn, limit=5)
+        finally:
+            conn.close()
+
+        cand_pts = [
+            ForecastAccuracyPoint(
+                forecast_date=(
+                    r["forecast_date"]
+                    if isinstance(r["forecast_date"], dt.date)
+                    else dt.date.fromisoformat(str(r["forecast_date"]))
+                ),
+                predicted_units=float(r["predicted_units"]),
+                actual_units=float(r["actual_units"]),
+                model_name=r["model_name"],
+            )
+            for r in acc_raw
+            if r["model_name"] != "SeasonalNaive"
+        ]
+        base_pts = [
+            ForecastAccuracyPoint(
+                forecast_date=(
+                    r["forecast_date"]
+                    if isinstance(r["forecast_date"], dt.date)
+                    else dt.date.fromisoformat(str(r["forecast_date"]))
+                ),
+                predicted_units=float(r["predicted_units"]),
+                actual_units=float(r["actual_units"]),
+                model_name="SeasonalNaive",
+            )
+            for r in acc_raw
+            if r["model_name"] == "SeasonalNaive"
+        ]
+
+        prior_consecutive = 0
+        if past_runs and isinstance(past_runs[0].get("notes"), dict):
+            prior_consecutive = int(
+                past_runs[0]["notes"].get("drift_details", {}).get("consecutive_drift_weeks", 0)
+            )
+
+        if not cand_pts or not base_pts:
+            print("[ANALYTICS] Insufficient accuracy observations to evaluate drift.")
+            return 0
+
+        res = evaluate_drift(
+            candidate_points=cand_pts,
+            baseline_points=base_pts,
+            prior_consecutive_drift_weeks=prior_consecutive,
+            threshold=config.monitoring.drift_relative_wape_threshold,
+            min_consecutive_weeks=config.monitoring.consecutive_drift_weeks_to_alert,
+            window_days=config.monitoring.rolling_window_days,
+        )
+        print(f"[ANALYTICS] Candidate Model WAPE: {res.model_wape:.2%}")
+        print(f"[ANALYTICS] Baseline Model WAPE:  {res.baseline_wape:.2%}")
+        print(
+            f"[ANALYTICS] Relative Ratio:       {res.relative_ratio:.2f} (threshold: {1.0 + res.threshold:.2f})"
+        )
+        print(f"[ANALYTICS] Consecutive Weeks:    {res.consecutive_drift_weeks}")
+        print(f"[ANALYTICS] Drift Alert:          {res.drift_alert}")
+        print(f"[ANALYTICS] Active Display Model: {res.active_display_model}")
+        print(f"[ANALYTICS] Admin Notice:         {res.message_ar}")
         return 0
 
     return 0

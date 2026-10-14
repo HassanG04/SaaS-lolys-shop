@@ -67,6 +67,13 @@ class GlobalMLConfig:
 
 
 @dataclass(frozen=True)
+class MonitoringConfig:
+    rolling_window_days: int = 28
+    drift_relative_wape_threshold: float = 0.20
+    consecutive_drift_weeks_to_alert: int = 2
+
+
+@dataclass(frozen=True)
 class AnalyticsConfig:
     gates: GatesConfig
     reorder: ReorderConfig
@@ -74,6 +81,7 @@ class AnalyticsConfig:
     intervals: IntervalsConfig
     synthetic: SyntheticConfig
     global_ml: GlobalMLConfig = GlobalMLConfig()
+    monitoring: MonitoringConfig = MonitoringConfig()
 
 
 def get_default_config_path() -> Path:
@@ -109,6 +117,7 @@ def load_config(path: str | Path | None = None) -> AnalyticsConfig:
     intervals_data = data.get("intervals", {})
     synthetic_data = data.get("synthetic", {})
     global_ml_data = data.get("global_ml", {})
+    monitoring_data = data.get("monitoring", {})
 
     return AnalyticsConfig(
         gates=GatesConfig(
@@ -158,5 +167,14 @@ def load_config(path: str | Path | None = None) -> AnalyticsConfig:
             min_active_products=int(global_ml_data.get("min_active_products", 30)),
             min_beat_percentage=float(global_ml_data.get("min_beat_percentage", 0.05)),
             direct_horizons=tuple(global_ml_data.get("direct_horizons", (7, 14, 21, 28))),
+        ),
+        monitoring=MonitoringConfig(
+            rolling_window_days=int(monitoring_data.get("rolling_window_days", 28)),
+            drift_relative_wape_threshold=float(
+                monitoring_data.get("drift_relative_wape_threshold", 0.20)
+            ),
+            consecutive_drift_weeks_to_alert=int(
+                monitoring_data.get("consecutive_drift_weeks_to_alert", 2)
+            ),
         ),
     )

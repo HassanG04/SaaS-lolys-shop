@@ -55,3 +55,9 @@ min_history_days = 180
 min_active_products = 30
 min_beat_percentage = 0.05
 direct_horizons = [7, 14, 21, 28]
+
+[monitoring]
+# Weekly accuracy and drift monitoring (analytics-plan.md Section 9)
+rolling_window_days = 28
+drift_relative_wape_threshold = 0.20
+consecutive_drift_weeks_to_alert = 2
