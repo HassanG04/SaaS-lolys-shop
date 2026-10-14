@@ -261,3 +261,29 @@ Problems found:
   - Payment amendment was absent from all inventoried branches; competing approval implementations need reconciliation outside this no-feature-code task.
 Next action: Owner reviews the merge plan, merges PR15, then follows the recorded replay/verification steps for PR16-19. Do not merge payment branches yet.
 ```
+
+## Stable merge-day refresh after Anti-Gravity pause — 2026-10-14
+
+```yaml
+Current task: Finish the owner's merge-day inventory and plan; no feature work or merges.
+Completed:
+  - Owner confirmed Anti-Gravity paused. Saved its remaining security-test draft unchanged as 6d8fcbc and pushed its branch.
+  - Retained Anti-Gravity's intervening T-7.07 commit fb16222; earlier WIP ee22392 remains in its history.
+  - Refetched all remotes with pruning; inventory now covers 93 non-main branch names, 47 published, and six open PRs including documentation PR20.
+  - Every published local branch matches origin; both original working copies are clean.
+  - All six PRs passed remote checks at the captured heads; PR20's refresh must pass again at its updated head.
+  - Rehearsed PR20 at 15c9f2a in addition to PR15-19; replay preserved its exact tree.
+  - Held 40 payment branches and descendants, including the new security E2E draft.
+Files changed:
+  - docs/handoff/MERGE-PLAN.md
+  - .agent-state/project-progress.md
+  - Existing uncommitted e2e/security/security.spec.ts preserved on its own WIP branch, not implemented or repaired in this task.
+Tests executed:
+  - Secret scan before the final checkpoint: one changed file, no findings.
+  - Complete branch/PR coverage, owner-amendment byte comparison, documentation-only diff, formatting and roadmap checks.
+  - PR15-19 prior CI repair verification remains valid at unchanged heads; no database or unfinished E2E suite was executed.
+Problems found:
+  - Actual child rebases require the owner's preceding squash commit, so those actions remain pending rather than claiming future conflicts are already fixed.
+  - T-7.08 is incomplete and contains an unscoped local MFA-fixture deletion; isolate and review fixtures before future execution.
+Next action: Owner reviews PR15, then follows MERGE-PLAN.md for PR16-20. Payment branches remain held. Main unchanged.
+```
