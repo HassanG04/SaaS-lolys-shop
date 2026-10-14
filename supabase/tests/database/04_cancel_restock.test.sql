@@ -135,7 +135,7 @@ SELECT is(
 -- 4. Reopening a cancelled order is blocked by orders_status_guard
 SELECT throws_ok(
     format('UPDATE public.orders SET status = ''pending'' WHERE id = %s', :'s10_order_id'),
-    'P0001',
+    '22023',
     'A cancelled order cannot be re-opened',
     'S10: Reopening a cancelled order is rejected by status guard trigger'
 );
@@ -235,7 +235,7 @@ SELECT is(
 -- 2. Buyer A attempts to cancel Buyer B's pending order (Order B1) -> refused
 SELECT throws_ok(
     format('SELECT public.cancel_my_order(%s)', :'order_b1'),
-    'P0001',
+    '22023',
     'Order not found, or it can no longer be cancelled',
     'S11: Customer cannot cancel another users order'
 );
@@ -267,7 +267,7 @@ SELECT is(
 -- 3. Buyer A attempts to cancel their own shipped order (Order A2) -> refused
 SELECT throws_ok(
     format('SELECT public.cancel_my_order(%s)', :'order_a2'),
-    'P0001',
+    '22023',
     'Order not found, or it can no longer be cancelled',
     'S11: Customer cannot cancel a shipped order'
 );

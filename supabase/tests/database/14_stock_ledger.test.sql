@@ -88,6 +88,9 @@ SELECT is(
     'S29: Product stock decremented to 47 after order'
 );
 
+-- Switch to admin (aal2) to inspect stock_movements ledger (which is admin-only)
+SELECT tests.authenticate_as('admin_s29', 'aal2');
+
 -- 4. Order movement delta is -3
 SELECT is(
     (SELECT delta FROM public.stock_movements
@@ -132,6 +135,7 @@ SELECT is(
 -- 3. Cancel movement (reason = 'cancel')
 -- ============================================================================
 
+SELECT tests.authenticate_as('customer_s29');
 SELECT public.cancel_my_order(:s29_order_id);
 
 -- 9. Product stock restocked back to 50
@@ -140,6 +144,9 @@ SELECT is(
     50,
     'S29: Product stock restored to 50 on order cancellation'
 );
+
+-- Switch to admin (aal2) to inspect cancel movement in stock_movements
+SELECT tests.authenticate_as('admin_s29', 'aal2');
 
 -- 10. Cancel movement delta is +3
 SELECT is(
@@ -170,6 +177,7 @@ SELECT is(
 -- ============================================================================
 
 SELECT tests.authenticate_as('admin_s29', 'aal2');
+SELECT set_config('app.stock_reason', '', true);
 
 UPDATE public.products
    SET stock_quantity = 60
@@ -243,6 +251,7 @@ SELECT cmp_ok(
 );
 
 -- 21. Direct UPDATE on stock_movements is blocked by immutability trigger
+SELECT tests.authenticate_as_service_role();
 SELECT throws_ok(
     format($$UPDATE public.stock_movements SET delta = 999 WHERE product_id = %s$$, :s29_prod_id),
     '42501',

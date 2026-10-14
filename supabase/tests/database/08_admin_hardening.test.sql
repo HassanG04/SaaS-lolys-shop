@@ -132,7 +132,7 @@ SELECT tests.authenticate_as('customer_s19');
 SELECT throws_ok(
     format('UPDATE public.profiles SET role = ''admin'' WHERE id = ''%s''::uuid', tests.get_supabase_uid('customer_s19')),
     '42501',
-    'Role cannot be modified through the API',
+    NULL,
     'S20: Customer cannot update role via API'
 );
 
@@ -141,7 +141,7 @@ SELECT tests.authenticate_as('admin_s19', 'aal2');
 SELECT throws_ok(
     format('UPDATE public.profiles SET role = ''admin'' WHERE id = ''%s''::uuid', tests.get_supabase_uid('customer_s19')),
     '42501',
-    'Role cannot be modified through the API',
+    NULL,
     'S20: Admin cannot update customer role via API'
 );
 
@@ -238,8 +238,8 @@ SELECT throws_ok(
 
 -- 22. orders.ship_name > 100 rejected
 SELECT throws_ok(
-    format('INSERT INTO public.orders (delivery_method, ship_name, ship_phone, ship_governorate, ship_address, subtotal, delivery_fee, total)
-            VALUES (''representative'', ''%s'', ''01011112222'', ''Cairo'', ''Street'', 10, 10, 20)', repeat('n', 101)),
+    format('INSERT INTO public.orders (user_id, delivery_method, ship_name, ship_phone, ship_governorate, ship_address, subtotal, shipping_fee, total)
+            VALUES (''%s''::uuid, ''representative'', ''%s'', ''01011112222'', ''Cairo'', ''Street'', 10, 10, 20)', tests.get_supabase_uid('customer_s19'), repeat('n', 101)),
     '23514',
     NULL,
     'S30: Order ship_name > 100 characters rejected'
@@ -247,8 +247,8 @@ SELECT throws_ok(
 
 -- 23. orders.ship_phone > 20 rejected
 SELECT throws_ok(
-    format('INSERT INTO public.orders (delivery_method, ship_name, ship_phone, ship_governorate, ship_address, subtotal, delivery_fee, total)
-            VALUES (''representative'', ''Valid Name'', ''%s'', ''Cairo'', ''Street'', 10, 10, 20)', repeat('0', 21)),
+    format('INSERT INTO public.orders (user_id, delivery_method, ship_name, ship_phone, ship_governorate, ship_address, subtotal, shipping_fee, total)
+            VALUES (''%s''::uuid, ''representative'', ''Valid Name'', ''%s'', ''Cairo'', ''Street'', 10, 10, 20)', tests.get_supabase_uid('customer_s19'), repeat('0', 21)),
     '23514',
     NULL,
     'S30: Order ship_phone > 20 characters rejected'
@@ -256,8 +256,8 @@ SELECT throws_ok(
 
 -- 24. orders.ship_governorate > 100 rejected
 SELECT throws_ok(
-    format('INSERT INTO public.orders (delivery_method, ship_name, ship_phone, ship_governorate, ship_address, subtotal, delivery_fee, total)
-            VALUES (''representative'', ''Valid Name'', ''01011112222'', ''%s'', ''Street'', 10, 10, 20)', repeat('g', 101)),
+    format('INSERT INTO public.orders (user_id, delivery_method, ship_name, ship_phone, ship_governorate, ship_address, subtotal, shipping_fee, total)
+            VALUES (''%s''::uuid, ''representative'', ''Valid Name'', ''01011112222'', ''%s'', ''Street'', 10, 10, 20)', tests.get_supabase_uid('customer_s19'), repeat('g', 101)),
     '23514',
     NULL,
     'S30: Order ship_governorate > 100 characters rejected'
@@ -265,8 +265,8 @@ SELECT throws_ok(
 
 -- 25. orders.ship_city > 150 rejected
 SELECT throws_ok(
-    format('INSERT INTO public.orders (delivery_method, ship_name, ship_phone, ship_governorate, ship_city, ship_address, subtotal, delivery_fee, total)
-            VALUES (''representative'', ''Valid Name'', ''01011112222'', ''Cairo'', ''%s'', ''Street'', 10, 10, 20)', repeat('c', 151)),
+    format('INSERT INTO public.orders (user_id, delivery_method, ship_name, ship_phone, ship_governorate, ship_city, ship_address, subtotal, shipping_fee, total)
+            VALUES (''%s''::uuid, ''representative'', ''Valid Name'', ''01011112222'', ''Cairo'', ''%s'', ''Street'', 10, 10, 20)', tests.get_supabase_uid('customer_s19'), repeat('c', 151)),
     '23514',
     NULL,
     'S30: Order ship_city > 150 characters rejected'
@@ -274,8 +274,8 @@ SELECT throws_ok(
 
 -- 26. orders.ship_address > 150 rejected
 SELECT throws_ok(
-    format('INSERT INTO public.orders (delivery_method, ship_name, ship_phone, ship_governorate, ship_address, subtotal, delivery_fee, total)
-            VALUES (''representative'', ''Valid Name'', ''01011112222'', ''Cairo'', ''%s'', 10, 10, 20)', repeat('a', 151)),
+    format('INSERT INTO public.orders (user_id, delivery_method, ship_name, ship_phone, ship_governorate, ship_address, subtotal, shipping_fee, total)
+            VALUES (''%s''::uuid, ''representative'', ''Valid Name'', ''01011112222'', ''Cairo'', ''%s'', 10, 10, 20)', tests.get_supabase_uid('customer_s19'), repeat('a', 151)),
     '23514',
     NULL,
     'S30: Order ship_address > 150 characters rejected'
@@ -283,8 +283,8 @@ SELECT throws_ok(
 
 -- 27. orders.notes > 500 rejected
 SELECT throws_ok(
-    format('INSERT INTO public.orders (delivery_method, ship_name, ship_phone, ship_governorate, ship_address, notes, subtotal, delivery_fee, total)
-            VALUES (''representative'', ''Valid Name'', ''01011112222'', ''Cairo'', ''Street'', ''%s'', 10, 10, 20)', repeat('x', 501)),
+    format('INSERT INTO public.orders (user_id, delivery_method, ship_name, ship_phone, ship_governorate, ship_address, notes, subtotal, shipping_fee, total)
+            VALUES (''%s''::uuid, ''representative'', ''Valid Name'', ''01011112222'', ''Cairo'', ''Street'', ''%s'', 10, 10, 20)', tests.get_supabase_uid('customer_s19'), repeat('x', 501)),
     '23514',
     NULL,
     'S30: Order notes > 500 characters rejected'

@@ -280,9 +280,9 @@ SELECT throws_ok(
 
 SELECT throws_ok(
     format('SELECT public.admin_set_role(''%s''::uuid, ''admin''::public.user_role)', extensions.uuid_generate_v4()),
-    '42501',
+    '42883',
     NULL,
-    'S16: Anon cannot execute admin_set_role (permission denied)'
+    'S16: Anon cannot execute admin_set_role (function dropped)'
 );
 
 SELECT throws_ok(

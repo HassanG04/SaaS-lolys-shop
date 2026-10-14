@@ -58,7 +58,7 @@ INSERT INTO public.products (
     'S26 Never Ordered Product',
     'منتج غير مطلوب',
     150.00,
-    10,
+    0,
     true
 ) RETURNING id AS s26_prod_never_ordered \gset
 
@@ -99,6 +99,8 @@ SELECT is(
 -- ============================================================================
 -- 2. Image path pattern validation
 -- ============================================================================
+
+SELECT tests.authenticate_as('admin_s26', 'aal2');
 
 -- 4. Full URL in categories.image_url is rejected (23514)
 SELECT throws_ok(
@@ -209,7 +211,7 @@ SELECT tests.authenticate_as('admin_s26', 'aal1');
 SELECT throws_ok(
     format($$SELECT public.admin_delete_product(%s)$$, :s26_prod_never_ordered),
     '42501',
-    'Two-factor authentication required',
+    'Two-factor authentication required for admin actions',
     'S26: Admin at aal1 calling admin_delete_product raises ADM-002'
 );
 
@@ -264,7 +266,7 @@ SELECT tests.authenticate_as('admin_s26', 'aal1');
 SELECT throws_ok(
     format($$SELECT public.admin_delete_category(%s)$$, :s26_cat_a),
     '42501',
-    'Two-factor authentication required',
+    'Two-factor authentication required for admin actions',
     'S26: Admin at aal1 calling admin_delete_category raises ADM-002'
 );
 

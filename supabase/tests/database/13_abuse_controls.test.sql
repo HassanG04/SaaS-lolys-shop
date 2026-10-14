@@ -135,7 +135,7 @@ SELECT throws_ok(
         jsonb_build_object('name', 'Ali', 'phone', '01011110027', 'governorate_id', 1, 'address', 'Addr 4')
     )$$, :s27_product_id),
     '22023',
-    'Too many pending orders',
+    'Pending orders limit reached',
     'S27: 4th pending order rejected with ORD-010'
 );
 
@@ -215,9 +215,11 @@ SELECT throws_ok(
 );
 
 -- 17. After window expires, count resets and call succeeds again
+SELECT tests.authenticate_as_service_role();
 UPDATE public.rate_limits
    SET window_start = now() - interval '2 minutes'
  WHERE key = tests.get_supabase_uid('customer_s27')::text || ':test_rate_action';
+SELECT tests.authenticate_as('customer_s27');
 
 SELECT lives_ok(
     $$SELECT public.check_rate_limit('test_rate_action', 3, interval '1 minute')$$,

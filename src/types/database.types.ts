@@ -328,7 +328,7 @@ isOneToOne: false
 "place_order":
 { Args: { "p_delivery_method": Database["public"]['Enums']["delivery_method"],"p_items": Json,"p_payment_method": Database["public"]['Enums']["payment_method"],"p_ship": Json }; Returns: number
                            } |
-{ Args: { "p_delivery_method": Database["public"]['Enums']["delivery_method"],"p_governorate_id": number,"p_items": Json,"p_notes"?: string,"p_ship_address": string,"p_ship_city": string,"p_ship_name": string,"p_ship_phone": string }; Returns: number
+{ Args: { "p_delivery_method": Database["public"]['Enums']["delivery_method"],"p_governorate_id": number,"p_items": Json,"p_notes"?: string,"p_ship_address"?: string,"p_ship_city"?: string,"p_ship_name": string,"p_ship_phone": string }; Returns: number
                            },
 "require_admin":
 { Args: Record<PropertyKey, never>; Returns: undefined

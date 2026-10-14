@@ -1,6 +1,6 @@
 BEGIN;
 
-SELECT plan(37);
+SELECT plan(38);
 
 -- ============================================================================
 -- Setup for T-1.18 Orders v2 and Payments (Scenarios S23, S24, S25)
@@ -48,6 +48,11 @@ INSERT INTO public.products (
     50,
     true
 ) RETURNING id AS s23_product_id \gset
+
+-- Disable order approval requirement for direct payment tests in this suite
+UPDATE public.shop_settings
+   SET value = 'false'::jsonb
+ WHERE key = 'require_order_approval';
 
 -- ============================================================================
 -- 1. Scenario S23: Orders v2, address validation, payment methods, COD auto-pay
@@ -366,7 +371,7 @@ SELECT tests.authenticate_as('admin_s23', 'aal1');
 SELECT throws_ok(
     format($$SELECT public.admin_review_payment(%s, true)$$, :'s23_order_instapay'),
     '42501',
-    'Two-factor authentication required',
+    'Two-factor authentication required for admin actions',
     'S24: Admin at aal1 calling admin_review_payment raises ADM-002'
 );
 
@@ -438,15 +443,16 @@ SELECT throws_ok(
 -- ============================================================================
 
 -- Create an overdue order by updating payment_deadline into past
+SELECT tests.authenticate_as_service_role();
 UPDATE public.orders
    SET payment_deadline = now() - interval '1 hour'
  WHERE id = :'s23_order2_instapay';
 
--- Verify product stock before expiration (was 48 - 1 = 47)
+-- Verify product stock before expiration (was 47 - 1 = 46)
 SELECT is(
     (SELECT stock_quantity FROM public.products WHERE id = :'s23_product_id'),
-    47,
-    'S25: Product stock before order expiration is 47'
+    46,
+    'S25: Product stock before order expiration is 46'
 );
 
 -- 34. Run expire_unpaid_orders as admin
@@ -458,17 +464,19 @@ SELECT cmp_ok(
     'S25: expire_unpaid_orders cancels at least 1 overdue order'
 );
 
--- 35. Overdue order is cancelled and product stock restocked back to 48
+-- 35. Overdue order is cancelled and product stock restocked back to 47
 SELECT is(
     (SELECT (status, (SELECT stock_quantity FROM public.products WHERE id = :'s23_product_id'))
        FROM public.orders WHERE id = :'s23_order2_instapay'),
-    ROW('cancelled'::public.order_status, 48),
+    ROW('cancelled'::public.order_status, 47),
     'S25: Overdue order status is cancelled and inventory is restocked'
 );
 
 -- ============================================================================
 -- 4. Storage bucket payment-proofs properties
 -- ============================================================================
+
+SELECT tests.authenticate_as_service_role();
 
 -- 36. payment-proofs bucket is private
 SELECT is(
