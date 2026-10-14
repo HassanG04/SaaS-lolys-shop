@@ -3,8 +3,9 @@
 Updated 2026-10-14 (Africa/Cairo). Active: Anti-Gravity, completed T-8.11 (Operations runbook).
 
 ```yaml
-Current task: T-1.11: Staging Supabase project (Phase 1, lane C, size S)
+Current task: T-1.13: Production Supabase project (Phase 1, lane C, size S)
 Completed:
+  - T-1.11: Created staging Supabase project shop-staging. Configured GitHub Actions repository secrets SUPABASE_ACCESS_TOKEN, STAGING_PROJECT_REF, and STAGING_DB_PASSWORD. Added Cloudflare Pages Preview environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.
   - T-0.11: Created Cloudflare Pages project connected to HassanG04/SaaS_Accessories Git repo with Vite framework preset, build command npm run build, output dist, production branch main, and preview deployments enabled. Initial deployment published to https://saas-accessories.pages.dev. Phase 0 is 100% complete (23/23 tasks).
   - T-0.10: Configured GitHub Repository Ruleset on main requiring pull requests (1 approval, stale dismissal, Code Owners review, conversation resolution), passing CI checks (static, unit, build, roadmap, secrets, db, e2e, sast), disallowing deletions and force pushes, with empty bypass list. Repository converted to public to enable full ruleset enforcement under GitHub Free plan. Direct push to main rejected with GH013 repository rule violation.
   - T-0.13: Enabled GitHub repository security settings under Advanced Security: secret scanning active, push protection enabled, Dependabot alerts and security updates enabled, private vulnerability reporting enabled, Code Owners review enforced via main ruleset, and account 2FA verified.

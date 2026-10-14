@@ -526,7 +526,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:reset && npm run db:test`
 
 #### T-1.11: Staging Supabase project
-`status: todo` `owner: human` `needs: T-0.11` `size: S`
+`status: done` `owner: human` `needs: T-0.11` `size: S`
 - **Do:** Create the second free Supabase project (`shop-staging`) and note its project ref. Add GitHub secrets `SUPABASE_ACCESS_TOKEN`, `STAGING_PROJECT_REF`, `STAGING_DB_PASSWORD`. Set the Cloudflare **Preview** environment variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to the staging values.
 - **Done when:** the secrets and variables exist (names are listed in `docs/runbooks/deploy-db.md`, never the values).
 - **Verify:** `db-staging.yml` runs green (after T-1.12)
@@ -1380,6 +1380,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-14 | T-0.10 | Owner / Anti-Gravity | Configured GitHub Repository Ruleset on main requiring pull requests (1 approval, stale dismissal, Code Owners review, conversation resolution), passing CI checks (static, unit, build, roadmap, secrets, db, e2e, sast), disallowing deletions and force pushes, with empty bypass list. Repository converted to public to enable full ruleset enforcement under GitHub Free plan. Direct push to main rejected with GH013 repository rule violation. | verified |
 | 2026-10-14 | T-0.13 | Owner / Anti-Gravity | Enabled GitHub repository security settings under Advanced Security: secret scanning active, push protection enabled, Dependabot alerts and security updates enabled, private vulnerability reporting enabled, Code Owners review enforced via main ruleset, and account 2FA verified. | verified |
 | 2026-10-14 | T-0.11 | Owner / Anti-Gravity | Created Cloudflare Pages project connected to HassanG04/SaaS_Accessories Git repo with Vite framework preset, build command npm run build, output dist, production branch main, and preview deployments enabled. Initial deployment published to https://saas-accessories.pages.dev. | verified |
+| 2026-10-14 | T-1.11 | Owner / Anti-Gravity | Created staging Supabase project shop-staging. Configured GitHub Actions repository secrets SUPABASE_ACCESS_TOKEN, STAGING_PROJECT_REF, and STAGING_DB_PASSWORD. Added Cloudflare Pages Preview environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. | verified |
 
 ### Open questions (agents add rows; the owner answers)
 
