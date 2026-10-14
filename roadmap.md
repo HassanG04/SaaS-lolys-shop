@@ -986,7 +986,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ### Phase 9: AI analytics
 
 #### T-9.01: Analytics database foundation
-`status: todo` `owner: agent` `needs: T-1.21, T-1.18, T-1.09` `size: L`
+`status: done` `owner: agent` `needs: T-1.21, T-1.18, T-1.09` `size: L`
 - **Do:** Migration (S31). Schema `analytics` with views `sales_daily` and `stock_daily`; tables `calendar`, `forecast_runs`, `sales_forecasts`, `forecast_metrics`, `basket_pairs`, `cohort_retention`; view `forecast_accuracy`. Roles `analytics_reader` and `analytics_writer` with no access to `public` tables. No personal data in any object. The admin UI reads results only through admin-only functions in `public` (such as `admin_get_forecasts`), never by exposing the `analytics` schema. Record the CI connection method for the restricted roles in an ADR (verify what Supabase supports).
 - **Done when:** pgTAP proves the role boundaries; the views return correct sums for the seed data; the `analytics` schema is not reachable through the REST API.
 - **Verify:** `npm run db:test`
@@ -1382,6 +1382,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-14 | T-0.11 | Owner / Anti-Gravity | Created Cloudflare Pages project connected to HassanG04/SaaS_Accessories Git repo with Vite framework preset, build command npm run build, output dist, production branch main, and preview deployments enabled. Initial deployment published to https://saas-accessories.pages.dev. | verified |
 | 2026-10-14 | T-1.11 | Owner / Anti-Gravity | Created staging Supabase project shop-staging. Configured GitHub Actions repository secrets SUPABASE_ACCESS_TOKEN, STAGING_PROJECT_REF, and STAGING_DB_PASSWORD. Added Cloudflare Pages Preview environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. | verified |
 | 2026-10-14 | T-1.13 | Owner / Anti-Gravity | Configured production Supabase project Lolys. Added GitHub Actions repository secrets PRODUCTION_PROJECT_REF, PRODUCTION_DB_PASSWORD, PRODUCTION_URL, and PRODUCTION_ANON_KEY. Configured Cloudflare Pages Production environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. Phase 1 is 100% complete (23/23 tasks). | verified |
+| 2026-10-14 | T-9.01 | Anti-Gravity | Implemented analytics database foundation in supabase/migrations/20261014230000_analytics_foundation.sql: analytics schema with aggregate views sales_daily and stock_daily, tables calendar (seeded 2026-2028 with Egyptian & Hijri events), forecast_runs, sales_forecasts, forecast_metrics, basket_pairs, cohort_retention, and view forecast_accuracy; restricted database roles analytics_reader and analytics_writer with zero public table access (Scenario S31, zero PII); public admin functions admin_get_forecasts, admin_get_reorder_list, admin_get_analytics_insights (guarded by require_admin at AAL2); authored ADR-0003 in docs/adr/0003-analytics-ci-connection.md; 37 pgTAP assertions in 17_analytics_foundation.test.sql pass (475 total db tests pass); regenerated TypeScript types; full npm run verify passes cleanly. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 
@@ -1396,3 +1397,4 @@ What gets easier, what gets harder, what to watch.
 |---|---|---|
 | 0001 | Stack and versions | accepted; OD-001 approved by owner |
 | 0002 | Bilingual interface | accepted under OD-003, recorded in Anti-Gravity handover |
+| 0003 | Analytics CI connection method for restricted roles | accepted (T-9.01) |

@@ -3,8 +3,9 @@
 Updated 2026-10-14 (Africa/Cairo). Active: Anti-Gravity, completed T-8.11 (Operations runbook).
 
 ```yaml
-Current task: T-9.01: Analytics database foundation (Phase 9, lane A, size L)
+Current task: T-9.02: Analytics Python project setup and synthetic data generator (Phase 9, lane A, size M)
 Completed:
+  - T-9.01: Implemented analytics database foundation in supabase/migrations/20261014230000_analytics_foundation.sql: analytics schema with aggregate views sales_daily and stock_daily, tables calendar (seeded 2026-2028 with Egyptian & Hijri events), forecast_runs, sales_forecasts, forecast_metrics, basket_pairs, cohort_retention, and view forecast_accuracy; restricted database roles analytics_reader and analytics_writer with zero public table access (Scenario S31, zero PII); public admin functions admin_get_forecasts, admin_get_reorder_list, admin_get_analytics_insights (guarded by require_admin at AAL2); authored ADR-0003 in docs/adr/0003-analytics-ci-connection.md; 37 pgTAP assertions in 17_analytics_foundation.test.sql pass (475 total db tests pass); regenerated TypeScript types; full npm run verify passes cleanly.
   - T-1.13: Configured production Supabase project Lolys. Added GitHub Actions repository secrets PRODUCTION_PROJECT_REF, PRODUCTION_DB_PASSWORD, PRODUCTION_URL, and PRODUCTION_ANON_KEY. Configured Cloudflare Pages Production environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. Phase 1 is 100% complete (23/23 tasks).
   - T-1.11: Created staging Supabase project shop-staging. Configured GitHub Actions repository secrets SUPABASE_ACCESS_TOKEN, STAGING_PROJECT_REF, and STAGING_DB_PASSWORD. Added Cloudflare Pages Preview environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.
   - T-0.11: Created Cloudflare Pages project connected to HassanG04/SaaS_Accessories Git repo with Vite framework preset, build command npm run build, output dist, production branch main, and preview deployments enabled. Initial deployment published to https://saas-accessories.pages.dev. Phase 0 is 100% complete (23/23 tasks).
