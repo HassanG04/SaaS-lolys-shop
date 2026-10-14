@@ -16,8 +16,8 @@ evidence are in shared progress and `docs/handoff/DATABASE-INTEGRATION.md`.
 
 ## Remaining
 
-Complete remote CI, record exact-head results and publish/update
-the integration PR. Main requires owner review plus a real e2e job still to be
+Complete remote CI and record exact-head results on
+https://github.com/HassanG04/SaaS_Accessories/pull/26. Main requires owner review plus a real e2e job still to be
 integrated. Do not merge, weaken that rule, or import held payment branches.
 
 ## Current Files

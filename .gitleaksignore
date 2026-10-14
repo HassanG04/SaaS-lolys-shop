@@ -8,3 +8,7 @@ d334e5738906cfaea4a859c0e27eddf0fe711c28:src/features/admin/admin.test.tsx:gener
 # Local Supabase CI public anon JWT, issuer supabase-demo, localhost endpoint.
 # Reviewed without printing token; this exact historical test occurrence only.
 b18aa57c7d0264f0840f3c4e65df7d64d6248ad7:.github/workflows/ci.yml:jwt:178
+# Historical performance fixtures: public local Supabase demo JWTs (role anon,
+# issuer supabase-demo); the test calls 127.0.0.1. Exact occurrences only.
+7f05c3c5d644d5c4914e6672d16b183c0af6839f:perf/config.js:jwt:50
+7f05c3c5d644d5c4914e6672d16b183c0af6839f:scripts/perf-scripts.test.mjs:jwt:114

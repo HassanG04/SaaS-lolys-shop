@@ -3,6 +3,7 @@
 ## Scope and source
 
 Branch: `agent/T-1.09-database-integration`, based on main `4dfb26c`.
+Review: [PR 26](https://github.com/HassanG04/SaaS_Accessories/pull/26).
 Extracted only database, types, tests and database runbooks from Anti-Gravity's
 published history through `cfac9d5` (T-1.16). The source CI branch `53f5110`
 also contains older application/auth changes and duplicate guards, so its whole
@@ -52,6 +53,10 @@ Anti-Gravity's active checkout are preserved. No cloud database was changed.
 - Full npm run verify passed: 57 application and 114 tooling tests, lint,
   formatting, strict TypeScript, production build and migration/token/secret/bundle guards.
   Remote CI is recorded separately in the PR.
+- The first remote history scan found two JWT occurrences in Anti-Gravity's
+  performance-test commit `7f05c3`. Both are local public demo keys (`anon`,
+  `supabase-demo`), reviewed without printing values. Only their exact
+  commit/file/rule/line fingerprints were added to `.gitleaksignore`.
 
 ## Merge and follow-up gates
 
