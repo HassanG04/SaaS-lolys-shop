@@ -232,3 +232,84 @@ for provenance; do not restore it over the newer implementation.
 ## Merge-day CI repair — 2026-10-14
 
 PR19's latest remote SAST job failed before scanning: setup-node could not execute the downloaded Node24 binary inside the scanner container (ENOENT). The workflow now runs Node on the Ubuntu host and invokes the unchanged digest-pinned Semgrep image through a read-only Docker wrapper. Both planted-violation tests and maintained/project scans remain mandatory. This is a CI compatibility repair, with no feature or scanner-rule changes. Remote rerun is required before merge; previous green jobs are not proof for the new head.
+
+## Merge-day preparation — 2026-10-14
+
+```yaml
+Current task: Merge-day preparation requested by owner; no feature code.
+Completed:
+  - Fetched all remotes with pruning; inventoried 91 existing local branch names, 45 published branches and five open PRs.
+  - Pushed WIP checkpoints ee22392 (security workflow, 8 files) and 745c787 (approval flow, 25 files).
+  - Fixed PR19 Node/scanner runtime boundary; retained pinned Semgrep image and mandatory rejection tests.
+  - Reviewed one historical localhost public anon-key finding; added an exact fingerprint exception to PR18 and PR19. New/privileged secrets remain blocked.
+  - PR15, PR16, PR17, PR18 and PR19 have green remote checks at the heads recorded in MERGE-PLAN.md.
+  - Rehearsed squash-dependent rebases in a detached checkout; all five resulting trees exactly equal their source PR heads.
+  - Restored the owner's payment amendment verbatim as docs/spec/payment-flow-change.md and held 39 payment branches/descendants.
+Files changed:
+  - docs/handoff/MERGE-PLAN.md
+  - docs/spec/payment-flow-change.md
+  - .agent-state/project-progress.md
+  - Existing PR18/19 fixes are recorded separately in the merge plan; no application feature changes.
+Tests executed:
+  - Full npm run verify for CI repair: 55 application and 111 tooling tests passed, build and guards passed.
+  - Real Gitleaks rejection/history, environment-file refusal and unavailable-scanner tests: all 3 passed; redacted full-history scan passed.
+  - GitHub current-head CI: all required jobs passed on PR15-19, including SAST and secrets on PR19 at 819ba69.
+  - Five dependency replay rehearsals: clean and tree-identical.
+Problems found:
+  - Squash-only policy means each child must be replayed after the preceding owner merge; the future main commit does not exist yet.
+  - Many branches have no PR or remote CI. A task marked done is not proof of merge readiness.
+  - Payment amendment was absent from all inventoried branches; competing approval implementations need reconciliation outside this no-feature-code task.
+Next action: Owner reviews the merge plan, merges PR15, then follows the recorded replay/verification steps for PR16-19. Do not merge payment branches yet.
+```
+
+## Stable merge-day refresh after Anti-Gravity pause — 2026-10-14
+
+```yaml
+Current task: Finish the owner's merge-day inventory and plan; no feature work or merges.
+Completed:
+  - Owner confirmed Anti-Gravity paused. Saved its remaining security-test draft unchanged as 6d8fcbc and pushed its branch.
+  - Retained Anti-Gravity's intervening T-7.07 commit fb16222; earlier WIP ee22392 remains in its history.
+  - Refetched all remotes with pruning; inventory now covers 93 non-main branch names, 47 published, and six open PRs including documentation PR20.
+  - Every published local branch matches origin; both original working copies are clean.
+  - All six PRs passed remote checks at the captured heads; PR20's refresh must pass again at its updated head.
+  - Rehearsed PR20 at 15c9f2a in addition to PR15-19; replay preserved its exact tree.
+  - Held 40 payment branches and descendants, including the new security E2E draft.
+Files changed:
+  - docs/handoff/MERGE-PLAN.md
+  - .agent-state/project-progress.md
+  - Existing uncommitted e2e/security/security.spec.ts preserved on its own WIP branch, not implemented or repaired in this task.
+Tests executed:
+  - Secret scan before the final checkpoint: one changed file, no findings.
+  - Complete branch/PR coverage, owner-amendment byte comparison, documentation-only diff, formatting and roadmap checks.
+  - PR15-19 prior CI repair verification remains valid at unchanged heads; no database or unfinished E2E suite was executed.
+Problems found:
+  - Actual child rebases require the owner's preceding squash commit, so those actions remain pending rather than claiming future conflicts are already fixed.
+  - T-7.08 is incomplete and contains an unscoped local MFA-fixture deletion; isolate and review fixtures before future execution.
+Next action: Owner reviews PR15, then follows MERGE-PLAN.md for PR16-20. Payment branches remain held. Main unchanged.
+```
+
+## Owner-approved merge execution — 2026-10-14
+
+```yaml
+Current task: Execute the owner-approved PR15-20 merge sequence and cleanup; no feature implementation.
+Completed:
+  - Owner explicitly approved the recommended sequence after the preparation-only snapshot.
+  - PR15-19 squash-merged into main after current-head checks passed; each merged tree equals its verified source tree.
+  - PR16-19 rebased against the actual preceding squash with recorded cutoffs and exact force-with-lease pushes; all source trees preserved.
+  - Preserved all roadmap statuses and the union of prior shared changes; no lockfile, translation or migration conflict needed resolution.
+  - PR20 delivers the payment amendment, historical inventory and new execution record; its live PR records final checks, merge SHA and cleanup.
+Files changed:
+  - docs/handoff/MERGE-RESULTS.md
+  - docs/handoff/MERGE-PLAN.md
+  - .agent-state/project-progress.md
+Tests executed:
+  - Full local verify after each PR16-19 rebase: 161 tests for PR16; 166 each for PR17-19, plus build, lint, format, type checks and guards.
+  - All required fresh remote checks passed before each merge; real Gitleaks and Semgrep checks remained mandatory where present.
+  - Each GitHub squash commit's tree matched the verified PR head exactly.
+  - PR20 final verification is recorded in its live description; no shared database or unfinished security E2E execution.
+Problems found:
+  - Dependabot opened PR21-25 while the security configuration reached main; three have failing checks and none is in this approved merge sequence.
+  - Remaining development histories diverge before the earlier foundation squash and need dedicated integration PRs.
+  - Payment hold remains on 40 total branches, including 32 published branches. Nine other published development branches still need dependency preparation and remote checks.
+Next action: Finish PR20 checks and cleanup in this approved sequence, then use its live merged state and MERGE-RESULTS.md as the handoff. Next eligible preparation is the existing database foundation and T-1.09 CI chain; no payment merges or deployment.
+```
