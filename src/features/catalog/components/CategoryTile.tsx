@@ -24,24 +24,21 @@ export function CategoryTile({ category, className = '' }: CategoryTileProps) {
   return (
     <Link
       to={`/category/${category.slug}`}
-      className={`group relative block aspect-square w-full overflow-hidden rounded-card border border-border bg-surface transition-shadow hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${className}`}
+      className={`catalog-category group block w-full overflow-hidden rounded-card border border-border bg-surface p-2 sm:p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${className}`}
       data-testid={`category-tile-${category.slug}`}
       aria-label={displayName}
     >
-      {/* Full-bleed background image */}
+      {/* Square photography suits jewelry and homeware equally. */}
       <ProductImage
         src={category.image_url}
         alt={displayName}
         aspectRatio="square"
-        className="size-full rounded-card"
-        imageClassName="size-full rounded-card object-cover transition-transform duration-500 group-hover:scale-105"
+        className="rounded-image"
       />
 
-      {/* Floating label chip */}
-      <div className="absolute inset-x-3 bottom-3 flex items-center justify-center sm:inset-x-4 sm:bottom-4">
-        <span className="inline-flex max-w-full truncate rounded-pill border border-border bg-surface/90 px-4 py-1.5 text-small font-bold text-text shadow-pill backdrop-blur-sm transition-colors group-hover:bg-brand group-hover:text-brand-contrast">
-          {displayName}
-        </span>
+      {/* Keep the label readable independently of the photograph. */}
+      <div className="flex min-h-14 items-center justify-center px-1 py-3 text-center">
+        <span className="text-small font-semibold text-brand">{displayName}</span>
       </div>
     </Link>
   )

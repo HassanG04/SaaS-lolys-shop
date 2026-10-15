@@ -6,21 +6,15 @@ import {
   useBestSellers,
   useBrowseProducts,
   ProductCard,
-  ProductImage,
   CategoryTile,
   type ProductSortOption,
 } from '@/features/catalog'
 import { usePublicSettings } from '@/features/settings'
-import {
-  Sparkle,
-  RibbonBow,
-  RibbonDivider,
-  ArchFrame,
-  PearlOrnament,
-} from '@/components/ui/ornaments'
+import { Sparkle, RibbonBow, RibbonDivider, PearlOrnament } from '@/components/ui/ornaments'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorPanel } from '@/components/ui/ErrorPanel'
-import { Skeleton } from '@/components/ui/Skeleton'
+import { CatalogSkeleton } from '@/features/catalog/components/CatalogSkeleton'
+import { StorefrontHero } from '@/features/catalog/components/StorefrontHero'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 
@@ -32,7 +26,7 @@ export default function HomePage() {
     isLoading: isCategoriesLoading,
     error: categoriesError,
   } = useCategories()
-  const { data: bestSellers = [], isLoading: isBestSellersLoading } = useBestSellers(4)
+  const { data: bestSellers = [] } = useBestSellers(4)
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [sortBy, setSortBy] = useState<ProductSortOption>('best_sellers')
@@ -50,18 +44,16 @@ export default function HomePage() {
   })
 
   // Dynamic public settings with graceful copy deck fallbacks
-  const salePercent = typeof settings?.sale_percent === 'number' ? settings.sale_percent : 50
+  const salePercent = typeof settings?.sale_percent === 'number' ? settings.sale_percent : 0
 
   const heroTitle =
-    (lang === 'ar' ? (settings?.hero_title_ar as string) : undefined) ||
-    t('hero.title', { n: salePercent })
+    (lang === 'ar' ? (settings?.hero_title_ar as string) : undefined) || t.hero.cozyTitle
 
   const heroSubtitle =
     (lang === 'ar' ? (settings?.hero_subtitle_ar as string) : undefined) || t.hero.subtitle
 
   const returnsText =
-    (lang === 'ar' ? (settings?.returns_text_ar as string) : undefined) ||
-    'إمكانية الاسترجاع أو الاستبدال خلال 14 يوماً من الاستلام بشرط أن تكون المنتجات بحالتها الأصلية.'
+    (lang === 'ar' ? (settings?.returns_text_ar as string) : undefined) || t.hero.returnsSummary
 
   const handleCategorySelect = (slug: string) => {
     setSelectedCategory(slug)
@@ -83,95 +75,22 @@ export default function HomePage() {
   }, [categories, selectedCategory])
 
   return (
-    <div className="space-y-16 pb-16">
-      {/* 1. HERO SECTION */}
-      <section
-        aria-label="Hero"
-        className="relative overflow-hidden rounded-card border border-border bg-surface p-6 sm:p-10 lg:p-12 shadow-card"
-      >
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
-          {/* Hero text & CTA */}
-          <div className="max-w-xl space-y-6 text-center lg:text-start">
-            {/* Sale Banner tag */}
-            <div className="inline-flex items-center gap-2 rounded-pill bg-surface-tint border border-border px-4 py-1.5 text-caption font-semibold text-brand shadow-pill">
-              <Sparkle className="size-4 text-brand" />
-              <span>{t('hero.title', { n: salePercent })}</span>
-              <RibbonBow className="size-4 text-brand" />
-            </div>
-
-            <div className="space-y-3">
-              <h1 className="font-accent text-display font-bold text-brand leading-tight">
-                {heroTitle}
-              </h1>
-              <p className="text-body text-text-muted leading-relaxed">{heroSubtitle}</p>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
-              <a
-                href="#browse"
-                className="ui-control ui-button inline-flex items-center justify-center gap-2 rounded-pill font-semibold px-6 py-2.5 bg-brand text-brand-contrast transition-opacity hover:opacity-95 shadow-pill"
-              >
-                {t.hero.cta}
-              </a>
-              <a
-                href="#store"
-                className="ui-control ui-button inline-flex items-center justify-center gap-2 rounded-pill font-semibold px-6 py-2.5 border border-border-input bg-surface-2 text-text transition-colors hover:border-brand"
-              >
-                {t.catalog.exploreStore}
-              </a>
-            </div>
-
-            {/* Pearl string ornament */}
-            <div className="pt-2 flex justify-center lg:justify-start">
-              <PearlOrnament className="h-6 w-32 text-sand" />
-            </div>
-          </div>
-
-          {/* Arch frame & floating highlights */}
-          <div className="relative flex flex-col sm:flex-row items-center gap-6">
-            {/* Arch-framed photo */}
-            <div className="relative">
-              <ArchFrame className="w-56 sm:w-64 h-80 sm:h-96 border-border shadow-card bg-surface-tint">
-                <ProductImage
-                  src="categories/earrings-cover.webp"
-                  alt="Lolys Jewelry Hero"
-                  loading="eager"
-                  fetchPriority="high"
-                  className="size-full rounded-arch"
-                  imageClassName="size-full object-cover rounded-arch"
-                />
-              </ArchFrame>
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -bottom-3 -end-3 rounded-pill bg-brand text-brand-contrast p-2 shadow-pill"
-              >
-                <RibbonBow className="size-6" />
-              </div>
-            </div>
-
-            {/* Floating best seller card */}
-            {isBestSellersLoading ? (
-              <div className="hidden sm:block w-48 space-y-3 p-3 rounded-card border border-border bg-surface shadow-card">
-                <Skeleton className="aspect-square w-full rounded-image" />
-                <Skeleton className="h-4 w-3/4 rounded-chip" />
-                <Skeleton className="h-4 w-1/2 rounded-chip" />
-              </div>
-            ) : bestSellers[0] ? (
-              <div className="hidden sm:block w-52 transform transition-transform hover:-translate-y-1">
-                <ProductCard product={bestSellers[0]} className="shadow-card" />
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </section>
+    <div className="space-y-12 pb-16 sm:space-y-16">
+      <StorefrontHero
+        title={heroTitle}
+        subtitle={heroSubtitle}
+        salePercent={salePercent}
+        featured={bestSellers[0]}
+      />
 
       {/* 2. CATEGORY PILLS (Quick Navigation) */}
-      <nav aria-label="Categories quick links" className="space-y-3">
+      <nav aria-label={t.section.categories} className="space-y-3">
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={() => handleCategorySelect('all')}
-            className={`rounded-pill px-5 py-2 text-small font-semibold transition-all ${
+            aria-pressed={selectedCategory === 'all'}
+            className={`ui-control rounded-pill px-5 py-2 text-small font-semibold transition-colors ${
               selectedCategory === 'all'
                 ? 'bg-brand text-brand-contrast shadow-pill'
                 : 'border border-border bg-surface text-text hover:border-brand hover:text-brand'
@@ -187,7 +106,8 @@ export default function HomePage() {
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategorySelect(cat.slug)}
-                className={`rounded-pill px-5 py-2 text-small font-semibold transition-all ${
+                aria-pressed={isSelected}
+                className={`ui-control rounded-pill px-5 py-2 text-small font-semibold transition-colors ${
                   isSelected
                     ? 'bg-brand text-brand-contrast shadow-pill'
                     : 'border border-border bg-surface text-text hover:border-brand hover:text-brand'
@@ -200,9 +120,9 @@ export default function HomePage() {
         </div>
       </nav>
 
-      <RibbonDivider className="h-6 w-full text-pink" />
+      <RibbonDivider className="mx-auto h-6 w-48 text-pink" />
 
-      {/* 3. STORE SECTION (Category Tiles with Arch Frames) */}
+      {/* 3. STORE SECTION (Category Tiles) */}
       <section id="store" aria-labelledby="store-heading" className="space-y-8 scroll-mt-24">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 text-brand">
@@ -212,21 +132,13 @@ export default function HomePage() {
             </h2>
             <RibbonBow className="size-5" />
           </div>
-          <p className="text-body text-text-muted">
-            {lang === 'ar'
-              ? 'اكتشفي تشكيلاتنا المتنوعة من الإكسسوارات والقطع المنزلية المميزة'
-              : 'Explore our curated collections of jewelry and home decor'}
-          </p>
+          <p className="text-body text-text-muted">{t.hero.collectionsSubtitle}</p>
         </div>
 
         {categoriesError ? (
           <ErrorPanel error={categoriesError} />
         ) : isCategoriesLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {[1, 2, 3, 4].map((n) => (
-              <Skeleton key={n} className="aspect-square w-full rounded-card" />
-            ))}
-          </div>
+          <CatalogSkeleton count={4} categories />
         ) : categories.length === 0 ? (
           <EmptyState title={t.ui.emptyState} />
         ) : (
@@ -238,7 +150,7 @@ export default function HomePage() {
         )}
       </section>
 
-      <RibbonDivider className="h-6 w-full text-pink" />
+      <RibbonDivider className="mx-auto h-6 w-48 text-pink" />
 
       {/* 4. BROWSE SECTION (Catalog Filters, Best Sellers first, Load More) */}
       <section id="browse" aria-labelledby="browse-heading" className="space-y-8 scroll-mt-24">
@@ -252,9 +164,7 @@ export default function HomePage() {
                 : t.section.all}
             </h2>
             <p className="text-caption text-text-muted mt-1">
-              {browseData
-                ? `${browseData.totalCount} ${t('product.items_other', { count: browseData.totalCount })}`
-                : ''}
+              {browseData ? t('product.items', { count: browseData.totalCount }) : ''}
             </p>
           </div>
 
@@ -270,7 +180,7 @@ export default function HomePage() {
               id="sort-select"
               value={sortBy}
               onChange={handleSortChange}
-              className="rounded-pill border border-border-input bg-surface px-4 py-1.5 text-small text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="ui-control rounded-pill border border-border-input bg-surface px-4 py-1.5 text-small text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
               <option value="best_sellers">{t.catalog.sortBestSellers}</option>
               <option value="newest">{t.catalog.sortNewest}</option>
@@ -283,16 +193,7 @@ export default function HomePage() {
         {browseError ? (
           <ErrorPanel error={browseError} />
         ) : isBrowseLoading && !browseData ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-              <div key={n} className="space-y-3 p-3 rounded-card border border-border bg-surface">
-                <Skeleton className="aspect-square w-full rounded-image" />
-                <Skeleton className="h-4 w-3/4 rounded-chip" />
-                <Skeleton className="h-4 w-1/2 rounded-chip" />
-                <Skeleton className="h-8 w-full rounded-pill mt-4" />
-              </div>
-            ))}
-          </div>
+          <CatalogSkeleton />
         ) : !browseData || browseData.products.length === 0 ? (
           <EmptyState title={t.catalog.noProducts} />
         ) : (
@@ -320,7 +221,7 @@ export default function HomePage() {
         )}
       </section>
 
-      <RibbonDivider className="h-6 w-full text-pink" />
+      <RibbonDivider className="mx-auto h-6 w-48 text-pink" />
 
       {/* 5. ABOUT AND DELIVERY INFO SECTION */}
       <section id="about" aria-labelledby="about-heading" className="space-y-8 scroll-mt-24">
@@ -329,11 +230,11 @@ export default function HomePage() {
             {t.section.about}
           </h2>
           <p className="text-body text-text-muted">
-            {(settings?.tagline_ar as string) || t.brand.tagline}
+            {(lang === 'ar' ? (settings?.tagline_ar as string) : undefined) || t.brand.tagline}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 rounded-card bg-surface-tint p-4 md:grid-cols-3 sm:gap-6 sm:p-6">
           {/* About story card */}
           <Card className="p-6 space-y-4 rounded-card border border-border bg-surface shadow-card">
             <div className="inline-flex size-12 items-center justify-center rounded-pill bg-surface-tint text-brand">
@@ -351,12 +252,16 @@ export default function HomePage() {
             <h3 className="text-h3 font-bold text-brand">{t.section.delivery}</h3>
             <p className="text-body text-text-muted leading-relaxed">{t.catalog.shippingDetails}</p>
             <div className="flex flex-wrap gap-2 pt-2">
-              <span className="rounded-pill bg-surface-tint border border-border px-3 py-1 text-caption font-semibold text-brand">
-                {t.payment.cod}
-              </span>
-              <span className="rounded-pill bg-surface-tint border border-border px-3 py-1 text-caption font-semibold text-brand">
-                {t.payment.instapay}
-              </span>
+              {settings?.payment_methods_enabled?.includes('cod') && (
+                <span className="rounded-pill bg-surface-tint border border-border px-3 py-1 text-caption font-semibold text-brand">
+                  {t.payment.cod}
+                </span>
+              )}
+              {settings?.payment_methods_enabled?.includes('instapay_qr') && (
+                <span className="rounded-pill bg-surface-tint border border-border px-3 py-1 text-caption font-semibold text-brand">
+                  {t.payment.instapay}
+                </span>
+              )}
             </div>
           </Card>
 
@@ -369,7 +274,7 @@ export default function HomePage() {
             <p className="text-body text-text-muted leading-relaxed">{returnsText}</p>
             <div className="pt-2">
               <Link to="/returns" className="text-small font-semibold text-brand hover:underline">
-                {t.footer.returns} &larr;
+                {t.footer.returns} <span aria-hidden="true">{lang === 'ar' ? '←' : '→'}</span>
               </Link>
             </div>
           </Card>

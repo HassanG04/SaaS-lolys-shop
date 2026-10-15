@@ -1,10 +1,10 @@
 import { useState, type ChangeEvent } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { ArchFrame, PearlOrnament, RibbonBow } from '@/components/ui/ornaments'
+import { PearlOrnament, RibbonBow } from '@/components/ui/ornaments'
 import { ProductCard, ProductImage } from '@/features/catalog'
 import { useCategory, useBrowseProducts, type ProductSortOption } from '@/features/catalog'
 import { Checkbox } from '@/components/ui/Checkbox'
-import { Skeleton } from '@/components/ui/Skeleton'
+import { CatalogSkeleton } from '@/features/catalog/components/CatalogSkeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { useLanguage } from '@/i18n/LanguageProvider'
@@ -156,14 +156,14 @@ export default function CategoryPage() {
         </ol>
       </nav>
 
-      {/* 2. Category Header with Arch Frame & Ornaments */}
+      {/* 2. Category Header with Square Photo & Ornaments */}
       <header className="relative overflow-hidden rounded-card border border-border bg-surface p-6 sm:p-8 shadow-card">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center sm:text-start flex-1">
             <div className="flex items-center justify-center sm:justify-start gap-2">
               <h1 className="text-h1 font-bold font-accent text-brand">{categoryName}</h1>
               <span className="rounded-pill bg-surface-tint border border-border px-3 py-0.5 text-caption font-semibold text-brand">
-                {totalCount} {t('product.items_other', { count: totalCount })}
+                {t('product.items', { count: totalCount })}
               </span>
             </div>
             <p className="text-body text-text-muted max-w-xl">
@@ -173,16 +173,14 @@ export default function CategoryPage() {
 
           {category?.image_url ? (
             <div className="relative shrink-0">
-              <ArchFrame className="w-28 sm:w-36 h-36 sm:h-44 border-border shadow-card bg-surface-tint">
+              <div className="w-28 rounded-card border border-border bg-surface-tint p-2 shadow-card sm:w-36">
                 <ProductImage
                   src={category.image_url}
                   alt={categoryName}
                   loading="eager"
                   fetchPriority="high"
-                  className="size-full rounded-arch"
-                  imageClassName="size-full object-cover rounded-arch"
                 />
-              </ArchFrame>
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-center text-brand shrink-0">
@@ -235,19 +233,7 @@ export default function CategoryPage() {
       ) : browseError ? (
         <ErrorPanel error={browseError} onRetry={() => refetch()} />
       ) : isBrowseLoading && products.length === 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-            <div
-              key={n}
-              className="space-y-3 p-3 rounded-card border border-border bg-surface shadow-card"
-            >
-              <Skeleton className="aspect-square w-full rounded-image" />
-              <Skeleton className="h-4 w-3/4 rounded-chip" />
-              <Skeleton className="h-4 w-1/2 rounded-chip" />
-              <Skeleton className="h-8 w-full rounded-pill mt-4" />
-            </div>
-          ))}
-        </div>
+        <CatalogSkeleton />
       ) : products.length === 0 ? (
         <EmptyState title={t.catalog.noProducts} />
       ) : (

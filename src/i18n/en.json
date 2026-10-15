@@ -42,7 +42,14 @@
   "hero": {
     "title": "Up to {{n}}% off",
     "subtitle": "Accessories and home touches that add charm to your style and space",
-    "cta": "Shop Offers"
+    "cta": "Shop Offers",
+    "eyebrow": "Little details. Lovely moments.",
+    "cozyTitle": "A little lovely for you. A little warmth for home.",
+    "shopCta": "Find your little lovely",
+    "littleThings": "For everyday rituals and special moments",
+    "photoCaption": "Warm cups & little treasures",
+    "collectionsSubtitle": "From the finishing touch to your outfit to your favourite quiet-morning cup",
+    "returnsSummary": "Visit our returns policy for return and exchange conditions."
   },
   "section": {
     "categories": "Shop by Category",

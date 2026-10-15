@@ -1,5 +1,46 @@
 # Shared project progress
 
+Draft review: [PR #28](https://github.com/HassanG04/SaaS-lolys-shop/pull/28). Implementation checkpoints: `35df0a2` (loading/motion) and `eb703de` (art direction).
+
+## Codex cozy storefront — 2026-10-15
+
+Current task: T-3.09 and split T-3.09b, owner-requested visual refresh while
+Anti-Gravity works on foundations. Both remain doing until all gates and the
+visual matrix pass. Isolated checkout: `.tools/cozy-storefront`; branch:
+`agent/T-3.09-cozy-storefront`; base: `7f9b21c`.
+
+Completed:
+
+- Wide rounded still-life hero and square category frames replace the arches.
+- Responsive local artwork, bilingual warm copy, ribbon accents and compact
+  mobile header. Public hero overrides remain supported; missing settings do
+  not invent discounts or enabled payment methods.
+- Shared home/category/search skeletons, graceful image failure/retry, image
+  fade, gentle entrance/hover motion and reduced-motion CSS.
+- Added image lifecycle, settings and loading regressions. Recorded owner design
+  amendment, asset provenance and integration conflicts.
+
+Files changed: Full path inventory is in `HANDOVER_TO_ANTI_GRAVITY.md`; design
+evidence is in `docs/design/cozy-storefront.md` and integration instructions are
+in `docs/handoff/COZY-STOREFRONT.md`. Root foundation files were not overwritten.
+
+Tests executed: 685 application tests across 59 files passed in the latest
+verification. Final command outcomes are recorded in the design evidence table.
+Desktop Arabic/light and English/dark were observed locally. No production,
+database, payment or authenticated order verification is claimed by this session.
+
+Problems found: Clean unchanged base already exceeds the initial bundle budget
+(201,984 / 200,000 gzip bytes). Mobile overflow was observed and the header
+adjusted; the fix and remaining theme/language/motion combinations still need
+visual verification. Browser automation denied further preview access under its
+URL security policy. A separate existing catalogue-to-cart handler gap is flagged
+in the handoff for Anti-Gravity.
+
+Next action: Review the draft storefront PR against the analytics development
+branch, combine with Anti-Gravity's committed foundation/performance fixes,
+rerun all applicable gates and complete the visual matrix before marking these
+tasks done. Do not merge or deploy automatically.
+
 ## Codex deployment recheck — 2026-10-15
 
 Current task: Recheck launch readiness. The owner reports identifying the Brave error and assigning its fix to Anti-Gravity; Codex is not duplicating that fix.

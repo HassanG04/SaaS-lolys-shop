@@ -39,18 +39,14 @@ export function ProductCard({
 
   return (
     <Card
-      className={`group flex h-full flex-col justify-between p-3 transition-shadow hover:shadow-card ${className}`}
+      className={`catalog-product group flex h-full flex-col justify-between p-3 transition-shadow hover:shadow-card ${className}`}
       data-testid={`product-card-${product.id}`}
     >
       <div>
         {/* Image Container with Badges & Favorite Toggle */}
         <div className="relative mb-3 overflow-hidden rounded-image">
           <Link to={productUrl} tabIndex={-1} aria-hidden="true" className="block">
-            <ProductImage
-              src={product.image_url}
-              alt={displayName}
-              imageClassName="transition-transform duration-300 group-hover:scale-105"
-            />
+            <ProductImage src={product.image_url} alt={displayName} />
           </Link>
 
           {/* Badges Overlay */}

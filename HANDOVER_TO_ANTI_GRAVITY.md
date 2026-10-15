@@ -1,3 +1,91 @@
+# Cozy storefront handover — 2026-10-15
+
+Draft review: [PR #28](https://github.com/HassanG04/SaaS-lolys-shop/pull/28). Implementation checkpoints: `35df0a2` (loading/motion) and `eb703de` (art direction).
+
+## Current Objective
+
+Finish T-3.09 and T-3.09b: the owner's cozy storefront, replacement frames,
+animations and loading skeletons. Branch: agent/T-3.09-cozy-storefront, based on
+7f9b21c. Isolated checkout: D:/Projects/Programming/الاء/.tools/cozy-storefront.
+
+## Completed
+
+Implementation and 685 application tests are complete. All 203 tooling tests
+passed with zero skips. See docs/design/cozy-storefront.md for the final gate
+results, image provenance and desktop screenshot. See
+.agent-state/project-progress.md and docs/handoff/COZY-STOREFRONT.md for continuity.
+The owner requested concurrent work; the root checkout's foundation edits were
+preserved. No merge or deployment occurred.
+
+## Remaining
+
+Combine with Anti-Gravity's committed performance/foundation work. Re-run all
+gates on that combined head. Finish 360px/1280px, Arabic/English, light/dark,
+slow-image and reduced-motion visual checks. Both tasks remain doing and the PR
+remains draft. Source review also found the existing ProductCard add-to-cart
+handler gap described in the integration handoff.
+
+## Current Files
+
+- `.agent-state/project-progress.md`
+- `HANDOVER_TO_ANTI_GRAVITY.md`
+- `docs/design/cozy-storefront-desktop.jpg`
+- `docs/design/cozy-storefront.md`
+- `docs/handoff/COZY-STOREFRONT.md`
+- `docs/spec/design-system.md`
+- `public/brand/cozy-still-life-small.webp`
+- `public/brand/cozy-still-life.webp`
+- `roadmap.md`
+- `src/App.test.tsx`
+- `src/components/layout/Navbar.tsx`
+- `src/components/ui/LanguageToggle.tsx`
+- `src/components/ui/Skeleton.tsx`
+- `src/features/catalog/components/CatalogSkeleton.tsx`
+- `src/features/catalog/components/CategoryTile.tsx`
+- `src/features/catalog/components/ProductCard.tsx`
+- `src/features/catalog/components/ProductImage.tsx`
+- `src/features/catalog/components/StorefrontHero.tsx`
+- `src/features/catalog/components/catalogUI.test.tsx`
+- `src/i18n/ar.json`
+- `src/i18n/en.json`
+- `src/pages/CategoryPage.tsx`
+- `src/pages/HomePage.test.tsx`
+- `src/pages/HomePage.tsx`
+- `src/pages/SearchPage.test.tsx`
+- `src/pages/SearchPage.tsx`
+- `src/styles/index.css`
+- `src/styles/storefront.css`
+
+## Current Error
+
+Error: Initial JavaScript exceeds the unchanged 200,000 gzip-byte budget.
+Expected: Every verify gate passes, including the initial download limit.
+Actual: Tests and production build pass; check:bundle fails. Exact final sizes
+are in docs/design/cozy-storefront.md. The unchanged base independently measured
+201,984 bytes, also failing.
+Possible cause: Existing eager entry/chunk dependencies plus shared UI/copy.
+Anti-Gravity is already working on foundation/performance changes; do not
+weaken the gate or discard those edits.
+
+Additional limitation: Browser automation denied further local preview access
+under its URL security policy; no workaround was attempted. Mobile overflow was
+adjusted in code but still needs a visual recheck.
+
+## Next Exact Command
+
+From the UI checkout with the pinned Node version:
+
+```powershell
+npm run verify
+```
+
+Review docs/handoff/COZY-STOREFRONT.md before integration. Do not switch/reset
+Anti-Gravity's dirty root checkout, merge main, or deploy.
+
+---
+
+## Earlier handover history (superseded for the current task)
+
 # Database integration handover — 2026-10-15
 
 ## Current Objective

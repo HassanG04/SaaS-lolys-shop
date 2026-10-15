@@ -1,5 +1,6 @@
 @import './tokens.css';
 @import './ui.css';
+@import './storefront.css';
 
 @layer base {
   html {

@@ -1,0 +1,81 @@
+@layer components {
+  .storefront-hero {
+    isolation: isolate;
+  }
+  .storefront-hero::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inline-size: 65%;
+    block-size: 110%;
+    inset-inline-end: -15%;
+    inset-block-start: -15%;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface-tint-val);
+    transform: rotate(-18deg);
+  }
+  .storefront-photo {
+    transform: rotate(-2deg);
+  }
+  [dir='rtl'] .storefront-photo {
+    transform: rotate(2deg);
+  }
+  .storefront-caption {
+    position: relative;
+    margin-block-start: -1.5rem;
+    margin-inline: auto;
+    inline-size: fit-content;
+    max-inline-size: calc(100% - 2rem);
+  }
+  .catalog-placeholder-seal {
+    outline: 1px dashed var(--color-border-val);
+    outline-offset: 8px;
+  }
+  .catalog-photo {
+    transition:
+      opacity 220ms ease,
+      transform 220ms ease;
+  }
+  .catalog-category {
+    transition:
+      transform 200ms ease,
+      box-shadow 200ms ease;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .storefront-enter {
+      animation: storefront-arrive 240ms ease-out both;
+    }
+    .ui-skeleton {
+      animation: storefront-breathe 1.6s ease-in-out infinite;
+    }
+    @media (hover: hover) {
+      .catalog-category:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-card-val);
+      }
+      .catalog-category:hover .catalog-photo,
+      .catalog-product:hover .catalog-photo {
+        transform: scale(1.035);
+      }
+    }
+  }
+  @keyframes storefront-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes storefront-breathe {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
