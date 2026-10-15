@@ -20,13 +20,19 @@ export default defineConfig({
             id.includes('node_modules/react/') ||
             id.includes('node_modules/react-dom/') ||
             id.includes('node_modules/scheduler/') ||
-            id.includes('node_modules/@tanstack/') ||
+            id.includes('node_modules/react-router')
+          ) {
+            return 'vendor-react'
+          }
+          if (
             id.includes('node_modules/i18next/') ||
             id.includes('node_modules/react-i18next/') ||
-            id.includes('node_modules/react-router') ||
             id.includes('node_modules/@supabase/')
           ) {
-            return 'react-vendor'
+            return 'vendor-i18n'
+          }
+          if (id.includes('node_modules/@tanstack/')) {
+            return 'vendor-query'
           }
         },
       },
