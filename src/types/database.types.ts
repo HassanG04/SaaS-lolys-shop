@@ -2,7 +2,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
-  
+
   "graphql_public": {
           Tables: {
             [_ in never]: never
@@ -35,7 +35,7 @@ export type Database = {
                     "action"?: string,"actor"?: string | null,"actor_role"?: string,"at"?: string,"entity"?: string,"entity_id"?: string,"id"?: never,"new"?: Json | null,"old"?: Json | null
                   }
                   Relationships: [
-                    
+
                   ]
                 },"categories": {
                   Row: {
@@ -49,7 +49,7 @@ export type Database = {
                     "created_at"?: string,"id"?: never,"image_url"?: string | null,"is_active"?: boolean,"name"?: string,"name_ar"?: string | null,"show_on_home"?: boolean,"slug"?: string,"sort_order"?: number
                   }
                   Relationships: [
-                    
+
                   ]
                 },"delivery_fees": {
                   Row: {
@@ -115,7 +115,7 @@ isOneToOne: false
                     "id"?: number,"name_ar"?: string,"name_en"?: string
                   }
                   Relationships: [
-                    
+
                   ]
                 },"order_items": {
                   Row: {
@@ -221,7 +221,7 @@ isOneToOne: false
                     "count"?: number,"key"?: string,"window_start"?: string
                   }
                   Relationships: [
-                    
+
                   ]
                 },"shop_settings": {
                   Row: {
@@ -235,7 +235,7 @@ isOneToOne: false
                     "is_public"?: boolean,"key"?: string,"updated_at"?: string,"updated_by"?: string | null,"value"?: NonNullable<Json>
                   }
                   Relationships: [
-                    
+
                   ]
                 },"stock_movements": {
                   Row: {
@@ -350,7 +350,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "delivery_method": "egypt_post"|"representative","order_status": "pending"|"confirmed"|"shipped"|"delivered"|"cancelled","payment_method": "cod"|"instapay_qr","payment_status": "unpaid"|"awaiting_approval"|"awaiting_proof"|"under_review"|"paid"|"rejected","stock_reason": "order"|"cancel"|"admin_adjust"|"restock"|"correction","user_role": "customer"|"admin"
+            "delivery_method": "egypt_post"|"representative","order_status": "pending"|"confirmed"|"shipped"|"delivered"|"cancelled","payment_method": "cod"|"instapay_qr","payment_status": "unpaid"|"awaiting_proof"|"under_review"|"paid"|"rejected"|"awaiting_approval","stock_reason": "order"|"cancel"|"admin_adjust"|"restock"|"correction","user_role": "customer"|"admin"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -466,11 +466,11 @@ export type CompositeTypes<
 export const Constants = {
   "graphql_public": {
           Enums: {
-            
+
           }
         },"public": {
           Enums: {
-            "delivery_method": ["egypt_post", "representative"],"order_status": ["pending", "confirmed", "shipped", "delivered", "cancelled"],"payment_method": ["cod", "instapay_qr"],"payment_status": ["unpaid", "awaiting_approval", "awaiting_proof", "under_review", "paid", "rejected"],"stock_reason": ["order", "cancel", "admin_adjust", "restock", "correction"],"user_role": ["customer", "admin"]
+            "delivery_method": ["egypt_post", "representative"],"order_status": ["pending", "confirmed", "shipped", "delivered", "cancelled"],"payment_method": ["cod", "instapay_qr"],"payment_status": ["unpaid", "awaiting_proof", "under_review", "paid", "rejected", "awaiting_approval"],"stock_reason": ["order", "cancel", "admin_adjust", "restock", "correction"],"user_role": ["customer", "admin"]
           }
         }
 } as const

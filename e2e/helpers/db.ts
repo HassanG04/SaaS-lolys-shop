@@ -30,7 +30,7 @@ export function getSupabaseStatus(): SupabaseLocalStatus {
 
   // Fallback to local default stack configuration if already known
   cachedStatus = {
-    API_URL: process.env.VITE_SUPABASE_URL || 'http://127.0.0.1:54321',
+    API_URL: process.env.VITE_SUPABASE_URL || 'http://127.0.0.1:56321',
     ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || '',
     SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   }
@@ -53,7 +53,7 @@ export function queryDb<T = Record<string, unknown>>(sql: string): T[] {
 }
 
 export function resetDb(): void {
-  execSync('npx supabase db reset', {
+  execSync('npx supabase db reset --local', {
     stdio: 'inherit',
   })
   cachedStatus = null
