@@ -69,7 +69,3 @@ rules:
     message: SEC-15 Browser source must never reference the privileged role.
     # Match the forbidden literal without embedding it in scanner configuration.
     pattern-regex: (?i)service[_]role
-    paths:
-      include:
-        - 'src/'
-        - 'public/'

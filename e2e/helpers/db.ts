@@ -53,7 +53,7 @@ export function queryDb<T = Record<string, unknown>>(sql: string): T[] {
 }
 
 export function resetDb(): void {
-  execSync('npx supabase db reset --local', {
+  execSync('npx supabase db reset --local --yes', {
     stdio: 'inherit',
   })
   cachedStatus = null
