@@ -17,7 +17,19 @@ let combined = `-- =============================================================
 --   1. Open your Supabase Dashboard: https://supabase.com/dashboard/project/wcdkrgrceczeuttnijwf
 --   2. Click "SQL Editor" in the left navigation.
 --   3. Click "New query", paste the entire contents of this file, and click "Run".
--- =====================================================================\n\n`
+-- =====================================================================
+
+-- Clean up any preexisting storage policies to ensure idempotent execution
+drop policy if exists "admin list product images" on storage.objects;
+drop policy if exists "admin upload product images" on storage.objects;
+drop policy if exists "admin replace product images" on storage.objects;
+drop policy if exists "admin delete product images" on storage.objects;
+drop policy if exists "user upload payment proof" on storage.objects;
+drop policy if exists "user read payment proof" on storage.objects;
+drop policy if exists "admin read payment proofs" on storage.objects;
+drop policy if exists "admin delete payment proofs" on storage.objects;
+
+`
 
 for (const file of files) {
   combined += `-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n`

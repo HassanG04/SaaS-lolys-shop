@@ -7,6 +7,16 @@
 --   3. Click "New query", paste the entire contents of this file, and click "Run".
 -- =====================================================================
 
+-- Clean up any preexisting storage policies to ensure idempotent execution
+drop policy if exists "admin list product images" on storage.objects;
+drop policy if exists "admin upload product images" on storage.objects;
+drop policy if exists "admin replace product images" on storage.objects;
+drop policy if exists "admin delete product images" on storage.objects;
+drop policy if exists "user upload payment proof" on storage.objects;
+drop policy if exists "user read payment proof" on storage.objects;
+drop policy if exists "admin read payment proofs" on storage.objects;
+drop policy if exists "admin delete payment proofs" on storage.objects;
+
 -- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 -- MIGRATION: 20261010232047_schema.sql
 -- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
