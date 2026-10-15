@@ -216,7 +216,7 @@ export function getAdminTotpSecret(): string | null {
       FROM auth.mfa_factors f
       JOIN auth.users u ON u.id = f.user_id
      WHERE u.email = 'admin@example.com'
-       AND f.status = 'verified'
+     ORDER BY f.created_at DESC
      LIMIT 1;
   `)
   return rows[0]?.secret ?? null

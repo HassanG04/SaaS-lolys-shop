@@ -155,7 +155,9 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await page.waitForTimeout(500)
 
     await page.getByRole('button', { name: /إضافة القسم|حفظ/ }).click()
-    await expect(page.getByText('أساور وحليات فاخرة')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('أساور وحليات فاخرة').first()).toBeVisible({
+      timeout: 10000,
+    })
 
     // Part B: Create product in that category
     await page.goto('/admin/products/new')

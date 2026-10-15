@@ -90,8 +90,17 @@ async function loginAdmin(page: Page) {
   await page.goto('/admin')
   await page.waitForURL((url) => url.pathname.startsWith('/admin'), { timeout: 15000 })
   await page.waitForLoadState('networkidle').catch(() => {})
+  await page
+    .waitForSelector('input[name="totpCode"], h1, #admin-main', { timeout: 8000 })
+    .catch(() => {})
 
-  if (page.url().includes('/admin/mfa/enroll')) {
+  if (
+    page.url().includes('/admin/mfa/enroll') ||
+    (await page
+      .locator('div.select-all')
+      .isVisible()
+      .catch(() => false))
+  ) {
     const secretContainer = page.locator('div.select-all')
     await expect(secretContainer).toBeVisible({ timeout: 10000 })
     const secret = (await secretContainer.innerText()).trim()
@@ -99,7 +108,13 @@ async function loginAdmin(page: Page) {
     await page.locator('input[name="totpCode"]').fill(totpCode)
     await page.getByRole('button', { name: 'تأكيد وتفعيل' }).click()
     await page.waitForURL((url) => !url.pathname.includes('/mfa'), { timeout: 15000 })
-  } else if (page.url().includes('/admin/mfa/challenge')) {
+  } else if (
+    page.url().includes('/admin/mfa/challenge') ||
+    (await page
+      .locator('input[name="totpCode"]')
+      .isVisible()
+      .catch(() => false))
+  ) {
     const secret = getAdminTotpSecret()
     if (secret) {
       const code = generateTotp(secret)
