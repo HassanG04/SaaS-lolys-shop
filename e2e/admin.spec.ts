@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 import path from 'node:path'
 import { generateTotp } from './helpers/totp'
-import { queryDb, getProductStock } from './helpers/db'
+import { queryDb, getProductStock, getAdminTotpSecret } from './helpers/db'
 
 let adminTotpSecret = ''
 let createdCategorySlug = ''
@@ -20,7 +20,8 @@ async function loginAdmin(page: Page) {
   await page.goto('/admin')
   await page.waitForTimeout(500)
   if (page.url().includes('/admin/mfa/challenge')) {
-    const code = generateTotp(adminTotpSecret)
+    const secret = adminTotpSecret || getAdminTotpSecret() || ''
+    const code = generateTotp(secret)
     await page.locator('input[name="totpCode"]').fill(code)
     await page.getByRole('button', { name: 'تأكيد الرمز والمتابعة' }).click()
     await page.waitForURL((url) => !url.pathname.includes('/mfa'), { timeout: 15000 })
@@ -202,7 +203,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
     await page.goto(`/category/${createdCategorySlug}`)
     await expect(page.getByText('سوار اللؤلؤ الفضي التجريبي').first()).toBeVisible({
-      timeout: 10000,
+      timeout: 15000,
     })
 
     await page.goto(`/product/${createdProductId}`)

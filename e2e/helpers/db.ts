@@ -38,17 +38,56 @@ export function getSupabaseStatus(): SupabaseLocalStatus {
 }
 
 export function queryDb<T = Record<string, unknown>>(sql: string): T[] {
-  const stdout = execSync('npx supabase db query --local', {
+  const stdout = execSync('npx supabase db query --local --output-format json', {
     input: sql,
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'pipe'],
   })
-  const start = stdout.indexOf('{')
-  const end = stdout.lastIndexOf('}')
-  if (start !== -1 && end !== -1) {
-    const parsed = JSON.parse(stdout.slice(start, end + 1))
-    return (parsed.rows ?? []) as T[]
+
+  // 1. Try parsing JSON array directly: [ ... ] (standard / CI mode)
+  const arrStart = stdout.indexOf('[')
+  const arrEnd = stdout.lastIndexOf(']')
+  const objStart = stdout.indexOf('{')
+  const objEnd = stdout.lastIndexOf('}')
+
+  if (arrStart !== -1 && arrEnd !== -1 && (objStart === -1 || arrStart < objStart)) {
+    try {
+      const parsed = JSON.parse(stdout.slice(arrStart, arrEnd + 1))
+      if (Array.isArray(parsed)) {
+        return parsed as T[]
+      }
+    } catch {
+      // Fall through to object parsing
+    }
   }
+
+  // 2. Try parsing object wrapper: { "rows": [ ... ], ... } (agent boundary wrapper mode)
+  if (objStart !== -1 && objEnd !== -1) {
+    try {
+      const parsed = JSON.parse(stdout.slice(objStart, objEnd + 1))
+      if (Array.isArray(parsed.rows)) {
+        return parsed.rows as T[]
+      }
+      if (Array.isArray(parsed)) {
+        return parsed as T[]
+      }
+    } catch {
+      // Fall through to array parsing
+    }
+  }
+
+  // 3. Fallback array search if object wrapper did not yield rows
+  if (arrStart !== -1 && arrEnd !== -1) {
+    try {
+      const parsed = JSON.parse(stdout.slice(arrStart, arrEnd + 1))
+      if (Array.isArray(parsed)) {
+        return parsed as T[]
+      }
+    } catch {
+      // Ignore parse failure
+    }
+  }
+
   return []
 }
 
