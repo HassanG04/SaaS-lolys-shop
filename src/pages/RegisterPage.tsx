@@ -8,7 +8,7 @@ import { useLanguage } from '@/i18n/LanguageProvider'
 import { Button } from '@/components/ui/Button'
 
 export default function RegisterPage() {
-  const { signUp } = useAuth()
+  const { signUp, resendConfirmation } = useAuth()
   const { t } = useLanguage()
 
   const [fullName, setFullName] = useState('')
@@ -17,6 +17,20 @@ export default function RegisterPage() {
   const [captchaToken, setCaptchaToken] = useState<string | undefined>()
   const [statusMessage, setStatusMessage] = useState<AuthErrorCode | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResending, setIsResending] = useState(false)
+  const [resendSent, setResendSent] = useState(false)
+
+  async function handleResend() {
+    if (isResending || !email.trim()) return
+    setIsResending(true)
+    setResendSent(false)
+    try {
+      await resendConfirmation({ email: email.trim() })
+      setResendSent(true)
+    } finally {
+      setIsResending(false)
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -84,13 +98,25 @@ export default function RegisterPage() {
               <p className="text-small text-(--color-text)">{t.auth.checkEmailDesc}</p>
               <p className="text-caption text-(--color-text-muted)">{t.auth.checkSpamFolder}</p>
             </div>
-            <div className="pt-2">
-              <Link
-                to="/resend-confirmation"
-                className="inline-flex h-10 items-center justify-center rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-surface) px-4 text-small font-semibold text-(--color-brand) hover:bg-(--color-surface-2) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-              >
-                {t.auth.resendNoticeLink}
-              </Link>
+            <div className="pt-2 space-y-2">
+              {resendSent ? (
+                <p
+                  role="status"
+                  aria-live="polite"
+                  className="text-small font-semibold text-(--color-brand)"
+                >
+                  {t.auth.checkEmailDesc}
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={isResending}
+                  className="inline-flex h-10 items-center justify-center rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-surface) px-4 text-small font-semibold text-(--color-brand) hover:bg-(--color-surface-2) focus:outline-none focus:ring-2 focus:ring-(--color-focus) disabled:opacity-50"
+                >
+                  {isResending ? t.auth.sendingConfirmationLink : t.auth.resendNoticeLink}
+                </button>
+              )}
             </div>
           </div>
         ) : (

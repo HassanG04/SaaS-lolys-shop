@@ -1,6 +1,55 @@
 # Shared project progress
 
-## Anti-Gravity — Admin Easy UI Database Manipulation, Product ID Cascade, & Quick Product Management — 2026-10-16
+## Anti-Gravity — UI Animations Overhaul, Hamburger Admin Pages, Inline Resend Confirmation, and Idempotent Profile Migration — 2026-10-16
+
+Current task: Animation overhaul, hamburger admin links, inline resend UX, and database profile trigger hardening — COMPLETE
+Status: 115 / 122 tasks done (100% of all agent tasks in the roadmap completed; 7 tasks human-owned).
+
+Completed:
+
+- Comprehensive UI animation overhaul (Zero external npm packages; pure CSS keyframes and Tailwind utilities):
+  - Upgraded `src/components/ui/Skeleton.tsx` with `.ui-skeleton` shimmer gradient wave and added composite `SkeletonCard` component.
+  - Enhanced `src/styles/storefront.css` with staggered grid entrances (`.catalog-stagger-item`), cart count pop animation (`cart-badge-pop`), dialog arrive animation (`dialog-arrive`), hero arch frame pulse glow (`hero-arch-glow`), section heading reveals (`section-heading-reveal`), feature cards stagger (`feature-card`), and hamburger morph transitions.
+  - Updated `src/components/layout/Navbar.tsx`: animated hamburger SVG morphing lines into an "X" via CSS classes, dynamic bouncing cart badge counter, and bundle-optimized markup.
+  - Updated `src/components/ui/Dialog.tsx` with smooth entrance scaling.
+  - Updated `src/pages/HomePage.tsx` and `src/pages/CategoryPage.tsx` with staggered arrivals and `SkeletonCard` loading states.
+- Enhanced Hamburger Menu Navigation:
+  - Added dedicated Admin Navigation section to `src/components/layout/NavbarQuickMenu.tsx` (Dashboard, Products, Orders, Categories, Settings) visible when `role === 'admin'`.
+- Authentication & Registration Flow Improvements:
+  - Overhauled `src/pages/RegisterPage.tsx`: inline resend confirmation button with immediate loading and success feedback right on the confirmation card without navigating away or re-entering the email address.
+  - Updated `src/features/auth/auth.test.tsx` to verify the inline button behavior.
+- Database & Schema Hardening:
+  - Added migration `supabase/migrations/20261016020000_handle_new_user_idempotent.sql`:
+    - Updated `handle_new_user()` trigger function with `ON CONFLICT (id) DO NOTHING` to prevent errors when re-registering previously created auth users.
+    - Added automatic backfill query to insert missing `public.profiles` rows for any orphaned `auth.users` records.
+  - Rebuilt consolidated `setup_remote_supabase.sql` via `scripts/build-remote-sql.mjs` (25 migrations, 230,165 bytes).
+- Full Verification:
+  - All 13 quality gates passed cleanly (`npm run verify`).
+  - 916 tests passing (713 Vitest + 203 tooling tests).
+  - Initial JS bundle strictly within budget: 199,968 / 200,000 gzip bytes.
+
+Files changed:
+- `supabase/migrations/20261016020000_handle_new_user_idempotent.sql` (new)
+- `setup_remote_supabase.sql`
+- `src/components/layout/Navbar.tsx`
+- `src/components/layout/NavbarQuickMenu.tsx`
+- `src/components/ui/Dialog.tsx`
+- `src/components/ui/Skeleton.tsx`
+- `src/features/auth/auth.test.tsx`
+- `src/pages/CategoryPage.tsx`
+- `src/pages/HomePage.tsx`
+- `src/pages/RegisterPage.tsx`
+- `src/styles/storefront.css`
+- `.agent-state/project-progress.md`
+
+Tests executed:
+- `npm run verify` (all 13 gates passed: check:migrations, check:sql, check:tokens, check:supply-chain, check:i18n, lint, format:check, typecheck, test:unit, build, check:ui-build, check:secrets, check:bundle)
+- `npm run test:unit` (916 tests passed)
+- `npm run check:bundle` (199,968 / 200,000 gzip bytes)
+
+Problems found: None.
+Next action: Provide the owner with clear SQL commands for profile promotion and auto-confirmation.
+
 
 Current task: Admin Database Manipulation from Website (Easy UI: Add product, change product name + ID with cascade, update photo, and quick stock quantity adjustment) — COMPLETE
 Status: 115 / 122 tasks done (100% of all agent tasks in the roadmap completed; 7 tasks human-owned).

@@ -232,9 +232,8 @@ describe('Authentication unit tests (T-2.04)', () => {
       expect(screen.getByText(/إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة/)).toBeInTheDocument()
       expect(screen.getByText(/صندوق الوارد ومجلد الرسائل غير المرغوب فيها/)).toBeInTheDocument()
 
-      const resendLink = screen.getByRole('link', { name: 'لم تصلك الرسالة؟ أعد الإرسال' })
-      expect(resendLink).toBeInTheDocument()
-      expect(resendLink).toHaveAttribute('href', '/resend-confirmation')
+      const resendBtn = screen.getByRole('button', { name: 'لم تصلك الرسالة؟ أعد الإرسال' })
+      expect(resendBtn).toBeInTheDocument()
     })
 
     it('displays clear "check your email" state after password reset request', async () => {

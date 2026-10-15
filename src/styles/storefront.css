@@ -41,6 +41,19 @@
       transform 200ms ease,
       box-shadow 200ms ease;
   }
+  .nav-link {
+    font-size: var(--text-small);
+    border-radius: var(--radius-chip);
+    padding: 0.25rem 0.5rem;
+    color: var(--color-text);
+  }
+  .nav-link:hover {
+    color: var(--color-brand);
+  }
+  .nav-link.active {
+    color: var(--color-brand);
+    font-weight: 700;
+  }
   .auth-panel {
     box-shadow: var(--shadow-card-val);
   }
@@ -82,6 +95,110 @@
       .catalog-product:hover .catalog-photo {
         transform: scale(1.035);
       }
+    }
+
+    /* Scroll-triggered stagger for product/category grid items */
+    .catalog-stagger-item {
+      animation: storefront-arrive 320ms ease-out both;
+    }
+    .catalog-stagger-item:nth-child(1) {
+      animation-delay: 0ms;
+    }
+    .catalog-stagger-item:nth-child(2) {
+      animation-delay: 50ms;
+    }
+    .catalog-stagger-item:nth-child(3) {
+      animation-delay: 100ms;
+    }
+    .catalog-stagger-item:nth-child(4) {
+      animation-delay: 150ms;
+    }
+    .catalog-stagger-item:nth-child(5) {
+      animation-delay: 200ms;
+    }
+    .catalog-stagger-item:nth-child(6) {
+      animation-delay: 250ms;
+    }
+    .catalog-stagger-item:nth-child(7) {
+      animation-delay: 300ms;
+    }
+    .catalog-stagger-item:nth-child(8) {
+      animation-delay: 350ms;
+    }
+    .catalog-stagger-item:nth-child(9) {
+      animation-delay: 400ms;
+    }
+    .catalog-stagger-item:nth-child(10) {
+      animation-delay: 450ms;
+    }
+    .catalog-stagger-item:nth-child(11) {
+      animation-delay: 500ms;
+    }
+    .catalog-stagger-item:nth-child(12) {
+      animation-delay: 550ms;
+    }
+
+    /* Navbar hamburger morph animation */
+    .hamburger-line {
+      transform-origin: center;
+      transition:
+        transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 200ms ease;
+    }
+    .hamburger-open .hamburger-line-1 {
+      transform: translateY(6px) rotate(45deg);
+    }
+    .hamburger-open .hamburger-line-2 {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+    .hamburger-open .hamburger-line-3 {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    /* Cart badge bounce */
+    .cart-badge-pop {
+      animation: cart-badge-pop 380ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Dialog entrance */
+    .dialog-arrive {
+      animation: dialog-arrive 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Theme toggle rotation */
+    .theme-icon-spin {
+      animation: theme-icon-spin 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Hero arch glow */
+    .hero-arch-glow {
+      animation: hero-pulse-glow 3s ease-in-out infinite;
+    }
+
+    /* Section heading reveal */
+    .section-heading-reveal {
+      animation: storefront-arrive 400ms ease-out both;
+      animation-delay: 80ms;
+    }
+
+    /* Feature card stagger */
+    .feature-card {
+      animation: storefront-arrive 360ms ease-out both;
+    }
+    .feature-card:nth-child(1) {
+      animation-delay: 0ms;
+    }
+    .feature-card:nth-child(2) {
+      animation-delay: 100ms;
+    }
+    .feature-card:nth-child(3) {
+      animation-delay: 200ms;
+    }
+
+    /* Favorite button heart pop */
+    .heart-pop {
+      animation: heart-pop 380ms cubic-bezier(0.22, 1, 0.36, 1);
     }
   }
   @keyframes theme-icon-arrive {
@@ -129,6 +246,61 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+  @keyframes cart-badge-pop {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.5);
+    }
+    70% {
+      transform: scale(0.85);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes dialog-arrive {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  @keyframes theme-icon-spin {
+    from {
+      transform: rotate(-90deg) scale(0.7);
+    }
+    to {
+      transform: rotate(0deg) scale(1);
+    }
+  }
+  @keyframes hero-pulse-glow {
+    0%,
+    100% {
+      box-shadow: none;
+    }
+    50% {
+      box-shadow: var(--shadow-card-val);
+    }
+  }
+  @keyframes heart-pop {
+    0% {
+      transform: scale(1);
+    }
+    35% {
+      transform: scale(1.4);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
     }
   }
 }

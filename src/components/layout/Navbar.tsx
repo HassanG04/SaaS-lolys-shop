@@ -8,33 +8,13 @@ import LanguageToggle from '../ui/LanguageToggle'
 const NavbarSearch = lazy(() => import('./NavbarSearch'))
 const NavbarQuickMenu = lazy(() => import('./NavbarQuickMenu'))
 
-const Icon = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <svg
-    className={`size-5 ${className}`}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    {children}
-  </svg>
-)
-
-const initials = (n?: string | null, e?: string | null) => {
-  const [a, b] = (n || '').trim().split(/\s+/)
-  return (b ? a[0] + b[0] : n || e || 'U').slice(0, 2).toUpperCase()
-}
+const initials = (n?: string | null, e?: string | null) =>
+  (n || e || 'U').trim().slice(0, 2).toUpperCase()
 
 const pill =
   'h-11 items-center rounded-pill border border-border bg-surface-2 px-3 text-small hover:border-brand focus:ring-2'
 const iconBtn =
   'flex size-11 items-center justify-center rounded-pill hover:border-brand focus:ring-2'
-
-const navLink = ({ isActive }: { isActive: boolean }) =>
-  `text-small rounded-chip px-2 py-1 focus:ring-2 ${isActive ? 'text-brand font-bold' : 'text-text hover:text-brand'}`
 
 export function Navbar({ cartCount }: { cartCount?: number } = {}) {
   const { t } = useLanguage()
@@ -73,10 +53,10 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
         </Suspense>
 
         <nav className="hidden lg:flex items-center gap-6" aria-label="Desktop">
-          <NavLink to="/" className={navLink}>
+          <NavLink to="/" className="nav-link focus:ring-2">
             {t.nav.store}
           </NavLink>
-          <NavLink to="/category/all" className={navLink}>
+          <NavLink to="/category/all" className="nav-link focus:ring-2">
             {t.nav.browse}
           </NavLink>
         </nav>
@@ -88,10 +68,21 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
             className={`flex gap-2 ${pill}`}
             aria-label={`${t.nav.cart} (${displayCartCount})`}
           >
-            <Icon className="text-brand">
+            <svg
+              className="size-5 text-brand"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0" />
-            </Icon>
-            <span className="font-bold text-brand">{displayCartCount}</span>
+            </svg>
+            <span key={displayCartCount} className="font-bold text-brand cart-badge-pop">
+              {displayCartCount}
+            </span>
           </Link>
 
           {!user ? (
@@ -120,9 +111,19 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
               aria-expanded={quickMenuOpen}
               aria-label={quickMenuOpen ? t.nav.closeMenu : t.nav.openMenu}
             >
-              <Icon>
-                <path d={quickMenuOpen ? 'M18 6 6 18M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
-              </Icon>
+              <svg
+                className={`size-5 overflow-visible ${quickMenuOpen ? 'hamburger-open' : ''}`}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <line x1="4" y1="6" x2="20" y2="6" className="hamburger-line hamburger-line-1" />
+                <line x1="4" y1="12" x2="20" y2="12" className="hamburger-line hamburger-line-2" />
+                <line x1="4" y1="18" x2="20" y2="18" className="hamburger-line hamburger-line-3" />
+              </svg>
             </button>
 
             {/* Quick Buttons Dropdown */}

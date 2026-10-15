@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/ornaments'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorPanel } from '@/components/ui/ErrorPanel'
-import { Skeleton } from '@/components/ui/Skeleton'
+import { Skeleton, SkeletonCard } from '@/components/ui/Skeleton'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 
@@ -130,7 +130,7 @@ export default function HomePage() {
           {/* Arch frame & floating highlights */}
           <div className="relative flex flex-col sm:flex-row items-center gap-6">
             {/* Arch-framed photo */}
-            <div className="relative">
+            <div className="relative hero-arch-glow rounded-arch">
               <ArchFrame className="w-56 sm:w-64 h-80 sm:h-96 border-border shadow-card bg-surface-tint">
                 <ProductImage
                   src="categories/earrings-cover.webp"
@@ -204,7 +204,7 @@ export default function HomePage() {
 
       {/* 3. STORE SECTION (Category Tiles with Arch Frames) */}
       <section id="store" aria-labelledby="store-heading" className="space-y-8 scroll-mt-24">
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 section-heading-reveal">
           <div className="inline-flex items-center gap-2 text-brand">
             <RibbonBow className="size-5" />
             <h2 id="store-heading" className="font-accent text-h2 font-bold text-brand">
@@ -232,7 +232,9 @@ export default function HomePage() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {categories.map((cat) => (
-              <CategoryTile key={cat.id} category={cat} />
+              <div key={cat.id} className="catalog-stagger-item">
+                <CategoryTile category={cat} />
+              </div>
             ))}
           </div>
         )}
@@ -243,7 +245,7 @@ export default function HomePage() {
       {/* 4. BROWSE SECTION (Catalog Filters, Best Sellers first, Load More) */}
       <section id="browse" aria-labelledby="browse-heading" className="space-y-8 scroll-mt-24">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-border pb-4">
-          <div>
+          <div className="section-heading-reveal">
             <h2 id="browse-heading" className="font-accent text-h2 font-bold text-brand">
               {activeCategoryObject
                 ? lang === 'ar'
@@ -285,12 +287,7 @@ export default function HomePage() {
         ) : isBrowseLoading && !browseData ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-              <div key={n} className="space-y-3 p-3 rounded-card border border-border bg-surface">
-                <Skeleton className="aspect-square w-full rounded-image" />
-                <Skeleton className="h-4 w-3/4 rounded-chip" />
-                <Skeleton className="h-4 w-1/2 rounded-chip" />
-                <Skeleton className="h-8 w-full rounded-pill mt-4" />
-              </div>
+              <SkeletonCard key={n} />
             ))}
           </div>
         ) : !browseData || browseData.products.length === 0 ? (
@@ -299,7 +296,9 @@ export default function HomePage() {
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {browseData.products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <div key={product.id} className="catalog-stagger-item">
+                  <ProductCard product={product} />
+                </div>
               ))}
             </div>
 
@@ -324,7 +323,7 @@ export default function HomePage() {
 
       {/* 5. ABOUT AND DELIVERY INFO SECTION */}
       <section id="about" aria-labelledby="about-heading" className="space-y-8 scroll-mt-24">
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 section-heading-reveal">
           <h2 id="about-heading" className="font-accent text-h2 font-bold text-brand">
             {t.section.about}
           </h2>
@@ -335,7 +334,7 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* About story card */}
-          <Card className="p-6 space-y-4 rounded-card border border-border bg-surface shadow-card">
+          <Card className="feature-card p-6 space-y-4 rounded-card border border-border bg-surface shadow-card">
             <div className="inline-flex size-12 items-center justify-center rounded-pill bg-surface-tint text-brand">
               <RibbonBow className="size-6 text-brand" />
             </div>
@@ -344,7 +343,7 @@ export default function HomePage() {
           </Card>
 
           {/* Delivery & Payment card */}
-          <Card className="p-6 space-y-4 rounded-card border border-border bg-surface shadow-card">
+          <Card className="feature-card p-6 space-y-4 rounded-card border border-border bg-surface shadow-card">
             <div className="inline-flex size-12 items-center justify-center rounded-pill bg-surface-tint text-brand">
               <Sparkle className="size-6 text-brand" />
             </div>
@@ -361,7 +360,7 @@ export default function HomePage() {
           </Card>
 
           {/* Returns & Exchange Guarantee card */}
-          <Card className="p-6 space-y-4 rounded-card border border-border bg-surface shadow-card">
+          <Card className="feature-card p-6 space-y-4 rounded-card border border-border bg-surface shadow-card">
             <div className="inline-flex size-12 items-center justify-center rounded-pill bg-surface-tint text-brand">
               <PearlOrnament className="h-6 w-12 text-brand" />
             </div>
