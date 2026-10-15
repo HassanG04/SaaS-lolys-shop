@@ -201,3 +201,131 @@ def write_forecast_run(
         conn.rollback()
         logger.error(f"Database write failed, rolled back completely: {e}")
         raise
+
+
+def write_insights(
+    conn: Any,
+    basket_pairs: list[Any] | None = None,
+    cohort_periods: list[Any] | None = None,
+    customer_segments: list[Any] | None = None,
+) -> None:
+    """Atomically persist market basket, cohort retention, and customer segments.
+
+    Operates under analytics_writer role.
+    Clears or upserts insights atomically. If any error occurs, the entire
+    transaction rolls back.
+    """
+    try:
+        with conn.cursor() as cur:
+            # 1. Basket Pairs
+            if basket_pairs is not None:
+                cur.execute("DELETE FROM analytics.basket_pairs;")
+                if basket_pairs:
+                    insert_basket_sql = """
+                        INSERT INTO analytics.basket_pairs (
+                            product_a_id, product_b_id, support, confidence, lift, sample_orders, updated_at
+                        ) VALUES (%s, %s, %s, %s, %s, %s, NOW());
+                    """
+                    for bp in basket_pairs:
+                        p_a = bp.product_a_id if hasattr(bp, "product_a_id") else bp["product_a_id"]
+                        p_b = bp.product_b_id if hasattr(bp, "product_b_id") else bp["product_b_id"]
+                        sup = bp.support if hasattr(bp, "support") else bp["support"]
+                        conf = bp.confidence if hasattr(bp, "confidence") else bp["confidence"]
+                        lift = bp.lift if hasattr(bp, "lift") else bp["lift"]
+                        samp = (
+                            bp.sample_orders
+                            if hasattr(bp, "sample_orders")
+                            else bp["sample_orders"]
+                        )
+                        if p_a > p_b:
+                            p_a, p_b = p_b, p_a
+                        cur.execute(
+                            insert_basket_sql,
+                            (
+                                p_a,
+                                p_b,
+                                round(float(sup), 4),
+                                round(float(conf), 4),
+                                round(float(lift), 4),
+                                int(samp),
+                            ),
+                        )
+
+            # 2. Cohort Retention
+            if cohort_periods is not None:
+                if cohort_periods:
+                    upsert_cohort_sql = """
+                        INSERT INTO analytics.cohort_retention (
+                            cohort_month, period_months, cohort_size, active_customers, retention_rate, updated_at
+                        ) VALUES (%s, %s, %s, %s, %s, NOW())
+                        ON CONFLICT (cohort_month, period_months) DO UPDATE SET
+                            cohort_size = EXCLUDED.cohort_size,
+                            active_customers = EXCLUDED.active_customers,
+                            retention_rate = EXCLUDED.retention_rate,
+                            updated_at = NOW();
+                    """
+                    for cp in cohort_periods:
+                        cm = cp.cohort_month if hasattr(cp, "cohort_month") else cp["cohort_month"]
+                        pm = (
+                            cp.period_months
+                            if hasattr(cp, "period_months")
+                            else cp["period_months"]
+                        )
+                        cs = cp.cohort_size if hasattr(cp, "cohort_size") else cp["cohort_size"]
+                        ac = (
+                            cp.active_customers
+                            if hasattr(cp, "active_customers")
+                            else cp["active_customers"]
+                        )
+                        rr = (
+                            cp.retention_rate
+                            if hasattr(cp, "retention_rate")
+                            else cp["retention_rate"]
+                        )
+                        cur.execute(
+                            upsert_cohort_sql,
+                            (cm, int(pm), int(cs), int(ac), round(float(rr), 4)),
+                        )
+
+            # 3. Customer Segments
+            if customer_segments is not None:
+                cur.execute("DELETE FROM analytics.customer_segments;")
+                if customer_segments:
+                    insert_segment_sql = """
+                        INSERT INTO analytics.customer_segments (
+                            segment, customer_count, total_revenue, avg_order_value, updated_at
+                        ) VALUES (%s, %s, %s, %s, NOW())
+                        ON CONFLICT (segment) DO UPDATE SET
+                            customer_count = EXCLUDED.customer_count,
+                            total_revenue = EXCLUDED.total_revenue,
+                            avg_order_value = EXCLUDED.avg_order_value,
+                            updated_at = NOW();
+                    """
+                    for cs in customer_segments:
+                        seg = cs.segment if hasattr(cs, "segment") else cs["segment"]
+                        cnt = (
+                            cs.customer_count
+                            if hasattr(cs, "customer_count")
+                            else cs["customer_count"]
+                        )
+                        rev = (
+                            cs.total_revenue
+                            if hasattr(cs, "total_revenue")
+                            else cs["total_revenue"]
+                        )
+                        aov = (
+                            cs.avg_order_value
+                            if hasattr(cs, "avg_order_value")
+                            else cs["avg_order_value"]
+                        )
+                        cur.execute(
+                            insert_segment_sql,
+                            (str(seg), int(cnt), round(float(rev), 2), round(float(aov), 2)),
+                        )
+
+        conn.commit()
+        logger.info("Successfully updated analytics insights tables")
+    except Exception as e:
+        conn.rollback()
+        logger.error(f"Failed to write analytics insights, rolled back: {e}")
+        raise

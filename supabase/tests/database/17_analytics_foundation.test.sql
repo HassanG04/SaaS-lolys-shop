@@ -1,6 +1,6 @@
 BEGIN;
 
-SELECT plan(39);
+SELECT plan(54);
 
 -- ============================================================================
 -- Scenario S31: Analytics database foundation & role boundary enforcement
@@ -18,10 +18,16 @@ SELECT has_table('analytics', 'sales_forecasts', 'analytics.sales_forecasts tabl
 SELECT has_table('analytics', 'forecast_metrics', 'analytics.forecast_metrics table exists');
 SELECT has_table('analytics', 'basket_pairs', 'analytics.basket_pairs table exists');
 SELECT has_table('analytics', 'cohort_retention', 'analytics.cohort_retention table exists');
+SELECT has_table('analytics', 'customer_segments', 'analytics.customer_segments table exists');
 
 SELECT has_view('analytics', 'sales_daily', 'analytics.sales_daily view exists');
 SELECT has_view('analytics', 'stock_daily', 'analytics.stock_daily view exists');
 SELECT has_view('analytics', 'forecast_accuracy', 'analytics.forecast_accuracy view exists');
+SELECT has_view('analytics', 'sales_overview', 'analytics.sales_overview view exists');
+SELECT has_view('analytics', 'product_performance', 'analytics.product_performance view exists');
+SELECT has_view('analytics', 'discount_effect', 'analytics.discount_effect view exists');
+SELECT has_view('analytics', 'fulfilment_quality', 'analytics.fulfilment_quality view exists');
+SELECT has_view('analytics', 'geography', 'analytics.geography view exists');
 
 SELECT ok(
     EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'analytics_reader'),
@@ -260,6 +266,13 @@ SELECT throws_ok(
     'Customer calling admin_get_reorder_list throws ADM-001'
 );
 
+SELECT throws_ok(
+    $$ SELECT public.admin_get_analytics_insights() $$,
+    '42501',
+    'Admins only',
+    'Customer calling admin_get_analytics_insights throws ADM-001'
+);
+
 -- 5.3: Admin at AAL1 (MFA required)
 SELECT tests.authenticate_as('analytics_admin_user', 'aal1');
 
@@ -268,6 +281,13 @@ SELECT throws_ok(
     '42501',
     'Two-factor authentication required for admin actions',
     'Admin at AAL1 calling admin_get_forecasts throws ADM-002'
+);
+
+SELECT throws_ok(
+    $$ SELECT public.admin_get_analytics_insights() $$,
+    '42501',
+    'Two-factor authentication required for admin actions',
+    'Admin at AAL1 calling admin_get_analytics_insights throws ADM-002'
 );
 
 -- 5.4: Admin at AAL2 (Success)
@@ -296,6 +316,41 @@ SELECT ok(
 SELECT ok(
     (public.admin_get_analytics_insights() ? 'basket_pairs'),
     'Admin at AAL2 can successfully call admin_get_analytics_insights'
+);
+
+SELECT ok(
+    (public.admin_get_analytics_insights() ? 'cohorts'),
+    'insights result includes cohorts'
+);
+
+SELECT ok(
+    (public.admin_get_analytics_insights() ? 'customer_segments'),
+    'insights result includes customer_segments'
+);
+
+SELECT ok(
+    (public.admin_get_analytics_insights() ? 'sales_overview'),
+    'insights result includes sales_overview'
+);
+
+SELECT ok(
+    (public.admin_get_analytics_insights() ? 'product_performance'),
+    'insights result includes product_performance'
+);
+
+SELECT ok(
+    (public.admin_get_analytics_insights() ? 'discount_effect'),
+    'insights result includes discount_effect'
+);
+
+SELECT ok(
+    (public.admin_get_analytics_insights() ? 'fulfilment_quality'),
+    'insights result includes fulfilment_quality'
+);
+
+SELECT ok(
+    (public.admin_get_analytics_insights() ? 'geography'),
+    'insights result includes geography'
 );
 
 SELECT * FROM finish();
