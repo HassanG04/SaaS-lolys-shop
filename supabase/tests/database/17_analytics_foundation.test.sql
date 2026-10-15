@@ -1,6 +1,6 @@
 BEGIN;
 
-SELECT plan(37);
+SELECT plan(39);
 
 -- ============================================================================
 -- Scenario S31: Analytics database foundation & role boundary enforcement
@@ -279,8 +279,18 @@ SELECT ok(
 );
 
 SELECT ok(
+    (public.admin_get_forecasts() ? 'history'),
+    'admin_get_forecasts result includes history array'
+);
+
+SELECT ok(
     jsonb_array_length(public.admin_get_reorder_list()) >= 1,
     'Admin at AAL2 can successfully call admin_get_reorder_list'
+);
+
+SELECT ok(
+    ((public.admin_get_reorder_list()->0) ? 'days_since_last_sale') AND ((public.admin_get_reorder_list()->0) ? 'is_dead_stock'),
+    'admin_get_reorder_list items include dead stock and days since last sale fields'
 );
 
 SELECT ok(

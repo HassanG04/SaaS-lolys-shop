@@ -175,6 +175,22 @@ function NavIcon({ type }: { type: AdminNavItem['icon'] }): ReactNode {
           <line x1="6" x2="6" y1="20" y2="14" />
         </svg>
       )
+    case 'forecast':
+      return (
+        <svg
+          className="size-5 shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m22 7-8.5 8.5-5-5L2 17" />
+          <polyline points="16 7 22 7 22 13" />
+        </svg>
+      )
   }
 }
 
@@ -196,6 +212,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     { to: '/admin/delivery', label: t.admin.delivery, icon: 'delivery' },
     { to: '/admin/settings', label: t.admin.settings, icon: 'settings' },
     { to: '/admin/audit', label: t.admin.audit, icon: 'audit' },
+    { to: '/admin/forecast', label: t.admin.forecast, icon: 'forecast' },
     { to: '/admin/analytics', label: t.admin.analytics, icon: 'analytics' },
   ]
 

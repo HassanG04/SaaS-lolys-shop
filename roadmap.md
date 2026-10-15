@@ -464,7 +464,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** try both once on a scratch branch
 
 #### T-0.09b: Initial-route bundle guard
-`status: doing` `owner: agent` `needs: T-0.09` `size: M`
+`status: done` `owner: agent` `needs: T-0.09` `size: M`
 - **Do:** Complete the repository-guard split: write `scripts/check-bundle.mjs` to enforce a gzip budget for initial-route JS of 200 KB or less, with the admin chunk separate. Wire it into the `build` CI job and preserve the secret guard.
 - **Done when:** a budget breach is shown once then reverted; initial dependencies are counted, lazy admin code is excluded from the initial route, and full verification passes.
 - **Verify:** `npm run build && npm run check:bundle && npm run verify`
@@ -610,7 +610,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:reset && npm run check:sql`
 
 #### T-1.09b: Append-only migration guard
-`status: doing` `owner: agent` `needs: T-0.06` `size: M`
+`status: done` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Implement `check:migrations` to reject modification, deletion or renaming of migrations already on `origin/main`; wire into local verification and the existing static CI job. Use the pre-push SHA on main so the post-push check cannot compare a rewrite against itself. No database or cloud connections.
 - **Done when:** real Git fixtures prove committed/staged/unstaged edits, deletion, rename and missing-history rejection; additions pass; CI runs the guard and negative fixtures. Owner workflow review remains required. T-1.09 retains database/type and actual merged-migration PR acceptance.
 - **Verify:** `node --test scripts/check-migrations.test.mjs && npm run check:migrations && npm run verify`; read PR checks.
@@ -1052,7 +1052,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run analytics:test`
 
 #### T-9.10: Admin forecast and reorder screens
-`status: todo` `owner: agent` `needs: T-9.08, T-5.01, T-2.08` `size: L`
+`status: done` `owner: agent` `needs: T-9.08, T-5.01, T-2.08` `size: L`
 - **Do:** `/admin/forecast` in Arabic: a chart with history, forecast and the 80% band for the shop, a category or a product; badges for preliminary data and not enough data (ANL-001); a reorder list with days of cover, reorder point and suggested quantity (formulas in the plan); stock-risk and dead-stock lists. Data comes only through the admin-only functions from T-9.01.
 - **Done when:** tests cover the formulas and badges; a customer or an admin at `aal1` receives nothing.
 - **Verify:** `npm run test:unit`
@@ -1403,6 +1403,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-15 | T-9.07 | Anti-Gravity | Implemented model selection, readiness gates, and output validation in analytics/src/lolys_analytics/select.py: readiness gate evaluating data adequacy across shop (56d/30 orders), category (84d/40 units), and product levels (12w/6 non-zero weeks for statistical, >= 3 for intermittent, preliminary fallback or ANL-001 insufficient data); select_best_model enforcing 5% relative improvement over baseline; create_ensemble_forecast computing median ensemble; validate_forecast checking finite numbers, non-negativity, 5x max historical cap, and interval ordering; sanitize_or_fallback replacing invalid forecasts; reconcile_hierarchy ensuring coherent bottom-up totals. All 48 analytics tests and full npm run verify pass cleanly. | pending |
 | 2026-10-15 | T-9.08 | Anti-Gravity | Implemented weekly forecast workflow and database writes in analytics/ (db.py, write.py, forecast.py, cli.py): enforced TLS with sslmode=require for remote hosts (ADR-0003), atomic write_forecast_run via analytics_writer with cascade idempotency per day, 80% conformal prediction intervals, SHA-256 reproducibility hash, git SHA recording, zero personal data (S31), GitHub Actions weekly workflow (.github/workflows/forecast.yml) on Sunday nights with 30m timeout and supply-chain action SHA pins. All 59 analytics tests, 199 tooling tests, and full npm run verify pass cleanly. | pending |
 | 2026-10-15 | T-9.09 | Anti-Gravity | Implemented accuracy tracking and drift alert module in analytics/ (accuracy.py, db.py, forecast.py, cli.py): 4-week rolling WAPE evaluation, interval coverage, signed bias; drift detection rule triggering alert and switching display to SeasonalNaive when candidate model WAPE exceeds baseline by > 20% for 2 consecutive weeks; alert clears and display restores when accuracy recovers; verified simulated multi-week drift and recovery lifecycle; check-drift subcommand added to CLI; 71 analytics tests, 200 tooling tests, and full npm run verify pass cleanly. | pending |
+| 2026-10-15 | T-9.10 | Anti-Gravity | Implemented admin forecast and reorder screens at /admin/forecast: interactive charts with 80% conformal prediction intervals and 56-day history for shop, category, and product series; badges for readiness (preliminary, ANL-001 insufficient data, ready), selected model, and WAPE error; automated drift alert banner; comprehensive reorder list with lead-time/service-level parameters, days of cover, reorder point, suggested quantity, stock-risk (<= 14 days), and dead-stock (>= 60 days) tabs; SEC-14 formula-neutralized CSV export with UTF-8 BOM; RPCs require AAL2 MFA (customer / AAL1 access refused); 15 unit tests, 492 pgTAP tests, 71 analytics tests, and full npm run verify pass cleanly (initial JS bundle 199,858 / 200,000 gzip bytes). | pending |
 
 
 | 2026-10-11 | T-0.01 / T-0.06 / T-0.10 | Codex | Owner explicitly authorized updating branches and merging verified work to main. Consolidated the published PR 1–12 stack with README PR 13 in an isolated worktree; active Anti-Gravity edits remain separate. Added owner-supplied JPEG, enabled squash-only merge/automatic cleanup. Branch protection rejected with HTTP 403 (private repository requires GitHub Pro); T-0.10 remains incomplete. Fresh npm run verify passes with 152 tests; final remote integration checks still gate the merge. No production or visual acceptance claim. | [#13](https://github.com/HassanG04/lolys/pull/13) |
