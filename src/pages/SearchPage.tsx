@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useLanguage } from '../i18n/LanguageProvider'
 import { useSearchProducts } from '../features/catalog/hooks'
 import { ProductCard } from '../features/catalog/components/ProductCard'
-import { Skeleton } from '../components/ui/Skeleton'
+import { CatalogSkeleton } from '@/features/catalog/components/CatalogSkeleton'
 import { EmptyState } from '../components/ui/EmptyState'
 import { ErrorPanel } from '../components/ui/ErrorPanel'
 import { useSeo } from '../features/seo'
@@ -142,22 +142,7 @@ export default function SearchPage() {
       ) : isError ? (
         <ErrorPanel error={error} onRetry={() => void refetch()} retryLabel={t.ui.retry} />
       ) : isLoading ? (
-        <div
-          role="status"
-          aria-label="Searching products"
-          className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4"
-        >
-          {Array.from({ length: 8 }).map((_, idx) => (
-            <div
-              key={idx}
-              className="flex flex-col gap-3 rounded-card border border-border bg-surface p-3 shadow-card"
-            >
-              <Skeleton className="aspect-square w-full rounded-image" />
-              <Skeleton className="h-4 w-3/4 rounded-pill" />
-              <Skeleton className="h-4 w-1/3 rounded-pill" />
-            </div>
-          ))}
-        </div>
+        <CatalogSkeleton />
       ) : products && products.length === 0 ? (
         <EmptyState
           description={t.empty.search}

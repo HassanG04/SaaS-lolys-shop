@@ -184,7 +184,7 @@ describe('SearchPage (T-3.07)', () => {
 
     renderSearchPage(['/search?q=loadingquery'])
 
-    expect(screen.getByRole('status', { name: 'Searching products' })).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: 'جارٍ التحميل' })).toBeInTheDocument()
   })
 
   it('debounces input typing and syncs search param to URL', async () => {

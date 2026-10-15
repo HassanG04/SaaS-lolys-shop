@@ -128,6 +128,42 @@ describe('Catalog UI Components (T-3.02)', () => {
     })
   })
 
+  describe('image loading lifecycle', () => {
+    it('shows a skeleton until an eager image loads and forwards the load callback', () => {
+      const onLoad = vi.fn()
+      const { container } = render(
+        <ProductImage
+          src="/brand/cozy-still-life.webp"
+          alt="Still life"
+          loading="eager"
+          onLoad={onLoad}
+        />,
+      )
+      expect(container.querySelector('.ui-skeleton')).toBeInTheDocument()
+      fireEvent.load(screen.getByRole('img', { name: 'Still life' }))
+      expect(container.querySelector('.ui-skeleton')).not.toBeInTheDocument()
+      expect(onLoad).toHaveBeenCalledOnce()
+    })
+
+    it('stops loading on error and recovers when the source changes', () => {
+      const onError = vi.fn()
+      const { container, rerender } = render(
+        <ProductImage src="/broken.webp" alt="Mug" onError={onError} />,
+      )
+      fireEvent.error(screen.getByRole('img', { name: 'Mug' }))
+      expect(screen.getByRole('img', { name: 'Mug' }).tagName).toBe('DIV')
+      expect(container.querySelector('.ui-skeleton')).not.toBeInTheDocument()
+      expect(onError).toHaveBeenCalledOnce()
+      rerender(<ProductImage src="/fixed.webp" alt="Mug" />)
+      const image = screen.getByRole('img', { name: 'Mug' })
+      expect(image).toHaveAttribute('src', '/fixed.webp')
+      expect(container.querySelector('.ui-skeleton')).toBeInTheDocument()
+      fireEvent.load(image)
+      expect(image).toHaveClass('opacity-100')
+      expect(container.querySelector('.ui-skeleton')).not.toBeInTheDocument()
+    })
+  })
+
   describe('ProductCard', () => {
     it('renders 28px card radius, 20px inner image radius, links, and prices', () => {
       const { container } = renderWithProviders(<ProductCard product={mockAvailableProduct} />)
@@ -191,7 +227,7 @@ describe('Catalog UI Components (T-3.02)', () => {
   })
 
   describe('CategoryTile', () => {
-    it('renders full-bleed image with floating label chip and category link', () => {
+    it('renders square image with a readable caption and category link', () => {
       const { container } = renderWithProviders(<CategoryTile category={mockCategory} />)
 
       const link = screen.getByRole('link', { name: 'أساور وأغواش' })

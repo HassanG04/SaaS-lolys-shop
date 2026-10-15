@@ -1,5 +1,6 @@
 import { useState, type ComponentPropsWithoutRef, type ReactNode } from 'react'
 import { publicImageUrl } from '@/lib/images'
+import { RibbonBow } from '@/components/ui/ornaments'
 
 export interface ProductImageProps extends Omit<ComponentPropsWithoutRef<'img'>, 'src'> {
   src?: string | null
@@ -9,7 +10,12 @@ export interface ProductImageProps extends Omit<ComponentPropsWithoutRef<'img'>,
   imageClassName?: string
 }
 
-export function ProductImage({
+export function ProductImage(props: ProductImageProps) {
+  // Changing the source must recover after a failure and restart its loading state.
+  return <ImageContent key={props.src ?? ''} {...props} />
+}
+
+function ImageContent({
   src,
   alt,
   aspectRatio = 'square',
@@ -17,15 +23,13 @@ export function ProductImage({
   className = '',
   imageClassName = '',
   loading = 'lazy',
+  onLoad,
+  onError,
   ...props
 }: ProductImageProps) {
   const [hasError, setHasError] = useState(false)
-  const isEager = loading === 'eager'
-  const [isLoaded, setIsLoaded] = useState(isEager)
-
+  const [isLoaded, setIsLoaded] = useState(false)
   const resolvedUrl = publicImageUrl(src)
-  const isAvailable = Boolean(resolvedUrl) && !hasError
-
   const ratioClass =
     aspectRatio === 'square'
       ? 'aspect-square'
@@ -37,53 +41,38 @@ export function ProductImage({
     <div
       className={`relative w-full overflow-hidden rounded-image bg-surface-tint ${ratioClass} ${className}`}
     >
-      {isAvailable ? (
+      {resolvedUrl && !hasError ? (
         <>
-          {/* Skeleton placeholder while loading to prevent layout shift */}
-          {!isLoaded && !isEager && (
-            <div aria-hidden="true" className="absolute inset-0 animate-pulse bg-surface-2" />
+          {!isLoaded && (
+            <div aria-hidden="true" className="ui-skeleton absolute inset-0 bg-surface-2" />
           )}
           <img
             {...props}
-            src={resolvedUrl as string}
+            src={resolvedUrl}
             alt={alt}
             loading={loading}
-            onLoad={() => setIsLoaded(true)}
-            onError={() => setHasError(true)}
-            className={`size-full object-cover rounded-image ${
-              isEager
-                ? 'opacity-100'
-                : `transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`
-            } ${imageClassName}`}
+            onLoad={(event) => {
+              setIsLoaded(true)
+              onLoad?.(event)
+            }}
+            onError={(event) => {
+              setHasError(true)
+              onError?.(event)
+            }}
+            className={`catalog-photo size-full object-cover rounded-image ${isLoaded ? 'opacity-100' : 'opacity-0'} ${imageClassName}`}
           />
         </>
       ) : (
         <div
-          role="img"
-          aria-label={alt}
-          className="flex size-full items-center justify-center rounded-image bg-surface-tint text-text-muted p-4"
+          role={alt ? 'img' : undefined}
+          aria-label={alt || undefined}
+          aria-hidden={alt ? undefined : true}
+          className="catalog-image-fallback flex size-full items-center justify-center rounded-image bg-surface-tint text-brand p-4"
         >
-          {fallback ? (
-            fallback
-          ) : (
-            <svg
-              aria-hidden="true"
-              className="size-12 opacity-60 text-text-muted"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {/* Elegant accessory / gift ornament placeholder */}
-              <circle cx="12" cy="12" r="7" />
-              <path d="M12 5V2" />
-              <path d="M12 22v-3" />
-              <path d="M5 12H2" />
-              <path d="M22 12h-3" />
-              <circle cx="12" cy="12" r="2" />
-            </svg>
+          {fallback ?? (
+            <span className="catalog-placeholder-seal rounded-pill border border-border bg-surface p-5">
+              <RibbonBow className="size-10" />
+            </span>
           )}
         </div>
       )}
