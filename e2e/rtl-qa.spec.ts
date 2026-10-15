@@ -88,7 +88,8 @@ async function loginAdmin(page: Page) {
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
   await page.goto('/admin')
-  await page.waitForTimeout(800)
+  await page.waitForURL((url) => url.pathname.startsWith('/admin'), { timeout: 15000 })
+  await page.waitForLoadState('networkidle').catch(() => {})
 
   if (page.url().includes('/admin/mfa/enroll')) {
     const secretContainer = page.locator('div.select-all')

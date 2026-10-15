@@ -91,7 +91,8 @@ async function loginAdmin(page: Page) {
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
   await page.goto('/admin')
-  await page.waitForTimeout(800)
+  await page.waitForURL((url) => url.pathname.startsWith('/admin'), { timeout: 15000 })
+  await page.waitForLoadState('networkidle').catch(() => {})
 
   if (page.url().includes('/admin/mfa/enroll')) {
     const secretContainer = page.locator('div.select-all')
@@ -227,8 +228,17 @@ test.describe.serial('Axe Accessibility Audit Suite (T-7.02)', () => {
   test('09. Admin Dashboard Accessibility Pass (Light & Dark)', async ({ page }) => {
     await loginAdmin(page)
     await page.goto('/admin')
+    if (page.url().includes('/admin/mfa/challenge')) {
+      const secret = getAdminTotpSecret()
+      if (secret) {
+        const code = generateTotp(secret)
+        await page.locator('input[name="totpCode"]').fill(code)
+        await page.getByRole('button', { name: 'تأكيد الرمز والمتابعة' }).click()
+        await page.waitForURL((url) => !url.pathname.includes('/mfa'), { timeout: 15000 })
+      }
+    }
     await expect(page.getByRole('heading', { name: 'لوحة تحكم الإدارة' })).toBeVisible({
-      timeout: 10000,
+      timeout: 15000,
     })
 
     await assertZeroSeriousOrCritical(page, 'Admin Dashboard')

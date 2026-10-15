@@ -167,6 +167,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     // Select created category
     const catOptionVal = await page
       .locator('#prod-category option', { hasText: 'أساور وحليات فاخرة' })
+      .first()
       .getAttribute('value')
     await page.locator('#prod-category').selectOption(catOptionVal ?? '')
     await page.locator('#prod-price').fill('350')
