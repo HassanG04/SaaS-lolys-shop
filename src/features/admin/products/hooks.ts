@@ -11,6 +11,8 @@ import {
   restoreAdminProduct,
   updateProductStock,
   updateProductActive,
+  updateAdminProductId,
+  quickUpdateAdminProduct,
 } from './api'
 import type { ProductInputForm } from './payloadBuilder'
 import type {
@@ -18,6 +20,8 @@ import type {
   AdminCategorySummary,
   UpdateProductStockParams,
   UpdateProductActiveParams,
+  UpdateProductIdParams,
+  QuickProductUpdateParams,
 } from './types'
 
 export const ADMIN_PRODUCTS_QUERY_KEY = ['admin', 'products'] as const
@@ -194,6 +198,35 @@ export function useRestoreProduct() {
     onSuccess: (updated) => {
       void queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_QUERY_KEY })
       void queryClient.invalidateQueries({ queryKey: ['admin', 'product', updated.id] })
+    },
+  })
+}
+
+export function useUpdateProductId() {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, AppError, UpdateProductIdParams>({
+    mutationFn: ({ oldId, newId }) => updateAdminProductId(oldId, newId),
+    onSuccess: (_, { oldId, newId }) => {
+      void queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'product', oldId] })
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'product', newId] })
+    },
+  })
+}
+
+export function useQuickUpdateProduct() {
+  const queryClient = useQueryClient()
+
+  return useMutation<AdminProduct, AppError, QuickProductUpdateParams>({
+    mutationFn: (params) => quickUpdateAdminProduct(params),
+    onSuccess: (updatedProduct, { productId, newId }) => {
+      void queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_QUERY_KEY })
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'product', productId] })
+      if (newId && newId !== productId) {
+        void queryClient.invalidateQueries({ queryKey: ['admin', 'product', newId] })
+      }
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'product', updatedProduct.id] })
     },
   })
 }

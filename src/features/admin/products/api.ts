@@ -6,6 +6,7 @@ import type {
   AdminCategorySummary,
   UpdateProductStockParams,
   UpdateProductActiveParams,
+  QuickProductUpdateParams,
 } from './types'
 
 type RawAdminProductRow = Tables<'products'> & {
@@ -232,6 +233,92 @@ export async function archiveAdminProduct(productId: number): Promise<AdminProdu
  */
 export async function restoreAdminProduct(productId: number): Promise<AdminProduct> {
   return updateProductActive({ productId, isActive: true })
+}
+
+interface AdminRpcCaller {
+  rpc<T = unknown>(
+    fn: string,
+    args?: Record<string, unknown>,
+  ): Promise<{ data: T | null; error: { code?: string; message?: string } | null }>
+}
+
+const adminRpc = supabase as unknown as AdminRpcCaller
+
+/**
+ * Updates a product's ID via admin_update_product_id RPC.
+ * Cascades to orders, carts, favorites, stock movements, reviews, and analytics.
+ */
+export async function updateAdminProductId(oldId: number, newId: number): Promise<void> {
+  if (oldId === newId) return
+  if (!Number.isInteger(newId) || newId <= 0) {
+    throw new AppError('PRD-001')
+  }
+
+  try {
+    const { error } = await adminRpc.rpc('admin_update_product_id', {
+      p_old_id: oldId,
+      p_new_id: newId,
+    })
+
+    if (error) {
+      if (error.code === '23505' || error.message?.includes('already in use')) {
+        throw new AppError('PRD-002')
+      }
+      throw toAppError(error)
+    }
+  } catch (err) {
+    throw toAppError(err)
+  }
+}
+
+/**
+ * Performs a fast, atomic quick update of essential product attributes (name, category, price, stock, photo, and ID).
+ */
+export async function quickUpdateAdminProduct({
+  productId,
+  newId,
+  name,
+  name_ar,
+  categoryId,
+  price,
+  stockQuantity,
+  currentStockQuantity,
+  imageUrl,
+}: QuickProductUpdateParams): Promise<AdminProduct> {
+  let targetId = productId
+
+  // 1. Update general product fields (name, category, price, image)
+  const updateData: Partial<ProductInputForm> = {}
+  if (name !== undefined) updateData.name = name
+  if (name_ar !== undefined) updateData.name_ar = name_ar
+  if (categoryId !== undefined) updateData.category_id = categoryId
+  if (price !== undefined) updateData.price = price
+  if (imageUrl !== undefined) updateData.image_url = imageUrl
+
+  let updatedProduct: AdminProduct
+  if (Object.keys(updateData).length > 0) {
+    updatedProduct = await updateAdminProduct(targetId, updateData)
+  } else {
+    updatedProduct = await getAdminProductById(targetId)
+  }
+
+  // 2. Update stock quantity if changed
+  if (stockQuantity !== undefined && stockQuantity !== currentStockQuantity) {
+    updatedProduct = await updateProductStock({
+      productId: targetId,
+      newQuantity: stockQuantity,
+      reason: 'admin_adjust',
+    })
+  }
+
+  // 3. Update Product ID if a new valid ID was requested and differs
+  if (newId !== undefined && newId > 0 && newId !== productId) {
+    await updateAdminProductId(productId, newId)
+    targetId = newId
+    updatedProduct = await getAdminProductById(targetId)
+  }
+
+  return updatedProduct
 }
 
 import {

@@ -14,6 +14,8 @@ import { useToast } from '@/components/ui/ToastProvider'
 import { useAdminProducts, useAdminCategories, useUpdateProductActive } from './hooks'
 import { StockEditDialog } from './StockEditDialog'
 import { DeleteProductDialog } from './DeleteProductDialog'
+import { QuickProductEditModal } from './QuickProductEditModal'
+import { QuickProductAddModal } from './QuickProductAddModal'
 import {
   ExportCsvButton,
   formatProductsCsv,
@@ -49,6 +51,8 @@ export default function ProductsPage() {
   // Dialog state
   const [stockEditProduct, setStockEditProduct] = useState<AdminProduct | null>(null)
   const [productToDelete, setProductToDelete] = useState<AdminProduct | null>(null)
+  const [quickEditProduct, setQuickEditProduct] = useState<AdminProduct | null>(null)
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
 
   // Filter state
   const [search, setSearch] = useState('')
@@ -172,6 +176,14 @@ export default function ProductsPage() {
             successMessage={isAr ? 'تم تصدير ملف المنتجات بنجاح' : 'Products exported successfully'}
             disabled={isLoadingProducts || !products || products.length === 0}
           />
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setIsQuickAddOpen(true)}
+            className="shadow-card"
+          >
+            ⚡ {isAr ? 'إضافة سريعة' : 'Quick Add'}
+          </Button>
           <Link
             to="/admin/products/new"
             className="inline-flex items-center justify-center rounded-pill bg-brand px-4 py-2 text-small font-semibold text-brand-contrast shadow-card hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-focus"
@@ -362,9 +374,21 @@ export default function ProductsPage() {
                               {product.name}
                             </span>
                           )}
-                          <span className="font-mono text-caption text-text-muted inline-block">
+                          <button
+                            type="button"
+                            onClick={() => setQuickEditProduct(product)}
+                            className="font-mono text-caption text-brand hover:underline inline-flex items-center gap-1 cursor-pointer bg-brand/5 px-2 py-0.5 rounded-chip border border-brand/20 transition-colors"
+                            title={
+                              isAr
+                                ? `تعديل سريع للمنتج #${product.id}`
+                                : `Quick edit product #${product.id}`
+                            }
+                          >
                             <Ltr>#{product.id}</Ltr>
-                          </span>
+                            <span className="text-caption text-brand/70 font-sans">
+                              {isAr ? 'تعديل سريع ⚡' : 'Quick ⚡'}
+                            </span>
+                          </button>
                         </div>
                       </td>
 
@@ -458,6 +482,14 @@ export default function ProductsPage() {
                       {/* Actions */}
                       <td className="p-4 align-middle text-end">
                         <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="secondary"
+                            onClick={() => setQuickEditProduct(product)}
+                            className="text-small text-brand"
+                            aria-label={`تعديل سريع ${product.name_ar || product.name}`}
+                          >
+                            ⚡ {isAr ? 'سريع' : 'Quick'}
+                          </Button>
                           <Link
                             to={`/admin/products/${product.id}`}
                             className="inline-flex items-center justify-center rounded-pill border border-border bg-surface px-3 py-1 text-small font-semibold text-text hover:border-brand hover:text-brand focus:outline-none focus:ring-2 focus:ring-focus"
@@ -492,6 +524,20 @@ export default function ProductsPage() {
 
       {/* Delete / Archive Dialog */}
       <DeleteProductDialog product={productToDelete} onClose={() => setProductToDelete(null)} />
+
+      {/* Quick Edit Modal (Easy UI) */}
+      <QuickProductEditModal
+        product={quickEditProduct}
+        categories={categories ?? []}
+        onClose={() => setQuickEditProduct(null)}
+      />
+
+      {/* Quick Add Modal (Easy UI) */}
+      <QuickProductAddModal
+        isOpen={isQuickAddOpen}
+        categories={categories ?? []}
+        onClose={() => setIsQuickAddOpen(false)}
+      />
     </div>
   )
 }

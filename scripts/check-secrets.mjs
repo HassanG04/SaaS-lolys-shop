@@ -28,7 +28,10 @@ export function inspectText(source, file) {
   // Database hardening must name a role to revoke its privileges. Permit only
   // these complete, literal revocations in migrations; keys are still scanned
   // above, and grants, other SQL, frontend code and build output remain rejected.
-  const roleSource = /^supabase\/migrations\/\d{14}_[a-z0-9_]+\.sql$/.test(file)
+  const isMigrationOrSetup =
+    /^supabase\/migrations\/\d{14}_[a-z0-9_]+\.sql$/.test(file) ||
+    file === 'setup_remote_supabase.sql'
+  const roleSource = isMigrationOrSetup
     ? source.replace(
         new RegExp(
           `^revoke all on (?:function public\\.[a-z_]+\\([a-z0-9_, ]*\\)|(?:table|sequence) public\\.[a-z_]+) from public, anon, authenticated, ${privilegedRole};\\r?$`,

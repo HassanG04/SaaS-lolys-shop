@@ -15,6 +15,8 @@ import {
   useUpdateProduct,
   useArchiveProduct,
   useRestoreProduct,
+  useUpdateProductId,
+  useUpdateProductStock,
 } from './hooks'
 import { uploadProductImage } from './api'
 import { validateProductImageFile } from './imageUpload'
@@ -39,6 +41,8 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
   const updateMutation = useUpdateProduct()
   const archiveMutation = useArchiveProduct()
   const restoreMutation = useRestoreProduct()
+  const updateIdMutation = useUpdateProductId()
+  const updateStockMutation = useUpdateProductStock()
 
   // Form Fields State initialized directly from props (no setState in useEffect)
   const [name, setName] = useState(existingProduct?.name || '')
@@ -53,6 +57,11 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
   const [initialStock, setInitialStock] = useState<string>(
     existingProduct ? String(existingProduct.stock_quantity || 0) : '0',
   )
+  const [customIdInput, setCustomIdInput] = useState<string>('')
+  const [editIdInput, setEditIdInput] = useState<string>(
+    existingProduct ? String(existingProduct.id) : '',
+  )
+  const [isEditingId, setIsEditingId] = useState(false)
   const [isFeatured, setIsFeatured] = useState(Boolean(existingProduct?.is_featured))
   const [isActive, setIsActive] = useState(
     existingProduct !== undefined ? Boolean(existingProduct.is_active) : true,
@@ -183,13 +192,43 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
 
     try {
       if (isEditing && productId) {
+        let targetId = productId
+
+        // 1. If ID was edited
+        const parsedNewId = Number(editIdInput)
+        if (
+          isEditingId &&
+          !Number.isNaN(parsedNewId) &&
+          parsedNewId > 0 &&
+          parsedNewId !== productId
+        ) {
+          await updateIdMutation.mutateAsync({ oldId: productId, newId: parsedNewId })
+          targetId = parsedNewId
+        }
+
+        // 2. If stock quantity was modified
+        const currentStockVal = existingProduct?.stock_quantity ?? 0
+        const newStockVal = Number(initialStock) || 0
+        if (newStockVal !== currentStockVal) {
+          await updateStockMutation.mutateAsync({
+            productId: targetId,
+            newQuantity: newStockVal,
+            reason: 'admin_adjust',
+          })
+        }
+
+        // 3. Update main product details
         await updateMutation.mutateAsync({
-          productId,
+          productId: targetId,
           formData: payload,
         })
         toast.success(isAr ? 'تم تحديث المنتج بنجاح' : 'Product updated successfully')
       } else {
-        await createMutation.mutateAsync(payload)
+        const parsedCustomId = customIdInput.trim() ? Number(customIdInput) : undefined
+        await createMutation.mutateAsync({
+          ...payload,
+          custom_id: parsedCustomId && parsedCustomId > 0 ? parsedCustomId : undefined,
+        })
         toast.success(isAr ? 'تمت إضافة المنتج بنجاح' : 'Product created successfully')
       }
       navigate('/admin/products')
@@ -292,6 +331,74 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
           <h2 className="text-h3 font-bold text-text border-b border-border pb-2">
             {isAr ? 'المعلومات الأساسية' : 'Basic Information'}
           </h2>
+
+          {/* Product ID Control (Edit ID or Custom ID) */}
+          <div className="rounded-chip bg-surface-2/60 border border-border p-3.5 space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <span className="block text-small font-semibold text-text">
+                  {isEditing
+                    ? isAr
+                      ? 'معرّف المنتج في قاعدة البيانات (Product ID)'
+                      : 'Database Product ID'
+                    : isAr
+                      ? 'معرّف المنتج المخصص (اختياري)'
+                      : 'Custom Product ID (Optional)'}
+                </span>
+                <p className="text-caption text-text-muted">
+                  {isEditing
+                    ? isAr
+                      ? `المعرّف الحالي: #${productId}. تغيير المعرّف ينعكس تلقائيًا على كافة السجلات والطلبات المرتبطة.`
+                      : `Current ID: #${productId}. Changing ID automatically cascades to all linked orders and records.`
+                    : isAr
+                      ? 'اتركه فارغًا للتوليد التلقائي للرقم التالي، أو أدخل رقمًا مخصصًا غير مستخدم.'
+                      : 'Leave blank for auto-increment, or enter an unused custom number.'}
+                </p>
+              </div>
+
+              {isEditing && !isEditingId && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setIsEditingId(true)}
+                  className="text-small shrink-0"
+                >
+                  {isAr ? 'تغيير المعرّف' : 'Change ID'}
+                </Button>
+              )}
+            </div>
+
+            {(!isEditing || isEditingId) && (
+              <div className="pt-1 flex items-center gap-2">
+                <span className="font-mono text-small text-text-muted">#</span>
+                <input
+                  id="prod-custom-id"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={isEditing ? editIdInput : customIdInput}
+                  onChange={(e) =>
+                    isEditing ? setEditIdInput(e.target.value) : setCustomIdInput(e.target.value)
+                  }
+                  placeholder={isEditing ? String(productId) : isAr ? 'تلقائي' : 'Auto'}
+                  className="h-10 w-36 rounded-chip border border-border-input bg-bg px-3 text-body font-mono text-text focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
+                />
+                {isEditing && isEditingId && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setEditIdInput(String(productId))
+                      setIsEditingId(false)
+                    }}
+                    className="text-caption text-text-muted"
+                  >
+                    {isAr ? 'إلغاء التغيير' : 'Cancel'}
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Arabic Name */}

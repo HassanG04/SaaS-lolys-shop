@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useContext } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/Badge'
 import { RibbonBow, Sparkle } from '@/components/ui/ornaments'
@@ -11,6 +11,7 @@ import { useCart } from '@/features/cart'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatEGP } from '@/lib/format'
 import { ProductReviewsSection, useProductReviewSummary, StarRating } from '@/features/reviews'
+import { AuthContext } from '@/features/auth/AuthProvider'
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>()
@@ -18,6 +19,8 @@ export default function ProductPage() {
   const isAr = lang === 'ar'
   const { success } = useToast()
   const { addItem } = useCart()
+  const authContext = useContext(AuthContext)
+  const role = authContext?.role ?? 'customer'
 
   const productId = id ? Number(id) : null
 
@@ -195,6 +198,29 @@ export default function ProductPage() {
           </li>
         </ol>
       </nav>
+
+      {/* Admin Quick Action Banner */}
+      {role === 'admin' && product && (
+        <div className="rounded-card border border-brand/30 bg-surface-tint p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-card">
+          <div className="flex items-center gap-2">
+            <span className="rounded-pill bg-brand text-brand-contrast px-2.5 py-0.5 text-caption font-bold">
+              لوحة الإدارة • Admin
+            </span>
+            <span className="text-small text-text">
+              {isAr
+                ? `معرّف المنتج: #${product.id} • الكمية: ${product.stock_quantity}`
+                : `Product ID: #${product.id} • Stock: ${product.stock_quantity}`}
+            </span>
+          </div>
+          <Link
+            to={`/admin/products/${product.id}`}
+            className="inline-flex items-center justify-center gap-1.5 rounded-pill bg-brand px-4 py-1.5 text-small font-semibold text-brand-contrast shadow-card hover:opacity-95 transition-opacity"
+          >
+            <span>✏️</span>
+            <span>{isAr ? 'تعديل هذا المنتج في لوحة التحكم' : 'Edit in Admin Dashboard'}</span>
+          </Link>
+        </div>
+      )}
 
       {/* 2. Main Product Showcase */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 rounded-card border border-border bg-surface p-6 sm:p-10 shadow-card">
