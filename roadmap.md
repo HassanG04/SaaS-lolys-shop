@@ -721,6 +721,18 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** the title changes on every route.
 - **Verify:** `npm run test:unit`
 
+#### T-3.09: Cozy storefront art direction
+`status: doing` `owner: agent` `needs: T-3.03` `size: M`
+- **Do:** Owner-requested 2026-10-15 visual refresh: wide rounded hero still life, square category imagery, warm editorial spacing and bilingual copy. See `docs/design/cozy-storefront.md`.
+- **Done when:** no arch remains in storefront/category pages; artwork is bundled and responsive; public settings still work; light/dark and Arabic/English work at 360px and 1280px; no fabricated promotion when settings are absent.
+- **Verify:** `npm run verify`, local browser review.
+
+#### T-3.09b: Catalogue loading and motion
+`status: doing` `owner: agent` `needs: T-3.02` `size: M`
+- **Do:** Split from T-3.09 to keep the visual refresh and loading lifecycle independently reviewable. Shared image-shaped placeholders across home/category/search, graceful bow fallback, image fade and gentle entrance/hover motion.
+- **Done when:** image failure stops loading; a changed source recovers; eager images have placeholders; loading status is localized; reduced motion disables animation; existing catalogue behavior passes regression tests.
+- **Verify:** `npm run verify`, local browser loading and reduced-motion review.
+
 ### Phase 4: Checkout and orders
 
 #### T-4.01: Delivery options API
@@ -1420,6 +1432,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-15 | T-1.01–T-1.10, T-1.14–T-1.16 | Codex | Database-only reconciliation from cfac9d5 onto main 4dfb26c; preserve source branches and current-main guards. Corrected unmerged owner-role/audit migrations, stale tests, unsafe concurrency target and regenerated types. Isolated reset/seed counts, 259 pgTAP assertions, five negative probes plus recovery, S7 blocking proof and deterministic types pass. Full verify passes (57 application + 114 tooling tests); remote CI/owner review pending; see docs/handoff/DATABASE-INTEGRATION.md. InstaPay and dependent branches remain held. | [#26](https://github.com/HassanG04/SaaS_Accessories/pull/26) |
 | 2026-10-15 | T-1.09, T-5.09 | Codex | Owner supplied payment QR and explicitly approved main merge. Offline decoding verified the local JPEG and matching recipient; asset remains unmodified and unconfigured in cloud settings. PR26 at 4c04816 passed all seven implemented remote checks plus preview. Normal merge API returned HTTP 405: write-access approving review and required e2e check missing. Main unchanged; no gate bypass, no payment code or task status change. | [#26](https://github.com/HassanG04/SaaS_Accessories/pull/26) |
 | 2026-10-14 | T-7.06 | Codex | Merge-day preparation: repaired Node execution boundary in SAST workflow after remote setup-node ENOENT; scanner image digest and rejection/scan gates preserved. No feature edits. New-head CI pending. | pending |
+| 2026-10-15 | T-3.09, T-3.09b | Codex | Owner-requested cozy storefront, broad/square frames, responsive local artwork, bilingual copy and loading/motion lifecycle; split for review size. 685 application and 203 tooling tests pass with no skips; production build and earlier guards pass. Full verify fails the unchanged bundle gate: final UI build 202,391/200,000 gzip bytes; clean base 7f9b21c is also over at 201,984. Partial desktop visual review completed; mobile recheck and full visual matrix pending because browser URL policy denied further access. Both tasks stay doing; see docs/design/cozy-storefront.md and docs/handoff/COZY-STOREFRONT.md. | draft pending |
 
 ### Open questions (agents add rows; the owner answers)
 

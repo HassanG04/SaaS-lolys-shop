@@ -62,11 +62,11 @@ export function Navbar({ cartCount }: NavbarProps) {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-surface/95 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-(--container-layout) items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-20 max-w-(--container-layout) items-center justify-between gap-2 px-3 sm:gap-4 sm:px-6">
         {/* Brand Logo & Wordmark */}
         <Link
           to="/"
-          className="group flex items-center gap-3 text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-pill p-1"
+          className="group flex shrink-0 items-center gap-3 text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-pill p-1"
           aria-label="Lolys' Accessories & Home"
         >
           <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-pill border border-border bg-bg">
@@ -85,7 +85,7 @@ export function Navbar({ cartCount }: NavbarProps) {
               <rect x="10" y="9" width="4" height="5" />
             </NavIcon>
           </div>
-          <div className="flex flex-col">
+          <div className="hidden xl:flex flex-col">
             <span className="font-accent text-h3 font-bold leading-tight tracking-normal text-brand">
               Lolys&apos;
             </span>
@@ -97,7 +97,7 @@ export function Navbar({ cartCount }: NavbarProps) {
         <form
           role="search"
           onSubmit={handleSearchSubmit}
-          className="hidden md:flex flex-1 max-w-sm items-center"
+          className="hidden min-w-0 md:flex flex-1 max-w-sm items-center"
         >
           <div className="relative w-full">
             <input
@@ -137,7 +137,7 @@ export function Navbar({ cartCount }: NavbarProps) {
         </nav>
 
         {/* Actions: Cart, Account, Theme, Language */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-3">
           {/* Cart Pill */}
           <Link
             to="/cart"

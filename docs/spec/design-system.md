@@ -1,5 +1,10 @@
 # Design system: Lolys' Accessories & Home
 
+**2026-10-15 owner amendment:** storefront and category imagery now use broad
+rounded/square frames instead of arches. Subtle entrance/hover motion and
+pending-only skeleton pulses are authorized, with reduced-motion support.
+See [Cozy storefront](../design/cozy-storefront.md) for scope and asset provenance.
+
 Version 1.0, 2026-10-07. Applies to roadmap v1.1 (tasks T-0.07, T-0.08, T-3.x, T-5.x, T-7.01). Supersedes the Shop-style violet palette from roadmap v1.0.
 
 The structure still follows the Shop reference (pill controls, heavily rounded image-first cards, generous section spacing). The personality, colors and ornaments come from the Lolys' logo.

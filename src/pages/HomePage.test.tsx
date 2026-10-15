@@ -183,7 +183,7 @@ describe('HomePage (T-3.03)', () => {
     expect(screen.getByText(/خصم يصل إلى 70%/)).toBeInTheDocument()
   })
 
-  it('renders Store section with category tiles and arch frames', () => {
+  it('renders Store section with square category photographs', () => {
     const { container } = renderWithProviders('ar')
 
     const storeSection = container.querySelector('#store')
@@ -226,11 +226,60 @@ describe('HomePage (T-3.03)', () => {
     // Filter pill clicked
     const chainsPill = screen.getAllByRole('button', { name: 'سلاسل' })[0]
     await user.click(chainsPill)
+    expect(chainsPill).toHaveAttribute('aria-pressed', 'true')
 
     // Load more button
     const loadMoreBtn = screen.getByRole('button', { name: 'عرض المزيد' })
     expect(loadMoreBtn).toBeInTheDocument()
     await user.click(loadMoreBtn)
+  })
+
+  it('uses cozy copy without inventing a promotion when settings are unavailable', () => {
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({ data: undefined } as ReturnType<
+      typeof settingsHooks.usePublicSettings
+    >)
+    renderWithProviders('en')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('A little lovely for you.')
+    expect(screen.queryByText(/50%/)).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Find your little lovely/ })).toHaveAttribute(
+      'href',
+      '#browse',
+    )
+  })
+
+  it('announces loading and replaces placeholders when catalogue data arrives', () => {
+    const result = { data: undefined, isLoading: true, error: null }
+    vi.spyOn(catalogHooks, 'useCategories').mockReturnValue(
+      result as ReturnType<typeof catalogHooks.useCategories>,
+    )
+    vi.spyOn(catalogHooks, 'useBrowseProducts').mockReturnValue(
+      result as ReturnType<typeof catalogHooks.useBrowseProducts>,
+    )
+    const view = renderWithProviders('ar')
+    expect(screen.getAllByRole('status', { name: 'جارٍ التحميل' })).toHaveLength(2)
+    vi.spyOn(catalogHooks, 'useCategories').mockReturnValue({
+      data: mockCategories,
+      isLoading: false,
+      error: null,
+    } as ReturnType<typeof catalogHooks.useCategories>)
+    vi.spyOn(catalogHooks, 'useBrowseProducts').mockReturnValue({
+      data: { products: mockProducts, totalCount: 2, hasMore: false },
+      isLoading: false,
+      error: null,
+    } as ReturnType<typeof catalogHooks.useBrowseProducts>)
+    view.unmount()
+    renderWithProviders('ar')
+    expect(screen.queryByRole('status', { name: 'جارٍ التحميل' })).not.toBeInTheDocument()
+    expect(screen.getByTestId('category-tile-earrings')).toBeInTheDocument()
+  })
+
+  it('advertises only payment methods enabled by shop settings', () => {
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: { payment_methods_enabled: ['instapay_qr'] },
+    } as ReturnType<typeof settingsHooks.usePublicSettings>)
+    renderWithProviders('en')
+    expect(screen.getByText('InstaPay (QR)')).toBeInTheDocument()
+    expect(screen.queryByText('Cash on Delivery')).not.toBeInTheDocument()
   })
 
   it('renders About and Delivery section with returns guarantee from settings', () => {
