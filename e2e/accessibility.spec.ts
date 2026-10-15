@@ -93,6 +93,7 @@ async function loginAdmin(page: Page) {
   await page.goto('/admin')
   await page.waitForURL((url) => url.pathname.startsWith('/admin'), { timeout: 15000 })
   await page.waitForLoadState('networkidle').catch(() => {})
+  await page.waitForTimeout(500)
 
   if (page.url().includes('/admin/mfa/enroll')) {
     const secretContainer = page.locator('div.select-all')
@@ -227,7 +228,6 @@ test.describe.serial('Axe Accessibility Audit Suite (T-7.02)', () => {
 
   test('09. Admin Dashboard Accessibility Pass (Light & Dark)', async ({ page }) => {
     await loginAdmin(page)
-    await page.goto('/admin')
     if (page.url().includes('/admin/mfa/challenge')) {
       const secret = getAdminTotpSecret()
       if (secret) {

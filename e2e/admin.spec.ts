@@ -180,7 +180,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     // Save product
     await page.getByRole('button', { name: 'حفظ المنتج' }).click()
     await page.waitForURL('**/admin/products', { timeout: 15000 })
-    await expect(page.getByText('سوار اللؤلؤ الفضي التجريبي')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('سوار اللؤلؤ الفضي التجريبي').first()).toBeVisible({ timeout: 10000 })
 
     // Extract product ID from row
     const idText = await page
