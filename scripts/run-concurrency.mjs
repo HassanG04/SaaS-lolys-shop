@@ -64,8 +64,10 @@ async function main() {
   let a, b
   try {
     query(`begin;
-      insert into public.governorates(id,name_en,name_ar) values (-31000,'S7 ${run}','S7');
-      insert into public.delivery_fees(governorate_id,method,fee) values (-31000,'representative',35);
+      delete from public.delivery_fees where governorate_id = 31000;
+      delete from public.governorates where id = 31000;
+      insert into public.governorates(id,name_en,name_ar) values (31000,'S7 ${run}','S7');
+      insert into public.delivery_fees(governorate_id,method,fee) values (31000,'representative',35);
       insert into auth.users(id,raw_user_meta_data) values ('${buyerA}','{}'), ('${buyerB}','{}');
       insert into public.categories(name,slug) values ('S7 fixture','s7-${run}');
       insert into public.products(category_id,name,price,stock_quantity)
@@ -77,7 +79,7 @@ async function main() {
       set local role authenticated;
       select set_config('request.jwt.claims','{"sub":"${user}","aal":"aal1"}',true);
       select public.place_order('[{"product_id":${product},"quantity":${qty}}]'::jsonb,
-        'representative','S7 buyer','01011110001',(-31000)::smallint,'Cairo','S7 test address');\n`
+        'representative','cod','{"name":"S7 buyer","phone":"01011110001","governorate_id":31000,"city":"Cairo","address":"S7 test address"}'::jsonb);\n`
     a = session(nameA)
     a.child.stdin.write(order(buyerA, 2) + '\\echo A_READY\n')
     await until(() => a.stdout.includes('A_READY'), 'buyer A holding its transaction')
@@ -112,11 +114,16 @@ async function main() {
     }
     await Promise.all([a?.done, b?.done])
     query(`begin;
+      set session_replication_role = 'replica';
+      delete from public.order_items where product_id in (select id from public.products where name='S7 ${run}');
+      delete from public.stock_movements where product_id in (select id from public.products where name='S7 ${run}');
       delete from public.orders where user_id in ('${buyerA}','${buyerB}');
       delete from public.products where name='S7 ${run}';
       delete from public.categories where slug='s7-${run}';
       delete from auth.users where id in ('${buyerA}','${buyerB}');
-      delete from public.governorates where id=-31000 and name_en='S7 ${run}';
+      delete from public.delivery_fees where governorate_id = 31000;
+      delete from public.governorates where id=31000 and name_en='S7 ${run}';
+      set session_replication_role = 'origin';
       commit;`)
   }
 }

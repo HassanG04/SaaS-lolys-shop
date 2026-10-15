@@ -1,9 +1,7 @@
 name: OWASP ZAP Baseline Scan (Staging)
 
 on:
-  schedule:
-    # Run every Monday at 04:00 UTC
-    - cron: '0 4 * * 1'
+  # Owner launch hold (2026-10-15): manual-only until explicitly re-enabled.
   workflow_dispatch:
     inputs:
       target_url:

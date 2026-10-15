@@ -13,11 +13,11 @@ test('OWASP ZAP workflow file exists and is properly structured', () => {
   assert.ok(fs.existsSync(ZAP_WORKFLOW_PATH), '.github/workflows/zap.yml must exist')
   const content = fs.readFileSync(ZAP_WORKFLOW_PATH, 'utf8')
 
-  // Must have weekly cron schedule
-  assert.match(
+  // Owner launch hold: automatic scheduling must stay disabled.
+  assert.doesNotMatch(
     content,
-    /schedule:\s*(?:\r?\n\s*#[^\n]*)*\r?\n\s*-\s*cron:/,
-    'zap.yml must define a scheduled cron trigger',
+    /^ {2}schedule:/m,
+    'Scheduled workflows must remain manual-only until launch',
   )
 
   // Must have manual dispatch trigger

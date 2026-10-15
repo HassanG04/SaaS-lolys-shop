@@ -1,0 +1,51 @@
+[
+  {
+    "file": "ci.yml",
+    "schedules": [],
+    "pushMain": true,
+    "secrets": [],
+    "manual": false
+  },
+  {
+    "file": "db-production.yml",
+    "schedules": [],
+    "pushMain": false,
+    "secrets": ["SUPABASE_ACCESS_TOKEN", "PRODUCTION_PROJECT_REF", "PRODUCTION_DB_PASSWORD"],
+    "manual": true
+  },
+  {
+    "file": "db-staging.yml",
+    "schedules": [],
+    "pushMain": true,
+    "secrets": ["SUPABASE_ACCESS_TOKEN", "STAGING_PROJECT_REF", "STAGING_DB_PASSWORD"],
+    "manual": false
+  },
+  {
+    "file": "forecast.yml",
+    "schedules": ["0 21 * * 0"],
+    "pushMain": false,
+    "secrets": ["ANALYTICS_DB_URL_STAGING", "ANALYTICS_DB_URL_PRODUCTION"],
+    "manual": true
+  },
+  {
+    "file": "keepalive.yml",
+    "schedules": ["0 5 * * 1"],
+    "pushMain": false,
+    "secrets": ["PRODUCTION_URL", "PRODUCTION_ANON_KEY"],
+    "manual": true
+  },
+  {
+    "file": "sast.yml",
+    "schedules": [],
+    "pushMain": true,
+    "secrets": [],
+    "manual": false
+  },
+  {
+    "file": "zap.yml",
+    "schedules": ["0 4 * * 1"],
+    "pushMain": false,
+    "secrets": [],
+    "manual": true
+  }
+]

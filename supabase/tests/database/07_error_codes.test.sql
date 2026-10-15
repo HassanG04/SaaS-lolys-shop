@@ -161,7 +161,7 @@ SELECT tests.assert_error_code(
 SELECT tests.assert_error_code(
     $$SELECT public.place_order(
         jsonb_build_array(jsonb_build_object('product_id', (SELECT id FROM public.products WHERE name = 'Pearl drop earrings'), 'quantity', 1)),
-        'egypt_post', 'Buyer', '01011112222', 99::smallint, 'City', 'Addr'
+        'egypt_post', 'Buyer', '01011112222', 1::smallint, 'City', 'Addr'
     )$$,
     'ORD-004',
     NULL,
@@ -211,7 +211,7 @@ SELECT stock_quantity FROM public.products WHERE name = 'Pearl drop earrings' \g
 SELECT tests.assert_error_code(
     format(
         'SELECT public.place_order(jsonb_build_array(jsonb_build_object(''product_id'', (SELECT id FROM public.products WHERE name = ''Pearl drop earrings''), ''quantity'', %s)), ''representative'', ''Buyer'', ''010'', 1::smallint, ''City'', ''Addr'')',
-        :p1_stock_quantity + 10
+        :p1_stock_quantity + 2
     ),
     'ORD-007',
     format('left=%s', :p1_stock_quantity),

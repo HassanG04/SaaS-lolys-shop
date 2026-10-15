@@ -11,11 +11,11 @@ test('keep-alive workflow file exists and is properly structured', () => {
   assert.ok(fs.existsSync(KEEPALIVE_WORKFLOW_PATH), '.github/workflows/keepalive.yml must exist')
   const content = fs.readFileSync(KEEPALIVE_WORKFLOW_PATH, 'utf8')
 
-  // Must have weekly cron schedule
-  assert.match(
+  // Owner launch hold: automatic scheduling must stay disabled.
+  assert.doesNotMatch(
     content,
-    /schedule:\s*(?:\r?\n\s*#[^\n]*)*\r?\n\s*-\s*cron:\s*['"][^'"]+['"]/,
-    'keepalive.yml must define a scheduled cron trigger',
+    /^ {2}schedule:/m,
+    'Scheduled workflows must remain manual-only until launch',
   )
 
   // Must support manual workflow_dispatch

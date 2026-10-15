@@ -77,7 +77,7 @@ test('Weekly forecast workflow and writes configuration (T-9.08)', () => {
   assert.ok(existsSync(forecastYmlPath), '.github/workflows/forecast.yml must exist')
 
   const content = readFileSync(forecastYmlPath, 'utf-8')
-  assert.ok(content.includes('0 21 * * 0'), 'forecast.yml must schedule weekly run on Sunday night')
+  assert.doesNotMatch(content, /^ {2}schedule:/m, 'Forecast must remain manual-only until launch')
   assert.ok(content.includes('workflow_dispatch:'), 'forecast.yml must support manual triggers')
   assert.ok(content.includes('timeout-minutes: 30'), 'forecast.yml must enforce 30-minute timeout')
   assert.ok(content.includes('ANALYTICS_DB_URL_STAGING'), 'forecast.yml must pass staging secret')

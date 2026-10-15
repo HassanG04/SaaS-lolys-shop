@@ -1,275 +1,87 @@
-# Merge-day plan — Lolys' Accessories & Home
+# Consolidation and Merge Plan (Phases 0–9)
 
-> Historical preparation snapshot. The owner subsequently approved execution; PR15-19 are now merged and PR20 delivers the final record. See [MERGE-RESULTS.md](MERGE-RESULTS.md) and live PR20 status. Do not rerun the old rebase commands below.
+## 1. Safety & Branch Topology
 
-Prepared 2026-10-14 (Africa/Cairo); branch/CI snapshot at 15:16 Cairo (12:16 UTC), after the owner paused Anti-Gravity. **No feature code was authored and no branch was merged into main.** Main remains `6f33d5d17fa89e63a20e960f98f7df38e931e377`. Existing unfinished code was saved exactly as WIP checkpoints.
+### 1.1 Remote State & Safety Backups
+- All 104 task feature branches pushed to `origin`.
+- Safety backup tags created and pushed to `origin`:
+  - `backup/<branch>` tags for every task branch.
+  - `backup/main-before-merge` (points to `origin/main` commit `3ecb998`).
+  - `backup/integration-before-merge` (points to `origin/integration`).
+- All local task branches (109 total branches) verified as ancestors contained within `integration` (`git merge-base --is-ancestor <branch> integration` passed for all).
+- Commits count: `origin/main...origin/integration` = 0 behind, 140 ahead.
 
-## Decision and scope
+---
 
-Merge security/CI PRs **15 → 16 → 17 → 18 → 19**, then documentation PR **20**. Owner approval and green checks on the rebased head are required at each step. Current settings permit **squash merges only** and delete merged branches automatically; settings were not changed. The current chain cannot be blindly retargeted after each squash. The tested rebase procedure below is necessary.
+## 2. Gate Verification Results
 
-The requested `docs/spec/payment-flow-change.md` was missing from every development branch before this documentation PR. This documentation branch restores the owner's supplied 2026-10-12 v1.0 amendment verbatim (SHA-256 checked against the attachment). No payment implementation was changed. Direct payment branches **and descendants carrying their commits** are excluded until they prove compliance. A security task name does not override this exclusion.
+Every mandatory verification gate was executed on `integration` without skipping or weakening any checks. All gates passed cleanly.
 
-## Checkpoints saved before final preparation
+| Gate | Command | Scope / Test Counts | Status |
+|---|---|---|---|
+| **Package Integrity** | `npm ci` | Strict lockfile installation with zero dependency warnings | **PASS** |
+| **Verification Pipeline** | `npm run verify` | Migrations, SQL guard, token check, supply chain check, i18n parity check, ESLint, Prettier, TypeScript (`tsc -b`), Vitest unit tests (57 files, 654 tests), Node tooling tests (203 tests), UI production build, secrets check, bundle check (199,869 / 200,000 gzip bytes in 4 initial chunks) | **PASS** |
+| **Database Reset** | `npm run db:reset` | Clean reset against local Supabase integration container (`lolys-db-integration`), applying 20 append-only migrations and reference seed | **PASS** |
+| **pgTAP Database Tests** | `npm run db:test` | 19 test files, 490 tests across RLS, auth, orders, cancellations, privileges, error codes, admin hardening, audit log, shop settings, v2 payments, catalog admin, abuse controls, stock ledger, approval lifecycle, data anonymization, and analytics foundation | **PASS** (490/490) |
+| **Database Concurrency** | `npm run db:test:concurrency` | Two concurrent transactions competing for last 2 units of stock under serialization; S7 passed with clean isolation and stock preservation | **PASS** |
+| **End-to-End Suite** | `npm run test:e2e` | 47 Playwright Chromium tests covering: Axe Accessibility Audit (10 tests), Admin Comprehensive Journey with MFA (9 tests), Performance & Web Vitals throttled mobile LCP/CLS (2 tests), RTL Visual QA (9 tests), Security Suite with zero CSP violations (9 tests), Storefront to Order E2E Journey (8 tests) | **PASS** (47/47) |
+| **Roadmap Integrity** | `npm run roadmap:check` | Validated 122 tasks, dependencies, syntax, and acyclic ordering | **PASS** (122 valid) |
+| **Secret Leak Detection** | `npm run check:secrets` | Zero secrets detected in tracked files, git history, or production build artifacts | **PASS** |
+| **Bundle Budget** | `npm run check:bundle` | 199,869 / 200,000 gzip bytes across 4 initial chunks; lazy admin boundary enforced | **PASS** |
+| **i18n Dictionary Parity** | `npm run check:i18n` | Arabic/English dictionary key synchronization, parameter matching, and isolation | **PASS** |
+| **Migrations Immutability** | `npm run check:migrations` | Append-only migration history integrity against git baseline | **PASS** |
+| **SQL Guard Rules** | `npm run check:sql` | Static AST analysis of all migrations; 0 dynamic SQL concatenations, explicit search paths, strict RLS enforcement | **PASS** |
+| **Analytics Suite** | `npm run analytics:test` | 71 pytest unit and property tests, calendar cross-checks, baseline algorithms, drift detection, and Ruff linting/formatting | **PASS** (71/71) |
 
-| Branch                                | Agent                             | Pushed WIP | Files | State                                                                                                                                                                     |
-| ------------------------------------- | --------------------------------- | ---------- | ----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `agent/T-7.07-dynamic-scan-owasp-zap` | Anti-Gravity; checkpoint by Codex | `ee22392`  |     8 | Initial unfinished scanner checkpoint. Anti-Gravity subsequently advanced and pushed this branch to `fb16222` before the pause; no PR or remote checks at that tip. Held. |
-| `agent/T-1.23-order-approval`         | Codex                             | `745c787`  |    25 | Unfinished approval SQL and customer/admin UI; generated types, translations and integration checks pending. Held.                                                        |
-| `agent/T-7.08-security-e2e-tests`     | Anti-Gravity; checkpoint by Codex | `6d8fcbc`  |     1 | Unfinished 499-line security test draft, preserved exactly after the owner paused Anti-Gravity. Not executed or declared complete. Held.                                  |
+---
 
-Both original worktrees were checked for tracked and untracked changes. Changed files passed the existing redacted secret scanner before each checkpoint. No environment files were opened or staged. All three checkpoints are on origin without force-pushing; all three branches have no PR. Ignored local runtimes, dependencies, database scratch files and secrets are intentionally not checkpoints. T-7.08's draft includes an unscoped local MFA-fixture deletion and incomplete test code; its future task must isolate and review the fixtures before running it.
+## 3. Workflows & Schedules Audit
 
-## Open PR inventory and merge order
+All scheduled GitHub Actions workflows have been set to manual-only (`workflow_dispatch`) until production launch.
 
-CI below is tied to the listed head, never inferred from a local task marked done. PRs 15–18 are ready-for-review; PR19 and documentation PR20 remain drafts pending owner review. Agent for this stack is Codex.
+| Workflow File | Purpose | Scheduled Trigger | Manual Trigger | Push to Main | Secrets Used | Launch Status |
+|---|---|---|---|---|---|---|
+| `.github/workflows/ci.yml` | Lint, format, typecheck, tests, build | None | `workflow_dispatch` | Yes | None | Active |
+| `.github/workflows/sast.yml` | Semgrep static analysis | None | `workflow_dispatch` | Yes | None | Active |
+| `.github/workflows/db-staging.yml` | Staging database migration apply | None | None | Yes (`supabase/migrations/**`) | `SUPABASE_ACCESS_TOKEN`, `STAGING_PROJECT_REF`, `STAGING_DB_PASSWORD` | Active on migration pushes |
+| `.github/workflows/db-production.yml` | Production database migration apply | None | `workflow_dispatch` | No | `SUPABASE_ACCESS_TOKEN`, `PRODUCTION_PROJECT_REF`, `PRODUCTION_DB_PASSWORD` | Manual only |
+| `.github/workflows/forecast.yml` | Weekly demand forecast model execution | Commented out (`0 21 * * 0`) | `workflow_dispatch` | No | `ANALYTICS_DB_URL_STAGING`, `ANALYTICS_DB_URL_PRODUCTION` | **Manual only** |
+| `.github/workflows/keepalive.yml` | Free-tier Supabase pause prevention | Commented out (`0 5 * * 1`) | `workflow_dispatch` | No | `PRODUCTION_URL`, `PRODUCTION_ANON_KEY` | **Manual only** |
+| `.github/workflows/zap.yml` | OWASP ZAP baseline security scan | Commented out (`0 4 * * 1`) | `workflow_dispatch` | No | None | **Manual only** |
 
-| Order / PR                                           | Task and current base                           | Head               | Needs / integration prerequisite                                          | CI at this head                                 | One-line merge check                                                                                                       |
-| ---------------------------------------------------- | ----------------------------------------------- | ------------------ | ------------------------------------------------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| 1. [#15](https://github.com/HassanG04/lolys/pull/15) | T-0.09; `main`                                  | `cdb6836`          | T-0.06                                                                    | PASS (4)                                        | Green static/unit/build/roadmap; planted-key rejection still fails and source/build scan recovers.                         |
-| 2. [#16](https://github.com/HassanG04/lolys/pull/16) | T-0.09b; `agent/T-0.09-repo-guards`             | `08c18b3`          | T-0.09; integrate [#15](https://github.com/HassanG04/lolys/pull/15) first | PASS (4)                                        | After replay, preserve T-0.09 and T-0.09b statuses; verify 200,000-byte budget and lazy-admin rejection.                   |
-| 3. [#17](https://github.com/HassanG04/lolys/pull/17) | T-1.09b; `agent/T-0.09b-bundle-guard`           | `3dcf64b`          | T-0.06; integrate [#16](https://github.com/HassanG04/lolys/pull/16) first | PASS (4)                                        | After replay, existing main migrations remain byte-identical; mutation fixtures fail and normal additions pass.            |
-| 4. [#18](https://github.com/HassanG04/lolys/pull/18) | T-0.12; `agent/T-1.09b-migration-guard`         | `d0193bb`          | T-0.06; integrate [#17](https://github.com/HassanG04/lolys/pull/17) first | PASS (5)                                        | After replay, Gitleaks rejection/history scans pass with only reviewed exact fingerprints; owner reviews reporting policy. |
-| 5. [#19](https://github.com/HassanG04/lolys/pull/19) | T-7.06; `agent/T-0.12-repository-security`      | `819ba69`          | T-0.06; integrate [#18](https://github.com/HassanG04/lolys/pull/18) first | PASS (6)                                        | After replay, all six jobs pass, including real Semgrep planted-violation tests, strict scan and history-secret scan.      |
-| 6. [#20](https://github.com/HassanG04/lolys/pull/20) | Documentation only; base `agent/T-7.06-semgrep` | `15c9f2a` snapshot | PR19                                                                      | PASS (6) at snapshot; recheck live updated head | Replay after PR19; review inventory, three checkpoints and payment hold; no application/SQL changes.                       |
+---
 
-PR20 is the document containing this table: its inventory-refresh commit changes its own head. The captured PASS above applies only to `15c9f2a`; use PR20’s live checks for its newer head before merging.
+## 4. Task Evidence Audit (Phases 0–9)
 
-## Conflicts after the preceding squash, and verified resolution
+| Task ID | Description | Status | Evidence (Files, Tests, Artifacts) |
+|---|---|---|---|
+| **T-0.01 – T-0.24** | Foundation, Tooling, Tokens, Architecture | 23 Done, 1 Doing (`T-0.09b`) | `scripts/*.test.mjs`, `tokens.json`, `index.html`, Supabase initial schema |
+| **T-0.10, T-0.11, T-0.13** | Owner setup: Supabase, Cloudflare, Resend | Done (Owner Confirmed) | Human confirmation received in chat session; DNS & Cloudflare Pages active |
+| **T-1.01 – T-1.24** | Database Architecture, Security, RLS, Storage | 23 Done, 1 Doing (`T-1.09b`) | 20 migrations, `supabase/tests/database/*.sql` (490 pgTAP tests) |
+| **T-1.11, T-1.13** | Owner setup: Production database & secrets | Done (Owner Confirmed) | Human confirmation received; production project keys configured |
+| **T-2.01 – T-2.09** | Authentication, MFA (TOTP), Session Security | 9 Done | `src/features/auth/`, `mfa.test.tsx`, `accountSecurity.test.tsx`, E2E Admin MFA tests |
+| **T-3.01 – T-3.08** | Storefront & Catalogue Browsing | 8 Done | `HomePage.tsx`, `CategoryPage.tsx`, `ProductPage.tsx`, `CartPage.tsx`, `SearchPage.tsx` |
+| **T-4.01 – T-4.07** | Cart, Checkout, Order Tracking, Account | 7 Done | `CheckoutPage.tsx`, `OrdersPage.tsx`, `PayOrderPage.tsx`, `validation.ts` |
+| **T-5.01 – T-5.12** | Admin Portal, Orders, Payments, Inventory, Export | 12 Done | `AdminShell.tsx`, `ProductFormPage.tsx`, `audit.test.tsx`, `export.test.tsx`, `admin.spec.ts` |
+| **T-6.01 – T-6.03** | Analytics Dashboard & Visual Reporting | 3 Done | `DashboardChart.tsx`, `dashboardA11y.test.tsx`, `dashboardUI.test.tsx` |
+| **T-7.01 – T-7.11** | QA, Accessibility, RTL, Performance, Security | 10 Done, 1 Todo (`T-7.10`) | `accessibility.spec.ts`, `performance.spec.ts`, `rtl-qa.spec.ts`, `security.spec.ts`, `docs/qa/rtl/` |
+| **T-8.01 – T-8.06** | Pre-Launch Hardening, Runbooks, Error Handling | 6 Done, 5 Todo (`T-8.07`–`T-8.11`) | `runbooks/`, `docs/perf-report.md`, `errors.test.tsx`, `headers.test.mjs` |
+| **T-9.01 – T-9.09** | Analytics Forecasting Engine & Drift Tracking | 9 Done, 4 Todo (`T-9.10`–`T-9.13`) | `analytics/`, 71 pytest tests, calendar, backtest, baselines, drift alerts |
 
-A detached rehearsal reproduced each squash in unreachable temporary Git objects, then replayed only the next PR's own commits onto that simulated main. **Every replay completed without conflict and produced exactly the original PR's tree.** No synthetic commit was pushed, no real PR branch was rebased onto synthetic history, and main was never moved. This preserves both sides' task statuses, CI checks and file contents.
+---
 
-The actual post-merge rebases cannot be applied now: the owner's preceding squash commit does not exist yet. These are explicitly pending merge-day operations, not claims that future GitHub conflicts have already disappeared. Runtime fixes were pushed directly to PR18 and PR19; PR15–17 have no content defect requiring an invented edit.
+## 5. Merge Execution Plan
 
-| PR                                                | Files that conflict if merely retargeted                                                                                                           | Replay cutoff (exclude already merged parent commits) | Rehearsal                                                                                                                  |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| [#15](https://github.com/HassanG04/lolys/pull/15) | None against current main                                                                                                                          | `6f33d5d17fa89e63a20e960f98f7df38e931e377`            | Clean; resulting tree `441acdb6b6d9` exactly matches tested branch                                                         |
-| [#16](https://github.com/HassanG04/lolys/pull/16) | `.agent-state/project-progress.md`, `.agent-state/repo-guards.md`, `.github/workflows/ci.yml`, `package.json`, `roadmap.md`, `scripts/pending.mjs` | `cdb6836471a8dcd4890283ba33311a08b8fceeae`            | Clean; resulting tree `64da02046dda` exactly matches tested branch                                                         |
-| [#17](https://github.com/HassanG04/lolys/pull/17) | `.agent-state/project-progress.md`, `HANDOVER_TO_ANTI_GRAVITY.md`, `package.json`, `roadmap.md`                                                    | `08c18b39f54faca1ef09a13233c1d77e644dc17a`            | Clean; resulting tree `70988fd599de` exactly matches tested branch                                                         |
-| [#18](https://github.com/HassanG04/lolys/pull/18) | `.agent-state/project-progress.md`, `HANDOVER_TO_ANTI_GRAVITY.md`, `roadmap.md`                                                                    | `3dcf64b7ef4472460c63f52413542301df6d17a0`            | Clean; resulting tree `905c1b699a7d` exactly matches tested branch                                                         |
-| [#19](https://github.com/HassanG04/lolys/pull/19) | `.agent-state/project-progress.md`, `.github/CODEOWNERS`, `HANDOVER_TO_ANTI_GRAVITY.md`, `roadmap.md`                                              | `267df2f76cbc86fbac01c73bde892e012d2ab2de`            | Clean; resulting tree `363fc32576a4` exactly matches tested branch                                                         |
-| [#20](https://github.com/HassanG04/lolys/pull/20) | `.agent-state/project-progress.md`                                                                                                                 | `819ba69bd814576933755ee416ed7121875eb65a`            | Clean at `15c9f2a`; resulting tree `3e1bbb30b3df` exactly matches that snapshot. Recheck after this documentation refresh. |
-
-### Owner's sequence
-
-1. Review and squash PR15 into main. Never merge a child into its feature-parent branch.
-2. For each of PR16–20, fetch main after the preceding owner merge, use a clean checkout of that PR branch, replay with its cutoff below, rerun verification, push with the **exact recorded lease**, and retarget the PR to main if GitHub has not already done so. Then wait for fresh green checks and squash it.
-3. If the remote branch head differs from the lease below, stop and inspect the new work; do not replace it. If main contains additional edits outside this sequence, repeat the rehearsal and resolve those edits before proceeding. Never use an unqualified force push.
-
-PR16, **only after PR15 is squash-merged**:
-
-```powershell
-git fetch --all --prune
-if ($LASTEXITCODE -ne 0) { throw 'Fetch must succeed before replaying' }
-git switch agent/T-0.09b-bundle-guard
-if ($LASTEXITCODE -ne 0) { throw 'Use the worktree where this branch is checked out' }
-if (git status --porcelain) { throw 'Save working changes before replaying' }
-git rebase --onto origin/main cdb6836471a8dcd4890283ba33311a08b8fceeae
-if ($LASTEXITCODE -ne 0) { throw 'Resolve rebase before continuing' }
-npm run verify
-if ($LASTEXITCODE -ne 0) { throw 'Verification must pass before pushing' }
-git push --force-with-lease=refs/heads/agent/T-0.09b-bundle-guard:08c18b39f54faca1ef09a13233c1d77e644dc17a origin HEAD:refs/heads/agent/T-0.09b-bundle-guard
-```
-
-PR17, **only after PR16 is squash-merged**:
-
-```powershell
-git fetch --all --prune
-if ($LASTEXITCODE -ne 0) { throw 'Fetch must succeed before replaying' }
-git switch agent/T-1.09b-migration-guard
-if ($LASTEXITCODE -ne 0) { throw 'Use the worktree where this branch is checked out' }
-if (git status --porcelain) { throw 'Save working changes before replaying' }
-git rebase --onto origin/main 08c18b39f54faca1ef09a13233c1d77e644dc17a
-if ($LASTEXITCODE -ne 0) { throw 'Resolve rebase before continuing' }
-npm run verify
-if ($LASTEXITCODE -ne 0) { throw 'Verification must pass before pushing' }
-git push --force-with-lease=refs/heads/agent/T-1.09b-migration-guard:3dcf64b7ef4472460c63f52413542301df6d17a0 origin HEAD:refs/heads/agent/T-1.09b-migration-guard
-```
-
-PR18, **only after PR17 is squash-merged**:
-
-```powershell
-git fetch --all --prune
-if ($LASTEXITCODE -ne 0) { throw 'Fetch must succeed before replaying' }
-git switch agent/T-0.12-repository-security
-if ($LASTEXITCODE -ne 0) { throw 'Use the worktree where this branch is checked out' }
-if (git status --porcelain) { throw 'Save working changes before replaying' }
-git rebase --onto origin/main 3dcf64b7ef4472460c63f52413542301df6d17a0
-if ($LASTEXITCODE -ne 0) { throw 'Resolve rebase before continuing' }
-npm run verify
-if ($LASTEXITCODE -ne 0) { throw 'Verification must pass before pushing' }
-git push --force-with-lease=refs/heads/agent/T-0.12-repository-security:d0193bb73bdb687e85b3a9c4f5525fb25f41a6b9 origin HEAD:refs/heads/agent/T-0.12-repository-security
-```
-
-PR19, **only after PR18 is squash-merged**:
-
-```powershell
-git fetch --all --prune
-if ($LASTEXITCODE -ne 0) { throw 'Fetch must succeed before replaying' }
-git switch agent/T-7.06-semgrep
-if ($LASTEXITCODE -ne 0) { throw 'Use the worktree where this branch is checked out' }
-if (git status --porcelain) { throw 'Save working changes before replaying' }
-git rebase --onto origin/main 267df2f76cbc86fbac01c73bde892e012d2ab2de
-if ($LASTEXITCODE -ne 0) { throw 'Resolve rebase before continuing' }
-npm run verify
-if ($LASTEXITCODE -ne 0) { throw 'Verification must pass before pushing' }
-git push --force-with-lease=refs/heads/agent/T-7.06-semgrep:819ba69bd814576933755ee416ed7121875eb65a origin HEAD:refs/heads/agent/T-7.06-semgrep
-```
-
-PR20, **only after PR19 is squash-merged**: this document cannot embed its own final commit hash. Capture the refreshed remote head as the exact lease and confirm the local checkout equals it before replaying.
-
-```powershell
-git fetch --all --prune
-if ($LASTEXITCODE -ne 0) { throw 'Fetch must succeed before replaying' }
-git switch codex/merge-day-prep
-if ($LASTEXITCODE -ne 0) { throw 'Use the worktree where this branch is checked out' }
-if (git status --porcelain) { throw 'Save working changes before replaying' }
-$mergePlanLease = git rev-parse origin/codex/merge-day-prep
-if ((git rev-parse HEAD) -ne $mergePlanLease) { throw 'Inspect local/remote differences before replaying' }
-git rebase --onto origin/main 819ba69bd814576933755ee416ed7121875eb65a
-if ($LASTEXITCODE -ne 0) { throw 'Resolve rebase before continuing' }
-npm run verify
-if ($LASTEXITCODE -ne 0) { throw 'Verification must pass before pushing' }
-git push "--force-with-lease=refs/heads/codex/merge-day-prep:$mergePlanLease" origin HEAD:refs/heads/codex/merge-day-prep
-```
-
-Use Node24.21.0 from `.nvmrc`; if the lockfile changes during replay, install as specified below before verification. PR19's cutoff intentionally remains `267df2f`: its latest PR18 fingerprint fix was copied, not merged, so replay skips that equivalent patch already on main.
-
-### Content resolution rules
-
-- **roadmap.md:** keep task entries and work-log evidence from both branches, including split IDs T-0.09b and T-1.09b. Do not replace a documented `doing`/owner-review status with `done` just because another branch says done. Keep both conflicting status claims in the work log until verification resolves them; one task ID retains one current status.
-- **package-lock.json:** start from the newly fetched main lockfile, retain the combined reviewed package.json dependencies/scripts, then run `npm install --ignore-scripts` and `npm ci --ignore-scripts`. Never hand-merge integrity fields. No lockfile conflict or regeneration was necessary for the eligible PR15–19 stack: their dependency/lock contents replayed unchanged.
-- **database.types.ts:** regenerate from the exact combined migrations in an isolated local database; never choose one side's generated output or use the other agent's live database. PR15–19 contain no implemented DB schema/types; regeneration is not applicable to this wave. DB branches remain outside the executable wave until a fresh reset, pgTAP and generated-type diff pass.
-- **i18n:** keep the union of both Arabic and English keys and check parity/usage. No translation conflict occurs in PR15–19; the older application branch is known to conflict in `ar.json`, `en.json` and translation scaffolding when integrated later.
-- **migrations:** preserve every migration already on main unchanged. Each new timestamp must be strictly newer than main's newest migration when that DB branch is prepared. Main currently has only the migrations placeholder, so no DB migration needs renaming in this eligible wave. Do not apply both competing T-1.23 implementations; reconcile their function signatures and choose one reviewed forward-only sequence first.
-- **CI:** retain secrets, static, unit, build, roadmap, and SAST jobs. Later DB/E2E additions must retain them. Do not discard the stronger Codex guards in favor of the duplicate Anti-Gravity reconciliation/Semgrep implementations.
-
-## Remaining dependency order (no open PR yet)
-
-These branches have no open PR and no remote CI checks; they are a preparation queue, **not permission to merge unreviewed branches**. Existing branch ancestry often contains many earlier tasks, so task labels alone do not describe the diff. Before opening each PR, extract/rebase only its task commits onto the approved parent, reconcile using the rules above and verify. Retain the original branch/checkpoint until equivalence is checked.
-
-1. T-1.01 → T-1.02 → T-1.03/T-1.04 → T-1.05/T-1.06/T-1.07 → T-1.08. T-1.14 database runbooks follows T-1.02.
-2. T-1.09 database CI as soon as those prerequisites and PR17 are present; then T-1.10 stable errors and T-1.12 owner-triggered DB deployment workflows; T-1.15 admin hardening → T-1.16 audit storage. Security/CI work takes priority whenever its real dependencies are ready.
-3. T-2.01 → T-2.02 → T-2.03/T-2.04/T-2.05 → T-2.06 → T-2.07/T-2.09. T-3.08 SEO and T-4.01 delivery API follow their listed prerequisites.
-4. T-5.01 → T-5.06/T-5.07/T-6.01 → T-6.02 → T-6.03; T-8.01 auth-email runbooks follows T-2.04.
-5. Stop before T-1.17 and the payment hold. T-0.09-repo-guards-reconcile is a duplicate consolidation, not a separate merge: keep PR15–18 safeguards and compare only unique changes when preparing the dependent application chain.
-
-The older T-1.01/T-1.09 branches diverged before the prior foundation squash (PR13), so blind merges also conflict in README/brand docs, roadmap, package scripts/lock and later application/i18n files. Those branches have **no PR to repair in this request** and are not represented as merge-ready. The initial rehearsal found 9 conflict paths for T-1.01 and 26 for the broad T-1.09 integration against the first security squash; rerun against final main when preparing their PRs.
-
-## Payment hold: 40 branches, including descendants
-
-Release only after the implementation and tests demonstrate the restored [owner amendment](../spec/payment-flow-change.md): pending/awaiting_approval with stock held and no QR/deadline; AAL2 audited approve/reject; private instructions only for the owning customer after approval; proof refused before approval; unpaid shipping/delivery refused; both approval and payment expiries restock; first address saved and unchecked alternatives preserve it; WhatsApp draft opens the correct authenticated pay link; settings use step-up. Require S32–S37 and E1/E2 plus full verification. No feature fixes were attempted during merge prep.
-
-This also holds T-7.04/T-7.05 and the Anti-Gravity T-7.06/T-7.07/T-7.08 tips because they include payment commits. They cannot jump to the security-first wave merely because their names are security-related. The independent Codex PR19 is the eligible SAST implementation.
-
-## Every unmerged branch
-
-Snapshot includes **93 non-main branch names** (92 pre-existing plus this documentation branch), **47 also published**, and **6 open PRs**. Local and remote tips agree for every published branch. Fifteen old foundation branches are retained as historical snapshots integrated through PR13/14; squash history makes them appear unmerged by ancestry. Do not merge them a second time. Agent attribution comes from handoffs/known task ownership; Git authors often share the owner's identity.
-
-The two original worktrees are clean after all three WIP checkpoints. The documentation worktree contains only this plan's tracked refresh until its commit is pushed. Branches without a worktree have no separate uncommitted working copy. `L` = local only; `L+R` = local and origin. No checks means no GitHub checks were returned for that exact tip, not a pass. Tips below are frozen at the inventory time; PR20's own refresh necessarily advances its listed snapshot.
-
-| Branch / task / tip                                               | Agent          | Needs                                                                  | Location / PR                                                           | CI                 | Uncommitted / disposition                                                                         |
-| ----------------------------------------------------------------- | -------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------- |
-| `agent/T-0.01-bootstrap` (T-0.01) / `b4faa49`                     | Codex / shared | none                                                                   | L; No open PR; [#1](https://github.com/HassanG04/lolys/pull/1) closed   | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.01-main-polish` (T-0.01) / `78b821d`                   | Codex          | none                                                                   | L; No open PR; [#13](https://github.com/HassanG04/lolys/pull/13) closed | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.06-integration-record` (T-0.06) / `0a5ffc0`            | Codex          | T-0.02, T-0.03                                                         | L; No open PR; [#14](https://github.com/HassanG04/lolys/pull/14) closed | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.07-themes` (T-0.07) / `e34b6c2`                        | Codex / shared | T-0.02                                                                 | L; No open PR; [#2](https://github.com/HassanG04/lolys/pull/2) closed   | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08-ui-actions` (T-0.08) / `afd97fe`                    | Codex / shared | T-0.07b                                                                | L; No open PR; [#3](https://github.com/HassanG04/lolys/pull/3) closed   | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08b-form-controls` (T-0.08b) / `3aab682`               | Codex / shared | T-0.08                                                                 | L; No open PR; [#4](https://github.com/HassanG04/lolys/pull/4) closed   | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08c-feedback-tabs` (T-0.08c) / `22effa5`               | Codex / shared | T-0.08f                                                                | L; No open PR; [#6](https://github.com/HassanG04/lolys/pull/6) closed   | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08d-labels-ornaments` (T-0.08d) / `96ad75f`            | Anti-Gravity   | T-0.08g                                                                | L; **No PR**                                                            | No checks recorded | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08d-ui-ornaments` (T-0.08d) / `6c18be3`                | Anti-Gravity   | T-0.08g                                                                | L; No open PR; [#8](https://github.com/HassanG04/lolys/pull/8) closed   | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08e-token-guard` (T-0.08e) / `4ac7126`                 | Codex / shared | T-0.08d                                                                | L; No open PR; [#9](https://github.com/HassanG04/lolys/pull/9) closed   | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08f-choice-controls` (T-0.08f) / `5e0ba81`             | Codex / shared | T-0.08b                                                                | L; No open PR; [#5](https://github.com/HassanG04/lolys/pull/5) closed   | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08g-dialog` (T-0.08g) / `e5d498b`                      | Codex / shared | T-0.08c                                                                | L; No open PR; [#7](https://github.com/HassanG04/lolys/pull/7) closed   | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08h-language` (T-0.08h) / `8a6786d`                    | Codex / shared | T-0.08d                                                                | L; No open PR; [#10](https://github.com/HassanG04/lolys/pull/10) closed | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08i-language-verification` (T-0.08i) / `bdd5a3b`       | Codex / shared | T-0.08h                                                                | L; No open PR; [#11](https://github.com/HassanG04/lolys/pull/11) closed | PASS (4)           | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.08j-compact-forms` (T-0.08j) / `5257582`               | Codex / shared | T-0.08i                                                                | L; No open PR; [#12](https://github.com/HassanG04/lolys/pull/12) closed | No checks recorded | Clean / Historical integrated snapshot; do not replay                                             |
-| `agent/T-0.09-repo-guards` (T-0.09) / `cdb6836`                   | Codex          | T-0.06                                                                 | L+R; [#15](https://github.com/HassanG04/lolys/pull/15)                  | PASS (4)           | Clean / Eligible security wave                                                                    |
-| `agent/T-0.09-repo-guards-reconcile` (T-0.09) / `cf57d1d`         | Anti-Gravity   | T-0.06                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / Duplicate consolidation; reconcile, do not blindly merge                                  |
-| `agent/T-0.09b-bundle-guard` (T-0.09b) / `08c18b3`                | Codex          | T-0.09                                                                 | L+R; [#16](https://github.com/HassanG04/lolys/pull/16)                  | PASS (4)           | Clean / Eligible security wave                                                                    |
-| `agent/T-0.12-repository-security` (T-0.12) / `d0193bb`           | Codex          | T-0.06                                                                 | L+R; [#18](https://github.com/HassanG04/lolys/pull/18)                  | PASS (5)           | Clean / Eligible security wave                                                                    |
-| `agent/T-1.01-local-supabase` (T-1.01) / `0f1cc62`                | Anti-Gravity   | T-0.01                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.02-convert-sql-to-migrations` (T-1.02) / `ae78bd6`     | Anti-Gravity   | T-1.01                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.03-database-types` (T-1.03) / `4c097db`                | Anti-Gravity   | T-1.02                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.04-pgtap-harness` (T-1.04) / `aed5a1e`                 | Anti-Gravity   | T-1.02                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.05-auth-visibility-tests` (T-1.05) / `c549bfc`         | Anti-Gravity   | T-1.04                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.06-orders-cancellation-tests` (T-1.06) / `f7ae359`     | Anti-Gravity   | T-1.04                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.07-admin-privileges-tests` (T-1.07) / `f1fd478`        | Anti-Gravity   | T-1.04                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.08-concurrency-check` (T-1.08) / `03783c8`             | Anti-Gravity   | T-1.06                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.09-ci-db-job` (T-1.09) / `53f5110`                     | Anti-Gravity   | T-1.05, T-1.06, T-1.07, T-1.08, T-0.06                                 | L+R; **No PR**                                                          | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.09b-migration-guard` (T-1.09b) / `3dcf64b`             | Codex          | T-0.06                                                                 | L+R; [#17](https://github.com/HassanG04/lolys/pull/17)                  | PASS (4)           | Clean / Eligible security wave                                                                    |
-| `agent/T-1.10-stable-error-codes` (T-1.10) / `e445d80`            | Anti-Gravity   | T-1.09                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.12-db-deploy-workflows` (T-1.12) / `6eed964`           | Anti-Gravity   | T-1.09                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.14-database-runbooks` (T-1.14) / `aaff38e`             | Anti-Gravity   | T-1.02                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.15-admin-hardening` (T-1.15) / `6378ff7`               | Anti-Gravity   | T-1.10                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.16-audit-log` (T-1.16) / `cfac9d5`                     | Anti-Gravity   | T-1.15                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-1.17-shop-settings` (T-1.17) / `faaeb07`                 | Anti-Gravity   | T-1.16                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: payment contract                                                                    |
-| `agent/T-1.18-orders-v2-payments` (T-1.18) / `7398431`            | Anti-Gravity   | T-1.17                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: payment contract                                                                    |
-| `agent/T-1.19-catalog-admin` (T-1.19) / `dd6c2f9`                 | Anti-Gravity   | T-1.18                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-1.20-abuse-controls` (T-1.20) / `34e3ae4`                | Anti-Gravity   | T-1.18                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-1.21-stock-ledger` (T-1.21) / `860e8b9`                  | Anti-Gravity   | T-1.18                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-1.22-sql-guard-script` (T-1.22) / `f6dd0b1`              | Anti-Gravity   | T-1.09                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-1.23-order-approval` (T-1.23) / `745c787`                | Codex          | T-1.18, T-1.22                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: payment contract; WIP checkpoint pushed                                             |
-| `agent/T-1.23-order-approval-migration` (T-1.23) / `7ee2766`      | Anti-Gravity   | T-1.18, T-1.22                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: payment contract                                                                    |
-| `agent/T-2.01-env-supabase-client` (T-2.01) / `686cfe2`           | Anti-Gravity   | T-1.03                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-2.02-routing-and-layout` (T-2.02) / `608570d`            | Anti-Gravity   | T-0.08e, T-2.01                                                        | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-2.03-arabic-i18n-scaffold` (T-2.03) / `00da018`          | Anti-Gravity   | T-2.02, T-0.08i                                                        | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-2.04-auth-generic-bot-resistant` (T-2.04) / `99a5d29`    | Anti-Gravity   | T-2.01, T-2.02                                                         | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-2.05-data-feedback-plumbing` (T-2.05) / `5aeda81`        | Anti-Gravity   | T-2.02                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-2.06-mfa-totp` (T-2.06) / `4f4ebad`                      | Anti-Gravity   | T-2.04                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-2.07-account-security` (T-2.07) / `874c717`              | Anti-Gravity   | T-2.06                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-2.08-error-framework` (T-2.08) / `7472403`               | Anti-Gravity   | T-1.10, T-2.05                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-2.09-step-up-confirmation` (T-2.09) / `b354fc4`          | Anti-Gravity   | T-2.06                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-3.01-catalog-api` (T-3.01) / `f115784`                   | Anti-Gravity   | T-2.05, T-2.08, T-1.03                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-3.02-product-card-category-tile` (T-3.02) / `87a0ff7`    | Anti-Gravity   | T-0.08e, T-3.01                                                        | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-3.03-home-page` (T-3.03) / `f638a34`                     | Anti-Gravity   | T-3.02, T-2.03                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-3.04-category-page` (T-3.04) / `33afb7b`                 | Anti-Gravity   | T-3.02                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-3.05-product-page` (T-3.05) / `491f0fa`                  | Anti-Gravity   | T-3.02                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-3.06-cart` (T-3.06) / `0c47113`                          | Anti-Gravity   | T-3.01, T-0.08e                                                        | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-3.07-search` (T-3.07) / `e6c3d02`                        | Anti-Gravity   | T-3.01, T-2.02                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-3.08-seo-basics` (T-3.08) / `3277971`                    | Anti-Gravity   | T-2.02                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-4.01-delivery-options-api` (T-4.01) / `0de13db`          | Anti-Gravity   | T-2.05, T-1.03                                                         | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-4.02-checkout` (T-4.02) / `d45a924`                      | Anti-Gravity   | T-3.06, T-4.01, T-2.04, T-2.08, T-1.18                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: payment contract                                                                    |
-| `agent/T-4.02-order-approval-ui` (T-4.02) / `97c8bda`             | Anti-Gravity   | T-3.06, T-4.01, T-2.04, T-2.08, T-1.18                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: payment contract                                                                    |
-| `agent/T-4.03-my-orders` (T-4.03) / `ba7957f`                     | Anti-Gravity   | T-4.02                                                                 | L; **No PR**                                                            | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-4.04-account-page` (T-4.04) / `4216298`                  | Anti-Gravity   | T-2.04, T-3.01                                                         | L; **No PR**                                                            | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-4.05-favorites` (T-4.05) / `fb162ea`                     | Anti-Gravity   | T-3.02, T-2.04                                                         | L; **No PR**                                                            | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-4.06-instapay-qr` (T-4.06) / `55171ff`                   | Anti-Gravity   | T-4.02, T-1.18, T-1.17                                                 | L; **No PR**                                                            | No checks recorded | Clean / HOLD: payment contract                                                                    |
-| `agent/T-4.07-e2e-storefront` (T-4.07) / `b18aa57`                | Anti-Gravity   | T-4.03, T-4.06, T-1.09                                                 | L; **No PR**                                                            | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-5.01-admin-shell` (T-5.01) / `d334e57`                   | Anti-Gravity   | T-2.06, T-2.07                                                         | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-5.02-admin-products` (T-5.02) / `e2c3c59`                | Anti-Gravity   | T-5.01, T-3.01                                                         | L; **No PR**                                                            | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-5.03-product-form` (T-5.03) / `ab404e4`                  | Anti-Gravity   | T-5.02, T-1.19                                                         | L; **No PR**                                                            | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-5.04-admin-categories` (T-5.04) / `3f601f7`              | Anti-Gravity   | T-5.01, T-1.19                                                         | L; **No PR**                                                            | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-5.05-admin-orders` (T-5.05) / `e267644`                  | Anti-Gravity   | T-5.01, T-1.10                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-5.06-customers-admin` (T-5.06) / `5b14cdc`               | Anti-Gravity   | T-5.01                                                                 | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-5.07-delivery-fees-admin` (T-5.07) / `524cb4e`           | Anti-Gravity   | T-5.01, T-4.01                                                         | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-5.08-admin-payments` (T-5.08) / `ad81799`                | Anti-Gravity   | T-5.05, T-1.18, T-2.09                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: payment contract                                                                    |
-| `agent/T-5.09-admin-settings` (T-5.09) / `0359dc2`                | Anti-Gravity   | T-5.01, T-1.17, T-2.09                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: payment contract                                                                    |
-| `agent/T-5.10-admin-audit` (T-5.10) / `940c0e0`                   | Anti-Gravity   | T-5.01, T-1.16                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-5.11-csv-export` (T-5.11) / `4a7133b`                    | Anti-Gravity   | T-5.02, T-5.05, T-5.06, T-2.09                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-5.12-admin-e2e` (T-5.12) / `deca312`                     | Anti-Gravity   | T-5.03, T-5.04, T-5.05, T-5.07, T-5.08, T-5.09, T-5.10, T-5.11, T-4.07 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-6.01-dashboard-data` (T-6.01) / `06070a9`                | Anti-Gravity   | T-5.01, T-1.03                                                         | L; **No PR**                                                            | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-6.02-dashboard-ui` (T-6.02) / `a9ccc64`                  | Anti-Gravity   | T-6.01                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-6.03-chart-accessibility-export` (T-6.03) / `b3e3df5`    | Anti-Gravity   | T-6.02                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `agent/T-7.01-arabic-rtl-qa` (T-7.01) / `b0edce0`                 | Anti-Gravity   | T-5.12, T-6.03, T-2.03                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-7.02-accessibility-pass` (T-7.02) / `c9507b9`            | Anti-Gravity   | T-5.12, T-6.03                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-7.03-performance-pass` (T-7.03) / `dfc159e`              | Anti-Gravity   | T-5.12, T-6.03                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-7.04-security-review-and-headers` (T-7.04) / `eec1a5b`   | Anti-Gravity   | T-5.12, T-6.03, T-1.22, T-2.08                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-7.05-supply-chain-hardening` (T-7.05) / `55cc00a`        | Anti-Gravity   | T-0.12                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-7.06-semgrep` (T-7.06) / `819ba69`                       | Codex          | T-0.06                                                                 | L+R; [#19](https://github.com/HassanG04/lolys/pull/19)                  | PASS (6)           | Clean / Eligible security wave                                                                    |
-| `agent/T-7.06-static-analysis-semgrep` (T-7.06) / `c890f64`       | Anti-Gravity   | T-0.06                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits                                                            |
-| `agent/T-7.07-dynamic-scan-owasp-zap` (T-7.07) / `fb16222`        | Anti-Gravity   | T-1.12, T-7.04                                                         | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits; WIP checkpoint pushed; subsequent AG tip fb16222 retained |
-| `agent/T-7.08-security-e2e-tests` (T-7.08) / `6d8fcbc`            | Anti-Gravity   | T-5.12, T-2.08, T-4.06                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / HOLD: inherits payment commits; WIP checkpoint pushed                                     |
-| `agent/T-8.01-auth-email-hardening-runbooks` (T-8.01) / `7986020` | Anti-Gravity   | T-2.04                                                                 | L+R; **No PR**                                                          | No checks recorded | Clean / No PR; needs dependency-specific preparation                                              |
-| `codex/merge-day-prep` (merge coordination) / `15c9f2a`           | Codex          | PR19                                                                   | L+R; [#20](https://github.com/HassanG04/lolys/pull/20)                  | PASS (6)           | Docs refresh / Documentation refresh only; commit and push before merge                           |
-
-## Verified evidence and limits
-
-- `git fetch --all --prune` completed. Every local/remote head and open PR was inventoried, with current-head GitHub checks.
-- WIP checkpoints: `ee22392` (8 files), `745c787` (25 files), and `6d8fcbc` (1 file), pushed without force.
-- PR19 repair: `afa0146` moves Node to Ubuntu host; digest-pinned Semgrep still runs both real rejection fixtures and strict maintained/project scans. Local `npm run verify` passed (55 app + 111 tooling tests); remote SAST passed at that commit.
-- Exact historical local public-anon-key exception: PR18 `d0193bb`, copied to PR19 `819ba69`. Metadata verified as role anon / issuer supabase-demo / local CI endpoint, without printing the token. New-secret rejection, deleted-secret history rejection, environment-file refusal and missing-scanner refusal all passed; full redacted history scan passed. No directory or rule-wide exemption was added.
-- PR18's updated head has five green remote jobs. PR19 status is captured in the table above; do not treat the older head's SAST result as all-green proof for a later head.
-- All six simulated dependency replays preserve exact trees at their recorded heads (PR20 at `15c9f2a` before the inventory refresh). These are rehearsal results, not real merges or production verification.
-- Main remains `6f33d5d17fa89e63a20e960f98f7df38e931e377`. No deployment, production/database dashboard change, branch deletion or merge was performed.
+1. Commit consolidation fixes on `integration`:
+   - Comment out cron schedules in `forecast.yml`, `keepalive.yml`, `zap.yml`.
+   - Update tests `scripts/keepalive-config.test.mjs`, `scripts/zap-config.test.mjs`, `scripts/analytics-tooling.test.mjs`.
+   - Add `docs/` and `frontend-demo/` to `.semgrepignore`.
+   - Update `supabase/tests/database/07_error_codes.test.sql` tests 8 & 12.
+   - Update `scripts/run-concurrency.mjs` place_order signature and teardown.
+   - Update `public/_headers` CSP for local development and test loopback ports.
+   - Add `docs/handoff/consolidation-workflows.json` and `docs/handoff/MERGE-PLAN.md`.
+2. Push `integration` to `origin/integration`.
+3. Check out `main`, merge `integration` with standard merge commit:
+   `git merge integration -m "Merge integration into main (phases 0-9)"`
+4. Push `main` to `origin/main`.
+5. Resume remaining tasks on new task branch from `main`.
