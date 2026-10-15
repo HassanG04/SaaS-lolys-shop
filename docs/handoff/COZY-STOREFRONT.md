@@ -1,5 +1,7 @@
 # Cozy storefront integration handoff — 2026-10-15
 
+Draft review: [PR #28](https://github.com/HassanG04/SaaS-lolys-shop/pull/28). Implementation checkpoints: `35df0a2` (loading/motion) and `eb703de` (art direction).
+
 ## Current objective
 
 Complete the owner's warmer storefront, animations and loading-state request.

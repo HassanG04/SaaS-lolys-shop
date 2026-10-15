@@ -1,5 +1,7 @@
 # Shared project progress
 
+Draft review: [PR #28](https://github.com/HassanG04/SaaS-lolys-shop/pull/28). Implementation checkpoints: `35df0a2` (loading/motion) and `eb703de` (art direction).
+
 ## Codex cozy storefront — 2026-10-15
 
 Current task: T-3.09 and split T-3.09b, owner-requested visual refresh while
