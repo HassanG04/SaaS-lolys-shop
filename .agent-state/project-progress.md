@@ -1,5 +1,21 @@
 # Shared project progress
 
+## Codex deployment recheck — 2026-10-15
+
+Current task: Recheck launch readiness. The owner reports identifying the Brave error and assigning its fix to Anti-Gravity; Codex is not duplicating that fix.
+Completed:
+
+- Refreshed remote references. `origin/main` is `315f01d`; the current analytics branch is `cd7f738`.
+- Observed the live storefront and login interface in the Codex in-app browser. The login page rendered visually, with no captured warning/error console entries in that browser session. This does not reproduce or resolve the owner's Brave failure.
+- Reviewed the owner's screenshot confirming the blank page in Brave. Requested the first red console error after a reload to distinguish the actual cause; no cause has been established yet.
+- Roadmap reports 114 done / 8 todo on the analytics branch. These are recorded labels, not a verified production readiness percentage. Launch tasks for email, production setup, real catalogue, admin recovery, and soft launch remain todo. The existing merge-plan audit groups whole phases and does not provide evidence for each Done-when item; owner confirmations and remote verification still need reconciliation.
+- Launch-status review: explicitly open launch tasks are T-7.09 (owner security scan), T-8.02 (real auth-email delivery), T-8.03 (production verification), T-8.04 (catalogue/delivery/payment data), T-8.09 (admin MFA/recovery), and T-8.10 (about 10 real end-to-end orders and owner sign-off). T-9.12 is analytics documentation; T-9.13 explicitly follows shop launch and real-data readiness.
+- Evidence gaps: `docs/security-review.md` marks the owner incident-runbook review and Claude Security scan PASS using documentation existence as evidence; this does not establish either action occurred. The security-model pre-launch checklist is unticked. The launch checklist covers accessibility rather than the complete operational sign-off. Production settings, remote backup restoration, alert delivery, and approved customer-facing policies need direct evidence before launch is declared.
+  Files changed: `.agent-state/project-progress.md` only for this diagnostic session.
+  Tests executed: Read-only live-page visual/console inspection; roadmap next/status; repository status/diff and remote fetch. No full application, database, or authenticated production transaction tests rerun.
+  Problems found: Brave blank page remains unresolved; live UI rendering alone does not verify production database, authentication, payment, or order flows. Existing completion claims are not sufficient launch evidence.
+  Next action: Anti-Gravity owns the browser fix. After that fix, verify the release build and actual hosted flows, complete the outstanding owner setup and live catalogue, reconcile unsupported completion claims, then record the controlled soft launch and owner sign-off. Do not merge or deploy from this session.
+
 Updated 2026-10-15 (Africa/Cairo). Active: Anti-Gravity, completed T-9.10 (Admin Forecast & Reorder Screens).
 
 Current task: T-9.11: Descriptive analyses and Analytics page

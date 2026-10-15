@@ -5,9 +5,11 @@ import { mapAuthError } from '../features/auth/authErrors'
 import { useAuth } from '../features/auth/AuthProvider'
 import { Turnstile } from '../features/auth/Turnstile'
 import type { AuthErrorCode } from '../features/auth/types'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 export default function LoginPage() {
   const { signIn } = useAuth()
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -76,10 +78,8 @@ export default function LoginPage() {
     <div className="mx-auto max-w-md space-y-6">
       <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-h2 font-bold font-accent text-(--color-brand)">تسجيل الدخول</h1>
-          <p className="text-small text-(--color-text-muted)">
-            أدخل بريدك الإلكتروني لتسجيل الدخول إلى حسابك ومتابعة طلباتك.
-          </p>
+          <h1 className="text-h2 font-bold font-accent text-(--color-brand)">{t.auth.login}</h1>
+          <p className="text-small text-(--color-text-muted)">{t.auth.loginSubtitle}</p>
         </div>
 
         {errorCode && (
@@ -87,22 +87,20 @@ export default function LoginPage() {
             <AuthAlert code={errorCode} />
             {errorCode === 'AUTH-009' && (
               <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface-tint) p-3 text-small text-(--color-text) space-y-2">
-                <p className="font-semibold text-(--color-brand)">
-                  انتهت صلاحية هذا الرابط. يمكنك طلب رابط جديد:
-                </p>
+                <p className="font-semibold text-(--color-brand)">{t.auth.linkExpiredTitle}</p>
                 <div className="flex flex-wrap gap-2 text-caption">
                   <Link
                     to="/resend-confirmation"
                     className="font-semibold text-(--color-brand) hover:underline"
                   >
-                    إعادة إرسال رابط تفعيل الحساب &larr;
+                    {t.auth.requestNewConfirmationLink} &larr;
                   </Link>
                   <span className="text-(--color-text-muted)">•</span>
                   <Link
                     to="/reset-password"
                     className="font-semibold text-(--color-brand) hover:underline"
                   >
-                    طلب رابط جديد لاستعادة كلمة المرور &larr;
+                    {t.auth.requestNewResetLink} &larr;
                   </Link>
                 </div>
               </div>
@@ -113,7 +111,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="space-y-1">
             <label htmlFor="email-input" className="text-small font-semibold text-(--color-text)">
-              البريد الإلكتروني
+              {t.auth.email}
             </label>
             <input
               id="email-input"
@@ -132,13 +130,13 @@ export default function LoginPage() {
                 htmlFor="password-input"
                 className="text-small font-semibold text-(--color-text)"
               >
-                كلمة المرور
+                {t.auth.password}
               </label>
               <Link
                 to="/reset-password"
                 className="text-caption font-semibold text-(--color-brand) hover:underline"
               >
-                نسيت كلمة المرور؟
+                {t.auth.forgot}
               </Link>
             </div>
             <input
@@ -150,9 +148,7 @@ export default function LoginPage() {
               required
               className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) px-4 text-small text-(--color-text) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
             />
-            <p className="text-caption text-(--color-text-muted)">
-              يجب أن تحتوي كلمة المرور على 10 أحرف على الأقل.
-            </p>
+            <p className="text-caption text-(--color-text-muted)">{t.auth.passwordMinLength}</p>
           </div>
 
           <Turnstile onVerify={(token) => setCaptchaToken(token)} />
@@ -162,24 +158,24 @@ export default function LoginPage() {
             disabled={isSubmitting}
             className="w-full h-11 rounded-(--radius-pill) bg-(--color-brand) text-small font-semibold text-(--color-brand-contrast) transition-opacity hover:opacity-90 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
           >
-            {isSubmitting ? 'جارٍ تسجيل الدخول...' : 'تسجيل الدخول'}
+            {isSubmitting ? t.auth.loggingIn : t.auth.login}
           </button>
         </form>
 
-        {/* Neutral "resend confirmation" link is ALWAYS visible on sign-in */}
-        <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface-tint) p-3 text-center">
+        {/* Clean, discrete resend confirmation link */}
+        <div className="text-center pt-1">
           <Link
             to="/resend-confirmation"
-            className="text-small font-semibold text-(--color-brand) hover:underline"
+            className="text-caption text-(--color-text-muted) hover:text-(--color-brand) hover:underline"
           >
-            لم تصلك رسالة التفعيل؟ أعد الإرسال
+            {t.auth.resend}
           </Link>
         </div>
 
         <div className="text-center text-small text-(--color-text-muted)">
-          ليس لديك حساب؟{' '}
+          {t.auth.noAccount}{' '}
           <Link to="/register" className="font-semibold text-(--color-brand) hover:underline">
-            إنشاء حساب جديد
+            {t.auth.register}
           </Link>
         </div>
       </div>
