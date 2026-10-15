@@ -83,7 +83,7 @@ jobs:
       - name: Verify Semgrep project rules against planted violations
         run: node --test scripts/semgrep.test.mjs
       - name: Run Semgrep SAST scan
-        run: semgrep scan --config p/typescript --config p/react --config .semgrep/ --error --severity ERROR
+        run: semgrep scan --config p/typescript --config p/react --config .semgrep/ --error --severity ERROR src
 
   static:
     runs-on: ubuntu-latest

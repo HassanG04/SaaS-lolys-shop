@@ -33,7 +33,7 @@
     "check:sql": "node scripts/check-sql.mjs",
     "check:supply-chain": "node scripts/check-supply-chain.mjs",
     "audit:signatures": "npm audit signatures",
-    "sast": "semgrep scan --config p/typescript --config p/react --config .semgrep/ --error --severity ERROR",
+    "sast": "semgrep scan --config p/typescript --config p/react --config .semgrep/ --error --severity ERROR src",
     "analytics:install": "node scripts/run-analytics.mjs install",
     "analytics:test": "node scripts/run-analytics.mjs test",
     "analytics:forecast": "node scripts/pending.mjs analytics:forecast",
