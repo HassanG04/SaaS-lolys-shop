@@ -1,5 +1,16 @@
 @import './tokens.css';
 @import './ui.css';
+@import './storefront.css';
+
+/* Briefly include surface/text colors even on controls with their own transitions. */
+html.theme-transition,
+html.theme-transition body,
+html.theme-transition body * {
+  transition-property:
+    background-color, border-color, color, fill, stroke, box-shadow, transform, opacity;
+  transition-duration: 360ms;
+  transition-timing-function: ease;
+}
 
 @layer base {
   html {
@@ -24,6 +35,7 @@
     outline: 2px solid var(--color-focus-val);
     outline-offset: 2px;
   }
+
   .theme-toggle {
     min-block-size: var(--spacing-touch);
     min-inline-size: var(--spacing-touch);

@@ -6,6 +6,7 @@ import { useAuth } from '../features/auth/AuthProvider'
 import { Turnstile } from '../features/auth/Turnstile'
 import type { AuthErrorCode } from '../features/auth/types'
 import { useLanguage } from '@/i18n/LanguageProvider'
+import { Button } from '@/components/ui/Button'
 
 export default function ResetPasswordPage() {
   const { resetPassword } = useAuth()
@@ -62,7 +63,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-6 sm:p-8 space-y-6">
+      <div className="auth-panel rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-h2 font-bold font-accent text-(--color-brand)">
             {t.auth.resetPassword}
@@ -98,6 +99,15 @@ export default function ResetPasswordPage() {
               <p className="text-small text-(--color-text)">{t.auth.checkResetEmailDesc}</p>
               <p className="text-caption text-(--color-text-muted)">{t.auth.checkSpamFolder}</p>
             </div>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setCaptchaToken(undefined)
+                setFormStatusMessage(null)
+              }}
+            >
+              {t.auth.resendNoticeLink}
+            </Button>
           </div>
         ) : (
           <>
@@ -124,14 +134,22 @@ export default function ResetPasswordPage() {
 
               <Turnstile onVerify={(token) => setCaptchaToken(token)} />
 
-              <button
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 rounded-(--radius-pill) bg-(--color-brand) text-small font-semibold text-(--color-brand-contrast) transition-opacity hover:opacity-90 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+                className="h-11 w-full text-small disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
               >
                 {isSubmitting ? t.auth.sendingResetLink : t.auth.sendResetLink}
-              </button>
+              </Button>
             </form>
+            <p className="text-center text-caption text-(--color-text-muted)">
+              <Link
+                to="/resend-confirmation"
+                className="font-semibold text-(--color-brand) hover:underline"
+              >
+                {t.auth.resend}
+              </Link>
+            </p>
           </>
         )}
 

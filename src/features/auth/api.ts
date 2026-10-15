@@ -1,15 +1,12 @@
 import { supabase } from '../../lib/supabase'
 import type {
-  AalLevel,
   AuthActionResult,
   AuthErrorCode,
   MfaEnrollResult,
-  MfaFactor,
   ResendConfirmationCredentials,
   ResetPasswordCredentials,
   SignInCredentials,
   SignUpCredentials,
-  UserProfile,
 } from './types'
 
 async function resolveAuthError(err: unknown): Promise<{ code: AuthErrorCode; message: string }> {
@@ -167,70 +164,12 @@ export async function resendConfirmationApi(
   }
 }
 
-/**
- * Signs out the session, supporting global revocation across all devices.
- */
-export async function signOutApi(options?: {
-  scope?: 'global' | 'local' | 'others'
-}): Promise<void> {
-  await supabase.auth.signOut(options)
-}
+import * as self from './api'
+import { setApiDelegate } from './session.api'
 
-/**
- * Fetches the user profile from public.profiles.
- */
-export async function fetchProfileApi(userId: string): Promise<UserProfile | null> {
-  try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select(
-        'id, role, full_name, phone, alt_phone, governorate_id, city, district, address, floor, apartment, landmark',
-      )
-      .eq('id', userId)
-      .maybeSingle()
+export { signOutApi, fetchProfileApi, fetchAalApi, fetchFactorsApi } from './session.api'
 
-    if (error || !data) return null
-    return {
-      ...data,
-      role: (data.role as 'admin' | 'customer') || 'customer',
-    }
-  } catch {
-    return null
-  }
-}
-
-/**
- * Reads the current session Authenticator Assurance Level (aal1 or aal2).
- */
-export async function fetchAalApi(): Promise<AalLevel> {
-  try {
-    const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
-    if (error || !data) return 'aal1'
-    return data.currentLevel === 'aal2' ? 'aal2' : 'aal1'
-  } catch {
-    return 'aal1'
-  }
-}
-
-/**
- * Fetches all enrolled TOTP factors for the current user.
- */
-export async function fetchFactorsApi(): Promise<MfaFactor[]> {
-  try {
-    const { data, error } = await supabase.auth.mfa.listFactors()
-    if (error || !data) return []
-    return (data.totp || []).map((f) => ({
-      id: f.id,
-      friendly_name: f.friendly_name,
-      factor_type: 'totp',
-      status: f.status as 'verified' | 'unverified',
-      created_at: f.created_at,
-      updated_at: f.updated_at,
-    }))
-  } catch {
-    return []
-  }
-}
+setApiDelegate(self)
 
 /**
  * Enrolls a new TOTP factor returning QR code, manual key secret, and URI.

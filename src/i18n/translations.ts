@@ -24,6 +24,7 @@ import {
   seo as arSeo,
   catalog as arCatalog,
   whatsapp as arWhatsapp,
+  about as arAbout,
 } from './ar.json'
 
 import {
@@ -51,6 +52,7 @@ import {
   seo as enSeo,
   catalog as enCatalog,
   whatsapp as enWhatsapp,
+  about as enAbout,
 } from './en.json'
 
 export const translations = {
@@ -79,6 +81,7 @@ export const translations = {
     seo: arSeo,
     catalog: arCatalog,
     whatsapp: arWhatsapp,
+    about: arAbout,
   },
   en: {
     theme: enTheme,
@@ -105,5 +108,6 @@ export const translations = {
     seo: enSeo,
     catalog: enCatalog,
     whatsapp: enWhatsapp,
+    about: enAbout,
   },
 }

@@ -152,14 +152,19 @@ describe('Authentication unit tests (T-2.04)', () => {
     expect(container.textContent).toContain('AUTH-001')
   })
 
-  it('renders login page with always-visible resend confirmation link and upfront password rule', async () => {
+  it('keeps confirmation resend out of login and places it on the forgot-password page', async () => {
     render(<App initialEntries={['/login']} />)
 
     expect(await screen.findByRole('heading', { name: 'تسجيل الدخول' })).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'لم تصلك رسالة التفعيل؟ أعد الإرسال' }),
-    ).toBeInTheDocument()
+      screen.queryByRole('link', { name: 'لم تصلك رسالة التفعيل؟ أعد الإرسال' }),
+    ).not.toBeInTheDocument()
     expect(screen.getByText(/10 أحرف على الأقل/)).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('link', { name: 'نسيت كلمة المرور؟' }))
+    expect(
+      await screen.findByRole('link', { name: 'لم تصلك رسالة التفعيل؟ أعد الإرسال' }),
+    ).toHaveAttribute('href', '/resend-confirmation')
   })
 
   it('requires authentication for /account/orders and redirects to login with redirect param', async () => {
@@ -251,6 +256,11 @@ describe('Authentication unit tests (T-2.04)', () => {
         await screen.findByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
       ).toBeInTheDocument()
       expect(screen.getByText(/رابط إعادة التعيين خلال دقائق/)).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: 'لم تصلك الرسالة؟ أعد الإرسال' }))
+      expect(screen.getByLabelText('البريد الإلكتروني')).toHaveValue('user@example.com')
+      expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledTimes(1)
+      await user.click(screen.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }))
+      expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledTimes(2)
     })
 
     it('displays clear "resend" state on /resend-confirmation with active submission', async () => {

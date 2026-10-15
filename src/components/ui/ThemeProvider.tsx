@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -17,12 +18,10 @@ type ThemeState = {
 
 const mediaQuery = '(prefers-color-scheme: dark)'
 const ThemeContext = createContext<ThemeState | undefined>(undefined)
-const parseTheme = (value: unknown): Theme =>
-  value === 'light' || value === 'dark' ? value : 'system'
-
 function readTheme(): Theme {
   try {
-    return parseTheme(localStorage.getItem('theme'))
+    const v = localStorage.getItem('theme')
+    return v === 'light' || v === 'dark' ? v : 'system'
   } catch {
     return 'system'
   }
@@ -31,6 +30,7 @@ function readTheme(): Theme {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, updateTheme] = useState(readTheme)
   const [systemDark, setSystemDark] = useState(() => window.matchMedia(mediaQuery).matches)
+  const themeTransitionTimer = useRef<number | undefined>(undefined)
   const resolvedTheme = theme === 'system' ? (systemDark ? 'dark' : 'light') : theme
 
   useEffect(() => {
@@ -42,6 +42,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     media.addEventListener('change', onSystemChange)
     window.addEventListener('storage', onStorageChange)
     return () => {
+      window.clearTimeout(themeTransitionTimer.current)
+      document.documentElement.classList.remove('theme-transition')
       media.removeEventListener('change', onSystemChange)
       window.removeEventListener('storage', onStorageChange)
     }
@@ -55,6 +57,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     theme,
     resolvedTheme,
     setTheme: (nextTheme) => {
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('theme-transition')
+        window.clearTimeout(themeTransitionTimer.current)
+        themeTransitionTimer.current = window.setTimeout(() => {
+          document.documentElement.classList.remove('theme-transition')
+          themeTransitionTimer.current = undefined
+        }, 360)
+      }
       try {
         if (nextTheme === 'system') localStorage.removeItem('theme')
         else localStorage.setItem('theme', nextTheme)

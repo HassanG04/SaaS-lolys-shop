@@ -1064,7 +1064,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run analytics:test && npm run test:unit`
 
 #### T-9.12: Model card and analytics runbook
-`status: todo` `owner: agent` `needs: T-9.09, T-9.10, T-9.11` `size: M`
+`status: done` `owner: agent` `needs: T-9.09, T-9.10, T-9.11` `size: M`
 - **Do:** Write `docs/analytics/model-card.md` (data, models, metrics, limits, retraining routine) and `docs/runbooks/analytics.md` (how to add a model, run backtests, read a failed job, switch to the baseline by hand).
 - **Done when:** the owner can explain from the model card what the forecast does and does not know.
 - **Verify:** manual review

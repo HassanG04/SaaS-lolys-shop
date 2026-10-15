@@ -2,10 +2,8 @@ import { useEffect } from 'react'
 import type { SeoOptions } from './types'
 
 export const BRAND_NAME = "Lolys' Accessories & Home"
-export const DEFAULT_DESCRIPTION_AR =
-  'أشياء لطيفة لأسلوبك ومساحتك - إكسسوارات راقية ولمسات منزلية دافئة'
-export const DEFAULT_DESCRIPTION_EN =
-  'Cute things for your style & space - elegant accessories and warm home touches'
+export const DEFAULT_DESCRIPTION_AR = 'إكسسوارات راقية ولمسات منزلية'
+export const DEFAULT_DESCRIPTION_EN = 'Elegant accessories and warm home touches'
 export const DEFAULT_IMAGE = '/brand/logo.png'
 
 function setMetaTag(selector: string, attrName: string, attrValue: string, content: string) {
@@ -52,24 +50,24 @@ export function useSeo({
       description?.trim() || (isEnglish ? DEFAULT_DESCRIPTION_EN : DEFAULT_DESCRIPTION_AR)
     const locale = isEnglish ? 'en_US' : 'ar_EG'
 
-    // Standard description
-    setMetaTag('meta[name="description"]', 'name', 'description', finalDescription)
+    const tags: [string, string, boolean?][] = [
+      ['description', finalDescription],
+      ['og:site_name', BRAND_NAME, true],
+      ['og:type', type, true],
+      ['og:title', fullTitle, true],
+      ['og:description', finalDescription, true],
+      ['og:image', image, true],
+      ['og:locale', locale, true],
+      ['twitter:card', 'summary_large_image'],
+      ['twitter:title', fullTitle],
+      ['twitter:description', finalDescription],
+      ['twitter:image', image],
+    ]
+    for (const [key, val, isProp] of tags) {
+      const a = isProp ? 'property' : 'name'
+      setMetaTag(`meta[${a}="${key}"]`, a, key, val)
+    }
 
-    // Open Graph
-    setMetaTag('meta[property="og:site_name"]', 'property', 'og:site_name', BRAND_NAME)
-    setMetaTag('meta[property="og:type"]', 'property', 'og:type', type)
-    setMetaTag('meta[property="og:title"]', 'property', 'og:title', fullTitle)
-    setMetaTag('meta[property="og:description"]', 'property', 'og:description', finalDescription)
-    setMetaTag('meta[property="og:image"]', 'property', 'og:image', image)
-    setMetaTag('meta[property="og:locale"]', 'property', 'og:locale', locale)
-
-    // Twitter card
-    setMetaTag('meta[name="twitter:card"]', 'name', 'twitter:card', 'summary_large_image')
-    setMetaTag('meta[name="twitter:title"]', 'name', 'twitter:title', fullTitle)
-    setMetaTag('meta[name="twitter:description"]', 'name', 'twitter:description', finalDescription)
-    setMetaTag('meta[name="twitter:image"]', 'name', 'twitter:image', image)
-
-    // Robots
     if (noindex) {
       setMetaTag('meta[name="robots"]', 'name', 'robots', 'noindex, nofollow')
     } else {

@@ -31,72 +31,40 @@ export interface ToastContextValue {
 
 export const ToastContext = createContext<ToastContextValue | null>(null)
 
+let toastSeq = 0
+
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([])
-  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
+  const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({})
 
   const dismissToast = useCallback((id: string) => {
-    const timer = timersRef.current.get(id)
-    if (timer) {
-      clearTimeout(timer)
-      timersRef.current.delete(id)
-    }
+    clearTimeout(timers.current[id])
+    delete timers.current[id]
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }, [])
 
   const showToast = useCallback(
     ({ title, message, severity = 'info', durationMs = 5000 }: Omit<ToastItem, 'id'>) => {
-      const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-      const newItem: ToastItem = { id, title, message, severity, durationMs }
-
-      setToasts((prev) => [...prev, newItem])
-
-      if (durationMs > 0) {
-        const timer = setTimeout(() => {
-          dismissToast(id)
-        }, durationMs)
-        timersRef.current.set(id, timer)
-      }
-
+      const id = `t-${++toastSeq}`
+      setToasts((prev) => [...prev, { id, title, message, severity, durationMs }])
+      if (durationMs > 0) timers.current[id] = setTimeout(() => dismissToast(id), durationMs)
       return id
     },
     [dismissToast],
   )
 
-  const success = useCallback(
-    (message: ReactNode, title = 'نجاح') => {
-      return showToast({ title, message, severity: 'success' })
-    },
-    [showToast],
-  )
-
-  const error = useCallback(
-    (message: ReactNode, title = 'تنبيه') => {
-      return showToast({ title, message, severity: 'danger' })
-    },
-    [showToast],
-  )
-
-  const info = useCallback(
-    (message: ReactNode, title = 'معلومة') => {
-      return showToast({ title, message, severity: 'info' })
-    },
-    [showToast],
-  )
-
-  const warning = useCallback(
-    (message: ReactNode, title = 'تحذير') => {
-      return showToast({ title, message, severity: 'warning' })
-    },
-    [showToast],
-  )
+  const notify =
+    (severity: ToastSeverity, def: string) =>
+    (message: ReactNode, title = def) =>
+      showToast({ title, message, severity })
+  const success = notify('success', 'نجاح')
+  const error = notify('danger', 'تنبيه')
+  const info = notify('info', 'معلومة')
+  const warning = notify('warning', 'تحذير')
 
   useEffect(() => {
-    const currentTimers = timersRef.current
-    return () => {
-      currentTimers.forEach((timer) => clearTimeout(timer))
-      currentTimers.clear()
-    }
+    const t = timers.current
+    return () => Object.values(t).forEach(clearTimeout)
   }, [])
 
   return (

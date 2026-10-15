@@ -18,8 +18,7 @@ import { useLanguage } from '../../i18n/LanguageProvider'
 
 export function Toast({ title, message, severity = 'info', onDismiss }: ToastProps) {
   const { t } = useLanguage()
-  const ui = t.ui
-  const state = states[severity]
+  const s = states[severity]
   return (
     <div className="flex items-start gap-3 rounded-chip border border-border bg-surface p-3 text-text">
       <div
@@ -29,16 +28,15 @@ export function Toast({ title, message, severity = 'info', onDismiss }: ToastPro
       >
         <svg
           aria-hidden="true"
-          focusable="false"
           viewBox="0 0 24 24"
-          className={`size-6 shrink-0 ${state.color}`}
+          className={`size-6 shrink-0 ${s.color}`}
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d={state.path} />
+          <path d={s.path} />
         </svg>
         <div className="min-w-0 break-words">
           <p className="font-semibold">{title}</p>
@@ -48,14 +46,13 @@ export function Toast({ title, message, severity = 'info', onDismiss }: ToastPro
       {onDismiss ? (
         <button
           type="button"
-          aria-label={ui.dismissNotification}
+          aria-label={t.ui.dismissNotification}
           data-variant="ghost"
-          className="ui-control ui-button inline-flex aspect-square items-center justify-center rounded-pill p-2"
+          className="ui-control ui-button rounded-pill p-2"
           onClick={onDismiss}
         >
           <svg
-            width="24"
-            height="24"
+            className="size-5"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"

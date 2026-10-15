@@ -249,7 +249,9 @@ def run_forecast_pipeline(
     models_dict = {
         "seasonal_naive": SeasonalNaiveModel(seasonality=7),
         "moving_average_28": MovingAverage28Model(window=28),
+        "auto_theta": AutoThetaModel(seasonality=7),
         "autotheta": AutoThetaModel(seasonality=7),
+        "auto_ets": AutoETSModel(seasonality=7),
         "autoets": AutoETSModel(seasonality=7),
         "lightgbm": LightGBMDirectModel(),
     }
@@ -477,22 +479,34 @@ def run_forecast_pipeline(
 
         if p_folds >= 1:
             p_baseline_rep = run_backtest(
-                weekly_units, MovingAverage28Model(window=4), n_folds=p_folds, horizon=8
+                weekly_units,
+                MovingAverage28Model(window=4),
+                n_folds=p_folds,
+                horizon=8,
+                min_train=4,
             )
             if prod_readiness.can_use_intermittent and len(weekly_units) >= 12:
                 p_candidates.append(
-                    run_backtest(weekly_units, CrostonSBAModel(), n_folds=p_folds, horizon=8)
+                    run_backtest(
+                        weekly_units, CrostonSBAModel(), n_folds=p_folds, horizon=8, min_train=4
+                    )
                 )
                 p_candidates.append(
-                    run_backtest(weekly_units, TSBModel(), n_folds=p_folds, horizon=8)
+                    run_backtest(weekly_units, TSBModel(), n_folds=p_folds, horizon=8, min_train=4)
                 )
                 p_candidates.append(
-                    run_backtest(weekly_units, ADIDAModel(), n_folds=p_folds, horizon=8)
+                    run_backtest(
+                        weekly_units, ADIDAModel(), n_folds=p_folds, horizon=8, min_train=4
+                    )
                 )
             elif prod_readiness.can_use_statistical and len(weekly_units) >= 12:
                 p_candidates.append(
                     run_backtest(
-                        weekly_units, AutoThetaModel(seasonality=4), n_folds=p_folds, horizon=8
+                        weekly_units,
+                        AutoThetaModel(seasonality=4),
+                        n_folds=p_folds,
+                        horizon=8,
+                        min_train=4,
                     )
                 )
 
@@ -518,10 +532,13 @@ def run_forecast_pipeline(
 
         intermittent_map = {
             "croston_sba": CrostonSBAModel(),
+            "crostonsba": CrostonSBAModel(),
             "tsb": TSBModel(),
             "adida": ADIDAModel(),
             "moving_average_28": MovingAverage28Model(window=4),
             "seasonal_naive": SeasonalNaiveModel(seasonality=4),
+            "auto_theta": AutoThetaModel(seasonality=4),
+            "autotheta": AutoThetaModel(seasonality=4),
         }
         p_model = intermittent_map.get(
             p_selection.chosen_model.lower(), MovingAverage28Model(window=4)

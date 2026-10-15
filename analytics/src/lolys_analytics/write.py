@@ -120,7 +120,7 @@ def write_forecast_run(
             insert_run_sql = """
                 INSERT INTO analytics.forecast_runs (
                     run_at, git_commit, model_version, input_hash, notes, status
-                ) VALUES (%s, %s, %s, %s, %s, 'completed')
+                ) VALUES (%s, %s, %s, %s, %s, %s)
                 RETURNING id;
             """
             cur.execute(

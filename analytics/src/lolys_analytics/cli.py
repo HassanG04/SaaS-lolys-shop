@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import sys
 from pathlib import Path
@@ -242,8 +243,6 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "run":
-        import datetime as dt
-
         from lolys_analytics import db
         from lolys_analytics.forecast import run_forecast_pipeline
         from lolys_analytics.synthetic import DailySalesRecord, DailyStockRecord

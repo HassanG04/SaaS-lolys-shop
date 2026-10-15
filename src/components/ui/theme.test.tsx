@@ -5,6 +5,7 @@ import { ThemeProvider, useTheme } from './ThemeProvider'
 import { ThemeToggle } from './ThemeToggle'
 
 let media: EventTarget & { matches: boolean }
+let reducedMotion = false
 const toggle = () => screen.getByRole('button', { name: 'المظهر الداكن' })
 const renderTheme = () =>
   render(
@@ -21,17 +22,46 @@ beforeEach(() => {
   localStorage.clear()
   document.documentElement.removeAttribute('data-theme')
   media = Object.assign(new EventTarget(), { matches: false })
+  reducedMotion = false
   vi.stubGlobal(
     'matchMedia',
-    vi.fn(() => media),
+    vi.fn((query: string) =>
+      query === '(prefers-reduced-motion: reduce)' ? { matches: reducedMotion } : media,
+    ),
   )
 })
 
 afterEach(() => {
+  vi.useRealTimers()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
   localStorage.clear()
   document.documentElement.removeAttribute('data-theme')
+})
+
+it('ends the color transition after the latest rapid toggle and cleans up on unmount', () => {
+  vi.useFakeTimers()
+  const view = renderTheme()
+  fireEvent.click(toggle())
+  expect(document.documentElement).toHaveClass('theme-transition')
+  act(() => vi.advanceTimersByTime(200))
+  fireEvent.click(toggle())
+  act(() => vi.advanceTimersByTime(200))
+  expect(document.documentElement).toHaveClass('theme-transition')
+  act(() => vi.advanceTimersByTime(160))
+  expect(document.documentElement).not.toHaveClass('theme-transition')
+  fireEvent.click(toggle())
+  view.unmount()
+  expect(document.documentElement).not.toHaveClass('theme-transition')
+  expect(vi.getTimerCount()).toBe(0)
+})
+
+it('changes theme immediately without color animation when reduced motion is enabled', () => {
+  reducedMotion = true
+  renderTheme()
+  fireEvent.click(toggle())
+  expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
+  expect(document.documentElement).not.toHaveClass('theme-transition')
 })
 
 it('uses system dark mode and toggles away from the resolved theme on the first click', async () => {

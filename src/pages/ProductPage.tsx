@@ -10,10 +10,12 @@ import { FavoriteButton } from '@/features/favorites'
 import { useCart } from '@/features/cart'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatEGP } from '@/lib/format'
+import { ProductReviewsSection, useProductReviewSummary, StarRating } from '@/features/reviews'
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>()
   const { lang, t } = useLanguage()
+  const isAr = lang === 'ar'
   const { success } = useToast()
   const { addItem } = useCart()
 
@@ -21,6 +23,7 @@ export default function ProductPage() {
 
   // 1. Fetch product data
   const { data: product, isLoading: isProductLoading, error: productError } = useProduct(productId)
+  const { data: reviewSummary } = useProductReviewSummary(productId)
 
   // 2. State for active gallery image
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -267,6 +270,19 @@ export default function ProductPage() {
                 <h1 className="text-h1 font-bold font-accent text-brand">{displayName}</h1>
                 <FavoriteButton product={product} size="lg" />
               </div>
+
+              {reviewSummary && reviewSummary.review_count > 0 ? (
+                <div className="flex items-center gap-2 pt-0.5">
+                  <StarRating value={Math.round(reviewSummary.average_rating)} readOnly size="sm" />
+                  <span className="text-caption font-bold text-text font-mono">
+                    {reviewSummary.average_rating.toFixed(1)}
+                  </span>
+                  <span className="text-caption text-text-muted">
+                    ({reviewSummary.review_count}{' '}
+                    {isAr ? 'تقييم' : reviewSummary.review_count === 1 ? 'review' : 'reviews'})
+                  </span>
+                </div>
+              ) : null}
             </div>
 
             {/* Pricing block */}
@@ -367,6 +383,9 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
+
+      {/* 2. Product Reviews Section */}
+      {productId ? <ProductReviewsSection productId={productId} /> : null}
 
       {/* 3. Related Products Section */}
       {relatedProducts.length > 0 ? (

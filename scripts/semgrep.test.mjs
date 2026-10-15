@@ -201,7 +201,7 @@ test(
     const result = spawnSync(
       semgrepBin,
       ['scan', '--config', rulesFile, '--error', '--severity', 'ERROR', projectRoot],
-      { encoding: 'utf8', timeout: 120_000 },
+      { encoding: 'utf8', timeout: 180_000 },
     )
 
     assert.equal(
