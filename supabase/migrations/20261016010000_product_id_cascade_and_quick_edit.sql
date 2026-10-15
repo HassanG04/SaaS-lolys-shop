@@ -17,11 +17,6 @@ alter table public.order_items add constraint order_items_product_id_fkey
   foreign key (product_id) references public.products (id)
   on delete restrict on update cascade;
 
--- 2.2 cart_items
-alter table public.cart_items drop constraint if exists cart_items_product_id_fkey;
-alter table public.cart_items add constraint cart_items_product_id_fkey
-  foreign key (product_id) references public.products (id)
-  on delete cascade on update cascade;
 
 -- 2.3 favorites
 alter table public.favorites drop constraint if exists favorites_product_id_fkey;
