@@ -287,7 +287,7 @@ const mockOrders: AdminOrder[] = [
   },
 ]
 
-function renderWithProviders(ui: React.ReactElement) {
+function renderWithProviders(ui: React.ReactElement, entry = '/admin/orders') {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false, gcTime: 0 },
@@ -299,7 +299,7 @@ function renderWithProviders(ui: React.ReactElement) {
     <LanguageProvider>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
-          <MemoryRouter>{ui}</MemoryRouter>
+          <MemoryRouter initialEntries={[entry]}>{ui}</MemoryRouter>
         </ToastProvider>
       </QueryClientProvider>
     </LanguageProvider>,

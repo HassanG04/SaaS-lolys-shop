@@ -161,7 +161,7 @@ const mockOrders: AdminPaymentOrder[] = [
   },
 ]
 
-function renderWithProviders(ui: React.ReactElement) {
+function renderWithProviders(ui: React.ReactElement, entry = '/admin/payments') {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false, gcTime: 0 },
@@ -171,7 +171,7 @@ function renderWithProviders(ui: React.ReactElement) {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[entry]}>
         <LanguageProvider>
           <ToastProvider>{ui}</ToastProvider>
         </LanguageProvider>
@@ -184,6 +184,42 @@ describe('Admin Payment Review API', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockIsStepUpConfirmed = false
+  })
+
+  it('opens the exact order from Orders, including an already reviewed payment', async () => {
+    const builder = {
+      eq: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      then: vi
+        .fn()
+        .mockImplementation((resolve) => resolve({ data: [mockOrders[2]], error: null })),
+    }
+    vi.mocked(supabase.from).mockReturnValue({
+      select: vi.fn().mockReturnValue(builder),
+    } as unknown as ReturnType<typeof supabase.from>)
+    renderWithProviders(<PaymentsPage />, '/admin/payments?order=203')
+    expect(await screen.findByText('فاطمة حسن')).toBeInTheDocument()
+    expect(builder.eq).toHaveBeenCalledWith('id', 203)
+    expect(builder.eq).not.toHaveBeenCalledWith('payment_status', 'under_review')
+    expect(screen.getByRole('button', { name: 'إلغاء تصفية الطلب #203' })).toBeInTheDocument()
+  })
+
+  it('counts only proofs under review and does not turn a failed query into zero', async () => {
+    const builder = {
+      eq: vi.fn().mockReturnThis(),
+      then: vi.fn().mockImplementation((resolve) => resolve({ count: 4, error: null })),
+    }
+    const select = vi.fn().mockReturnValue(builder)
+    vi.mocked(supabase.from).mockReturnValue({ select } as unknown as ReturnType<
+      typeof supabase.from
+    >)
+    expect(await api.getPaymentReviewCount()).toBe(4)
+    expect(select).toHaveBeenCalledWith('id', { count: 'exact', head: true })
+    expect(builder.eq).toHaveBeenCalledWith('payment_status', 'under_review')
+    builder.then.mockImplementation((resolve) =>
+      resolve({ count: null, error: { hint: 'ADM-002' } }),
+    )
+    await expect(api.getPaymentReviewCount()).rejects.toMatchObject({ code: 'ADM-002' })
   })
 
   it('fetches under_review orders sorted oldest first (ascending)', async () => {

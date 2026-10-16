@@ -86,13 +86,13 @@ describe('PayOrderPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(settingsApi.getPublicSettings).mockResolvedValue({
-      instapay_handle: 'lolys@instapay',
+      instapay_handle: 'alaa.ahm9624@instapay',
       instapay_qr_path: undefined,
     })
     vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
       amount: 550,
       deadline: new Date(Date.now() + 3600_000).toISOString(),
-      handle: 'lolys@instapay',
+      handle: 'alaa.ahm9624@instapay',
       qr_path: null,
     })
 
@@ -144,7 +144,7 @@ describe('PayOrderPage', () => {
     expect(screen.getByText('بانتظار الدفع')).toBeInTheDocument()
 
     // Handle and order reference
-    expect(screen.getByText('lolys@instapay')).toBeInTheDocument()
+    expect(screen.getByText('alaa.ahm9624@instapay')).toBeInTheDocument()
     expect(screen.getByText('101')).toBeInTheDocument()
 
     // Instructions

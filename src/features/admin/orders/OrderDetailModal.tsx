@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Dialog } from '@/components/ui/Dialog'
 import { Button } from '@/components/ui/Button'
 import { PaymentStatusBadge } from '@/features/orders/components/PaymentStatusBadge'
@@ -199,7 +200,19 @@ export function OrderDetailModal({
           {/* Payment Metadata */}
           <div className="rounded-chip border border-border bg-surface p-4 space-y-2">
             <h3 className="text-small font-bold text-brand">
-              {isAr ? 'معلومات الدفع' : 'Payment Information'}
+              {order.payment_method === 'instapay_qr' ? (
+                <Link
+                  to={`/admin/payments?order=${order.id}`}
+                  onClick={onClose}
+                  className="ui-control inline-flex items-center underline underline-offset-4"
+                >
+                  {isAr ? 'معلومات الدفع' : 'Payment Information'} ↗
+                </Link>
+              ) : isAr ? (
+                'معلومات الدفع'
+              ) : (
+                'Payment Information'
+              )}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-small text-text">
               <div>

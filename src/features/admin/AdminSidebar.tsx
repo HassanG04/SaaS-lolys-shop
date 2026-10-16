@@ -2,6 +2,7 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import type { AdminNavItem } from './types'
+import { PaymentReviewCount } from './payments/PaymentReviewCount'
 
 function NavIcon({ type }: { type: AdminNavItem['icon'] }): ReactNode {
   switch (type) {
@@ -293,6 +294,7 @@ export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: Admi
             >
               <NavIcon type={item.icon} />
               <span>{item.label}</span>
+              {item.to === '/admin/payments' && <PaymentReviewCount />}
             </NavLink>
           ))}
         </nav>
