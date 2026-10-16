@@ -10,7 +10,8 @@ English must both work. No production change is authorized by this document.
    collapsible desktop sidebar and accessible mobile drawer; remove duplicate
    quick actions; clicking a product thumbnail opens image selection using the
    existing validated/re-encoded upload pipeline; clip rounded table corners;
-   render missing analytics as unavailable, never undefined/NaN; link pending
+   render missing analytics as unavailable, never undefined/NaN.
+   **T-5.13b — Review navigation:** link pending
    order cards to filtered orders; link order payment information to the matching
    payment review. Show outstanding payment review count to admins.
 2. **T-3.10 — Storefront control:** replace the arch with an accessory/mug-friendly
@@ -19,7 +20,7 @@ English must both work. No production change is authorized by this document.
    must match actual discounts (no fixed 50% claim). Editable category shortcut
    list with add control; catalogue sections keep their existing behavior.
    Hover/focus enlarges the informational cards without clipping text.
-3. **T-4.07 — Postal addresses:** add postal code to saved cloud addresses and
+3. **T-4.08 — Postal addresses:** add postal code to saved cloud addresses and
    immutable order address snapshots; validate it for postal delivery and show
    it to fulfilment staff. Preserve existing addresses/orders through additive
    migrations. Confirm applicable postal format from an authoritative source.

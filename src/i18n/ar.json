@@ -352,6 +352,8 @@
     "forecast": "التوقعات",
     "backToStore": "العودة للمتجر",
     "sidebarToggle": "قائمة لوحة التحكم",
+    "expandSidebar": "توسيع الشريط الجانبي",
+    "collapseSidebar": "طي الشريط الجانبي",
     "mfaBadge": "تحقق بخطوتين مفعّل",
     "customersDesc": "إحصائيات ونشاط العملاء وسجل المشتريات",
     "searchCustomers": "ابحث بالاسم أو الهاتف أو المنتج المفضل…",

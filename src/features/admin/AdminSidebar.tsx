@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import type { AdminNavItem } from './types'
@@ -197,10 +197,22 @@ function NavIcon({ type }: { type: AdminNavItem['icon'] }): ReactNode {
 interface AdminSidebarProps {
   isOpen: boolean
   onClose: () => void
+  desktopCollapsed?: boolean
 }
 
-export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
+export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: AdminSidebarProps) {
   const { t } = useLanguage()
+  const drawer = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    const dialog = drawer.current
+    if (!isOpen || !dialog) return
+    const opener = document.activeElement
+    dialog.showModal()
+    return () => {
+      if (dialog.open) dialog.close()
+      if (opener instanceof HTMLElement && opener.isConnected) opener.focus()
+    }
+  }, [isOpen])
 
   const navItems: AdminNavItem[] = [
     { to: '/admin', label: t.admin.dashboard, icon: 'dashboard', end: true },
@@ -243,8 +255,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-(--radius-pill) text-(--color-text-muted) hover:bg-(--color-surface-2) hover:text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-              aria-label="إغلاق القائمة"
+              className="inline-flex size-11 items-center justify-center rounded-(--radius-pill) text-(--color-text-muted) hover:bg-(--color-surface-2) hover:text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+              aria-label={t.ui.closeDialog}
             >
               <svg
                 className="size-5"
@@ -264,7 +276,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </div>
 
         {/* Navigation list */}
-        <nav aria-label="لوحة التحكم" className="space-y-1">
+        <nav aria-label={t.admin.dashboard} className="space-y-1">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -334,31 +346,28 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     <>
       {/* Desktop permanent sidebar rail */}
       <aside
-        aria-label="شريط لوحة التحكم"
-        className="hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col lg:border-e lg:border-(--color-border) lg:bg-(--color-surface) lg:p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto"
+        id="admin-desktop-sidebar"
+        aria-label={t.admin.dashboard}
+        className={`${desktopCollapsed ? 'hidden' : 'hidden lg:flex'} lg:w-64 lg:shrink-0 lg:flex-col lg:border-s rtl:lg:border-e rtl:lg:border-s-0 lg:border-border lg:bg-surface lg:p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto`}
       >
         {renderSidebarContent(false)}
       </aside>
 
-      {/* Mobile drawer overlay and sidebar */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-(--color-text)/40 backdrop-blur-xs transition-opacity"
-            onClick={onClose}
-            aria-hidden="true"
-          />
-
-          {/* Drawer panel */}
-          <aside
-            aria-label="شريط لوحة التحكم"
-            className="fixed inset-y-0 start-0 z-50 w-72 bg-(--color-surface) border-e border-(--color-border) p-4 shadow-(--shadow-popover) transition-transform flex flex-col overflow-y-auto"
-          >
-            {renderSidebarContent(true)}
-          </aside>
-        </div>
-      )}
+      {/* Native modality contains keyboard focus and makes background controls inert. */}
+      <dialog
+        ref={drawer}
+        aria-label={t.admin.sidebarToggle}
+        onCancel={(event) => {
+          event.preventDefault()
+          onClose()
+        }}
+        onClose={(event) => {
+          if (isOpen && !event.currentTarget.open) onClose()
+        }}
+        className="m-0 ms-auto rtl:ms-0 rtl:me-auto h-dvh max-h-none w-72 max-w-full border-s border-border bg-surface p-4 text-text shadow-popover backdrop:bg-text/40"
+      >
+        {isOpen && renderSidebarContent(true)}
+      </dialog>
     </>
   )
 }

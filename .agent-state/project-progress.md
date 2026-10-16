@@ -1,10 +1,25 @@
 # Shared project progress
 
+## Codex — Admin workspace repair — 2026-10-17
+
+Current task: T-5.13 on `agent/T-5.13-admin-workspace-usability`, based on MFA checkpoint `52dfb0b`.
+
+Completed: full-width admin layout, physically right collapsible desktop sidebar, native modal mobile drawer, thumbnail photo selection through the existing safe upload pipeline, duplicate quick/stock actions removed, table scroll/corner containment, unavailable analytics values instead of undefined/NaN. Owner confirmed verified sessions across reloads and MFA after logout.
+
+Files changed: Layout; AdminShell/Header/Sidebar and admin tests; product page/API/photo control/tests; DiscountEffectSection/tests; ar/en; owner experience spec and roadmap.
+
+Tests executed: 34 focused admin/product/analytics tests pass across runs (13 product tests after fixing labels); prior full application suite 734 passed; production build passed, initial gzip 199894/200000 bytes. Full verify currently stops at formatting, being corrected; no full-suite success claimed yet.
+
+Problems found: local Docker unavailable, so database-backed UI/security E2E and new schema work remain unverified. Stock ledger immutability blocks deleting referenced orders/accounts through FK SET NULL; reset preparation must refuse this case, not disable audit/ledger triggers. Live preview inspection was denied earlier; isolated CSS tests are not live-site evidence.
+
+Next action: complete verification, then T-5.13b order/payment navigation. T-3.10/T-4.08/T-2.10/T-2.11/T-5.14 remain explicit unfinished requirements. Prepare owner reset SQL only; do not execute, merge or deploy.
+
 ## Codex — MFA regression repair and owner experience scope — 2026-10-17
 
 Current task: T-2.06b / T-3.09 on `agent/T-2.06b-mfa-experience-repair`; preparing T-5.13 from the owner's new request.
 
 Completed:
+
 - Fixed mount-triggered duplicate TOTP enrollment, obsolete unfinished Lolys factors, misleading AUTH-010 setup errors, the awaited Auth notification deadlock, customer return destination and verified-factor selection. Localized enrollment/challenge/step-up; owner now confirms successful MFA in localhost:5173.
 - Added isolated compiled-CSS browser tests: all 16 pass in light/dark and LTR/RTL after preserving flower-petal rotation during scaling. Windows SPI_GETCLIENTAREAANIMATION returned false; owner enabled animation effects and confirms motion now works. Do not override reduced-motion preferences silently.
 - Corrected the first-admin runbook's nonexistent profile/audit columns. No cloud SQL executed.

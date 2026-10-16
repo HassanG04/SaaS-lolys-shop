@@ -352,6 +352,8 @@
     "forecast": "Forecast",
     "backToStore": "Back to store",
     "sidebarToggle": "Admin menu",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
     "mfaBadge": "2FA active",
     "customersDesc": "Customer statistics, activity, and purchase history",
     "searchCustomers": "Search by name, phone, or favorite product…",

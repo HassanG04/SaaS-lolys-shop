@@ -247,6 +247,14 @@ describe('T-9.11: Descriptive Analyses & Analytics Page', () => {
 
   // 6. Discount Effect
   describe('DiscountEffectSection', () => {
+    it('renders missing analytics as unavailable instead of undefined or NaN', () => {
+      renderWithProviders(
+        <DiscountEffectSection data={{} as AnalyticsInsightsPayload['discount_effect']} />,
+      )
+      expect(screen.getAllByText('—')).toHaveLength(3)
+      expect(screen.getByTestId('analytics-discount-effect')).not.toHaveTextContent(/undefined|NaN/)
+    })
+
     it('renders promo vs baseline units and mandatory non-causal disclaimer', () => {
       renderWithProviders(<DiscountEffectSection data={mockInsightsData.discount_effect} />)
 
