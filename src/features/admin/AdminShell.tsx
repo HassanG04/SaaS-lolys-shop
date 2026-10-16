@@ -8,7 +8,7 @@ export default function AdminShell() {
   const [desktopCollapsed, setDesktopCollapsed] = useState(false)
 
   return (
-    <div className="min-h-screen flex lg:flex-row-reverse rtl:lg:flex-row bg-(--color-bg) text-(--color-text) font-sans antialiased">
+    <div className="admin-workspace h-dvh min-h-0 overflow-hidden flex lg:flex-row-reverse rtl:lg:flex-row bg-bg text-text font-sans antialiased">
       {/* Sidebar Rail */}
       <AdminSidebar
         isOpen={isSidebarOpen}
@@ -17,7 +17,7 @@ export default function AdminShell() {
       />
 
       {/* Main Admin Column */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0">
         <AdminHeader
           isSidebarOpen={isSidebarOpen}
           desktopCollapsed={desktopCollapsed}
@@ -25,13 +25,13 @@ export default function AdminShell() {
           onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
         />
 
-        <main
+        <div
           id="admin-main"
           tabIndex={-1}
-          className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto focus:outline-none"
+          className="flex-1 min-h-0 p-4 sm:p-6 lg:p-8 overflow-y-auto focus:outline-none"
         >
           <AdminRoutes />
-        </main>
+        </div>
       </div>
     </div>
   )

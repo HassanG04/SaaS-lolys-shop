@@ -26,13 +26,13 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-surface/95 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-(--container-layout) items-center justify-between gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-20 max-w-(--container-layout) items-center justify-between gap-2 px-3 sm:gap-4 sm:px-6">
         <Link
           to="/"
           className="group flex items-center gap-3 text-brand rounded-pill p-1 shrink-0 focus:ring-2"
           aria-label="Lolys"
         >
-          <div className="relative flex size-12 items-center justify-center overflow-hidden rounded-pill border border-border bg-bg">
+          <div className="relative flex size-9 sm:size-12 items-center justify-center overflow-hidden rounded-pill border border-border bg-bg">
             <img
               src="/brand/logo.png"
               alt=""
@@ -41,7 +41,7 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
               onError={(e) => (e.currentTarget.style.display = 'none')}
             />
           </div>
-          <div className="flex flex-col">
+          <div className="hidden sm:flex flex-col">
             <span className="font-accent text-h3 font-bold">Lolys&apos;</span>
             <span className="text-caption text-text-muted">{t.footer.tagline}</span>
           </div>
@@ -64,11 +64,11 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
           <Link
             to="/cart"
             onClick={(e) => (e.preventDefault(), cart.openDrawer())}
-            className={`flex gap-2 ${pill}`}
+            className={`ui-control flex justify-center gap-2 ${pill}`}
             aria-label={`${t.nav.cart} (${displayCartCount})`}
           >
             <svg
-              className="size-5 text-brand"
+              className="hidden sm:block size-5 text-brand"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"

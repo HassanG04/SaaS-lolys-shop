@@ -43,6 +43,17 @@ English must both work. No production change is authorized by this document.
 
 ## Motion and reset
 
+### Responsive follow-up (T-5.13c, 2026-10-17)
+
+Keep the dashboard label and adjacent menu control on the physical right in
+both languages. Admin content scrolls independently so the header remains
+reachable on phones. Product visibility switches have a centered thumb, a
+44px target and logical positioning. All users receive TikTok, Instagram and
+WhatsApp community links in the hamburger menu; narrow views show named icons,
+larger views show icons and text. Use only the owner-supplied destinations in
+`SocialMenuLinks.tsx`. Add My Orders for signed-in users.
+T-5.13d carries the component/browser regression evidence separately for review size.
+
 The owner confirmed Windows Animation effects makes the existing motion visible.
 Keep system reduced-motion support; do not silently override accessibility.
 An explicit per-site preference can be considered separately if requested.

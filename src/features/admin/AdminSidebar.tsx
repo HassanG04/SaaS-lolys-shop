@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import type { AdminNavItem } from './types'
 import { PaymentReviewCount } from './payments/PaymentReviewCount'
+import { SocialMenuLinks } from '@/components/layout/SocialMenuLinks'
 
 function NavIcon({ type }: { type: AdminNavItem['icon'] }): ReactNode {
   switch (type) {
@@ -302,6 +303,7 @@ export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: Admi
 
       {/* Footer Actions & Security Badge */}
       <div className="space-y-4 border-t border-(--color-border) pt-4">
+        <SocialMenuLinks onClose={onClose} menuItems={false} />
         {/* Security assurance badge */}
         <div className="flex items-center gap-2 rounded-(--radius-chip) bg-(--color-surface-2) px-3 py-2 text-caption text-(--color-text-muted)">
           <svg
@@ -358,6 +360,7 @@ export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: Admi
       {/* Native modality contains keyboard focus and makes background controls inert. */}
       <dialog
         ref={drawer}
+        id="admin-mobile-sidebar"
         aria-label={t.admin.sidebarToggle}
         onCancel={(event) => {
           event.preventDefault()

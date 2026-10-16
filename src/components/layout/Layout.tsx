@@ -23,7 +23,7 @@ export function Layout() {
     <div className="min-h-screen flex flex-col bg-bg text-text">
       {/* Skip to Main Content Link */}
       <a
-        href="#main-content"
+        href={isAdminWorkspace ? '#admin-main' : '#main-content'}
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand focus:text-brand-contrast focus:rounded-pill focus:ring-2"
       >
         {t.nav.skipToContent}
@@ -61,7 +61,10 @@ export function Layout() {
             </div>
           }
         >
-          <div key={pathname} className="page-transition">
+          <div
+            key={isAdminWorkspace ? 'admin-workspace' : pathname}
+            className={isAdminWorkspace ? undefined : 'page-transition'}
+          >
             <Outlet />
           </div>
         </Suspense>

@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { AuthContext } from '../../features/auth/AuthProvider'
 import { ToastContext } from '../ui/ToastProvider'
+import { SocialMenuLinks } from './SocialMenuLinks'
 
 interface NavbarQuickMenuProps {
   onClose: () => void
@@ -37,14 +38,14 @@ export default function NavbarQuickMenu({ onClose }: NavbarQuickMenuProps) {
   }, [onClose])
 
   const itemClass =
-    'flex h-10 items-center gap-2.5 px-3 rounded-chip text-small font-medium text-text hover:bg-surface-2 hover:text-brand transition-all active:scale-[0.98]'
+    'flex min-h-11 shrink-0 items-center gap-2.5 px-3 rounded-chip text-small font-medium text-text hover:bg-surface-2 hover:text-brand transition-all active:scale-[0.98]'
 
   return (
     <div
       ref={menuRef}
-      className="absolute end-0 top-full mt-2 w-60 rounded-card border border-border bg-surface/95 backdrop-blur-md shadow-popover p-2 z-50 flex flex-col gap-1 dialog-arrive"
+      className="absolute end-0 top-full mt-2 w-60 max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-7rem)] overflow-y-auto rounded-card border border-border bg-surface/95 backdrop-blur-md shadow-popover p-2 z-50 flex flex-col gap-1 dialog-arrive"
       role="menu"
-      aria-label="Quick menu"
+      aria-label={t.nav.openMenu}
     >
       {/* Mobile Navigation Links */}
       <div className="lg:hidden flex flex-col gap-1 pb-1.5 border-b border-border">
@@ -253,6 +254,12 @@ export default function NavbarQuickMenu({ onClose }: NavbarQuickMenuProps) {
           </button>
         </>
       )}
+      {user && (
+        <Link to="/account/orders" onClick={onClose} className={itemClass} role="menuitem">
+          {t.account.orders}
+        </Link>
+      )}
+      <SocialMenuLinks onClose={onClose} />
     </div>
   )
 }

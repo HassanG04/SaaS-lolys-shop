@@ -1,5 +1,19 @@
 # Shared project progress
 
+## Codex — Responsive follow-up — 2026-10-17
+
+Current task: T-5.13c on `agent/T-5.13c-responsive-navigation`, based on `5580295`.
+
+Completed: right-side dashboard header/toggle; viewport-height admin with independent content scrolling; centered logical visibility switch with 44px target; social links for guest/customer/admin and admin sidebar with named narrow icons; My Orders menu link; narrow navbar sizing and bounded scrolling menus. Earlier review-navigation checkpoint is `5580295` and workspace checkpoint is `a561e3c`.
+
+Files changed: layout/Navbar/quick menu; SocialMenuLinks; AdminHeader/Shell/Sidebar; ProductsPage/ToggleSwitch; UI CSS and ar/en; responsive component/browser tests and fixture config; roadmap, owner spec and repair handoff.
+
+Tests executed: final full verify exited 0 (748 application + 203 tooling tests; all 12 gates; bundle 199971/200000). Offline compiled-CSS browser run: 28 passed (16 motion + 12 responsive cases). Screenshots reviewed at phone and desktop sizes in Arabic/English and both themes. Initial browser-test lint failures were fixed using explicit null checks, without changing lint rules.
+
+Problems found: local DB reset failed; E2E setup confirms absent Docker engine pipe. No hosted DB or live-preview inspection performed. Initial bundle has very little headroom. QR payload and hosted settings still unverified; public storage must not be described as private simply because payment settings have RLS.
+
+Next action: checkpoint production changes, then T-5.13d regression evidence on a child branch to respect review-size limits; prepare PR review. Continue remaining database features only when local stack is available. Exact reproduction and limitations: `docs/handoff/RESPONSIVE-REPAIR.md`. No merge, production change or reset SQL execution.
+
 ## Codex — Admin workspace repair — 2026-10-17
 
 Current task: T-5.13 on `agent/T-5.13-admin-workspace-usability`, based on MFA checkpoint `52dfb0b`.
