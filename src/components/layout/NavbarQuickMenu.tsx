@@ -42,7 +42,7 @@ export default function NavbarQuickMenu({ onClose }: NavbarQuickMenuProps) {
   return (
     <div
       ref={menuRef}
-      className="absolute end-0 top-full mt-2 w-60 rounded-card border border-border bg-surface/95 backdrop-blur-md shadow-popover p-2 z-50 flex flex-col gap-1 animate-in fade-in slide-in-from-top-2 zoom-in-95 duration-150"
+      className="absolute end-0 top-full mt-2 w-60 rounded-card border border-border bg-surface/95 backdrop-blur-md shadow-popover p-2 z-50 flex flex-col gap-1 dialog-arrive"
       role="menu"
       aria-label="Quick menu"
     >

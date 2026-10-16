@@ -38,8 +38,10 @@ export default function CheckoutPage() {
     if (isResendingConfirm || !user?.email) return
     setIsResendingConfirm(true)
     try {
-      await resendConfirmation({ email: user.email })
-      setConfirmResent(true)
+      const result = await resendConfirmation({ email: user.email })
+      if (result.success) {
+        setConfirmResent(true)
+      }
     } finally {
       setIsResendingConfirm(false)
     }
@@ -788,11 +790,13 @@ export default function CheckoutPage() {
               )}
 
               <p className="text-center text-caption text-text-muted leading-relaxed">
-                بإتمامك للطلب، فإنك توافق على{' '}
+                {lang === 'ar'
+                  ? 'بإتمامك للطلب، فإنك توافق على '
+                  : 'By placing your order, you agree to our '}
                 <Link to="/terms" target="_blank" className="text-brand underline hover:opacity-80">
                   {t.footer.terms}
                 </Link>
-                {' و'}
+                {lang === 'ar' ? ' و' : ', '}
                 <Link
                   to="/privacy"
                   target="_blank"
@@ -800,7 +804,7 @@ export default function CheckoutPage() {
                 >
                   {t.footer.privacy}
                 </Link>
-                {' و'}
+                {lang === 'ar' ? ' و' : ' and '}
                 <Link
                   to="/returns"
                   target="_blank"
@@ -815,7 +819,7 @@ export default function CheckoutPage() {
                 to="/cart"
                 className="w-full h-11 flex items-center justify-center rounded-pill border border-border bg-surface-2 px-6 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
               >
-                العودة إلى السلة
+                {lang === 'ar' ? 'العودة إلى السلة' : 'Back to Cart'}
               </Link>
             </div>
           </Card>

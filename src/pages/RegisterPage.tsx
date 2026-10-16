@@ -28,8 +28,10 @@ export default function RegisterPage() {
     setIsResending(true)
     setResendSent(false)
     try {
-      await resendConfirmation({ email: email.trim() })
-      setResendSent(true)
+      const result = await resendConfirmation({ email: email.trim() })
+      if (result.success) {
+        setResendSent(true)
+      }
     } finally {
       setIsResending(false)
     }

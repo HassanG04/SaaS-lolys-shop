@@ -1,9 +1,42 @@
 # Shared project progress
 
-## Anti-Gravity — Database Profile Email Sync, Conflict Upsert & Already-Registered Email Error (`AUTH-015`) — 2026-10-16
+## Anti-Gravity — Codebase Revision, Bug Fixes & Redundancy Cleanup — 2026-10-16
 
-Current task: Database profile email persistence & sync, conflict upsert handling, and "Email Already Registered" error (`AUTH-015`) — COMPLETE
+Current task: Comprehensive codebase revision, bug elimination, and redundant code removal — COMPLETE
 Status: 115 / 122 tasks done (100% of all agent tasks in the roadmap completed; 7 tasks human-owned).
+
+Completed:
+
+- Language Policy & Communication:
+  - Switched all assistant communications strictly to English as requested.
+- Redundancy Removal:
+  - Cleaned up `src/components/layout/NavbarQuickMenu.tsx`: replaced redundant/unsupported Tailwind animation utility classes with the store's native, accessible `dialog-arrive` keyframe class.
+- Bug Fixes & Resiliency:
+  - Fixed false-positive resend confirmation feedback in `src/pages/RegisterPage.tsx` and `src/pages/CheckoutPage.tsx`: now verifies `result.success` before displaying confirmation sent status.
+  - Fixed English localization bug in `src/pages/CheckoutPage.tsx`: terms agreement legal text and "Back to Cart" navigation button now dynamically adapt to English (`lang === 'en'`) rather than displaying hardcoded Arabic.
+- Audit & Verification:
+  - Zero `console.log` statements in `src/`.
+  - Zero `TODO`, `FIXME`, or `HACK` comments in `src/`.
+  - Zero `any` types and zero production non-null assertions.
+  - All 13 verification gates passed (`npm run verify`).
+  - All 928 unit and tooling tests passed (725 Vitest + 203 tooling).
+  - Production build and bundle budget verified.
+
+Files changed:
+
+- `src/components/layout/NavbarQuickMenu.tsx`
+- `src/pages/CheckoutPage.tsx`
+- `src/pages/RegisterPage.tsx`
+- `.agent-state/project-progress.md`
+
+Tests executed:
+
+- `npm run verify` (All 13 gates passed)
+- `npm run test:unit` (928 tests passed: 725 Vitest + 203 tooling)
+- `npm run check:bundle` (200,000 / 200,000 gzip bytes)
+
+Problems found: None.
+Next action: Provide the user with a comprehensive revision summary detailing the verified architecture, eliminated bugs, cleaned redundancies, and confirmed zero open issues.
 
 Completed:
 
