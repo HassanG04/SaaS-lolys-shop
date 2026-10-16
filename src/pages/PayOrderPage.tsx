@@ -164,7 +164,8 @@ export default function PayOrderPage() {
     ? publicImageUrl(qrPath) || '/placeholders/instapay-qr.svg'
     : '/placeholders/instapay-qr.svg'
 
-  const instapayHandle = instructions?.handle || settings?.instapay_handle || 'lolys@instapay'
+  const instapayHandle =
+    instructions?.handle || settings?.instapay_handle || 'alaa.ahm9624@instapay'
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 pb-12">

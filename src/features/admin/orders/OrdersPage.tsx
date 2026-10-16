@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { PearlLoader } from '@/components/ui/PearlLoader'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -49,7 +49,15 @@ export default function OrdersPage() {
   const routeOrderId = params.id ? Number(params.id) : null
 
   const [search, setSearch] = useState('')
-  const [selectedTab, setSelectedTab] = useState<'all' | OrderStatus | 'awaiting_approval'>('all')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedTab =
+    STATUS_TABS.find((tab) => tab.key === searchParams.get('status'))?.key ?? 'all'
+  const setSelectedTab = (value: string) =>
+    setSearchParams((previous) => {
+      if (value === 'all') previous.delete('status')
+      else previous.set('status', value)
+      return previous
+    })
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<'all' | PaymentStatus>('all')
 
   const filters: AdminOrderFilters = useMemo(() => {

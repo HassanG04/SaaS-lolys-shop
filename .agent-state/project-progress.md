@@ -12,7 +12,7 @@ Tests executed: 34 focused admin/product/analytics tests pass across runs (13 pr
 
 Problems found: local Docker unavailable, so database-backed UI/security E2E and new schema work remain unverified. Stock ledger immutability blocks deleting referenced orders/accounts through FK SET NULL; reset preparation must refuse this case, not disable audit/ledger triggers. Live preview inspection was denied earlier; isolated CSS tests are not live-site evidence.
 
-Next action: complete verification, then T-5.13b order/payment navigation. T-3.10/T-4.08/T-2.10/T-2.11/T-5.14 remain explicit unfinished requirements. Prepare owner reset SQL only; do not execute, merge or deploy.
+Next action: checkpoint T-5.13b after its 66 focused tests, then complete verification. Corrected the empty InstaPay fallback to `alaa.ahm9624@instapay`; the owner-provided QR remains a private upload through Admin Settings. Reset SQL is prepared only; do not execute, merge or deploy.
 
 ## Codex — MFA regression repair and owner experience scope — 2026-10-17
 

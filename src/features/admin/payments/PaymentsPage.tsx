@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { PearlLoader } from '@/components/ui/PearlLoader'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -26,15 +27,22 @@ export default function PaymentsPage() {
   const { lang } = useLanguage()
   const isAr = lang === 'ar'
 
-  const [selectedStatus, setSelectedStatus] = useState<'all' | PaymentStatus>('under_review')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedOrder = searchParams.get('order')
+  const parsedOrder = requestedOrder && /^\d+$/.test(requestedOrder) ? Number(requestedOrder) : 0
+  const orderId = Number.isSafeInteger(parsedOrder) && parsedOrder > 0 ? parsedOrder : undefined
+  const [selectedStatus, setSelectedStatus] = useState<'all' | PaymentStatus>(
+    orderId ? 'all' : 'under_review',
+  )
   const [search, setSearch] = useState('')
 
   const filters: PaymentReviewFilter = useMemo(
     () => ({
       status: selectedStatus,
       search,
+      orderId,
     }),
-    [selectedStatus, search],
+    [selectedStatus, search, orderId],
   )
 
   const { data: orders = [], isLoading, error, refetch } = useAdminPaymentOrders(filters)
@@ -80,6 +88,17 @@ export default function PaymentsPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {orderId && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setSearchParams({})
+                setSelectedStatus('under_review')
+              }}
+            >
+              {isAr ? `إلغاء تصفية الطلب #${orderId}` : `Clear order #${orderId} filter`}
+            </Button>
+          )}
           <Button
             type="button"
             variant="ghost"

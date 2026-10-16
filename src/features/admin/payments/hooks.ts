@@ -31,6 +31,7 @@ export function useReviewPayment() {
     mutationFn: (payload) => adminReviewPayment(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-payment-orders'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-payment-review-count'] })
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
       queryClient.invalidateQueries({ queryKey: ['admin-dashboard'] })
     },

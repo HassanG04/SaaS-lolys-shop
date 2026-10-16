@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: ShopSettingsMap = {
   sale_percent: 50,
   payment_methods_enabled: ['cod', 'instapay_qr'],
   instapay_qr_path: 'settings/instapay-qr-default.png',
-  instapay_handle: '',
+  instapay_handle: 'alaa.ahm9624@instapay',
   returns_text_ar:
     'إمكانية الاسترجاع أو الاستبدال خلال 14 يوماً من الاستلام بشرط أن تكون المنتجات بحالتها الأصلية.',
   payment_window_hours: 24,

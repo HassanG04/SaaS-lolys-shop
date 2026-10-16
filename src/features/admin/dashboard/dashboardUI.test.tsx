@@ -103,6 +103,14 @@ describe('Dashboard UI components (T-6.02)', () => {
 
       expect(screen.getByText('42')).toBeInTheDocument()
       expect(screen.getByText('3 طلب')).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'طلبات قيد الانتظار' })).toHaveAttribute(
+        'href',
+        '/admin/orders?status=pending',
+      )
+      expect(screen.getByRole('link', { name: 'بانتظار المراجعة' })).toHaveAttribute(
+        'href',
+        '/admin/payments',
+      )
     })
   })
 

@@ -1,4 +1,5 @@
 import { useLanguage } from '../../../i18n/LanguageProvider'
+import { Link } from 'react-router-dom'
 import { formatEGP, formatNumber } from '../../../lib/format'
 import type { DashboardKpis as DashboardKpisType } from './types'
 
@@ -52,7 +53,8 @@ export function DashboardKpis({ kpis }: DashboardKpisProps) {
         </svg>
       ),
       highlight: kpis.pending > 0,
-      badgeText: kpis.pending > 0 ? `${kpis.pending} طلب` : undefined,
+      badgeText:
+        kpis.pending > 0 ? `${kpis.pending} ${lang === 'ar' ? 'طلب' : 'orders'}` : undefined,
     },
     {
       id: 'booked_total',
@@ -171,14 +173,23 @@ export function DashboardKpis({ kpis }: DashboardKpisProps) {
       {cards.map((card) => (
         <div
           key={card.id}
-          className={`ui-print-card flex flex-col justify-between rounded-(--radius-card) border bg-(--color-surface) p-5 shadow-(--shadow-card) transition-all print:border print:shadow-none ${
+          className={`relative ui-print-card flex flex-col justify-between rounded-(--radius-card) border bg-(--color-surface) p-5 shadow-(--shadow-card) transition-all print:border print:shadow-none ${
             card.highlight
               ? 'border-(--color-brand) bg-(--color-surface-tint)'
               : 'border-(--color-border)'
           }`}
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="text-small font-medium text-(--color-text-muted)">{card.title}</span>
+            {card.id === 'pending' || card.id === 'awaiting_review' ? (
+              <Link
+                to={card.id === 'pending' ? '/admin/orders?status=pending' : '/admin/payments'}
+                className="text-small font-medium text-brand underline-offset-4 hover:underline after:absolute after:inset-0 after:rounded-card focus-visible:after:ring-2 focus-visible:after:ring-focus"
+              >
+                {card.title}
+              </Link>
+            ) : (
+              <span className="text-small font-medium text-text-muted">{card.title}</span>
+            )}
             <div
               className={`flex size-9 items-center justify-center rounded-(--radius-pill) ${
                 card.highlight
