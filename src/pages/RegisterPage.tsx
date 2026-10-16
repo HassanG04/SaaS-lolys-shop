@@ -63,8 +63,11 @@ export default function RegisterPage() {
         captchaToken,
       })
 
-      // Always display neutral outcome AUTH-010 (even on existing email)
-      setStatusMessage(result.code || 'AUTH-010')
+      if (!result.success) {
+        setStatusMessage(result.code || 'AUTH-001')
+      } else {
+        setStatusMessage(result.code || 'AUTH-010')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -130,6 +133,20 @@ export default function RegisterPage() {
         ) : (
           <>
             {statusMessage && <AuthAlert code={statusMessage} />}
+            {statusMessage === 'AUTH-015' && (
+              <div className="flex flex-wrap items-center gap-2 text-caption">
+                <Link to="/login" className="font-semibold text-(--color-brand) hover:underline">
+                  {t.auth.login} &larr;
+                </Link>
+                <span className="text-(--color-text-muted)">•</span>
+                <Link
+                  to="/reset-password"
+                  className="font-semibold text-(--color-brand) hover:underline"
+                >
+                  {t.auth.requestNewResetLink} &larr;
+                </Link>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div className="space-y-1">

@@ -160,4 +160,32 @@ describe('RegisterPage', () => {
       expect(screen.getByText('تحقق من بريدك الإلكتروني')).toBeInTheDocument()
     })
   })
+
+  it('displays AUTH-015 and navigation links when email is already registered', async () => {
+    const user = userEvent.setup()
+    const signUpMock = vi.fn().mockResolvedValue({
+      success: false,
+      code: 'AUTH-015',
+      message: 'هذا البريد الإلكتروني مسجّل بالفعل!',
+    })
+    renderRegisterPage({ signUpMock })
+
+    await user.type(screen.getByLabelText(/الاسم الكامل/i), 'مستخدم مسجل')
+    await user.type(screen.getByLabelText(/البريد الإلكتروني/i), 'registered@example.com')
+    await user.type(screen.getByLabelText(/^كلمة المرور$/i), 'ValidSecret123Pass!')
+    await user.type(screen.getByLabelText(/تأكيد كلمة المرور/i), 'ValidSecret123Pass!')
+
+    const submitBtn = screen.getByRole('button', { name: 'إنشاء حساب' })
+    await user.click(submitBtn)
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeInTheDocument()
+      expect(screen.getByText(/AUTH-015/)).toBeInTheDocument()
+      expect(screen.getByText(/هذا البريد الإلكتروني مسجّل بالفعل/i)).toBeInTheDocument()
+      expect(screen.getAllByRole('link', { name: /تسجيل الدخول/i })).toHaveLength(2)
+      expect(
+        screen.getByRole('link', { name: /طلب رابط جديد لاستعادة كلمة المرور/i }),
+      ).toBeInTheDocument()
+    })
+  })
 })

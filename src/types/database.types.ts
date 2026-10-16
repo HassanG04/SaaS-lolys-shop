@@ -191,14 +191,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "address": string | null,"alt_phone": string | null,"apartment": string | null,"city": string | null,"created_at": string,"district": string | null,"floor": string | null,"full_name": string,"governorate_id": number | null,"id": string,"landmark": string | null,"phone": string | null,"role": Database["public"]['Enums']["user_role"]
+                    "address": string | null,"alt_phone": string | null,"apartment": string | null,"city": string | null,"created_at": string,"district": string | null,"email": string | null,"floor": string | null,"full_name": string,"governorate_id": number | null,"id": string,"landmark": string | null,"phone": string | null,"role": Database["public"]['Enums']["user_role"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id": string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"email"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id": string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Update: {
-                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"email"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Relationships: [
                     {

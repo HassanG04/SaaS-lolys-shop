@@ -16,6 +16,7 @@ export interface UserProfile {
   floor?: string | null
   apartment?: string | null
   landmark?: string | null
+  email?: string | null
   created_at?: string
   updated_at?: string
 }
@@ -35,6 +36,7 @@ export type AuthErrorCode =
   | 'AUTH-012'
   | 'AUTH-013'
   | 'AUTH-014'
+  | 'AUTH-015'
   | 'ADM-001'
   | 'ADM-002'
   | 'ADM-003'

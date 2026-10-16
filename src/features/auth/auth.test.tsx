@@ -83,7 +83,7 @@ describe('Authentication unit tests (T-2.04)', () => {
     expect(knownRes.code).toBe(unknownRes.code)
   })
 
-  it('proves sign-up with an existing email shows neutral AUTH-010', async () => {
+  it('proves sign-up with an existing email returns AUTH-015', async () => {
     // Supabase returns an error or identity collision on existing user
     vi.spyOn(supabase.auth, 'signUp').mockResolvedValue({
       data: { user: null, session: null },
@@ -95,9 +95,28 @@ describe('Authentication unit tests (T-2.04)', () => {
       password: 'ValidPassword10!',
     })
 
-    expect(result.success).toBe(true)
-    expect(result.code).toBe('AUTH-010')
-    expect(result.message).toBe(getAuthMessage('AUTH-010'))
+    expect(result.success).toBe(false)
+    expect(result.code).toBe('AUTH-015')
+    expect(result.message).toBe(getAuthMessage('AUTH-015'))
+  })
+
+  it('detects existing email when identities array is empty', async () => {
+    vi.spyOn(supabase.auth, 'signUp').mockResolvedValue({
+      data: {
+        user: { id: 'u-123', identities: [] } as unknown as User,
+        session: null,
+      },
+      error: null,
+    })
+
+    const result = await signUpApi({
+      email: 'existing@example.com',
+      password: 'ValidPassword10!',
+    })
+
+    expect(result.success).toBe(false)
+    expect(result.code).toBe('AUTH-015')
+    expect(result.message).toBe(getAuthMessage('AUTH-015'))
   })
 
   it('enforces password policy (at least 10 characters) returning AUTH-008 up front', async () => {

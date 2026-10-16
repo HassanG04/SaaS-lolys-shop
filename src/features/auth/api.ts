@@ -57,7 +57,7 @@ export async function signUpApi(credentials: SignUpCredentials): Promise<AuthAct
   }
 
   try {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -69,10 +69,13 @@ export async function signUpApi(credentials: SignUpCredentials): Promise<AuthAct
     if (error) {
       const { mapAuthError, getAuthMessage } = await import('./authErrors')
       const mapped = mapAuthError(error)
-      if (mapped === 'AUTH-003') {
-        return { success: false, code: 'AUTH-003', message: getAuthMessage('AUTH-003') }
-      }
-      return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+      return { success: false, code: mapped, message: getAuthMessage(mapped) }
+    }
+
+    // In Supabase Auth, when email is already registered, it returns an empty identities array
+    if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      const { getAuthMessage } = await import('./authErrors')
+      return { success: false, code: 'AUTH-015', message: getAuthMessage('AUTH-015') }
     }
 
     const message = await resolveAuthMessage('AUTH-010')
@@ -80,11 +83,7 @@ export async function signUpApi(credentials: SignUpCredentials): Promise<AuthAct
   } catch (err) {
     const { mapAuthError, getAuthMessage } = await import('./authErrors')
     const mapped = mapAuthError(err)
-    if (mapped === 'AUTH-003') {
-      return { success: false, code: 'AUTH-003', message: getAuthMessage('AUTH-003') }
-    }
-    const message = await resolveAuthMessage('AUTH-010')
-    return { success: true, code: 'AUTH-010', message }
+    return { success: false, code: mapped, message: getAuthMessage(mapped) }
   }
 }
 

@@ -16,6 +16,7 @@ export const ERROR_CATALOGUE = {
   'AUTH-012': 'تعذّر إرسال الرسالة الآن. حاول بعد قليل.',
   'AUTH-013': 'كلمتا المرور غير متطابقتين. تأكد من تطابقهما.',
   'AUTH-014': 'يرجى تأكيد بريدك الإلكتروني لتتمكن من إتمام الطلب.',
+  'AUTH-015': 'هذا البريد الإلكتروني مسجّل بالفعل!',
 
   // ORD: orders
   'ORD-001': 'سلتك فارغة.',
@@ -176,7 +177,7 @@ function mapAuthCode(authCode: string): ErrorCode | null {
       return 'AUTH-009'
     case 'user_already_exists':
     case 'email_exists':
-      return 'AUTH-010'
+      return 'AUTH-015'
     case 'over_email_send_rate_limit':
     case 'over_sms_send_rate_limit':
       return 'AUTH-012'

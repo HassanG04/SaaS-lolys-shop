@@ -15,6 +15,7 @@ export const AUTH_MESSAGES: Record<AuthErrorCode, string> = {
   'AUTH-012': 'تعذّر إرسال الرسالة الآن. حاول بعد قليل.',
   'AUTH-013': 'كلمتا المرور غير متطابقتين. تأكد من تطابقهما.',
   'AUTH-014': 'يرجى تأكيد بريدك الإلكتروني لتتمكن من إتمام الطلب.',
+  'AUTH-015': 'هذا البريد الإلكتروني مسجّل بالفعل!',
   'ADM-001': 'هذه العملية للمسؤول فقط.',
   'ADM-002': 'فعّل التحقق بخطوتين للدخول إلى لوحة التحكم.',
   'ADM-003': 'أكّد هويتك برمز التحقق لإتمام هذا الإجراء.',
@@ -83,6 +84,15 @@ export function mapAuthError(error: unknown): AuthErrorCode {
     (message.includes('link') && (message.includes('expired') || message.includes('invalid')))
   ) {
     return 'AUTH-009'
+  }
+
+  if (
+    message.includes('already registered') ||
+    message.includes('already exists') ||
+    message.includes('user_already_exists') ||
+    message.includes('email_exists')
+  ) {
+    return 'AUTH-015'
   }
 
   // All other sign-in errors map to generic AUTH-001

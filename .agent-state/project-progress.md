@@ -1,9 +1,63 @@
 # Shared project progress
 
-## Anti-Gravity — Password Confirmation, Show/Hide Password, Email Verification Checkout Gate & Security Architecture Review — 2026-10-16
+## Anti-Gravity — Database Profile Email Sync, Conflict Upsert & Already-Registered Email Error (`AUTH-015`) — 2026-10-16
 
-Current task: Security architecture validation, password confirmation & visibility toggles, and email verification checkout gating — COMPLETE
+Current task: Database profile email persistence & sync, conflict upsert handling, and "Email Already Registered" error (`AUTH-015`) — COMPLETE
 Status: 115 / 122 tasks done (100% of all agent tasks in the roadmap completed; 7 tasks human-owned).
+
+Completed:
+
+- Database Schema & Trigger Enhancements:
+  - Created migration `20261016040000_profile_email_and_conflict_upsert.sql`:
+    - Added `email text` column to `public.profiles` table and created index `idx_profiles_email`.
+    - Updated `handle_new_user()` trigger to persist `new.email` on registration.
+    - Updated conflict resolution with `ON CONFLICT (id) DO UPDATE SET email = excluded.email, full_name = ..., phone = ...` to prevent any dropped data or failed user creation.
+    - Backfilled all existing rows in `public.profiles` with corresponding `email` from `auth.users`.
+    - Consolidated into `setup_remote_supabase.sql` and verified via `check:sql` and `check:migrations`.
+- Already-Registered Email Handling (`AUTH-015`):
+  - Added new error code `AUTH-015`:
+    - Arabic: `'هذا البريد الإلكتروني مسجّل بالفعل!'`
+    - English: `'This email has already been registered!'`
+  - In `src/features/auth/api.ts`, detected Supabase Auth empty identities array (`data.user.identities.length === 0`) and backend errors (`user_already_exists`, `email_exists`), returning `{ success: false, code: 'AUTH-015' }`.
+  - In `src/pages/RegisterPage.tsx`, updated `handleSubmit` to surface `AUTH-015` alert and render quick navigation links directly to `/login` and `/reset-password`.
+- Database & Session Typing:
+  - Added `email` to `Row`, `Insert`, and `Update` types in `src/types/database.types.ts`.
+  - Added `email` to `UserProfile` in `src/features/auth/types.ts` and included `email` in `.select(...)` in `src/features/auth/session.api.ts`.
+- Reliability & Test Suite:
+  - Added test for empty `identities` array and existing email in `src/features/auth/auth.test.tsx`.
+  - Added test for `AUTH-015` error and navigation links in `src/pages/RegisterPage.test.tsx`.
+  - Updated `src/lib/errors.test.tsx` to assert `AUTH-015` for existing user error codes.
+  - Configured `pool: 'threads'` in `vitest.config.ts` ensuring resilient, fast test execution on Windows.
+- Verification & Bundle Budget:
+  - All 13 verify gates passed (`npm run verify`).
+  - All 928 unit and tooling tests passed (725 unit + 203 tooling).
+  - Initial JS bundle strictly within budget: 199,995 / 200,000 gzip bytes.
+
+Files changed:
+
+- `supabase/migrations/20261016040000_profile_email_and_conflict_upsert.sql` (new)
+- `setup_remote_supabase.sql`
+- `src/lib/errors.ts`
+- `src/lib/errors.test.tsx`
+- `src/features/auth/types.ts`
+- `src/features/auth/authErrors.tsx`
+- `src/features/auth/api.ts`
+- `src/features/auth/session.api.ts`
+- `src/features/auth/auth.test.tsx`
+- `src/pages/RegisterPage.tsx`
+- `src/pages/RegisterPage.test.tsx`
+- `src/types/database.types.ts`
+- `vitest.config.ts`
+- `.agent-state/project-progress.md`
+
+Tests executed:
+
+- `npm run verify` (All 13 gates passed)
+- `npm run test:unit` (928 tests passed: 725 vitest + 203 tooling)
+- `npm run check:bundle` (199,995 / 200,000 gzip bytes)
+
+Problems found: None.
+Next action: Present the solution clearly to the user with exact SQL instructions to run on Supabase Dashboard, explaining the profiles email sync, conflict handling, and the new AUTH-015 detection.
 
 Completed:
 
