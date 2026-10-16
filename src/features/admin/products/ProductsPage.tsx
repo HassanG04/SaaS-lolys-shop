@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Ltr } from '@/components/ui/Ltr'
 import { formatEGP } from '@/lib/format'
 import { ProductPhotoButton } from './ProductPhotoButton'
+import { ToggleSwitch } from '@/components/ui/ToggleSwitch'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useAdminProducts, useAdminCategories, useUpdateProductActive } from './hooks'
 import { StockEditDialog } from './StockEditDialog'
@@ -418,10 +419,8 @@ export default function ProductsPage() {
                       {/* Active Toggle Switch */}
                       <td className="p-4 align-middle text-center">
                         <div className="flex flex-col items-center gap-1">
-                          <button
-                            type="button"
-                            role="switch"
-                            aria-checked={product.is_active}
+                          <ToggleSwitch
+                            checked={product.is_active}
                             aria-label={`${isAr ? product.name_ar || product.name : product.name} - ${
                               product.is_active
                                 ? t.admin.activeToggleActive
@@ -432,17 +431,7 @@ export default function ProductsPage() {
                               updateActiveMutation.variables?.productId === product.id
                             }
                             onClick={() => void handleToggleActive(product)}
-                            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-pill transition-colors focus:outline-none focus:ring-2 focus:ring-focus ${
-                              product.is_active ? 'bg-success' : 'bg-surface-2 border border-border'
-                            }`}
-                          >
-                            <span
-                              aria-hidden="true"
-                              className={`pointer-events-none inline-block size-5 transform rounded-pill bg-brand-contrast shadow-card transition-transform ${
-                                product.is_active ? 'translate-x-5' : 'translate-x-0.5'
-                              }`}
-                            />
-                          </button>
+                          />
                           <span className="text-caption text-text-muted">
                             {product.is_active
                               ? t.admin.activeToggleActive

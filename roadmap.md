@@ -882,10 +882,22 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify && npm run test:e2e`
 
 #### T-5.13b: Order and payment review navigation
-`status: todo` `owner: agent` `needs: T-5.05, T-5.08, T-6.02` `size: M`
+`status: doing` `owner: agent` `needs: T-5.05, T-5.08, T-6.02` `size: M`
 - **Do:** Link pending dashboard card to filtered orders, order payment information to exact payment review, show under-review count in payment navigation. See `docs/spec/owner-experience-change.md`.
 - **Done when:** Links select correct filters/order; empty and failed count do not misrepresent review status; admin alone confirms payment through existing RPC.
 - **Verify:** `npm run verify && npm run test:e2e`
+
+#### T-5.13c: Responsive header, switch and social menu repairs
+`status: doing` `owner: agent` `needs: T-5.01, T-5.02, T-2.02` `size: M`
+- **Do:** Owner correction on 2026-10-17: place dashboard title and adjacent toggle physically right; keep header reachable during mobile scrolling; align Active switch in both directions; include supplied TikTok, Instagram and WhatsApp links in all user menus with icon-only narrow presentation and accessible names. Keep admin content scroll independent and mobile menus within viewport.
+- **Done when:** Real-component controls tested in Arabic/English for guest/customer/admin; compiled-CSS checks at 320/360/1280 in both themes verify geometry, containment and scrolling; full verify and database-backed E2E pass. No auth/payment authority changes.
+- **Verify:** `npm run verify && npm run test:e2e`; offline fixture checks described in `docs/handoff/RESPONSIVE-REPAIR.md`.
+
+#### T-5.13d: Responsive regression evidence
+`status: doing` `owner: agent` `needs: T-5.13c` `size: S`
+- **Do:** Split regression fixtures and review evidence from T-5.13c to keep each checkpoint near the 400-line review limit. Export real rendered components without credentials; test narrow/desktop geometry, scrolling, both languages/themes and exact social destinations. Record unavailable database checks explicitly.
+- **Done when:** Component and compiled-CSS tests pass; full verify passes; browser screenshots reviewed; database-backed E2E and remote review evidence recorded before claiming the parent repair complete.
+- **Verify:** `npm run verify && npm run test:e2e`; fixture commands in `docs/handoff/RESPONSIVE-REPAIR.md`.
 
 #### T-5.14: Verify owner InstaPay recipient and QR
 `status: todo` `owner: agent` `needs: T-4.06, T-5.09` `size: S`
@@ -1479,6 +1491,9 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-14 | T-7.06 | Codex | Merge-day preparation: repaired Node execution boundary in SAST workflow after remote setup-node ENOENT; scanner image digest and rejection/scan gates preserved. No feature edits. New-head CI pending. | pending |
 
 | 2026-10-16 | T-2.04, T-3.03, T-7.01, T-7.03, T-1.14 | Codex | Documentation-only owner handoff: inspected freshly fetched analytics ref e79d047 and created CODEX-TO-ANTI-GRAVITY.md with concrete motion/loading/navigation/cache, bilingual errors, password and admin-diagnosis repairs. Source findings contradict broad completion claims; no task marked done, no application/cloud change and no fresh full verification claimed. Anti-Gravity must register/reopen repair tasks, provide browser/gate evidence and return HANDOVER_TO_CODEX.md for launch-gap review. | local brief |
+
+| 2026-10-17 | T-2.06b, T-5.13, T-5.13b | Codex | Local checkpoints 52dfb0b/a561e3c/5580295 repair MFA enrollment/session refresh, admin workspace/product controls and order/payment review navigation. Full verify at 5580295 passed (740 app + 203 tooling). Owner confirmed MFA enrollment and Windows motion setting. Docker absent blocks local DB/E2E; no cloud changes or launch claim. | pending |
+| 2026-10-17 | T-5.13c, T-5.13d | Codex | Right-side header, persistent mobile controls, centered switch and owner social links implemented. Split production changes (T-5.13c) from regression evidence (T-5.13d) for review size. Combined working tree passed all 12 verify gates (748 app + 203 tooling; bundle 199971/200000), plus 28 isolated browser checks (16 motion, 12 responsive). Screenshots reviewed; these fixtures do not test hosted data. Both tasks remain doing for database-backed E2E/remote review. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

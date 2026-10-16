@@ -9,6 +9,24 @@
     min-block-size: var(--spacing-touch);
     min-inline-size: var(--spacing-touch);
   }
+  .ui-switch-thumb {
+    position: absolute;
+    inset-block-start: 2px;
+    inset-inline-start: 2px;
+    inline-size: 18px;
+    block-size: 18px;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-text-val);
+  }
+  [aria-checked='true'] .ui-switch-thumb {
+    inset-inline-start: calc(100% - 20px);
+    background-color: var(--color-brand-contrast-val);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ui-switch-thumb {
+      transition: inset-inline-start 180ms ease;
+    }
+  }
   .ui-button,
   .magnetic-control {
     position: relative;
