@@ -9,13 +9,12 @@ import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Ltr } from '@/components/ui/Ltr'
 import { formatEGP } from '@/lib/format'
-import { ProductImage } from '@/features/catalog/components/ProductImage'
+import { ProductPhotoButton } from './ProductPhotoButton'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useAdminProducts, useAdminCategories, useUpdateProductActive } from './hooks'
 import { StockEditDialog } from './StockEditDialog'
 import { DeleteProductDialog } from './DeleteProductDialog'
 import { QuickProductEditModal } from './QuickProductEditModal'
-import { QuickProductAddModal } from './QuickProductAddModal'
 import {
   ExportCsvButton,
   formatProductsCsv,
@@ -52,7 +51,6 @@ export default function ProductsPage() {
   const [stockEditProduct, setStockEditProduct] = useState<AdminProduct | null>(null)
   const [productToDelete, setProductToDelete] = useState<AdminProduct | null>(null)
   const [quickEditProduct, setQuickEditProduct] = useState<AdminProduct | null>(null)
-  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
 
   // Filter state
   const [search, setSearch] = useState('')
@@ -131,7 +129,7 @@ export default function ProductsPage() {
       })
       toast.success(t.admin.activeUpdateSuccess)
     } catch {
-      toast.error('تعذر تحديث حالة المنتج')
+      toast.error(isAr ? 'تعذر تحديث حالة المنتج' : 'Could not update product visibility')
     }
   }
 
@@ -139,7 +137,7 @@ export default function ProductsPage() {
     return (
       <div
         role="status"
-        aria-label="جارٍ تحميل المنتجات"
+        aria-label={isAr ? 'جارٍ تحميل المنتجات' : 'Loading products'}
         className="flex min-h-[400px] w-full items-center justify-center text-brand"
       >
         <PearlLoader loading />
@@ -165,7 +163,8 @@ export default function ProductsPage() {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-pill bg-surface-tint border border-border px-3 py-1 text-small font-semibold text-brand">
-            <Ltr>{filteredProducts.length}</Ltr> / <Ltr>{products?.length ?? 0}</Ltr> منتج
+            <Ltr>{filteredProducts.length}</Ltr> / <Ltr>{products?.length ?? 0}</Ltr>{' '}
+            {t.admin.products}
           </span>
           <ExportCsvButton
             onExport={() => {
@@ -176,14 +175,6 @@ export default function ProductsPage() {
             successMessage={isAr ? 'تم تصدير ملف المنتجات بنجاح' : 'Products exported successfully'}
             disabled={isLoadingProducts || !products || products.length === 0}
           />
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setIsQuickAddOpen(true)}
-            className="shadow-card"
-          >
-            ⚡ {isAr ? 'إضافة سريعة' : 'Quick Add'}
-          </Button>
           <Link
             to="/admin/products/new"
             className="inline-flex items-center justify-center rounded-pill bg-brand px-4 py-2 text-small font-semibold text-brand-contrast shadow-card hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-focus"
@@ -202,7 +193,7 @@ export default function ProductsPage() {
               htmlFor="products-search-input"
               className="block text-small font-semibold text-text"
             >
-              البحث
+              {t.ui.search}
             </label>
             <input
               id="products-search-input"
@@ -220,7 +211,7 @@ export default function ProductsPage() {
               htmlFor="products-category-select"
               className="block text-small font-semibold text-text"
             >
-              القسم
+              {t.admin.tableColCategory}
             </label>
             <select
               id="products-category-select"
@@ -231,7 +222,7 @@ export default function ProductsPage() {
               <option value="all">{t.admin.categoryAll}</option>
               {categories?.map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.name_ar || cat.name}
+                  {isAr ? cat.name_ar || cat.name : cat.name}
                 </option>
               ))}
             </select>
@@ -243,7 +234,7 @@ export default function ProductsPage() {
               htmlFor="products-status-select"
               className="block text-small font-semibold text-text"
             >
-              حالة التفعيل
+              {isAr ? 'حالة التفعيل' : 'Visibility'}
             </label>
             <select
               id="products-status-select"
@@ -263,7 +254,7 @@ export default function ProductsPage() {
               htmlFor="products-stock-select"
               className="block text-small font-semibold text-text"
             >
-              حالة المخزون
+              {t.admin.tableColStock}
             </label>
             <select
               id="products-stock-select"
@@ -298,7 +289,11 @@ export default function ProductsPage() {
         <Card className="p-8 sm:p-12 text-center">
           <EmptyState
             title={t.admin.noProductsFound}
-            description="جرّب تعديل مصطلحات البحث أو إزالة بعض عوامل التصفية لعرض المنتجات."
+            description={
+              isAr
+                ? 'جرّب تعديل مصطلحات البحث أو إزالة بعض عوامل التصفية لعرض المنتجات.'
+                : 'Try changing your search or clearing filters to see products.'
+            }
             action={
               isFiltered ? (
                 <Button variant="secondary" onClick={handleResetFilters}>
@@ -310,8 +305,8 @@ export default function ProductsPage() {
         </Card>
       ) : (
         <Card className="overflow-hidden p-0 shadow-card">
-          <div className="overflow-x-auto">
-            <table className="w-full text-start">
+          <div className="overflow-x-auto rounded-card">
+            <table className="w-full min-w-[900px] text-start">
               <thead>
                 <tr className="border-b border-border bg-surface-2 text-start text-caption font-semibold text-text-muted">
                   <th scope="col" className="p-4 text-start w-16">
@@ -341,19 +336,16 @@ export default function ProductsPage() {
                 {filteredProducts.map((product) => {
                   const isOutOfStock = product.stock_quantity === 0
                   const isLowStock = product.stock_quantity > 0 && product.stock_quantity <= 5
-                  const categoryName = product.category?.name_ar || product.category?.name || '-'
+                  const categoryName =
+                    (isAr
+                      ? product.category?.name_ar || product.category?.name
+                      : product.category?.name) || '-'
 
                   return (
                     <tr key={product.id} className="transition-colors hover:bg-surface-2/60">
                       {/* Image Thumbnail */}
                       <td className="p-4 align-middle">
-                        <div className="size-12 shrink-0 overflow-hidden rounded-image border border-border">
-                          <ProductImage
-                            src={product.image_url}
-                            alt={product.name_ar || product.name}
-                            className="size-full object-cover"
-                          />
-                        </div>
+                        <ProductPhotoButton product={product} />
                       </td>
 
                       {/* Product Name & ID */}
@@ -361,34 +353,22 @@ export default function ProductsPage() {
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
                             <span className="text-body font-bold text-text">
-                              {product.name_ar || product.name}
+                              {isAr ? product.name_ar || product.name : product.name}
                             </span>
                             {product.is_featured && (
                               <span className="rounded-chip bg-surface-tint border border-brand px-1.5 py-0.5 text-caption font-bold text-brand">
-                                مميز
+                                {isAr ? 'مميز' : 'Featured'}
                               </span>
                             )}
                           </div>
-                          {product.name_ar && (
+                          {isAr && product.name_ar && (
                             <span className="text-caption text-text-muted block">
                               {product.name}
                             </span>
                           )}
-                          <button
-                            type="button"
-                            onClick={() => setQuickEditProduct(product)}
-                            className="font-mono text-caption text-brand hover:underline inline-flex items-center gap-1 cursor-pointer bg-brand/5 px-2 py-0.5 rounded-chip border border-brand/20 transition-colors"
-                            title={
-                              isAr
-                                ? `تعديل سريع للمنتج #${product.id}`
-                                : `Quick edit product #${product.id}`
-                            }
-                          >
+                          <span className="block font-mono text-caption text-text-muted">
                             <Ltr>#{product.id}</Ltr>
-                            <span className="text-caption text-brand/70 font-sans">
-                              {isAr ? 'تعديل سريع ⚡' : 'Quick ⚡'}
-                            </span>
-                          </button>
+                          </span>
                         </div>
                       </td>
 
@@ -403,11 +383,11 @@ export default function ProductsPage() {
                       <td className="p-4 align-middle">
                         <div className="space-y-0.5">
                           <span className="font-bold text-brand text-body block">
-                            <Ltr>{formatEGP(product.final_price ?? product.price)}</Ltr>
+                            <Ltr>{formatEGP(product.final_price ?? product.price, lang)}</Ltr>
                           </span>
                           {product.discount_percent > 0 && (
                             <span className="text-caption text-text-muted line-through block">
-                              <Ltr>{formatEGP(product.price)}</Ltr>
+                              <Ltr>{formatEGP(product.price, lang)}</Ltr>
                             </span>
                           )}
                         </div>
@@ -432,14 +412,6 @@ export default function ProductsPage() {
                               {t.admin.stockBadgeOk}
                             </span>
                           )}
-                          <Button
-                            variant="ghost"
-                            onClick={() => setStockEditProduct(product)}
-                            className="text-caption text-brand hover:underline p-1 h-auto"
-                            aria-label={`تعديل مخزون ${product.name_ar || product.name}`}
-                          >
-                            تعديل
-                          </Button>
                         </div>
                       </td>
 
@@ -450,7 +422,7 @@ export default function ProductsPage() {
                             type="button"
                             role="switch"
                             aria-checked={product.is_active}
-                            aria-label={`${product.name_ar || product.name} - ${
+                            aria-label={`${isAr ? product.name_ar || product.name : product.name} - ${
                               product.is_active
                                 ? t.admin.activeToggleActive
                                 : t.admin.activeToggleInactive
@@ -486,25 +458,45 @@ export default function ProductsPage() {
                             variant="secondary"
                             onClick={() => setQuickEditProduct(product)}
                             className="text-small text-brand"
-                            aria-label={`تعديل سريع ${product.name_ar || product.name}`}
+                            aria-label={
+                              isAr
+                                ? `تعديل سريع ${product.name_ar || product.name}`
+                                : `Quick edit ${product.name}`
+                            }
                           >
                             ⚡ {isAr ? 'سريع' : 'Quick'}
                           </Button>
                           <Link
                             to={`/admin/products/${product.id}`}
                             className="inline-flex items-center justify-center rounded-pill border border-border bg-surface px-3 py-1 text-small font-semibold text-text hover:border-brand hover:text-brand focus:outline-none focus:ring-2 focus:ring-focus"
-                            aria-label={`تعديل تفاصيل ${product.name_ar || product.name}`}
+                            aria-label={
+                              isAr
+                                ? `تعديل تفاصيل ${product.name_ar || product.name}`
+                                : `Edit details for ${product.name}`
+                            }
                           >
                             {isAr ? 'تعديل' : 'Edit'}
                           </Link>
-                          <Button variant="secondary" onClick={() => setStockEditProduct(product)}>
+                          <Button
+                            variant="secondary"
+                            onClick={() => setStockEditProduct(product)}
+                            aria-label={
+                              isAr
+                                ? `تعديل مخزون ${product.name_ar || product.name}`
+                                : `Edit stock for ${product.name}`
+                            }
+                          >
                             {t.admin.editStock}
                           </Button>
                           <Button
                             variant="ghost"
                             onClick={() => setProductToDelete(product)}
                             className="text-danger hover:underline p-1 text-small"
-                            aria-label={`حذف ${product.name_ar || product.name}`}
+                            aria-label={
+                              isAr
+                                ? `حذف ${product.name_ar || product.name}`
+                                : `Delete ${product.name}`
+                            }
                           >
                             {isAr ? 'حذف' : 'Delete'}
                           </Button>
@@ -530,13 +522,6 @@ export default function ProductsPage() {
         product={quickEditProduct}
         categories={categories ?? []}
         onClose={() => setQuickEditProduct(null)}
-      />
-
-      {/* Quick Add Modal (Easy UI) */}
-      <QuickProductAddModal
-        isOpen={isQuickAddOpen}
-        categories={categories ?? []}
-        onClose={() => setIsQuickAddOpen(false)}
       />
     </div>
   )

@@ -677,6 +677,18 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** unit tests cover expiry after 5 minutes and prove the confirmation is never written to storage.
 - **Verify:** `npm run test:unit`
 
+#### T-2.10: Customer notifications and suggestions
+`status: todo` `owner: agent` `needs: T-4.05, T-1.23` `size: L`
+- **Do:** Implement owner request in `docs/spec/owner-experience-change.md`: My Orders menu, notifications for wishlist sales/order approvals/general sales, customer suggestions and admin demand view. Split database/UI work into additive slices before implementation.
+- **Done when:** Owner-scoped RLS, rate limits, bilingual UI, safe errors, retention documentation, database and UI tests pass; no fabricated notification data.
+- **Verify:** `npm run db:reset && npm run db:test && npm run verify && npm run test:e2e`
+
+#### T-2.11: Customer profile photo
+`status: todo` `owner: agent` `needs: T-2.04` `size: M`
+- **Do:** User-owned validated/re-encoded photo upload and replacement per `docs/spec/owner-experience-change.md`; additive schema, storage policies and cleanup.
+- **Done when:** Cross-user access denied by database/storage tests; both languages/themes and upload failure paths checked.
+- **Verify:** `npm run db:reset && npm run db:test && npm run verify`
+
 ### Phase 3: Storefront
 
 #### T-3.01: Catalog API
@@ -733,6 +745,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Button movement, flower rotation, theme interpolation, skeleton motion, scoped card blur and reduced-motion fallbacks pass browser tests; owner preview checked with animation effects enabled; full verification passes.
 - **Verify:** `npm run verify` and `npx playwright test --config playwright.motion.config.ts` after build.
 
+#### T-3.10: Owner-controlled storefront presentation
+`status: todo` `owner: agent` `needs: T-3.03, T-5.09` `size: L`
+- **Do:** Follow `docs/spec/owner-experience-change.md`: replace arch, truthful sale copy, editable bilingual hero/showcase and category shortcuts with admin control toggle; enlarge info cards on hover/focus. Split database/UI work before implementation.
+- **Done when:** Admin AAL2/audit/allow-list enforced; settings persist; no false promotion; responsive visual and database tests pass.
+- **Verify:** `npm run db:reset && npm run db:test && npm run verify && npm run test:e2e`
+
 ### Phase 4: Checkout and orders
 
 #### T-4.01: Delivery options API
@@ -776,6 +794,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Do:** Playwright with a global setup that resets the local database and creates test users (customer and admin) using the local stack's keys. Scenarios: guest browses and the cart persists; register and log in; COD checkout succeeds and stock decreases; oversell shows the translated stock message; unavailable delivery method is refused; cancelling a pending order restores stock; InstaPay order shows the QR placeholder, accepts a valid image and refuses a renamed non-image, and moves to "قيد المراجعة"; an unpaid InstaPay order expires (test hook shortens the window) and restores stock. Add the `e2e` CI job.
 - **Done when:** the suite passes locally and in CI in under 10 minutes. Ask the owner to add `e2e` to the required checks.
 - **Verify:** `npm run test:e2e`
+
+#### T-4.08: Saved postal code and order snapshot
+`status: todo` `owner: agent` `needs: T-4.02, T-1.23` `size: M`
+- **Do:** Add saved postal code and immutable order snapshot with documented validation for Egypt Post; see `docs/spec/owner-experience-change.md`.
+- **Done when:** Existing orders remain readable; required postal delivery code validated in database, generated types and RLS/checkout tests pass.
+- **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run verify`
 
 ### Phase 5: Admin
 
@@ -850,6 +874,24 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Do:** Scenarios: an admin at `aal1` cannot load admin data, and after MFA can; create a category with an image, add a product to it, see both on the storefront; set stock to 0 and see the sold-out badge; archive, restore and delete rules; order lifecycle seen by the customer; InstaPay payment approve and reject; QR replacement asks for step-up and leaves an audit entry; non-admins are blocked; CSV export neutralises a product named `=cmd|...`.
 - **Done when:** the suite passes locally and in CI.
 - **Verify:** `npm run test:e2e`
+
+#### T-5.13: Admin workspace usability repair
+`status: doing` `owner: agent` `needs: T-5.01, T-5.02, T-5.03` `size: M`
+- **Do:** Full-width admin area, right collapsible sidebar, accessible mobile drawer, photo selection from thumbnail, remove duplicate product actions, clip table corners and handle missing analytics. See `docs/spec/owner-experience-change.md`.
+- **Done when:** Upload failure preserves previous photo; navigation and analytics regressions covered; responsive LTR/RTL in both themes verified without changing MFA/database authority.
+- **Verify:** `npm run verify && npm run test:e2e`
+
+#### T-5.13b: Order and payment review navigation
+`status: todo` `owner: agent` `needs: T-5.05, T-5.08, T-6.02` `size: M`
+- **Do:** Link pending dashboard card to filtered orders, order payment information to exact payment review, show under-review count in payment navigation. See `docs/spec/owner-experience-change.md`.
+- **Done when:** Links select correct filters/order; empty and failed count do not misrepresent review status; admin alone confirms payment through existing RPC.
+- **Verify:** `npm run verify && npm run test:e2e`
+
+#### T-5.14: Verify owner InstaPay recipient and QR
+`status: todo` `owner: agent` `needs: T-4.06, T-5.09` `size: S`
+- **Do:** Inspect `ip/ip.png`, verify QR payload, prepare owner-reviewed settings correction to `alaa.ahm9624@instapay`; follow `docs/spec/payment-flow-change.md` and `docs/spec/owner-experience-change.md`.
+- **Done when:** Owner confirms correct merchant QR in authenticated post-approval flow; no public QR or invented payment URI; payment review remains authoritative.
+- **Verify:** `npm run verify && npm run test:e2e`
 
 ### Phase 6: Dashboard
 

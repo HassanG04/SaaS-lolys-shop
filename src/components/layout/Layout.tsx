@@ -12,6 +12,7 @@ export function Layout() {
   const { t } = useLanguage()
   const { isDrawerOpen } = useCart()
   const { pathname } = useLocation()
+  const isAdminWorkspace = pathname === '/admin' || pathname.startsWith('/admin/')
   useRouteSeo()
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export function Layout() {
       </a>
 
       {/* Navigation Header */}
-      <Navbar />
+      {!isAdminWorkspace && <Navbar />}
 
       {/* Cart Drawer Slide-over */}
       {isDrawerOpen && (
@@ -42,7 +43,11 @@ export function Layout() {
       <main
         id="main-content"
         tabIndex={-1}
-        className="flex-1 max-w-(--container-layout) mx-auto px-4 sm:px-6 py-8 focus:outline-none"
+        className={
+          isAdminWorkspace
+            ? 'flex-1 w-full min-w-0 focus:outline-none'
+            : 'flex-1 w-full max-w-(--container-layout) mx-auto px-4 sm:px-6 py-8 focus:outline-none'
+        }
       >
         <Suspense
           fallback={
@@ -63,9 +68,11 @@ export function Layout() {
       </main>
 
       {/* Global Footer */}
-      <Suspense fallback={null}>
-        <Footer />
-      </Suspense>
+      {!isAdminWorkspace && (
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
+      )}
     </div>
   )
 }

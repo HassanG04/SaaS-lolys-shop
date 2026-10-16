@@ -350,3 +350,14 @@ export async function uploadProductImage(
 
   return storagePath
 }
+
+export async function replaceProductImage(file: File, productId: number): Promise<AdminProduct> {
+  const path = await uploadProductImage(file, productId)
+  try {
+    return await updateAdminProduct(productId, { image_url: path })
+  } catch (error) {
+    // The previous photo stays intact until the database accepts the replacement.
+    await supabase.storage.from('product-images').remove([path])
+    throw toAppError(error)
+  }
+}

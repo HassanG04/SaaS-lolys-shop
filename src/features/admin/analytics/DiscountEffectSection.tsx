@@ -12,6 +12,12 @@ export function DiscountEffectSection({ data }: DiscountEffectSectionProps): Rea
   const t = useAnalyticsI18n(lang)
 
   const isPositiveLift = data.uplift_pct > 0
+  const displayNumber = (value: unknown) =>
+    typeof value === 'number' && Number.isFinite(value)
+      ? value.toLocaleString(lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-US', {
+          maximumFractionDigits: 1,
+        })
+      : '—'
 
   return (
     <section
@@ -27,23 +33,25 @@ export function DiscountEffectSection({ data }: DiscountEffectSectionProps): Rea
         <div className="rounded-card border border-border bg-surface-2 p-4">
           <span className="text-caption text-text-muted block">{t.promoUnits}</span>
           <span className="text-h2 font-bold text-brand mt-1 block">
-            {Number(data.promo_weekly_units).toLocaleString(lang === 'ar' ? 'ar-EG' : 'en-US')}
+            {displayNumber(data.promo_weekly_units)}
           </span>
         </div>
         <div className="rounded-card border border-border bg-surface-2 p-4">
           <span className="text-caption text-text-muted block">{t.regularUnits}</span>
           <span className="text-h2 font-bold text-text mt-1 block">
-            {Number(data.baseline_weekly_units).toLocaleString(lang === 'ar' ? 'ar-EG' : 'en-US')}
+            {displayNumber(data.baseline_weekly_units)}
           </span>
         </div>
         <div className="rounded-card border border-border bg-surface-2 p-4">
           <span className="text-caption text-text-muted block">{t.uplift}</span>
           <span
-            className={`text-h2 font-bold mt-1 block ${
+            className={`text-h3 font-bold mt-1 block break-words ${
               isPositiveLift ? 'text-success' : 'text-text-muted'
             }`}
           >
-            {isPositiveLift ? `+${data.uplift_pct}%` : `${data.uplift_pct}%`}
+            {Number.isFinite(data.uplift_pct)
+              ? `${isPositiveLift ? '+' : ''}${displayNumber(data.uplift_pct)}%`
+              : '—'}
           </span>
         </div>
       </div>

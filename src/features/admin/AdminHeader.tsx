@@ -7,9 +7,16 @@ import { useAuth } from '../auth/AuthProvider'
 interface AdminHeaderProps {
   onToggleSidebar: () => void
   isSidebarOpen: boolean
+  desktopCollapsed?: boolean
+  onToggleDesktopSidebar?: () => void
 }
 
-export function AdminHeader({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) {
+export function AdminHeader({
+  onToggleSidebar,
+  isSidebarOpen,
+  desktopCollapsed,
+  onToggleDesktopSidebar,
+}: AdminHeaderProps) {
   const { t } = useLanguage()
   const { signOut, user } = useAuth()
 
@@ -37,6 +44,26 @@ export function AdminHeader({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps
             <line x1="4" x2="20" y1="12" y2="12" />
             <line x1="4" x2="20" y1="6" y2="6" />
             <line x1="4" x2="20" y1="18" y2="18" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={onToggleDesktopSidebar}
+          aria-label={desktopCollapsed ? t.admin.expandSidebar : t.admin.collapseSidebar}
+          aria-controls="admin-desktop-sidebar"
+          aria-expanded={!desktopCollapsed}
+          className="hidden lg:inline-flex ui-control items-center justify-center rounded-pill border border-border-input bg-surface-2 text-brand"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="size-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            aria-hidden="true"
+          >
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M15 4v16m-7-8h4" />
           </svg>
         </button>
 

@@ -141,6 +141,41 @@ describe('Admin Products Management (T-5.02)', () => {
   })
 
   describe('Table rendering and display', () => {
+    it('selects a photo from the thumbnail and refreshes the product after saving', async () => {
+      const user = userEvent.setup()
+      const replace = vi.spyOn(api, 'replaceProductImage').mockImplementation(async () => {
+        currentProducts[0] = { ...mockProducts[0], image_url: 'products/replacement.webp' }
+        return currentProducts[0]
+      })
+      render(<ProductsPage />, { wrapper: createWrapper() })
+      const label = 'تغيير صورة أقراط اللؤلؤ الطبيعي'
+      const button = await screen.findByRole('button', { name: label })
+      const input = screen.getByLabelText(label, { selector: 'input' })
+      const click = vi.spyOn(input as HTMLInputElement, 'click')
+      await user.click(button)
+      expect(click).toHaveBeenCalledOnce()
+      const file = new File(['image fixture'], 'photo.png', { type: 'image/png' })
+      await user.upload(input, file)
+      await waitFor(() => expect(replace).toHaveBeenCalledWith(file, 1))
+      await waitFor(() => expect(api.getAdminProducts).toHaveBeenCalledTimes(2))
+      expect(input).toHaveValue('')
+    })
+
+    it('keeps the old photo and shows a safe error if replacement fails', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(api, 'replaceProductImage').mockRejectedValue(new AppError('SYS-001'))
+      render(<ProductsPage />, { wrapper: createWrapper() })
+      const label = 'تغيير صورة أقراط اللؤلؤ الطبيعي'
+      await screen.findByRole('button', { name: label })
+      await user.upload(
+        screen.getByLabelText(label, { selector: 'input' }),
+        new File(['x'], 'photo.png', { type: 'image/png' }),
+      )
+      expect(await screen.findByText(/رمز الخطأ: SYS-001/)).toBeInTheDocument()
+      expect(api.getAdminProducts).toHaveBeenCalledTimes(1)
+      expect(screen.getByRole('button', { name: label })).toBeEnabled()
+    })
+
     it('renders products table with columns and product information', async () => {
       render(<ProductsPage />, { wrapper: createWrapper() })
 
@@ -241,7 +276,7 @@ describe('Admin Products Management (T-5.02)', () => {
         expect(screen.getByText('أقراط اللؤلؤ الطبيعي')).toBeInTheDocument()
       })
 
-      const stockSelect = screen.getByLabelText('حالة المخزون')
+      const stockSelect = screen.getByLabelText('المخزون')
 
       // Low stock (stock <= 5 and > 0)
       await user.selectOptions(stockSelect, 'low_stock')
