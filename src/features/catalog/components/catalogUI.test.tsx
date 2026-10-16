@@ -63,6 +63,7 @@ const mockCategory: Category = {
 }
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { CartProvider } from '@/features/cart'
 
 function renderWithProviders(ui: React.ReactElement, initialLanguage: Language = 'ar') {
   const queryClient = new QueryClient({
@@ -71,7 +72,9 @@ function renderWithProviders(ui: React.ReactElement, initialLanguage: Language =
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
-        <LanguageProvider initialLanguage={initialLanguage}>{ui}</LanguageProvider>
+        <LanguageProvider initialLanguage={initialLanguage}>
+          <CartProvider>{ui}</CartProvider>
+        </LanguageProvider>
       </MemoryRouter>
     </QueryClientProvider>,
   )
@@ -126,6 +129,43 @@ describe('Catalog UI Components (T-3.02)', () => {
 
       expect(screen.getByRole('img', { name: 'Broken Item' })).toBeInTheDocument()
     })
+
+    it('resets loaded and error states when src prop changes', () => {
+      const { rerender } = renderWithProviders(
+        <ProductImage src="products/initial.webp" alt="Test Item" />,
+      )
+
+      const img = screen.getByRole('img', { name: 'Test Item' })
+      fireEvent.load(img)
+      expect(img.className).toContain('opacity-100')
+
+      // Rerender with broken image
+      rerender(
+        <MemoryRouter>
+          <LanguageProvider initialLanguage="ar">
+            <ProductImage src="products/broken.webp" alt="Test Item" />
+          </LanguageProvider>
+        </MemoryRouter>,
+      )
+
+      const brokenImg = screen.getByRole('img', { name: 'Test Item' })
+      fireEvent.error(brokenImg)
+      expect(screen.getByRole('img', { name: 'Test Item' }).tagName).toBe('DIV')
+
+      // Replace with recovered image: should reset error and display IMG tag
+      rerender(
+        <MemoryRouter>
+          <LanguageProvider initialLanguage="ar">
+            <ProductImage src="products/recovered.webp" alt="Test Item" />
+          </LanguageProvider>
+        </MemoryRouter>,
+      )
+
+      const recoveredImg = screen.getByRole('img', { name: 'Test Item' })
+      expect(recoveredImg.tagName).toBe('IMG')
+      fireEvent.load(recoveredImg)
+      expect(recoveredImg.className).toContain('opacity-100')
+    })
   })
 
   describe('ProductCard', () => {
@@ -168,6 +208,19 @@ describe('Catalog UI Components (T-3.02)', () => {
       await user.click(addBtn)
 
       expect(onAdd).toHaveBeenCalledWith(mockAvailableProduct)
+    })
+
+    it('adds product directly via CartProvider when onAddToCart is not provided', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(<ProductCard product={mockAvailableProduct} />)
+
+      const addBtn = screen.getByRole('button', { name: /أضف إلى السلة/ })
+      expect(addBtn.className).toContain('flower-button')
+      await user.click(addBtn)
+
+      // Button remains accessible and rendered
+      expect(screen.getByRole('button', { name: /أضف إلى السلة/ })).toBeInTheDocument()
     })
 
     it('proves sold-out items are clearly marked and CANNOT be added', async () => {

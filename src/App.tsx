@@ -8,7 +8,15 @@ import { CartProvider } from './features/cart'
 import { LanguageProvider } from './i18n/LanguageProvider'
 import { validateEnv, type EnvValidationResult } from './lib/env'
 import { queryClient as defaultQueryClient } from './lib/queryClient'
-import { EnvErrorScreen } from './components/EnvErrorScreen'
+let DevEnvErrorScreen: React.ComponentType<{
+  errors: string[]
+  formattedMessage?: string | null
+}> | null = null
+
+if (import.meta.env.DEV) {
+  const mod = await import('./components/EnvErrorScreen')
+  DevEnvErrorScreen = mod.EnvErrorScreen
+}
 import { routes } from './routes'
 
 export interface AppProps {
@@ -27,13 +35,11 @@ export default function App({
   const validation = envValidation ?? validateEnv()
 
   if (!validation.success) {
-    if (import.meta.env.DEV) {
+    if (import.meta.env.DEV && DevEnvErrorScreen) {
+      const ErrorScreen = DevEnvErrorScreen
       return (
         <ThemeProvider>
-          <EnvErrorScreen
-            errors={validation.errors}
-            formattedMessage={validation.formattedMessage}
-          />
+          <ErrorScreen errors={validation.errors} formattedMessage={validation.formattedMessage} />
         </ThemeProvider>
       )
     }

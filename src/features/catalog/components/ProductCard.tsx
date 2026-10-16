@@ -6,6 +6,7 @@ import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatEGP } from '@/lib/format'
 import { ProductImage } from './ProductImage'
 import { FavoriteButton } from '@/features/favorites'
+import { useCart } from '@/features/cart'
 import type { Product, ProductWithCategory } from '../types'
 
 export interface ProductCardProps {
@@ -22,6 +23,7 @@ export function ProductCard({
   className = '',
 }: ProductCardProps) {
   const { t, lang } = useLanguage()
+  const cart = useCart()
 
   const isSoldOut = Boolean(!product.in_stock || product.stock_quantity <= 0)
   const hasDiscount = Boolean(product.discount_percent && product.discount_percent > 0)
@@ -37,9 +39,19 @@ export function ProductCard({
 
   const productUrl = `/product/${product.id}`
 
+  const handleAddToCart = () => {
+    if (isSoldOut || isAddingToCart) return
+    if (onAddToCart) {
+      onAddToCart(product)
+      return
+    }
+    cart.addItem(product.id, 1, product.stock_quantity)
+    cart.openDrawer()
+  }
+
   return (
     <Card
-      className={`group flex h-full flex-col justify-between p-3 transition-shadow hover:shadow-card ${className}`}
+      className={`catalog-product-card group flex h-full flex-col justify-between p-3 ${className}`}
       data-testid={`product-card-${product.id}`}
     >
       <div>
@@ -89,15 +101,55 @@ export function ProductCard({
           variant="primary"
           disabled={isSoldOut || isAddingToCart}
           aria-busy={isAddingToCart ? 'true' : undefined}
-          onClick={() => onAddToCart?.(product)}
-          className="w-full"
+          onClick={handleAddToCart}
+          className="flower-button w-full relative"
           aria-label={
             isSoldOut
               ? `${displayName} - ${t.product.soldout}`
               : `${t.product.add} - ${displayName}`
           }
         >
-          {isSoldOut ? t.product.soldout : t.product.add}
+          {!isSoldOut && (
+            <span className="flower-container" aria-hidden="true">
+              <span className="flower flower-1">
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+              </span>
+              <span className="flower flower-2">
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+              </span>
+              <span className="flower flower-3">
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+              </span>
+              <span className="flower flower-4">
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+              </span>
+              <span className="flower flower-5">
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+              </span>
+              <span className="flower flower-6">
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+                <span className="flower-petal" />
+              </span>
+            </span>
+          )}
+          <span className="relative z-10">{isSoldOut ? t.product.soldout : t.product.add}</span>
         </Button>
       </div>
     </Card>

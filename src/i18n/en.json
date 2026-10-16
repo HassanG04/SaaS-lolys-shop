@@ -14,7 +14,12 @@
     "errorOccurred": "An unexpected error occurred",
     "errorDescription": "Unable to complete request. Please try again.",
     "errorCode": "Error code:",
-    "emptyState": "Nothing to display"
+    "emptyState": "Nothing to display",
+    "notifications": "Notifications",
+    "toastSuccess": "Success",
+    "toastError": "Alert",
+    "toastInfo": "Info",
+    "toastWarning": "Warning"
   },
   "brand": {
     "tagline": "cute things for your style & space"
@@ -37,7 +42,7 @@
     "title": "Search Results",
     "resultsFor": "Search results for:",
     "noQueryTitle": "Search Lolys' Store",
-    "noQueryMessage": "Type a product name in search above to explore our collection.",
+    "noQueryMessage": "Type a product name above to explore our collection.",
     "clearSearch": "Clear search",
     "productsCount": "({{count}} products)"
   },
@@ -50,8 +55,8 @@
     "shopCta": "Find your little lovely",
     "littleThings": "For everyday rituals and special moments",
     "photoCaption": "Warm cups & little treasures",
-    "collectionsSubtitle": "Accessories for your style and cozy mugs for your moments.",
-    "returnsSummary": "Check return and exchange terms on the return policy page."
+    "collectionsSubtitle": "Accessories for your style and home.",
+    "returnsSummary": "Review return terms on the policy page."
   },
   "section": {
     "categories": "Shop by Category",
@@ -77,7 +82,7 @@
     "relatedTitle": "You might also like",
     "inStock": "In Stock",
     "notFound": "Product not found",
-    "notFoundDesc": "Sorry, the product you are looking for is unavailable or has been removed.",
+    "notFoundDesc": "Product is unavailable or removed.",
     "quantity": "Quantity",
     "decreaseQty": "Decrease quantity",
     "increaseQty": "Increase quantity",
@@ -90,7 +95,7 @@
     "shipping": "Delivery Fee",
     "total": "Total",
     "checkout": "Checkout",
-    "emptyDesc": "Your cart is currently empty, explore our collections and start shopping!",
+    "emptyDesc": "Your cart is empty. Explore our collection!",
     "browseProducts": "Browse products",
     "continueShopping": "Continue shopping",
     "loginToCheckout": "Log in to check out",
@@ -129,7 +134,7 @@
     "fastAndSecure": "Fast & Secure",
     "submit_request": "Submit Order",
     "save_address": "Save this address for my next orders",
-    "approval_note": "We will review your order first, then send you the payment link."
+    "approval_note": "We will review your order and send the payment link."
   },
   "field": {
     "name": "Full Name",
@@ -149,9 +154,9 @@
     "instapay": "InstaPay (QR)"
   },
   "instapay": {
-    "scan": "Scan QR code from your bank app or InstaPay",
+    "scan": "Scan QR code with InstaPay",
     "amount": "Required Amount",
-    "note": "Write order number in transfer notes",
+    "note": "Write order number in notes",
     "upload": "Upload transfer receipt",
     "reference": "Transfer Reference Number",
     "deadline": "Payment expires in {{time}}"
@@ -199,9 +204,9 @@
     "sendingConfirmationLink": "Sending...",
     "backToLogin": "Back to Log in",
     "checkYourEmail": "Check your email",
-    "checkEmailDesc": "If the email is valid, you will receive an activation email shortly.",
-    "checkResetEmailDesc": "If the email is registered, you will receive a reset link shortly.",
-    "checkSpamFolder": "Please check your inbox and spam folder.",
+    "checkEmailDesc": "If valid, you will receive an activation email shortly.",
+    "checkResetEmailDesc": "If registered, you will receive a reset link shortly.",
+    "checkSpamFolder": "Check inbox and spam folder.",
     "resendNoticeLink": "Didn't receive the email? Resend",
     "linkExpiredTitle": "This link has expired. You can request a new one:",
     "requestNewConfirmationLink": "Resend account confirmation link",
@@ -209,12 +214,17 @@
     "confirmPassword": "Confirm Password",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
+    "copyPassword": "Copy password",
+    "passwordCopied": "Copied",
+    "copyFailed": "Could not copy to clipboard",
+    "generatePassword": "Generate strong password",
+    "passwordWeak": "Password is too weak or predictable",
     "emailVerificationRequired": "Please verify your email address to complete your order."
   },
   "about": {
     "title": "About Lolys' Store",
-    "p1": "Elegant accessories and warm home touches for your space.",
-    "p2": "Curated pieces, gift packaging, and delivery across Egypt.",
+    "p1": "Accessories and home accents for your space.",
+    "p2": "Curated pieces and delivery across Egypt.",
     "browse": "Browse Collections"
   },
   "account": {
@@ -244,7 +254,7 @@
     "floor": "Floor",
     "apartment": "Apartment No.",
     "landmark": "Landmark (optional)",
-    "securityLink": "Want to change your password or enable two-factor authentication? Go to Security →",
+    "securityLink": "Security and two-factor settings →",
     "saveChanges": "Save Changes",
     "saving": "Saving...",
     "savedSuccess": "Account details saved successfully",
@@ -252,10 +262,45 @@
     "nameTooLong": "Name must not exceed 100 characters",
     "phoneRequired": "Primary phone is required",
     "phoneInvalid": "Invalid Egyptian phone number (11 digits starting with 010, 011, 012, or 015)",
-    "altPhoneInvalid": "Secondary phone number is invalid"
+    "altPhoneInvalid": "Secondary phone number is invalid",
+    "securityTitle": "Security & 2FA",
+    "securitySubtitle": "Account security",
+    "backToOrders": "My Orders",
+    "changePasswordTitle": "Change Password",
+    "changePasswordDesc": "At least 10 chars",
+    "passwordMismatch": "Passwords do not match",
+    "passwordSuccess": "Password updated",
+    "newPasswordLabel": "New Password",
+    "confirmNewPasswordLabel": "Confirm New Password",
+    "passwordMinChars": "At least 10 chars",
+    "updatePasswordAction": "Update Password",
+    "changeEmailTitle": "Change Email Address",
+    "currentEmailLabel": "Current email:",
+    "changeEmailDesc": "Confirm link to update",
+    "newEmailLabel": "New Email Address",
+    "updateEmailAction": "Update Email Address",
+    "sendingEmail": "Sending...",
+    "mfaCardTitle": "Two-Factor Auth",
+    "mfaEnabledBadge": "Enabled",
+    "mfaDisabledBadge": "Disabled",
+    "mfaExplanation": "Extra account protection",
+    "linkedDevicesHeading": "Devices:",
+    "defaultAuthApp": "Authenticator",
+    "identifierLabel": "ID:",
+    "unenrollAction": "Disable",
+    "unenrollCancelling": "Disabling...",
+    "mfaBackupTip": "Add backup device",
+    "addMfaDeviceAction": "Add device",
+    "enableMfaAction": "Enable Two-Factor Auth",
+    "signOutAllTitle": "Sign Out of All Devices",
+    "signOutAllDesc": "End all other sessions",
+    "signOutAllAction": "Sign Out of All Devices",
+    "signingOutAll": "Signing out..."
   },
   "favorites": {
     "title": "Favorites",
+    "subtitle": "Saved jewelry and items.",
+    "loading": "Loading favorite items...",
     "emptyTitle": "Your favorites list is empty",
     "emptyDesc": "You haven't added favorites yet. Explore our collection!",
     "browse": "Browse products",
@@ -458,7 +503,7 @@
   "seo": {
     "defaultTitle": "Lolys' Accessories & Home",
     "titleTemplate": "{{title}} | Lolys' Accessories & Home",
-    "defaultDescription": "Cute things for your style & space - elegant accessories and warm home touches",
+    "defaultDescription": "Cute things for your style & space",
     "home": "Home",
     "category": "Categories",
     "product": "Product",
@@ -547,14 +592,14 @@
       "sale": "Sample Sale",
       "soldOut": "Sold Out",
       "awaiting": "Awaiting Payment",
-      "image": "Sample image in arch frame",
-      "skeleton": "Content placeholder loading preview",
-      "loadingToggle": "Toggle test loading state"
+      "image": "Sample image",
+      "skeleton": "Content placeholder",
+      "loadingToggle": "Toggle test loading"
     },
     "dialog": {
       "open": "Open Details",
       "title": "Preview Details",
-      "description": "Sample dialog. Press Close or Escape to return to the page.",
+      "description": "Sample dialog.",
       "field": "Field inside dialog"
     },
     "feedback": {

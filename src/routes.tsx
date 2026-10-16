@@ -1,58 +1,29 @@
-import { lazy } from 'react'
+import { lazy, type ComponentType } from 'react'
 import type { RouteObject } from 'react-router-dom'
 import { adminChunkLoader } from './lib/adminLoader'
+import { Layout } from './components/layout/Layout'
 
 const loadGuards = () => import('./features/auth/guards')
 const RequireAuth = lazy(() => loadGuards().then((m) => ({ default: m.RequireAuth })))
 const RequireAdmin = lazy(() => loadGuards().then((m) => ({ default: m.RequireAdmin })))
 
-import { Layout } from './components/layout/Layout'
+const r = (
+  p: string,
+  fn: () => Promise<{ default: ComponentType<unknown> }>,
+  w?: (c: React.JSX.Element) => React.JSX.Element,
+): RouteObject => {
+  const C = lazy(fn)
+  return { path: p, element: w ? w(<C />) : <C /> }
+}
+const auth = (p: string, fn: () => Promise<{ default: ComponentType<unknown> }>) =>
+  r(p, fn, (c) => <RequireAuth>{c}</RequireAuth>)
+const admin = (p: string, fn: () => Promise<{ default: ComponentType<unknown> }>) =>
+  r(p, fn, (c) => <RequireAdmin>{c}</RequireAdmin>)
+
 const HomePage = lazy(() => import('./pages/HomePage'))
-const CategoryPage = lazy(() => import('./pages/CategoryPage'))
-const ProductPage = lazy(() => import('./pages/ProductPage'))
-const CartPage = lazy(() => import('./pages/CartPage'))
-const SearchPage = lazy(() => import('./pages/SearchPage'))
-const LoginPage = lazy(() => import('./pages/LoginPage'))
-const RegisterPage = lazy(() => import('./pages/RegisterPage'))
-const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
-const ResendConfirmationPage = lazy(() => import('./pages/ResendConfirmationPage'))
-const CheckoutPage = lazy(() => import('./pages/CheckoutPage'))
-const OrderConfirmationPage = lazy(() => import('./pages/OrderConfirmationPage'))
-const PayOrderPage = lazy(() => import('./pages/PayOrderPage'))
-const AccountPage = lazy(() => import('./pages/AccountPage'))
-const AccountOrdersPage = lazy(() => import('./pages/AccountOrdersPage'))
-const AccountFavoritesPage = lazy(() => import('./pages/AccountFavoritesPage'))
-const AccountSecurityPage = lazy(() => import('./pages/AccountSecurityPage'))
-const AdminShell = lazy(() => adminChunkLoader())
-const AboutPage = lazy(() => import('./pages/AboutPage'))
-const TermsPage = lazy(() => import('./pages/TermsPage'))
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
-const ReturnsPage = lazy(() => import('./pages/ReturnsPage'))
-const ShippingPage = lazy(() => import('./pages/ShippingPage'))
-const ContactPage = lazy(() => import('./pages/ContactPage'))
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
-const MfaEnrollPage = lazy(() => import('./pages/MfaEnrollPage'))
-const MfaChallengePage = lazy(() => import('./pages/MfaChallengePage'))
-
-const KitPage = import.meta.env.DEV ? lazy(() => import('./dev/KitPage')) : null
-
-const r = (path: string, C: React.ComponentType): RouteObject => ({ path, element: <C /> })
-const auth = (path: string, C: React.ComponentType): RouteObject => ({
-  path,
-  element: (
-    <RequireAuth>
-      <C />
-    </RequireAuth>
-  ),
-})
-const admin = (path: string, C: React.ComponentType): RouteObject => ({
-  path,
-  element: (
-    <RequireAdmin>
-      <C />
-    </RequireAdmin>
-  ),
-})
+const mfaEnroll = () => import('./pages/MfaEnrollPage')
+const mfaChallenge = () => import('./pages/MfaChallengePage')
+const KitPage = import.meta.env.DEV ? () => import('./dev/KitPage') : null
 
 export const routes: RouteObject[] = [
   {
@@ -60,34 +31,34 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      r('category/:slug', CategoryPage),
-      r('product/:id', ProductPage),
-      r('cart', CartPage),
-      r('search', SearchPage),
-      r('login', LoginPage),
-      r('register', RegisterPage),
-      r('reset-password', ResetPasswordPage),
-      r('resend-confirmation', ResendConfirmationPage),
-      auth('checkout', CheckoutPage),
-      auth('order/:id/thanks', OrderConfirmationPage),
-      r('pay/:orderId', PayOrderPage),
-      auth('account', AccountPage),
-      auth('account/orders', AccountOrdersPage),
-      auth('account/favorites', AccountFavoritesPage),
-      auth('account/security', AccountSecurityPage),
-      admin('admin/mfa/enroll', MfaEnrollPage),
-      admin('admin/mfa/challenge', MfaChallengePage),
-      auth('account/mfa/enroll', MfaEnrollPage),
-      auth('mfa/challenge', MfaChallengePage),
-      admin('admin/*', AdminShell),
-      r('about', AboutPage),
-      r('terms', TermsPage),
-      r('privacy', PrivacyPage),
-      r('returns', ReturnsPage),
-      r('shipping', ShippingPage),
-      r('contact', ContactPage),
+      r('category/:slug', () => import('./pages/CategoryPage')),
+      r('product/:id', () => import('./pages/ProductPage')),
+      r('cart', () => import('./pages/CartPage')),
+      r('search', () => import('./pages/SearchPage')),
+      r('login', () => import('./pages/LoginPage')),
+      r('register', () => import('./pages/RegisterPage')),
+      r('reset-password', () => import('./pages/ResetPasswordPage')),
+      r('resend-confirmation', () => import('./pages/ResendConfirmationPage')),
+      auth('checkout', () => import('./pages/CheckoutPage')),
+      auth('order/:id/thanks', () => import('./pages/OrderConfirmationPage')),
+      r('pay/:orderId', () => import('./pages/PayOrderPage')),
+      auth('account', () => import('./pages/AccountPage')),
+      auth('account/orders', () => import('./pages/AccountOrdersPage')),
+      auth('account/favorites', () => import('./pages/AccountFavoritesPage')),
+      auth('account/security', () => import('./pages/AccountSecurityPage')),
+      admin('admin/mfa/enroll', mfaEnroll),
+      admin('admin/mfa/challenge', mfaChallenge),
+      auth('account/mfa/enroll', mfaEnroll),
+      auth('mfa/challenge', mfaChallenge),
+      admin('admin/*', () => adminChunkLoader() as Promise<{ default: ComponentType<unknown> }>),
+      r('about', () => import('./pages/AboutPage')),
+      r('terms', () => import('./pages/TermsPage')),
+      r('privacy', () => import('./pages/PrivacyPage')),
+      r('returns', () => import('./pages/ReturnsPage')),
+      r('shipping', () => import('./pages/ShippingPage')),
+      r('contact', () => import('./pages/ContactPage')),
       ...(KitPage ? [r('__kit', KitPage)] : []),
-      r('*', NotFoundPage),
+      r('*', () => import('./pages/NotFoundPage')),
     ],
   },
 ]

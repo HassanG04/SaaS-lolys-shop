@@ -4,14 +4,18 @@ import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Input } from '../components/ui/Input'
+import { PasswordField } from '../components/ui/PasswordField'
 import { Ltr } from '../components/ui/Ltr'
 import { AuthAlert } from '../features/auth/AuthAlert'
 import { useAal, useAuth } from '../features/auth/AuthProvider'
+import { validatePasswordStrength } from '../features/auth/passwordStrength'
+import { useLanguage } from '../i18n/LanguageProvider'
 import type { AuthErrorCode } from '../features/auth/types'
 
 export default function AccountSecurityPage() {
   const { user, factors, unenrollFactor, updatePassword, updateEmail, signOut } = useAuth()
   const { isAal2 } = useAal()
+  const { t } = useLanguage()
   const navigate = useNavigate()
 
   // Password change state
@@ -40,7 +44,7 @@ export default function AccountSecurityPage() {
     setPasswordMismatch(false)
     setPasswordSuccess(false)
 
-    if (password.length < 10) {
+    if (!validatePasswordStrength(password).valid) {
       setPasswordError('AUTH-008')
       return
     }
@@ -126,17 +130,15 @@ export default function AccountSecurityPage() {
     <div className="space-y-6">
       <Card className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 sm:p-8">
         <div>
-          <h1 className="text-h1 font-bold font-accent text-brand">الأمان والتحقق بخطوتين</h1>
-          <p className="mt-2 text-body text-text-muted">
-            إدارة أمان الحساب وتحديث كلمة المرور والبريد والتحقق بخطوتين.
-          </p>
+          <h1 className="text-h1 font-bold font-accent text-brand">{t.account.securityTitle}</h1>
+          <p className="mt-2 text-body text-text-muted">{t.account.securitySubtitle}</p>
         </div>
         <div className="flex gap-2">
           <Link
             to="/account/orders"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
           >
-            العودة لطلباتي
+            {t.account.backToOrders}
           </Link>
         </div>
       </Card>
@@ -144,11 +146,8 @@ export default function AccountSecurityPage() {
       {/* Change Password Card */}
       <Card className="p-6 sm:p-8 space-y-6">
         <div>
-          <h2 className="text-h2 font-semibold text-text">تغيير كلمة المرور</h2>
-          <p className="mt-1 text-small text-text-muted">
-            استخدم كلمة مرور قوية مكونة من 10 أحرف أو أكثر. قد يطلب النظام إعادة تسجيل الدخول للتحقق
-            من هويتك.
-          </p>
+          <h2 className="text-h2 font-semibold text-text">{t.account.changePasswordTitle}</h2>
+          <p className="mt-1 text-small text-text-muted">{t.account.changePasswordDesc}</p>
         </div>
 
         {passwordError && <AuthAlert code={passwordError} />}
@@ -157,7 +156,7 @@ export default function AccountSecurityPage() {
             role="alert"
             className="rounded-card border border-danger bg-surface p-4 text-small font-semibold text-danger"
           >
-            كلمتا المرور غير متطابقتين.
+            {t.account.passwordMismatch}
           </div>
         )}
         {passwordSuccess && (
@@ -165,27 +164,30 @@ export default function AccountSecurityPage() {
             role="status"
             className="rounded-card border border-border bg-surface-tint p-4 text-small font-semibold text-text"
           >
-            تم تحديث كلمة المرور بنجاح.
+            {t.account.passwordSuccess}
           </div>
         )}
 
         <form onSubmit={handlePasswordSubmit} className="max-w-md space-y-4">
-          <Input
+          <PasswordField
             id="new-password"
-            label="كلمة المرور الجديدة"
-            type="password"
+            label={t.account.newPasswordLabel}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••••"
             required
             disabled={passwordSubmitting}
-            hint="10 أحرف على الأقل"
+            hint={t.account.passwordMinChars}
+            allowGenerate={true}
+            onGenerate={(p) => {
+              setPassword(p)
+              setConfirmPassword(p)
+            }}
           />
 
-          <Input
+          <PasswordField
             id="confirm-new-password"
-            label="تأكيد كلمة المرور الجديدة"
-            type="password"
+            label={t.account.confirmNewPasswordLabel}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="••••••••••"
@@ -194,7 +196,7 @@ export default function AccountSecurityPage() {
           />
 
           <Button type="submit" variant="primary" disabled={passwordSubmitting}>
-            {passwordSubmitting ? 'جارٍ الحفظ...' : 'تحديث كلمة المرور'}
+            {passwordSubmitting ? t.account.saving : t.account.updatePasswordAction}
           </Button>
         </form>
       </Card>
@@ -202,17 +204,14 @@ export default function AccountSecurityPage() {
       {/* Change Email Card */}
       <Card className="p-6 sm:p-8 space-y-6">
         <div>
-          <h2 className="text-h2 font-semibold text-text">تغيير البريد الإلكتروني</h2>
+          <h2 className="text-h2 font-semibold text-text">{t.account.changeEmailTitle}</h2>
           <p className="mt-1 text-small text-text-muted">
-            البريد المسجل حاليًا:{' '}
+            {t.account.currentEmailLabel}{' '}
             <span className="font-semibold text-brand">
               <Ltr>{user?.email || '—'}</Ltr>
             </span>
           </p>
-          <p className="mt-1 text-caption text-text-muted">
-            يتطلب تغيير البريد الإلكتروني تأكيد الرابط المرسل إلى كلا العنوانين (الحالي والجديد)
-            لحماية حسابك.
-          </p>
+          <p className="mt-1 text-caption text-text-muted">{t.account.changeEmailDesc}</p>
         </div>
 
         {emailNotice && <AuthAlert code={emailNotice} />}
@@ -220,7 +219,7 @@ export default function AccountSecurityPage() {
         <form onSubmit={handleEmailSubmit} className="max-w-md space-y-4">
           <Input
             id="new-email"
-            label="البريد الإلكتروني الجديد"
+            label={t.account.newEmailLabel}
             type="email"
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
@@ -230,7 +229,7 @@ export default function AccountSecurityPage() {
           />
 
           <Button type="submit" variant="primary" disabled={emailSubmitting}>
-            {emailSubmitting ? 'جارٍ الإرسال...' : 'تحديث البريد الإلكتروني'}
+            {emailSubmitting ? t.account.sendingEmail : t.account.updateEmailAction}
           </Button>
         </form>
       </Card>
@@ -238,32 +237,29 @@ export default function AccountSecurityPage() {
       {/* Two-factor authentication Card */}
       <Card className="p-6 sm:p-8 space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-h2 font-semibold text-text">حالة التحقق بخطوتين (MFA)</h2>
+          <h2 className="text-h2 font-semibold text-text">{t.account.mfaCardTitle}</h2>
           <Badge
             variant={hasFactors ? 'sale' : 'sold-out'}
-            label={hasFactors ? 'مفعّل' : 'غير مفعّل'}
+            label={hasFactors ? t.account.mfaEnabledBadge : t.account.mfaDisabledBadge}
           />
         </div>
 
-        <p className="text-body text-text-muted">
-          التحقق بخطوتين يوفر حماية إضافية لحسابك باستخدام تطبيق المصادقة (Authenticator app). يمنع
-          الوصول إلى حسابك حتى لو تم تسريب كلمة المرور.
-        </p>
+        <p className="text-body text-text-muted">{t.account.mfaExplanation}</p>
 
         {unenrollError && <AuthAlert code={unenrollError} />}
 
         {hasFactors && (
           <div className="space-y-4">
-            <h3 className="text-h3 font-semibold text-brand">الأجهزة المرتبطة:</h3>
+            <h3 className="text-h3 font-semibold text-brand">{t.account.linkedDevicesHeading}</h3>
             <div className="divide-y divide-border rounded-card border border-border bg-surface">
               {factors.map((factor) => (
                 <div key={factor.id} className="flex items-center justify-between p-4">
                   <div>
                     <p className="font-semibold text-text">
-                      {factor.friendly_name || 'تطبيق المصادقة'}
+                      {factor.friendly_name || t.account.defaultAuthApp}
                     </p>
                     <p className="text-caption text-text-muted">
-                      المعرف: <Ltr>{factor.id.slice(0, 8)}...</Ltr>
+                      {t.account.identifierLabel} <Ltr>{factor.id.slice(0, 8)}...</Ltr>
                     </p>
                   </div>
                   <Button
@@ -273,23 +269,22 @@ export default function AccountSecurityPage() {
                     onClick={() => handleUnenroll(factor.id)}
                     className="text-danger hover:bg-surface-tint"
                   >
-                    {processingId === factor.id ? 'جارٍ الإلغاء...' : 'إلغاء التفعيل'}
+                    {processingId === factor.id
+                      ? t.account.unenrollCancelling
+                      : t.account.unenrollAction}
                   </Button>
                 </div>
               ))}
             </div>
 
-            <p className="text-caption text-text-muted">
-              نوصي بإضافة جهاز ثانٍ احتياطي لضمان عدم فقدان الوصول إلى حسابك في حال فقدان جهازك
-              الأساسي.
-            </p>
+            <p className="text-caption text-text-muted">{t.account.mfaBackupTip}</p>
           </div>
         )}
 
         <div className="pt-2">
           <Link to="/account/mfa/enroll">
             <Button variant="primary">
-              {hasFactors ? 'إضافة جهاز مصادقة إضافي' : 'تفعيل التحقق بخطوتين الآن'}
+              {hasFactors ? t.account.addMfaDeviceAction : t.account.enableMfaAction}
             </Button>
           </Link>
         </div>
@@ -298,16 +293,13 @@ export default function AccountSecurityPage() {
       {/* Sign Out of All Devices Card */}
       <Card className="p-6 sm:p-8 space-y-4">
         <div>
-          <h2 className="text-h2 font-semibold text-text">تسجيل الخروج من كافة الأجهزة</h2>
-          <p className="mt-1 text-small text-text-muted">
-            إذا كنت تشك في نشاط غير مصرح به أو سجلت الدخول من أجهزة عامة، يمكنك إنهاء جميع الجلسات
-            النشطة فورًا.
-          </p>
+          <h2 className="text-h2 font-semibold text-text">{t.account.signOutAllTitle}</h2>
+          <p className="mt-1 text-small text-text-muted">{t.account.signOutAllDesc}</p>
         </div>
 
         <div>
           <Button variant="secondary" disabled={globalSignOutLoading} onClick={handleGlobalSignOut}>
-            {globalSignOutLoading ? 'جارٍ تسجيل الخروج...' : 'تسجيل الخروج من كافة الأجهزة'}
+            {globalSignOutLoading ? t.account.signingOutAll : t.account.signOutAllAction}
           </Button>
         </div>
       </Card>

@@ -8,8 +8,7 @@ import LanguageToggle from '../ui/LanguageToggle'
 const NavbarSearch = lazy(() => import('./NavbarSearch'))
 const NavbarQuickMenu = lazy(() => import('./NavbarQuickMenu'))
 
-const initials = (n?: string | null, e?: string | null) =>
-  (n || e || 'U').trim().slice(0, 2).toUpperCase()
+const initials = (n?: string | null, e?: string | null) => (n || e || 'U').slice(0, 2).toUpperCase()
 
 const pill =
   'h-11 items-center rounded-pill border border-border bg-surface-2 px-3 text-small hover:border-brand focus:ring-2'
@@ -38,7 +37,7 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
               src="/brand/logo.png"
               alt=""
               aria-hidden="true"
-              className="h-full w-full object-cover"
+              className="size-full object-cover"
               onError={(e) => (e.currentTarget.style.display = 'none')}
             />
           </div>
@@ -74,8 +73,6 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
               aria-hidden="true"
             >
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0" />

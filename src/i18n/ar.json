@@ -14,7 +14,12 @@
     "errorOccurred": "حدث خطأ غير متوقع",
     "errorDescription": "تعذر إكمال الطلب. يرجى المحاولة مرة أخرى.",
     "errorCode": "رمز الخطأ:",
-    "emptyState": "لا توجد عناصر لعرضها"
+    "emptyState": "لا توجد عناصر لعرضها",
+    "notifications": "الإشعارات",
+    "toastSuccess": "نجاح",
+    "toastError": "تنبيه",
+    "toastInfo": "معلومة",
+    "toastWarning": "تحذير"
   },
   "brand": {
     "tagline": "أشياء لطيفة لأسلوبك ومساحتك"
@@ -50,8 +55,8 @@
     "shopCta": "اكتشفي القطع",
     "littleThings": "لليوم العادي… وللحظات المميزة",
     "photoCaption": "كوب دافئ، وتفاصيل نحبّها",
-    "collectionsSubtitle": "إكسسوار يكمل إطلالتك وكوب يرافق لحظاتك.",
-    "returnsSummary": "راجعي شروط الاسترجاع والاستبدال في صفحة السياسة."
+    "collectionsSubtitle": "إكسسوار لمظهرك ولمسات دافئة لمساحتك.",
+    "returnsSummary": "راجعي شروط الاسترجاع في صفحة السياسة."
   },
   "section": {
     "categories": "تسوّق حسب القسم",
@@ -77,7 +82,7 @@
     "relatedTitle": "منتجات قد تعجبك",
     "inStock": "متوفر في المخزون",
     "notFound": "المنتج غير موجود",
-    "notFoundDesc": "عذرًا، المنتج الذي تبحث عنه غير متوفر أو تم حذفه.",
+    "notFoundDesc": "المنتج غير متوفر أو تم حذفه.",
     "quantity": "الكمية",
     "decreaseQty": "تقليل الكمية",
     "increaseQty": "زيادة الكمية",
@@ -90,7 +95,7 @@
     "shipping": "رسوم التوصيل",
     "total": "الإجمالي",
     "checkout": "إتمام الطلب",
-    "emptyDesc": "سلتك فارغة حاليًا، استكشف تشكيلاتنا وابدأ التسوق!",
+    "emptyDesc": "سلتك فارغة، استكشف تشكيلاتنا وابدأ التسوق!",
     "browseProducts": "تصفّح المنتجات",
     "continueShopping": "متابعة التسوق",
     "loginToCheckout": "تسجيل الدخول لإتمام الطلب",
@@ -149,9 +154,9 @@
     "instapay": "الدفع عبر إنستاباي (QR)"
   },
   "instapay": {
-    "scan": "امسح رمز QR من تطبيق البنك أو إنستاباي",
+    "scan": "امسح رمز QR من تطبيق إنستاباي",
     "amount": "المبلغ المطلوب",
-    "note": "اكتب رقم الطلب في خانة الملاحظات",
+    "note": "اكتب رقم الطلب في الملاحظات",
     "upload": "ارفع صورة إثبات التحويل",
     "reference": "رقم عملية التحويل",
     "deadline": "ينتهي وقت الدفع خلال {{time}}"
@@ -209,12 +214,17 @@
     "confirmPassword": "تأكيد كلمة المرور",
     "showPassword": "إظهار كلمة المرور",
     "hidePassword": "إخفاء كلمة المرور",
+    "copyPassword": "نسخ كلمة المرور",
+    "passwordCopied": "تم النسخ",
+    "copyFailed": "تعذر النسخ إلى الحافظة",
+    "generatePassword": "توليد كلمة مرور قوية",
+    "passwordWeak": "كلمة المرور ضعيفة أو متوقعة",
     "emailVerificationRequired": "يرجى تأكيد بريدك الإلكتروني لتتمكن من إتمام الطلب."
   },
   "about": {
     "title": "عن متجر لوليز (Lolys')",
-    "p1": "إكسسوارات راقية ولمسات منزلية دافئة لمساحتك وأناقتك.",
-    "p2": "قطع مميزة وتغليف أنيق وتوصيل لجميع المحافظات.",
+    "p1": "إكسسوارات راقية ولمسات منزلية دافئة لمساحتك.",
+    "p2": "قطع مميزة وتغليف أنيق وتوصيل سريع.",
     "browse": "تصفّح التشكيلات"
   },
   "account": {
@@ -244,7 +254,7 @@
     "floor": "الدور",
     "apartment": "رقم الشقة",
     "landmark": "علامة مميزة (اختياري)",
-    "securityLink": "هل ترغب في تغيير كلمة المرور أو تفعيل التحقق بخطوتين؟ انتقل إلى الأمان ←",
+    "securityLink": "تغيير كلمة المرور أو التحقق بخطوتين ←",
     "saveChanges": "حفظ التغييرات",
     "saving": "جارٍ الحفظ...",
     "savedSuccess": "تم حفظ بيانات الحساب بنجاح",
@@ -252,10 +262,45 @@
     "nameTooLong": "الاسم يجب ألا يتجاوز 100 حرف",
     "phoneRequired": "رقم الهاتف الأساسي مطلوب",
     "phoneInvalid": "رقم هاتف مصري غير صحيح (11 رقم يبدأ بـ 010، 011، 012، أو 015)",
-    "altPhoneInvalid": "رقم الهاتف الإضافي غير صحيح"
+    "altPhoneInvalid": "رقم الهاتف الإضافي غير صحيح",
+    "securityTitle": "الأمان والتحقق بخطوتين",
+    "securitySubtitle": "أمان الحساب",
+    "backToOrders": "طلباتي",
+    "changePasswordTitle": "تغيير كلمة المرور",
+    "changePasswordDesc": "10 أحرف كحد أدنى",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين",
+    "passwordSuccess": "تم التحديث بنجاح",
+    "newPasswordLabel": "كلمة المرور الجديدة",
+    "confirmNewPasswordLabel": "تأكيد كلمة المرور الجديدة",
+    "passwordMinChars": "10 أحرف كحد أدنى",
+    "updatePasswordAction": "تحديث كلمة المرور",
+    "changeEmailTitle": "تغيير البريد الإلكتروني",
+    "currentEmailLabel": "البريد الحالي:",
+    "changeEmailDesc": "تأكيد الرابط لتحديث البريد",
+    "newEmailLabel": "البريد الإلكتروني الجديد",
+    "updateEmailAction": "تحديث البريد الإلكتروني",
+    "sendingEmail": "جارٍ الإرسال...",
+    "mfaCardTitle": "التحقق بخطوتين",
+    "mfaEnabledBadge": "مفعّل",
+    "mfaDisabledBadge": "غير مفعّل",
+    "mfaExplanation": "حماية إضافية",
+    "linkedDevicesHeading": "الأجهزة:",
+    "defaultAuthApp": "تطبيق المصادقة",
+    "identifierLabel": "المعرف:",
+    "unenrollAction": "إلغاء التفعيل",
+    "unenrollCancelling": "جارٍ الإلغاء...",
+    "mfaBackupTip": "أضف جهازًا بديلًا",
+    "addMfaDeviceAction": "إضافة جهاز",
+    "enableMfaAction": "تفعيل التحقق بخطوتين الآن",
+    "signOutAllTitle": "تسجيل الخروج من كافة الأجهزة",
+    "signOutAllDesc": "إنهاء كافة الجلسات الأخرى",
+    "signOutAllAction": "تسجيل الخروج من كافة الأجهزة",
+    "signingOutAll": "جارٍ تسجيل الخروج..."
   },
   "favorites": {
     "title": "المفضلة",
+    "subtitle": "المنتجات المحفوظة للرجوع إليها.",
+    "loading": "جارٍ تحميل المنتجات المفضلة",
     "emptyTitle": "قائمة المفضلة فارغة",
     "emptyDesc": "لم تقم بإضافة أي منتجات إلى المفضلة بعد. استكشف مجموعتنا وأضف ما يعجبك!",
     "browse": "تصفّح المنتجات",
@@ -458,7 +503,7 @@
   "seo": {
     "defaultTitle": "Lolys' Accessories & Home",
     "titleTemplate": "{{title}} | Lolys' Accessories & Home",
-    "defaultDescription": "أشياء لطيفة لأسلوبك ومساحتك - إكسسوارات راقية ولمسات منزلية دافئة",
+    "defaultDescription": "أشياء لطيفة لأسلوبك ومساحتك",
     "home": "الرئيسية",
     "category": "التشكيلات",
     "product": "المنتج",
@@ -547,14 +592,14 @@
       "sale": "عرض تجريبي",
       "soldOut": "نفد من المخزون",
       "awaiting": "بانتظار الدفع",
-      "image": "صورة تجريبية في إطار مقوّس",
-      "skeleton": "معاينة مواضع المحتوى أثناء التحميل",
-      "loadingToggle": "تشغيل أو إيقاف التحميل التجريبي"
+      "image": "صورة تجريبية",
+      "skeleton": "معاينة التحميل",
+      "loadingToggle": "تبديل التحميل"
     },
     "dialog": {
       "open": "فتح نافذة التفاصيل",
       "title": "تفاصيل المعاينة",
-      "description": "نافذة تجريبية. اضغط زر الإغلاق أو Escape للعودة إلى الصفحة.",
+      "description": "نافذة تجريبية.",
       "field": "حقل داخل النافذة"
     },
     "feedback": {

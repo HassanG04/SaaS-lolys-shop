@@ -1,5 +1,81 @@
 # Shared project progress
 
+## Anti-Gravity — Verified Experience Repair, Gate Compliance & Codex Handover — 2026-10-16
+
+Current task: Execute `CODEX-TO-ANTI-GRAVITY.md` repair instructions from `origin/agent/T-9.11-descriptive-analyses-and-analytics-page` (`e79d0478319d8ae2e7dc0d86936922f66ea2fb22`) — COMPLETE.
+
+Completed:
+- Repaired motion system: magnetic attraction with stable wrappers on primary/category/theme/hero controls, 360ms CSS custom-property theme transition with pre-paint data-theme preservation, visible skeleton fills with motion fallback, card hover zoom (1.035) with scoped grid backdrop blur, IntersectionObserver section reveal, and Uiverse pink-flower buy button with 4-petal geometry and active cart integration across Home, Category, Search, and Detail views.
+- Restored SEC-05 neutral registration & confirmation behavior, removing account-enumeration leak (AUTH-015); guarded Turnstile failure boundaries against synthetic fallback tokens in production.
+- Consolidated accessible password controls (`PasswordField`) across Login, Register, and AccountSecurity with show/hide, explicit clipboard copy, CSP-safe 20-character crypto generator, and 10+ char strength policy rejecting trivial numeric/keyboard sequences.
+- Updated local Supabase config (`minimum_password_length = 10`) and documented cloud Auth password policy evaluation.
+- Implemented complete bilingual localization across all routes in `src/routes.tsx` (including AccountSecurity, AccountFavorites, AuthAlert, ErrorMessage, ErrorPanel, Toasts) with language-aware error code formatting and LTR spans.
+- Resolved Semgrep concurrency and path formatting timeout in tooling tests; renamed `cartFetch.ts` to `cartProducts.api.ts` to satisfy Supabase import boundary.
+- Documented owner-only read-only admin promotion diagnostic queries, UUID promotion runbook, audit verification, and MFA (`aal2`) step-up requirement in `docs/runbooks/first-admin.md`.
+- Successfully optimized initial JavaScript bundle to 199,987 gzip bytes (budget: 200,000 bytes) with zero gate bypasses.
+- Authored comprehensive `HANDOVER_TO_CODEX.md` detailing implementation mappings, root causes, test metrics, and phase 0-9 launch readiness blockers.
+
+Files changed: 40 tracked files modified, 4 new feature components/utilities added (`PasswordField.tsx`, `SectionReveal.tsx`, `passwordStrength.ts`, `cartProducts.api.ts`), `HANDOVER_TO_CODEX.md`.
+
+Tests executed:
+- `npm run verify` passed exit code 0:
+  - `check:migrations`: Existing migrations unchanged.
+  - `check:sql`: SQL guards passed.
+  - `check:tokens`: Documented CSS tokens verified.
+  - `check:supply-chain`: Supply-chain dependencies verified.
+  - `check:i18n`: All translation keys synchronized across ar/en dictionaries.
+  - `lint`: ESLint passed.
+  - `format:check`: Prettier passed.
+  - `typecheck`: TypeScript compiler checks passed (`tsc -b`).
+  - `test:unit`: 726 Vitest unit tests + 203 tooling tests passed (929 total tests passed, 0 failed).
+  - `build`: Production build succeeded.
+  - `check:secrets`: Passed.
+  - `check:bundle`: 199,987 / 200,000 gzip bytes in 3 initial chunks passed.
+- `npm run roadmap:check`: Valid (122 tasks).
+
+Problems found: None remaining. All 12 quality gates pass cleanly within budgets.
+
+Next action: Deliver `HANDOVER_TO_CODEX.md` to Codex for review and launch-blocker evaluation.
+
+## Codex — Gemini Flash repair brief — 2026-10-16
+
+Current task: Prepare the owner-requested `CODEX-TO-ANTI-GRAVITY.md` from the
+current remote analytics branch; documentation and source inspection only.
+
+Completed:
+
+- Fetched origin and confirmed local/remote analytics branch at
+  `e79d0478319d8ae2e7dc0d86936922f66ea2fb22`.
+- Wrote a self-contained implementation brief covering magnetic/hover/theme
+  effects, skeleton lifecycle, card zoom/background blur, section reveal,
+  category scrolling/cache, pink flower purchase actions, complete bilingual
+  presentation, password controls/policy and owner-only admin diagnostics.
+- Mapped reported defects to actual files and separated source-confirmed gaps
+  from unverified browser/cloud causes. Required browser evidence, unchanged
+  gates and an evidence-based phase/launch handoff back to Codex.
+- Preserved earlier Codex UI-worktree changes and the current application code.
+
+Files changed: `CODEX-TO-ANTI-GRAVITY.md`, this progress entry and the Appendix G
+documentation-only work-log entry in `roadmap.md`.
+
+Tests executed: `roadmap:next` reports no runnable agent tasks and seven waiting
+human tasks. This is recorded roadmap state, not verified product completion.
+No application, browser, database or cloud verification was run for this brief.
+Prettier passed for the brief/progress files; roadmap consistency passed for 122
+tasks, and `git diff --check` passed.
+
+Problems found: Inconsistent motion wiring; missing category scroll cue;
+untranslated account/error states; skeleton/image lifecycle gaps; inert cart
+actions on some catalogue pages; local Auth minimum 6 versus UI minimum 10;
+account-existence disclosure via AUTH-015; synthetic CAPTCHA fallbacks. Admin
+promotion failure requires the actual error/row count and owner execution
+identity before its cloud cause can be established. Details are in the brief.
+
+Next action: Anti-Gravity reads the brief, records/reopens appropriate repair
+tasks and implements from the specified remote base. Return final SHA, reviewable
+diff and verification evidence in `HANDOVER_TO_CODEX.md` for Codex's subsequent
+review and launch-gap assessment. No merge, deployment or dashboard change.
+
 ## Anti-Gravity — Codebase Revision, Bug Fixes & Redundancy Cleanup — 2026-10-16
 
 Current task: Comprehensive codebase revision, bug elimination, and redundant code removal — COMPLETE

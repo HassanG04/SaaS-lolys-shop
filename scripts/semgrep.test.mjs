@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const projectRoot = fileURLToPath(new URL('..', import.meta.url))
+const projectRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
 const rulesFile = path.join(projectRoot, '.semgrep', 'rules.yml')
 
 export function findSemgrepBin() {
@@ -25,6 +25,7 @@ export function findSemgrepBin() {
 
 const semgrepBin = findSemgrepBin()
 const skipOption = !semgrepBin ? 'Semgrep binary not installed in this environment' : false
+const testOpts = { skip: skipOption, concurrency: false }
 
 function runSemgrepOnCode(code, filename = 'sample.tsx') {
   const dir = mkdtempSync(path.join(tmpdir(), 'semgrep-planted-'))
@@ -61,7 +62,7 @@ function runSemgrepOnCode(code, filename = 'sample.tsx') {
 
 test(
   'planted violation of dangerouslySetInnerHTML fails with forbid-dangerously-set-inner-html',
-  { skip: skipOption },
+  testOpts,
   () => {
     const code = `
     import React from 'react';
@@ -78,7 +79,7 @@ test(
   },
 )
 
-test('planted violation of innerHTML fails with forbid-inner-html', { skip: skipOption }, () => {
+test('planted violation of innerHTML fails with forbid-inner-html', testOpts, () => {
   const code = `
     export function injectHtml(el: HTMLElement) {
       el.innerHTML = '<p>unsafe</p>';
@@ -92,7 +93,7 @@ test('planted violation of innerHTML fails with forbid-inner-html', { skip: skip
   )
 })
 
-test('planted violation of eval fails with forbid-eval', { skip: skipOption }, () => {
+test('planted violation of eval fails with forbid-eval', testOpts, () => {
   const code = `
     export function runDynamic(str: string) {
       return eval(str);
@@ -103,27 +104,23 @@ test('planted violation of eval fails with forbid-eval', { skip: skipOption }, (
   assert.ok(ruleIds.includes('forbid-eval'), `Expected forbid-eval, got ${ruleIds.join(', ')}`)
 })
 
-test(
-  'planted violation of new Function fails with forbid-new-function',
-  { skip: skipOption },
-  () => {
-    const code = `
+test('planted violation of new Function fails with forbid-new-function', testOpts, () => {
+  const code = `
     export function makeFunc(body: string) {
       return new Function('a', 'b', body);
     }
   `
-    const { ruleIds, status } = runSemgrepOnCode(code, 'func.ts')
-    assert.equal(status, 1, 'Planted violation must exit with failure')
-    assert.ok(
-      ruleIds.includes('forbid-new-function'),
-      `Expected forbid-new-function, got ${ruleIds.join(', ')}`,
-    )
-  },
-)
+  const { ruleIds, status } = runSemgrepOnCode(code, 'func.ts')
+  assert.equal(status, 1, 'Planted violation must exit with failure')
+  assert.ok(
+    ruleIds.includes('forbid-new-function'),
+    `Expected forbid-new-function, got ${ruleIds.join(', ')}`,
+  )
+})
 
 test(
   'planted violation of rendering error.message fails with forbid-render-error-message',
-  { skip: skipOption },
+  testOpts,
   () => {
     const code = `
     import React from 'react';
@@ -142,7 +139,7 @@ test(
 
 test(
   'planted violation of unapproved fetch host fails with forbid-unapproved-fetch-host',
-  { skip: skipOption },
+  testOpts,
   () => {
     const malicious = `
     export async function exfiltrate(data: unknown) {
@@ -175,39 +172,31 @@ test(
   },
 )
 
-test(
-  'planted violation of service_role mention fails with forbid-service-role',
-  { skip: skipOption },
-  () => {
-    const code = `
+test('planted violation of service_role mention fails with forbid-service-role', testOpts, () => {
+  const code = `
     export const config = {
       role: 'service_role',
     };
   `
-    // Note: rule paths include 'src/' and 'public/'
-    const { ruleIds, status } = runSemgrepOnCode(code, 'src/secrets.ts')
-    assert.equal(status, 1, 'Planted violation must exit with failure')
-    assert.ok(
-      ruleIds.includes('forbid-service-role'),
-      `Expected forbid-service-role, got ${ruleIds.join(', ')}`,
-    )
-  },
-)
+  // Note: rule paths include 'src/' and 'public/'
+  const { ruleIds, status } = runSemgrepOnCode(code, 'src/secrets.ts')
+  assert.equal(status, 1, 'Planted violation must exit with failure')
+  assert.ok(
+    ruleIds.includes('forbid-service-role'),
+    `Expected forbid-service-role, got ${ruleIds.join(', ')}`,
+  )
+})
 
-test(
-  'repository codebase passes Semgrep static analysis with zero violations',
-  { skip: skipOption },
-  () => {
-    const result = spawnSync(
-      semgrepBin,
-      ['scan', '--config', rulesFile, '--error', '--severity', 'ERROR', projectRoot],
-      { encoding: 'utf8', timeout: 300_000 },
-    )
+test('repository codebase passes Semgrep static analysis with zero violations', testOpts, () => {
+  const result = spawnSync(
+    semgrepBin,
+    ['scan', '--config', rulesFile, '--error', '--severity', 'ERROR', projectRoot],
+    { encoding: 'utf8', timeout: 300_000 },
+  )
 
-    assert.equal(
-      result.status,
-      0,
-      `Semgrep found security violations in repository:\n${result.stdout}\n${result.stderr}`,
-    )
-  },
-)
+  assert.equal(
+    result.status,
+    0,
+    `Semgrep found security violations in repository:\n${result.stdout}\n${result.stderr}`,
+  )
+})

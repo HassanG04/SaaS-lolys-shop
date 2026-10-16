@@ -45,13 +45,15 @@ export async function signInApi(credentials: SignInCredentials): Promise<AuthAct
   }
 }
 
+import { validatePasswordStrength } from './passwordStrength'
+
 /**
  * Registers a new account. Always returns neutral AUTH-010 unless Turnstile or password validation fails.
  */
 export async function signUpApi(credentials: SignUpCredentials): Promise<AuthActionResult> {
   const { email, password, fullName, captchaToken } = credentials
 
-  if (password.length < 10) {
+  if (!validatePasswordStrength(password).valid) {
     const message = await resolveAuthMessage('AUTH-008')
     return { success: false, code: 'AUTH-008', message }
   }
@@ -69,13 +71,18 @@ export async function signUpApi(credentials: SignUpCredentials): Promise<AuthAct
     if (error) {
       const { mapAuthError, getAuthMessage } = await import('./authErrors')
       const mapped = mapAuthError(error)
+      // Under SEC-05 enumeration protection, user_already_exists is treated as neutral AUTH-010
+      if (mapped === 'AUTH-010') {
+        return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+      }
       return { success: false, code: mapped, message: getAuthMessage(mapped) }
     }
 
-    // In Supabase Auth, when email is already registered, it returns an empty identities array
+    // In Supabase Auth, when email is already registered, it returns an empty identities array.
+    // Under SEC-05 enumeration protection, this returns the same neutral AUTH-010 outcome.
     if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-      const { getAuthMessage } = await import('./authErrors')
-      return { success: false, code: 'AUTH-015', message: getAuthMessage('AUTH-015') }
+      const message = await resolveAuthMessage('AUTH-010')
+      return { success: true, code: 'AUTH-010', message }
     }
 
     const message = await resolveAuthMessage('AUTH-010')
@@ -83,6 +90,9 @@ export async function signUpApi(credentials: SignUpCredentials): Promise<AuthAct
   } catch (err) {
     const { mapAuthError, getAuthMessage } = await import('./authErrors')
     const mapped = mapAuthError(err)
+    if (mapped === 'AUTH-010') {
+      return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    }
     return { success: false, code: mapped, message: getAuthMessage(mapped) }
   }
 }
@@ -250,7 +260,7 @@ export async function unenrollFactorApi(factorId: string): Promise<AuthActionRes
  * Requires recent sign-in; returns AUTH-007 if stale, AUTH-008 if under 10 chars.
  */
 export async function updatePasswordApi(password: string): Promise<AuthActionResult> {
-  if (password.length < 10) {
+  if (!validatePasswordStrength(password).valid) {
     const message = await resolveAuthMessage('AUTH-008')
     return { success: false, code: 'AUTH-008', message }
   }

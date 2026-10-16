@@ -1,5 +1,10 @@
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <span aria-hidden="true" className={`block rounded-chip ui-skeleton ${className}`} />
+  return (
+    <span
+      aria-hidden="true"
+      className={`block min-h-4 min-w-8 rounded-chip ui-skeleton bg-surface-tint ${className}`}
+    />
+  )
 }
 
 export function SkeletonCard() {
