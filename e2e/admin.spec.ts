@@ -69,6 +69,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await expect(page.getByRole('heading', { name: 'إعداد التحقق بخطوتين (TOTP)' })).toBeVisible()
 
     // Step C: Extract base32 secret and verify enrollment
+    await page.getByRole('button', { name: 'إعداد تطبيق المصادقة' }).click()
     const secretContainer = page.locator('div.select-all')
     await expect(secretContainer).toBeVisible({ timeout: 10000 })
     const secret = (await secretContainer.innerText()).trim()

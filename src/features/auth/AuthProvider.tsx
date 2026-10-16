@@ -78,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let isMounted = true
+    let authRefreshTimer: ReturnType<typeof setTimeout> | undefined
 
     // Initial session retrieval
     void supabase.auth
@@ -102,16 +103,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Subscribe to ongoing auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
       if (!isMounted) return
       setSession(newSession)
       setUser(newSession?.user ?? null)
-      await loadUserData(newSession?.user ?? null)
-      setLoading(false)
+      // Auth notifications run inside the SDK lock. Fetching Auth data here and
+      // awaiting it deadlocks MFA verification; refresh after the callback returns.
+      clearTimeout(authRefreshTimer)
+      authRefreshTimer = setTimeout(() => {
+        if (!isMounted) return
+        void loadUserData(newSession?.user ?? null).finally(() => {
+          if (isMounted) setLoading(false)
+        })
+      }, 0)
     })
 
     return () => {
       isMounted = false
+      clearTimeout(authRefreshTimer)
       subscription.unsubscribe()
     }
   }, [loadUserData])

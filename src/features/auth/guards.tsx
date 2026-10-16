@@ -62,7 +62,7 @@ export function RequireAdmin({ children }: { children: ReactNode }) {
   const isChallengePath = currentPath.includes('/admin/mfa/challenge')
 
   // Ladder step 1: If no TOTP factors are enrolled, must enroll first
-  if (factors.length === 0) {
+  if (!factors.some((factor) => factor.status === 'verified')) {
     if (!isEnrollPath) {
       return <Navigate to="/admin/mfa/enroll" replace />
     }

@@ -70,7 +70,7 @@ Run the promotion using the verified UUID with an explicit `RETURNING` clause:
 update public.profiles
    set role = 'admin'
  where id = '00000000-0000-0000-0000-000000000000'::uuid
-returning id, role, updated_at;
+returning id, role;
 ```
 
 Confirm that the query returns 1 row with `role = 'admin'`.
@@ -81,16 +81,17 @@ Check that the promotion was audited and the profile state is updated:
 
 ```sql
 -- Verify profile state
-select p.id, u.email, p.full_name, p.role, p.updated_at
+select p.id, u.email, p.full_name, p.role
   from public.profiles p
   join auth.users u on u.id = p.id
  where p.id = '00000000-0000-0000-0000-000000000000'::uuid;
 
 -- Verify audit log entry
-select event_type, record_id, old_data, new_data, performed_by, created_at
+select action, entity, entity_id, "old", "new", actor, actor_role, at
   from public.audit_log
- where record_id = '00000000-0000-0000-0000-000000000000'::uuid
- order by created_at desc
+ where entity = 'profiles'
+   and entity_id = '00000000-0000-0000-0000-000000000000'
+ order by at desc
  limit 5;
 ```
 
@@ -98,7 +99,7 @@ select event_type, record_id, old_data, new_data, performed_by, created_at
 
 1. The promoted user must sign out and sign back in on the web application to refresh JWT claims and client profile state.
 2. Under Lolys' admin security architecture (T-1.15), all administrative endpoints and RLS mutations require `aal2` (MFA step-up).
-3. The user must navigate to `/admin/mfa/enroll` or `/account/security` to enroll a TOTP authenticator app.
+3. The user must navigate to `/admin` or `/account/security`. If no verified authenticator exists, select **Set up authenticator**, scan the QR or enter the manual key in a trusted authenticator app, then enter its current six-digit code. Restarting setup replaces only unfinished Lolys factors; verified factors are preserved.
 4. Verify the TOTP challenge code (`/admin/mfa/challenge`).
 5. Once verified at `aal2`, administrative routes and database access are fully authorized.
 
@@ -112,7 +113,7 @@ To revoke administrator privileges, the database owner executes:
 update public.profiles
    set role = 'customer'
  where id = '00000000-0000-0000-0000-000000000000'::uuid
-returning id, role, updated_at;
+returning id, role;
 ```
 
 ---

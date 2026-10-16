@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { AuthErrorCode } from './types'
 import { getAuthMessage } from './authErrors'
+import { useOptionalLanguage } from '../../i18n/LanguageProvider'
 
 export interface AuthAlertProps {
   code: AuthErrorCode
@@ -15,7 +16,8 @@ export interface AuthAlertProps {
  */
 export function AuthAlert({ code, className = '' }: AuthAlertProps): ReactNode {
   const isNeutral = code === 'AUTH-010'
-  const isEn = typeof document !== 'undefined' && document.documentElement.lang === 'en'
+  const language = useOptionalLanguage()
+  const isEn = language ? language.lang === 'en' : document.documentElement.lang === 'en'
   const message = getAuthMessage(code, isEn ? 'en' : 'ar')
 
   if (isNeutral) {

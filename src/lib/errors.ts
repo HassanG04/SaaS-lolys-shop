@@ -16,6 +16,7 @@ export const ERROR_CATALOGUE = {
   'AUTH-012': 'تعذّر إرسال الرسالة الآن. حاول بعد قليل.',
   'AUTH-013': 'كلمتا المرور غير متطابقتين. تأكد من تطابقهما.',
   'AUTH-014': 'يرجى تأكيد بريدك الإلكتروني لتتمكن من إتمام الطلب.',
+  'AUTH-016': 'تعذّر إعداد تطبيق المصادقة. أعد المحاولة أو سجّل الدخول من جديد.',
 
   // ORD: orders
   'ORD-001': 'سلتك فارغة.',
@@ -110,6 +111,7 @@ export const ERROR_CATALOGUE_EN: Record<ErrorCode, string> = {
   'AUTH-012': 'Unable to send message right now. Please try again shortly.',
   'AUTH-013': 'Passwords do not match. Please verify both fields.',
   'AUTH-014': 'Please verify your email address to complete your order.',
+  'AUTH-016': 'Unable to set up your authenticator. Try again or sign in again.',
 
   // ORD: orders
   'ORD-001': 'Your cart is empty.',

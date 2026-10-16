@@ -184,18 +184,30 @@ setApiDelegate(self)
  * Enrolls a new TOTP factor returning QR code, manual key secret, and URI.
  */
 export async function enrollTotpApi(
-  friendlyName?: string,
+  friendlyName = 'Lolys Authenticator',
 ): Promise<{ data?: MfaEnrollResult; error?: AuthErrorCode }> {
   try {
+    // An explicit setup attempt replaces only unfinished factors created by this
+    // flow (including the legacy name). Never remove a verified authenticator.
+    const existing = await supabase.auth.mfa.listFactors()
+    if (existing.error || !existing.data) return { error: 'AUTH-016' }
+    for (const factor of existing.data.all) {
+      if (
+        factor.factor_type === 'totp' &&
+        factor.status === 'unverified' &&
+        (factor.friendly_name === friendlyName || factor.friendly_name === 'Lolys Admin')
+      ) {
+        const removed = await supabase.auth.mfa.unenroll({ factorId: factor.id })
+        if (removed.error) return { error: 'AUTH-016' }
+      }
+    }
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
       issuer: "Lolys' Accessories",
       friendlyName,
     })
     if (error || !data) {
-      const { mapAuthError } = await import('./authErrors')
-      const code = mapAuthError(error)
-      return { error: code }
+      return { error: 'AUTH-016' }
     }
     return {
       data: {
@@ -208,10 +220,8 @@ export async function enrollTotpApi(
         },
       },
     }
-  } catch (err) {
-    const { mapAuthError } = await import('./authErrors')
-    const code = mapAuthError(err)
-    return { error: code }
+  } catch {
+    return { error: 'AUTH-016' }
   }
 }
 

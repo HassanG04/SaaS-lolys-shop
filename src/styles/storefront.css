@@ -349,7 +349,7 @@
       animation: flower-spin-6 15s linear 1s infinite;
     }
     .flower-button:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) .flower-petal {
-      transform: scale(1.5);
+      scale: 1.5;
     }
   }
 
@@ -413,7 +413,8 @@
     background-color: var(--color-pink-val);
     border-radius: var(--radius-petal);
     transform-origin: center;
-    transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+    scale: 1;
+    transition: scale 800ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .flower-petal:nth-child(1) {
     transform: rotate(0deg);

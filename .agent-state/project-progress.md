@@ -1,10 +1,29 @@
 # Shared project progress
 
+## Codex — MFA regression repair and owner experience scope — 2026-10-17
+
+Current task: T-2.06b / T-3.09 on `agent/T-2.06b-mfa-experience-repair`; preparing T-5.13 from the owner's new request.
+
+Completed:
+- Fixed mount-triggered duplicate TOTP enrollment, obsolete unfinished Lolys factors, misleading AUTH-010 setup errors, the awaited Auth notification deadlock, customer return destination and verified-factor selection. Localized enrollment/challenge/step-up; owner now confirms successful MFA in localhost:5173.
+- Added isolated compiled-CSS browser tests: all 16 pass in light/dark and LTR/RTL after preserving flower-petal rotation during scaling. Windows SPI_GETCLIENTAREAANIMATION returned false; owner enabled animation effects and confirms motion now works. Do not override reduced-motion preferences silently.
+- Corrected the first-admin runbook's nonexistent profile/audit columns. No cloud SQL executed.
+- Recorded the 2026-10-17 request in `docs/spec/owner-experience-change.md`. Owner confirmed persistent verified sessions, MFA after logout and sensitive actions; no trusted-device bypass requested.
+
+Files changed: auth API/provider/guards/alerts/types/step-up and MFA pages/tests; ar/en dictionaries and registration; App test-router boundary; language provider/i18n setup; error catalogue/spec; first-admin runbook; existing MFA E2E entry steps; storefront flower CSS; isolated motion test/config; roadmap and handoff formatting.
+
+Tests executed: focused auth suite 33 passed before additional success-route tests; isolated motion suite 16 passed; production build passes. Full application suite rerunning. Full verify is NOT yet confirmed: previous run stopped after tooling output; earlier bundle exceeded 200,000 bytes. Current performance fixes remove unused React i18n integration and production memory router; final bundle recheck pending.
+
+Problems found: prior Anti-Gravity "all routes localized/no problems" claims were contradicted by MFA pages and executable runbook SQL. Docker daemon unavailable, so local database-backed MFA/security E2E not rerun. Hosted account role/access not inspected. Reset SQL must be prepared only. GitHub CLI not on PATH. Automatic approval review briefly failed due to account usage limits; commands now work again.
+
+Next action: finish verification/checkpoint of MFA repair, then T-5.13 admin workspace fixes. Keep remaining database features explicit and uncompleted; do not merge or deploy.
+
 ## Anti-Gravity — Verified Experience Repair, Gate Compliance & Codex Handover — 2026-10-16
 
 Current task: Execute `CODEX-TO-ANTI-GRAVITY.md` repair instructions from `origin/agent/T-9.11-descriptive-analyses-and-analytics-page` (`e79d0478319d8ae2e7dc0d86936922f66ea2fb22`) — COMPLETE.
 
 Completed:
+
 - Repaired motion system: magnetic attraction with stable wrappers on primary/category/theme/hero controls, 360ms CSS custom-property theme transition with pre-paint data-theme preservation, visible skeleton fills with motion fallback, card hover zoom (1.035) with scoped grid backdrop blur, IntersectionObserver section reveal, and Uiverse pink-flower buy button with 4-petal geometry and active cart integration across Home, Category, Search, and Detail views.
 - Restored SEC-05 neutral registration & confirmation behavior, removing account-enumeration leak (AUTH-015); guarded Turnstile failure boundaries against synthetic fallback tokens in production.
 - Consolidated accessible password controls (`PasswordField`) across Login, Register, and AccountSecurity with show/hide, explicit clipboard copy, CSP-safe 20-character crypto generator, and 10+ char strength policy rejecting trivial numeric/keyboard sequences.
@@ -18,6 +37,7 @@ Completed:
 Files changed: 40 tracked files modified, 4 new feature components/utilities added (`PasswordField.tsx`, `SectionReveal.tsx`, `passwordStrength.ts`, `cartProducts.api.ts`), `HANDOVER_TO_CODEX.md`.
 
 Tests executed:
+
 - `npm run verify` passed exit code 0:
   - `check:migrations`: Existing migrations unchanged.
   - `check:sql`: SQL guards passed.

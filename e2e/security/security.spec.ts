@@ -374,6 +374,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await page.waitForURL('**/admin/mfa/enroll', { timeout: 15000 })
 
     const secretContainer = page.locator('div.select-all')
+    await page.getByRole('button', { name: 'إعداد تطبيق المصادقة' }).click()
     await expect(secretContainer).toBeVisible({ timeout: 10000 })
     adminTotpSecret = (await secretContainer.innerText()).trim()
 

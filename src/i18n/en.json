@@ -1,4 +1,24 @@
 {
+  "mfa": {
+    "enrollTitle": "Set up two-factor authentication (TOTP)",
+    "enrollDescription": "Protect your account with an authenticator app such as Google Authenticator or 1Password. Starting setup replaces only unfinished setup attempts.",
+    "qrAlt": "Authenticator setup QR code",
+    "manualKey": "Manual setup key:",
+    "secondDevice": "We recommend setting up an additional trusted device to avoid losing access.",
+    "appCode": "Code from your authenticator (6 digits)",
+    "code": "Verification code (6 digits)",
+    "verifying": "Verifying…",
+    "activate": "Confirm and activate",
+    "start": "Set up authenticator",
+    "retry": "Retry setup",
+    "challengeTitle": "Two-factor authentication",
+    "challengeDescription": "Enter the 6-digit code from your authenticator app to continue.",
+    "continue": "Verify code and continue",
+    "stepUpTitle": "Confirm your identity (sensitive action)",
+    "stepUpDescription": "This action requires a recent two-factor confirmation to protect the shop.",
+    "stepUpContinue": "Confirm and continue",
+    "cancel": "Cancel"
+  },
   "theme": {
     "dark": "Dark Theme",
     "switchToLight": "Switch to light theme",

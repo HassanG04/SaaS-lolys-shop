@@ -102,6 +102,7 @@ async function loginAdmin(page: Page) {
       .catch(() => false))
   ) {
     const secretContainer = page.locator('div.select-all')
+    await page.getByRole('button', { name: 'إعداد تطبيق المصادقة' }).click()
     await expect(secretContainer).toBeVisible({ timeout: 10000 })
     const secret = (await secretContainer.innerText()).trim()
     const totpCode = generateTotp(secret)
