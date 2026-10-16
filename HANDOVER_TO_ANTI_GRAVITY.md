@@ -1,4 +1,41 @@
-# Database integration handover — 2026-10-15
+# Current handover — responsive repairs — 2026-10-17
+
+This section supersedes the historical handover below. Continue the root checkout
+on `agent/T-5.13d-responsive-evidence`; do not restart from the old integration
+worktree. Read `.agent-state/project-progress.md`, `git status`, `git diff` and
+`docs/handoff/RESPONSIVE-REPAIR.md` first.
+
+Current objective: review the verified mobile navigation/switch repairs and
+continue remaining owner experience changes without weakening MFA/RLS.
+
+Completed checkpoints: `52dfb0b` MFA; `a561e3c` admin workspace; `5580295`
+review navigation; `169b452` responsive implementation. Regression evidence is
+on the current child branch. Full verify passed (748 app + 203 tooling), all
+28 isolated browser checks passed; no DB/remote/launch success is implied.
+
+Current files: `src/components/layout/{Layout,Navbar,NavbarQuickMenu,SocialMenuLinks}.tsx`,
+`src/components/ui/ToggleSwitch.tsx`, `src/features/admin/{AdminHeader,AdminShell,AdminSidebar}.tsx`,
+`src/features/admin/products/ProductsPage.tsx`, `src/styles/ui.css`, `src/i18n/{ar,en}.json`,
+`src/components/layout/responsive-navigation.test.tsx`, `e2e/ui/responsive.spec.ts`,
+`playwright.motion.config.ts`, `docs/spec/owner-experience-change.md`,
+`docs/handoff/RESPONSIVE-REPAIR.md`, `roadmap.md`, `.agent-state/project-progress.md`
+and this handover. Prior checkpoints retain their own file lists in Git.
+
+Current error: database reset/E2E setup cannot connect to
+`dockerDesktopLinuxEngine` (pipe absent). Expected: local Docker/Supabase ready.
+Actual: no database tests execute. Possible cause: Docker Desktop is stopped.
+No cloud workaround is authorized.
+
+Next exact command after Docker Desktop is available (pinned Node on PATH):
+`npm run db:reset`. Then run database tests and database-backed E2E; stop if the
+local stack guard fails. Do not repeat the completed UI checks without a change
+or new concern. Fixture commands are in `docs/handoff/RESPONSIVE-REPAIR.md`.
+No merge, deployment or data reset. Retain reduced-motion support and owner MFA
+decision: verified sessions persist; fresh login after logout requires MFA.
+
+---
+
+# Historical database integration handover — 2026-10-15
 
 ## Current Objective
 

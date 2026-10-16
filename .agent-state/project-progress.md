@@ -2,7 +2,7 @@
 
 ## Codex — Responsive follow-up — 2026-10-17
 
-Current task: T-5.13c on `agent/T-5.13c-responsive-navigation`, based on `5580295`.
+Current task: T-5.13d on `agent/T-5.13d-responsive-evidence`, based on responsive implementation `169b452`; parent T-5.13c on `agent/T-5.13c-responsive-navigation`.
 
 Completed: right-side dashboard header/toggle; viewport-height admin with independent content scrolling; centered logical visibility switch with 44px target; social links for guest/customer/admin and admin sidebar with named narrow icons; My Orders menu link; narrow navbar sizing and bounded scrolling menus. Earlier review-navigation checkpoint is `5580295` and workspace checkpoint is `a561e3c`.
 
@@ -12,7 +12,7 @@ Tests executed: final full verify exited 0 (748 application + 203 tooling tests;
 
 Problems found: local DB reset failed; E2E setup confirms absent Docker engine pipe. No hosted DB or live-preview inspection performed. Initial bundle has very little headroom. QR payload and hosted settings still unverified; public storage must not be described as private simply because payment settings have RLS.
 
-Next action: checkpoint production changes, then T-5.13d regression evidence on a child branch to respect review-size limits; prepare PR review. Continue remaining database features only when local stack is available. Exact reproduction and limitations: `docs/handoff/RESPONSIVE-REPAIR.md`. No merge, production change or reset SQL execution.
+Next action: checkpoint regression evidence and prepare draft PR review. Continue remaining database features only when the local stack is available. Exact reproduction and limitations: `docs/handoff/RESPONSIVE-REPAIR.md`. No merge, production change or reset SQL execution.
 
 ## Codex — Admin workspace repair — 2026-10-17
 
