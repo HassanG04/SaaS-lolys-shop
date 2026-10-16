@@ -5,6 +5,7 @@ import { Input } from '../../components/ui/Input'
 import { AuthAlert } from './AuthAlert'
 import type { AuthErrorCode } from './types'
 import { useStepUp } from './useStepUp'
+import { useLanguage } from '../../i18n/LanguageProvider'
 
 export interface StepUpDialogProps {
   open: boolean
@@ -14,13 +15,8 @@ export interface StepUpDialogProps {
   description?: string
 }
 
-export function StepUpDialog({
-  open,
-  onClose,
-  onSuccess,
-  title = 'تأكيد الهوية (إجراء حسّاس)',
-  description = 'يتطلب هذا الإجراء تأكيدًا حديثًا للتحقق بخطوتين لحماية المتجر.',
-}: StepUpDialogProps) {
+export function StepUpDialog({ open, onClose, onSuccess, title, description }: StepUpDialogProps) {
+  const { t } = useLanguage()
   const { confirmStepUp, errorCode: hookErrorCode, submitting } = useStepUp()
   const [code, setCode] = useState('')
   const [localError, setLocalError] = useState<AuthErrorCode | null>(null)
@@ -31,7 +27,7 @@ export function StepUpDialog({
     e.preventDefault()
     setLocalError(null)
 
-    if (code.trim().length !== 6) {
+    if (!/^\d{6}$/.test(code.trim())) {
       setLocalError('AUTH-006')
       return
     }
@@ -55,17 +51,24 @@ export function StepUpDialog({
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} title={title} description={description}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      title={title ?? t('mfa.stepUpTitle')}
+      description={description ?? t('mfa.stepUpDescription')}
+    >
       <div className="space-y-4">
         {activeError && <AuthAlert code={activeError} />}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             id="step-up-totp-code"
-            label="رمز التحقق (6 أرقام)"
+            label={t('mfa.code')}
             name="totpCode"
             type="text"
             inputMode="numeric"
+            autoComplete="one-time-code"
+            dir="ltr"
             pattern="[0-9]*"
             maxLength={6}
             placeholder="123456"
@@ -78,10 +81,10 @@ export function StepUpDialog({
 
           <div className="flex items-center justify-end gap-3 pt-2">
             <Button type="button" variant="ghost" onClick={handleClose} disabled={submitting}>
-              إلغاء
+              {t('mfa.cancel')}
             </Button>
             <Button type="submit" variant="primary" disabled={submitting}>
-              {submitting ? 'جارٍ التحقق...' : 'تأكيد ومتابعة'}
+              {submitting ? t('mfa.verifying') : t('mfa.stepUpContinue')}
             </Button>
           </div>
         </form>

@@ -42,30 +42,54 @@ export function Turnstile({ onVerify, onError, onExpire, className = '' }: Turns
       // fallback if env is not configured in test
     }
 
-    // Mock bypass for test or headless environments
-    if (typeof window === 'undefined' || !window.turnstile) {
+    // Test environment mock: emit synthetic token only during automated tests
+    if (import.meta.env.MODE === 'test') {
       const timer = setTimeout(() => {
         onVerify('test-turnstile-token')
       }, 0)
       return () => clearTimeout(timer)
     }
 
-    if (containerRef.current && window.turnstile) {
-      try {
-        const id = window.turnstile.render(containerRef.current, {
-          sitekey: siteKey,
-          callback: onVerify,
-          'error-callback': onError,
-          'expired-callback': onExpire,
-          theme: 'auto',
-        })
-        widgetIdRef.current = id
-      } catch {
-        onVerify('fallback-turnstile-token')
+    if (typeof window === 'undefined') return
+
+    let checkInterval: ReturnType<typeof setInterval> | null = null
+
+    const renderWidget = () => {
+      if (containerRef.current && window.turnstile && !widgetIdRef.current) {
+        try {
+          const id = window.turnstile.render(containerRef.current, {
+            sitekey: siteKey,
+            callback: onVerify,
+            'error-callback': onError,
+            'expired-callback': onExpire,
+            theme: 'auto',
+          })
+          widgetIdRef.current = id
+        } catch {
+          onError?.()
+        }
       }
     }
 
+    if (window.turnstile) {
+      renderWidget()
+    } else {
+      let attempts = 0
+      checkInterval = setInterval(() => {
+        attempts++
+        if (window.turnstile) {
+          if (checkInterval) clearInterval(checkInterval)
+          renderWidget()
+        } else if (attempts > 50) {
+          // Timeout after 5s
+          if (checkInterval) clearInterval(checkInterval)
+          onError?.()
+        }
+      }, 100)
+    }
+
     return () => {
+      if (checkInterval) clearInterval(checkInterval)
       if (widgetIdRef.current && window.turnstile?.remove) {
         try {
           window.turnstile.remove(widgetIdRef.current)

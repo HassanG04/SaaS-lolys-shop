@@ -4,12 +4,12 @@
 
 /* Briefly include surface/text colors even on controls with their own transitions. */
 html.theme-transition,
-html.theme-transition body,
-html.theme-transition body * {
-  transition-property:
-    background-color, border-color, color, fill, stroke, box-shadow, transform, opacity;
-  transition-duration: 360ms;
-  transition-timing-function: ease;
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow !important;
+  transition-duration: 360ms !important;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 @layer base {

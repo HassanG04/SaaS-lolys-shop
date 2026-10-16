@@ -7,7 +7,6 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { I18nextProvider } from 'react-i18next'
 import { i18n, type SupportedLanguage } from './i18n'
 import { translations } from './translations'
 
@@ -36,29 +35,19 @@ export function LanguageProvider({
 }) {
   const [lang, setLang] = useState<Language>(() => {
     if (initialLanguage) {
-      if (i18n.language !== initialLanguage) {
-        void i18n.changeLanguage(initialLanguage)
-      }
+      if (i18n.language !== initialLanguage) void i18n.changeLanguage(initialLanguage)
       return initialLanguage
     }
-    let initialLang: Language = 'ar'
+    let l: Language = 'ar'
     try {
-      const saved = localStorage.getItem('app-lang')
-      if (saved === 'ar' || saved === 'en') {
-        initialLang = saved
-      } else if (typeof navigator !== 'undefined' && !/^ar(?:-|$)/i.test(navigator.language)) {
-        initialLang = 'en'
-      }
+      const s = localStorage.getItem('app-lang')
+      if (s === 'ar' || s === 'en') l = s
+      else if (typeof navigator !== 'undefined' && !/^ar(?:-|$)/i.test(navigator.language)) l = 'en'
     } catch {
-      if (typeof navigator !== 'undefined' && !/^ar(?:-|$)/i.test(navigator.language)) {
-        initialLang = 'en'
-      }
+      if (typeof navigator !== 'undefined' && !/^ar(?:-|$)/i.test(navigator.language)) l = 'en'
     }
-
-    if (i18n.language !== initialLang) {
-      void i18n.changeLanguage(initialLang)
-    }
-    return initialLang
+    if (i18n.language !== l) void i18n.changeLanguage(l)
+    return l
   })
 
   useEffect(() => {
@@ -85,9 +74,13 @@ export function LanguageProvider({
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t: tValue, i18n }}>
-      <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
+      {children}
     </LanguageContext.Provider>
   )
+}
+
+export function useOptionalLanguage() {
+  return useContext(LanguageContext)
 }
 
 export function useLanguage() {

@@ -45,13 +45,15 @@ export async function signInApi(credentials: SignInCredentials): Promise<AuthAct
   }
 }
 
+import { validatePasswordStrength } from './passwordStrength'
+
 /**
  * Registers a new account. Always returns neutral AUTH-010 unless Turnstile or password validation fails.
  */
 export async function signUpApi(credentials: SignUpCredentials): Promise<AuthActionResult> {
   const { email, password, fullName, captchaToken } = credentials
 
-  if (password.length < 10) {
+  if (!validatePasswordStrength(password).valid) {
     const message = await resolveAuthMessage('AUTH-008')
     return { success: false, code: 'AUTH-008', message }
   }
@@ -69,13 +71,18 @@ export async function signUpApi(credentials: SignUpCredentials): Promise<AuthAct
     if (error) {
       const { mapAuthError, getAuthMessage } = await import('./authErrors')
       const mapped = mapAuthError(error)
+      // Under SEC-05 enumeration protection, user_already_exists is treated as neutral AUTH-010
+      if (mapped === 'AUTH-010') {
+        return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+      }
       return { success: false, code: mapped, message: getAuthMessage(mapped) }
     }
 
-    // In Supabase Auth, when email is already registered, it returns an empty identities array
+    // In Supabase Auth, when email is already registered, it returns an empty identities array.
+    // Under SEC-05 enumeration protection, this returns the same neutral AUTH-010 outcome.
     if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-      const { getAuthMessage } = await import('./authErrors')
-      return { success: false, code: 'AUTH-015', message: getAuthMessage('AUTH-015') }
+      const message = await resolveAuthMessage('AUTH-010')
+      return { success: true, code: 'AUTH-010', message }
     }
 
     const message = await resolveAuthMessage('AUTH-010')
@@ -83,6 +90,9 @@ export async function signUpApi(credentials: SignUpCredentials): Promise<AuthAct
   } catch (err) {
     const { mapAuthError, getAuthMessage } = await import('./authErrors')
     const mapped = mapAuthError(err)
+    if (mapped === 'AUTH-010') {
+      return { success: true, code: 'AUTH-010', message: getAuthMessage('AUTH-010') }
+    }
     return { success: false, code: mapped, message: getAuthMessage(mapped) }
   }
 }
@@ -174,18 +184,30 @@ setApiDelegate(self)
  * Enrolls a new TOTP factor returning QR code, manual key secret, and URI.
  */
 export async function enrollTotpApi(
-  friendlyName?: string,
+  friendlyName = 'Lolys Authenticator',
 ): Promise<{ data?: MfaEnrollResult; error?: AuthErrorCode }> {
   try {
+    // An explicit setup attempt replaces only unfinished factors created by this
+    // flow (including the legacy name). Never remove a verified authenticator.
+    const existing = await supabase.auth.mfa.listFactors()
+    if (existing.error || !existing.data) return { error: 'AUTH-016' }
+    for (const factor of existing.data.all) {
+      if (
+        factor.factor_type === 'totp' &&
+        factor.status === 'unverified' &&
+        (factor.friendly_name === friendlyName || factor.friendly_name === 'Lolys Admin')
+      ) {
+        const removed = await supabase.auth.mfa.unenroll({ factorId: factor.id })
+        if (removed.error) return { error: 'AUTH-016' }
+      }
+    }
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: 'totp',
       issuer: "Lolys' Accessories",
       friendlyName,
     })
     if (error || !data) {
-      const { mapAuthError } = await import('./authErrors')
-      const code = mapAuthError(error)
-      return { error: code }
+      return { error: 'AUTH-016' }
     }
     return {
       data: {
@@ -198,10 +220,8 @@ export async function enrollTotpApi(
         },
       },
     }
-  } catch (err) {
-    const { mapAuthError } = await import('./authErrors')
-    const code = mapAuthError(err)
-    return { error: code }
+  } catch {
+    return { error: 'AUTH-016' }
   }
 }
 
@@ -250,7 +270,7 @@ export async function unenrollFactorApi(factorId: string): Promise<AuthActionRes
  * Requires recent sign-in; returns AUTH-007 if stale, AUTH-008 if under 10 chars.
  */
 export async function updatePasswordApi(password: string): Promise<AuthActionResult> {
-  if (password.length < 10) {
+  if (!validatePasswordStrength(password).valid) {
     const message = await resolveAuthMessage('AUTH-008')
     return { success: false, code: 'AUTH-008', message }
   }

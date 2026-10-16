@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
+import { StrictMode } from 'react'
 import userEvent from '@testing-library/user-event'
 import type { Session, User } from '@supabase/supabase-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -67,6 +68,7 @@ describe('Two-factor login and TOTP gates (T-2.06)', () => {
     expect(
       await screen.findByRole('heading', { name: 'إعداد التحقق بخطوتين (TOTP)' }),
     ).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'إعداد تطبيق المصادقة' }))
     expect(await screen.findByText('JBSWY3DPEHPK3PXP')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'تأكيد وتفعيل' })).toBeInTheDocument()
   })
@@ -91,6 +93,94 @@ describe('Two-factor login and TOTP gates (T-2.06)', () => {
     expect(screen.getByText(getAuthMessage('AUTH-005'))).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'تأكيد الرمز والمتابعة' })).toBeInTheDocument()
   })
+
+  it('StrictMode does not create a factor until requested, and failed setup can retry in English', async () => {
+    localStorage.setItem('app-lang', 'en')
+    mockAuthenticatedAdmin('aal1', [
+      { id: 'unfinished', factor_type: 'totp', status: 'unverified' },
+    ])
+    const enroll = vi
+      .spyOn(api, 'enrollTotpApi')
+      .mockResolvedValueOnce({ error: 'AUTH-016' })
+      .mockResolvedValue({
+        data: {
+          id: 'new-factor',
+          type: 'totp',
+          totp: { qr_code: '', secret: 'TEST-ONLY-KEY', uri: '' },
+        },
+      })
+    const view = render(
+      <StrictMode>
+        <App initialEntries={['/admin']} />
+      </StrictMode>,
+    )
+    const start = await screen.findByRole('button', { name: 'Set up authenticator' })
+    expect(enroll).not.toHaveBeenCalled()
+    await userEvent.click(start)
+    expect(await screen.findByText(getAuthMessage('AUTH-016', 'en'))).toBeInTheDocument()
+    expect(screen.queryByText(getAuthMessage('AUTH-010', 'en'))).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Retry setup' }))
+    expect(await screen.findByText('TEST-ONLY-KEY')).toBeInTheDocument()
+    expect(enroll).toHaveBeenCalledTimes(2)
+    expect(view.container.querySelector('form')?.textContent).not.toMatch(/[\u0600-\u06ff]/)
+    expect(screen.getByRole('button', { name: 'Confirm and activate' })).toBeInTheDocument()
+  })
+
+  it('auth notifications return before refreshing factors, so MFA can release the SDK lock', async () => {
+    mockAuthenticatedAdmin('aal1', [])
+    render(
+      <AuthProvider>
+        <span>Session test</span>
+      </AuthProvider>,
+    )
+    await waitFor(() => expect(api.fetchFactorsApi).toHaveBeenCalled())
+    vi.mocked(api.fetchFactorsApi).mockClear()
+    const notify = vi.mocked(supabase.auth.onAuthStateChange).mock.calls[0]?.[0]
+    const session = { user: { id: 'admin-123' } } as Session
+    act(() => {
+      const result = notify?.('MFA_CHALLENGE_VERIFIED', session)
+      expect(result).toBeUndefined()
+      expect(api.fetchFactorsApi).not.toHaveBeenCalled()
+    })
+    await waitFor(() => expect(api.fetchFactorsApi).toHaveBeenCalledOnce())
+  })
+
+  it.each(['customer', 'admin'] as const)(
+    'finishes %s enrollment at the correct destination',
+    async (role) => {
+      mockAuthenticatedAdmin('aal1', [])
+      vi.mocked(api.fetchProfileApi).mockResolvedValue({
+        id: 'admin-123',
+        role,
+        full_name: 'Test',
+        phone: null,
+      })
+      vi.spyOn(api, 'enrollTotpApi').mockResolvedValue({
+        data: {
+          id: 'new',
+          type: 'totp',
+          totp: { qr_code: '', secret: 'TEST-KEY', uri: '' },
+        },
+      })
+      vi.spyOn(api, 'challengeAndVerifyApi').mockImplementation(async () => {
+        vi.mocked(api.fetchAalApi).mockResolvedValue('aal2')
+        vi.mocked(api.fetchFactorsApi).mockResolvedValue([
+          { id: 'new', factor_type: 'totp', status: 'verified' },
+        ])
+        return { success: true }
+      })
+      render(<App initialEntries={[role === 'admin' ? '/admin' : '/account/mfa/enroll']} />)
+      await userEvent.click(await screen.findByRole('button', { name: 'إعداد تطبيق المصادقة' }))
+      await userEvent.type(await screen.findByPlaceholderText('123456'), '123456')
+      await userEvent.click(screen.getByRole('button', { name: 'تأكيد وتفعيل' }))
+      expect(
+        await screen.findByRole('heading', {
+          name: role === 'admin' ? 'لوحة تحكم الإدارة' : 'الأمان والتحقق بخطوتين',
+        }),
+      ).toBeInTheDocument()
+      expect(api.challengeAndVerifyApi).toHaveBeenCalledWith('new', '123456')
+    },
+  )
 
   it('wrong or expired codes in challenge screen display AUTH-006', async () => {
     const user = userEvent.setup()

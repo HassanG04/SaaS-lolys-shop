@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom'
 import { AuthAlert } from '../features/auth/AuthAlert'
 import { useAuth } from '../features/auth/AuthProvider'
 import { Turnstile } from '../features/auth/Turnstile'
+import { validatePasswordStrength } from '../features/auth/passwordStrength'
 import type { AuthErrorCode } from '../features/auth/types'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { Button } from '@/components/ui/Button'
+import { PasswordField } from '@/components/ui/PasswordField'
 
 export default function RegisterPage() {
   const { signUp, resendConfirmation } = useAuth()
@@ -15,8 +17,6 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [captchaToken, setCaptchaToken] = useState<string | undefined>()
   const [statusMessage, setStatusMessage] = useState<AuthErrorCode | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,7 +46,7 @@ export default function RegisterPage() {
       return
     }
 
-    if (password.length < 10) {
+    if (!validatePasswordStrength(password).valid) {
       setStatusMessage('AUTH-008')
       return
     }
@@ -131,24 +131,22 @@ export default function RegisterPage() {
                 </button>
               )}
             </div>
+            <div className="pt-2 flex flex-wrap justify-center items-center gap-3 text-caption">
+              <Link to="/login" className="font-semibold text-(--color-brand) hover:underline">
+                {t.auth.login} &larr;
+              </Link>
+              <span className="text-(--color-text-muted)">•</span>
+              <Link
+                to="/reset-password"
+                className="font-semibold text-(--color-brand) hover:underline"
+              >
+                {t.auth.requestNewResetLink} &larr;
+              </Link>
+            </div>
           </div>
         ) : (
           <>
             {statusMessage && <AuthAlert code={statusMessage} />}
-            {statusMessage === 'AUTH-015' && (
-              <div className="flex flex-wrap items-center gap-2 text-caption">
-                <Link to="/login" className="font-semibold text-(--color-brand) hover:underline">
-                  {t.auth.login} &larr;
-                </Link>
-                <span className="text-(--color-text-muted)">•</span>
-                <Link
-                  to="/reset-password"
-                  className="font-semibold text-(--color-brand) hover:underline"
-                >
-                  {t.auth.requestNewResetLink} &larr;
-                </Link>
-              </div>
-            )}
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div className="space-y-1">
@@ -187,120 +185,31 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-1">
-                <label
-                  htmlFor="password-input"
-                  className="text-small font-semibold text-(--color-text)"
-                >
-                  {t.auth.password}
-                </label>
-                <div className="relative flex items-center">
-                  <input
-                    id="password-input"
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) ps-4 pe-11 text-small text-(--color-text) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    aria-label={showPassword ? t.auth.hidePassword : t.auth.showPassword}
-                    className="absolute end-3 inline-flex size-7 items-center justify-center rounded-(--radius-pill) text-(--color-text-muted) hover:text-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-                  >
-                    {showPassword ? (
-                      <svg
-                        className="size-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-                        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
-                        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
-                        <line x1="2" x2="22" y1="2" y2="22" />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="size-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-                <p className="text-caption text-(--color-text-muted)">{t.auth.passwordMinLength}</p>
+                <PasswordField
+                  id="password-input"
+                  label={t.auth.password}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  allowGenerate={true}
+                  onGenerate={(p) => {
+                    setPassword(p)
+                    setConfirmPassword(p)
+                  }}
+                  hint={t.auth.passwordMinLength}
+                />
               </div>
 
               <div className="space-y-1">
-                <label
-                  htmlFor="confirm-password-input"
-                  className="text-small font-semibold text-(--color-text)"
-                >
-                  {t.auth.confirmPassword}
-                </label>
-                <div className="relative flex items-center">
-                  <input
-                    id="confirm-password-input"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) ps-4 pe-11 text-small text-(--color-text) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword((prev) => !prev)}
-                    aria-label={showConfirmPassword ? t.auth.hidePassword : t.auth.showPassword}
-                    className="absolute end-3 inline-flex size-7 items-center justify-center rounded-(--radius-pill) text-(--color-text-muted) hover:text-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-                  >
-                    {showConfirmPassword ? (
-                      <svg
-                        className="size-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-                        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
-                        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
-                        <line x1="2" x2="22" y1="2" y2="22" />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="size-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
+                <PasswordField
+                  id="confirm-password-input"
+                  label={t.auth.confirmPassword}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                />
               </div>
 
               <Turnstile onVerify={(token) => setCaptchaToken(token)} />

@@ -23,6 +23,7 @@ import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { Skeleton, SkeletonCard } from '@/components/ui/Skeleton'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { SectionReveal } from '@/components/ui/SectionReveal'
 
 export default function HomePage() {
   const { t, lang } = useLanguage()
@@ -63,9 +64,22 @@ export default function HomePage() {
     (lang === 'ar' ? (settings?.returns_text_ar as string) : undefined) ||
     'إمكانية الاسترجاع أو الاستبدال خلال 14 يوماً من الاستلام بشرط أن تكون المنتجات بحالتها الأصلية.'
 
-  const handleCategorySelect = (slug: string) => {
+  const handleCategorySelect = (slug: string, isKeyboard = false) => {
     setSelectedCategory(slug)
     setLimit(12)
+    const el = document.getElementById('browse-heading') ?? document.getElementById('browse')
+    if (el) {
+      const prefersReduced =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (typeof el.scrollIntoView === 'function') {
+        el.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' })
+      }
+      if (isKeyboard) {
+        el.setAttribute('tabindex', '-1')
+        el.focus({ preventScroll: true })
+      }
+    }
   }
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -170,7 +184,8 @@ export default function HomePage() {
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
           <button
             type="button"
-            onClick={() => handleCategorySelect('all')}
+            aria-pressed={selectedCategory === 'all'}
+            onClick={(e) => handleCategorySelect('all', e.detail === 0)}
             className={`rounded-pill px-5 py-2 text-small font-semibold transition-all ${
               selectedCategory === 'all'
                 ? 'bg-brand text-brand-contrast shadow-pill'
@@ -186,7 +201,8 @@ export default function HomePage() {
               <button
                 key={cat.id}
                 type="button"
-                onClick={() => handleCategorySelect(cat.slug)}
+                aria-pressed={isSelected}
+                onClick={(e) => handleCategorySelect(cat.slug, e.detail === 0)}
                 className={`rounded-pill px-5 py-2 text-small font-semibold transition-all ${
                   isSelected
                     ? 'bg-brand text-brand-contrast shadow-pill'
@@ -230,13 +246,15 @@ export default function HomePage() {
         ) : categories.length === 0 ? (
           <EmptyState title={t.ui.emptyState} />
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {categories.map((cat) => (
-              <div key={cat.id} className="catalog-stagger-item">
-                <CategoryTile category={cat} />
-              </div>
-            ))}
-          </div>
+          <SectionReveal>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              {categories.map((cat) => (
+                <div key={cat.id} className="catalog-stagger-item">
+                  <CategoryTile category={cat} />
+                </div>
+              ))}
+            </div>
+          </SectionReveal>
         )}
       </section>
 
@@ -294,13 +312,15 @@ export default function HomePage() {
           <EmptyState title={t.catalog.noProducts} />
         ) : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-              {browseData.products.map((product) => (
-                <div key={product.id} className="catalog-stagger-item">
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </div>
+            <SectionReveal replayKey={selectedCategory}>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                {browseData.products.map((product) => (
+                  <div key={product.id} className="catalog-stagger-item">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
+            </SectionReveal>
 
             {/* Load more in steps of 12 */}
             {browseData.hasMore && (

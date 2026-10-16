@@ -1,5 +1,6 @@
 // Named imports keep development-only kit copy out of production dictionaries.
 import {
+  mfa as arMfa,
   theme as arTheme,
   ui as arUi,
   brand as arBrand,
@@ -28,6 +29,7 @@ import {
 } from './ar.json'
 
 import {
+  mfa as enMfa,
   theme as enTheme,
   ui as enUi,
   brand as enBrand,
@@ -57,6 +59,7 @@ import {
 
 export const translations = {
   ar: {
+    mfa: arMfa,
     theme: arTheme,
     ui: arUi,
     brand: arBrand,
@@ -84,6 +87,7 @@ export const translations = {
     about: arAbout,
   },
   en: {
+    mfa: enMfa,
     theme: enTheme,
     ui: enUi,
     brand: enBrand,

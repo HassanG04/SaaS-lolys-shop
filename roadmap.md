@@ -648,10 +648,16 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-2.06: Two-factor login (TOTP)
-`status: done` `owner: agent` `needs: T-2.04` `size: L`
+`status: doing` `owner: agent` `needs: T-2.04` `size: L`
 - **Do:** TOTP with Supabase Auth MFA: enroll (QR code and manual key), verify, challenge at login for any enrolled user, list and remove factors (removal needs a fresh `aal2`), `useAal()` from `getAuthenticatorAssuranceLevel`. Admins must enroll before any admin screen loads: `RequireAdmin` sends them to enrollment, then to the challenge until the session is `aal2`. Customers are offered 2FA from the account page (O-13). Encourage a second device. Arabic copy; AUTH-005 and AUTH-006 errors.
 - **Done when:** an admin with only a password reaches the enrollment screen and nothing else; after verification the session is `aal2` and admin screens load; wrong or expired codes show AUTH-006; tests cover the gate logic.
 - **Verify:** `npm run test:unit` and manual check
+
+#### T-2.06b: Repair MFA enrollment, session notifications and bilingual controls
+`status: doing` `owner: agent` `needs: T-2.04` `size: M`
+- **Do:** Owner-requested regression repair after 66877e4: explicit retryable enrollment, cleanup only unfinished Lolys factors, no Auth calls awaited inside SDK notification locks, verified-factor admin gates, English/Arabic enrollment/challenge/step-up copy and schema-correct owner runbook. SEC-01, SEC-02, SEC-05 and SEC-08 remain enforced.
+- **Done when:** StrictMode does not create duplicate factors; failures never show AUTH-010; customer/admin verification routes correctly; the live MFA flow is verified; the full gate and owner review pass.
+- **Verify:** `npm run verify` and local database-backed admin/security E2E.
 
 #### T-2.07: Account security
 `status: done` `owner: agent` `needs: T-2.06` `size: M`
@@ -720,6 +726,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Do:** Per-route document title and description hook, Open Graph defaults, `robots.txt`, favicon and web manifest.
 - **Done when:** the title changes on every route.
 - **Verify:** `npm run test:unit`
+
+#### T-3.09: Verify motion in compiled styles and repair flower hover
+`status: doing` `owner: agent` `needs: T-3.02` `size: S`
+- **Do:** Test actual CSS animation frames in isolated browser fixtures for both themes and writing directions; preserve petal rotation during hover growth; retain reduced-motion support.
+- **Done when:** Button movement, flower rotation, theme interpolation, skeleton motion, scoped card blur and reduced-motion fallbacks pass browser tests; owner preview checked with animation effects enabled; full verification passes.
+- **Verify:** `npm run verify` and `npx playwright test --config playwright.motion.config.ts` after build.
 
 ### Phase 4: Checkout and orders
 
@@ -1423,6 +1435,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-15 | T-1.01–T-1.10, T-1.14–T-1.16 | Codex | Database-only reconciliation from cfac9d5 onto main 4dfb26c; preserve source branches and current-main guards. Corrected unmerged owner-role/audit migrations, stale tests, unsafe concurrency target and regenerated types. Isolated reset/seed counts, 259 pgTAP assertions, five negative probes plus recovery, S7 blocking proof and deterministic types pass. Full verify passes (57 application + 114 tooling tests); remote CI/owner review pending; see docs/handoff/DATABASE-INTEGRATION.md. InstaPay and dependent branches remain held. | [#26](https://github.com/HassanG04/SaaS_Accessories/pull/26) |
 | 2026-10-15 | T-1.09, T-5.09 | Codex | Owner supplied payment QR and explicitly approved main merge. Offline decoding verified the local JPEG and matching recipient; asset remains unmodified and unconfigured in cloud settings. PR26 at 4c04816 passed all seven implemented remote checks plus preview. Normal merge API returned HTTP 405: write-access approving review and required e2e check missing. Main unchanged; no gate bypass, no payment code or task status change. | [#26](https://github.com/HassanG04/SaaS_Accessories/pull/26) |
 | 2026-10-14 | T-7.06 | Codex | Merge-day preparation: repaired Node execution boundary in SAST workflow after remote setup-node ENOENT; scanner image digest and rejection/scan gates preserved. No feature edits. New-head CI pending. | pending |
+
+| 2026-10-16 | T-2.04, T-3.03, T-7.01, T-7.03, T-1.14 | Codex | Documentation-only owner handoff: inspected freshly fetched analytics ref e79d047 and created CODEX-TO-ANTI-GRAVITY.md with concrete motion/loading/navigation/cache, bilingual errors, password and admin-diagnosis repairs. Source findings contradict broad completion claims; no task marked done, no application/cloud change and no fresh full verification claimed. Anti-Gravity must register/reopen repair tasks, provide browser/gate evidence and return HANDOVER_TO_CODEX.md for launch-gap review. | local brief |
 
 ### Open questions (agents add rows; the owner answers)
 

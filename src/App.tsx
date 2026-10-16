@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { RouterProvider, createBrowserRouter, createMemoryRouter } from 'react-router-dom'
+import { RouterProvider, createBrowserRouter, type createMemoryRouter } from 'react-router-dom'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { ThemeProvider } from './components/ui/ThemeProvider'
 import { ToastProvider } from './components/ui/ToastProvider'
@@ -8,7 +8,17 @@ import { CartProvider } from './features/cart'
 import { LanguageProvider } from './i18n/LanguageProvider'
 import { validateEnv, type EnvValidationResult } from './lib/env'
 import { queryClient as defaultQueryClient } from './lib/queryClient'
-import { EnvErrorScreen } from './components/EnvErrorScreen'
+const createTestRouter =
+  import.meta.env.MODE === 'test' ? (await import('react-router-dom')).createMemoryRouter : null
+let DevEnvErrorScreen: React.ComponentType<{
+  errors: string[]
+  formattedMessage?: string | null
+}> | null = null
+
+if (import.meta.env.DEV) {
+  const mod = await import('./components/EnvErrorScreen')
+  DevEnvErrorScreen = mod.EnvErrorScreen
+}
 import { routes } from './routes'
 
 export interface AppProps {
@@ -27,13 +37,11 @@ export default function App({
   const validation = envValidation ?? validateEnv()
 
   if (!validation.success) {
-    if (import.meta.env.DEV) {
+    if (import.meta.env.DEV && DevEnvErrorScreen) {
+      const ErrorScreen = DevEnvErrorScreen
       return (
         <ThemeProvider>
-          <EnvErrorScreen
-            errors={validation.errors}
-            formattedMessage={validation.formattedMessage}
-          />
+          <ErrorScreen errors={validation.errors} formattedMessage={validation.formattedMessage} />
         </ThemeProvider>
       )
     }
@@ -46,11 +54,10 @@ export default function App({
   }
 
   // Use memory router in test environments or when initialEntries are provided for isolation
-  const isTest = import.meta.env.MODE === 'test'
   const router =
     customRouter ??
-    (initialEntries || isTest
-      ? createMemoryRouter(routes, {
+    (createTestRouter
+      ? createTestRouter(routes, {
           initialEntries: initialEntries ?? [
             typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/',
           ],

@@ -57,6 +57,18 @@
   .auth-panel {
     box-shadow: var(--shadow-card-val);
   }
+  .ui-skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-surface-tint-val);
+  }
+  .catalog-product-card {
+    transition:
+      transform 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      filter 300ms ease,
+      opacity 300ms ease;
+  }
   @media (prefers-reduced-motion: no-preference) {
     .page-transition {
       animation: page-arrive 320ms ease-out both;
@@ -301,6 +313,199 @@
     }
     100% {
       transform: scale(1);
+    }
+  }
+
+  /* Animista shadow-drop-2-center & grid-local sibling card softening */
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+    :is(.grid, .catalog-grid):has(.catalog-product-card:hover) .catalog-product-card:not(:hover) {
+      filter: blur(2px);
+      opacity: 0.85;
+    }
+
+    .catalog-product-card:hover {
+      transform: translateY(-4px) scale(1.035);
+      box-shadow: var(--shadow-popover-val);
+      z-index: 10;
+    }
+
+    /* Uiverse yaroslavas2001 flower purchase button rotation on fine hover */
+    .flower-button:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) .flower-1 {
+      animation: flower-spin-1 15s linear infinite;
+    }
+    .flower-button:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) .flower-2 {
+      animation: flower-spin-2 13s linear 1s infinite;
+    }
+    .flower-button:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) .flower-3 {
+      animation: flower-spin-3 16s linear 1s infinite;
+    }
+    .flower-button:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) .flower-4 {
+      animation: flower-spin-4 17s linear 1s infinite;
+    }
+    .flower-button:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) .flower-5 {
+      animation: flower-spin-5 20s linear 1s infinite;
+    }
+    .flower-button:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) .flower-6 {
+      animation: flower-spin-6 15s linear 1s infinite;
+    }
+    .flower-button:hover:not(:disabled, [aria-disabled='true'], [aria-busy='true']) .flower-petal {
+      scale: 1.5;
+    }
+  }
+
+  /* Section roll-in-blurred-left (Animista adapted for responsive translation & RTL) */
+  @media (prefers-reduced-motion: no-preference) {
+    .section-reveal-enter {
+      animation: section-roll-in 650ms cubic-bezier(0.23, 1, 0.32, 1) both;
+    }
+    @keyframes section-roll-in {
+      from {
+        transform: translateX(-32px) rotate(-6deg);
+        filter: blur(6px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0) rotate(0deg);
+        filter: blur(0);
+        opacity: 1;
+      }
+    }
+    [dir='rtl'] .section-reveal-enter {
+      animation-name: section-roll-in-rtl;
+    }
+    @keyframes section-roll-in-rtl {
+      from {
+        transform: translateX(32px) rotate(6deg);
+        filter: blur(6px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0) rotate(0deg);
+        filter: blur(0);
+        opacity: 1;
+      }
+    }
+  }
+
+  /* Uiverse yaroslavas2001 base layout & rotations */
+  .flower-button {
+    position: relative;
+    overflow: visible !important;
+  }
+  .flower-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .flower {
+    position: absolute;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 20px;
+    height: 20px;
+    transform-origin: center;
+    transition: transform 300ms ease-out;
+    pointer-events: none;
+  }
+  .flower-petal {
+    width: 10px;
+    height: 10px;
+    background-color: var(--color-pink-val);
+    border-radius: var(--radius-petal);
+    transform-origin: center;
+    scale: 1;
+    transition: scale 800ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .flower-petal:nth-child(1) {
+    transform: rotate(0deg);
+  }
+  .flower-petal:nth-child(2) {
+    transform: rotate(90deg);
+  }
+  .flower-petal:nth-child(3) {
+    transform: rotate(270deg);
+  }
+  .flower-petal:nth-child(4) {
+    transform: rotate(180deg);
+  }
+
+  .flower-1 {
+    transform: rotate(5deg);
+    inset-block-start: -12px;
+    inset-inline-start: -13px;
+  }
+  .flower-2 {
+    transform: rotate(35deg);
+    inset-block-end: -5px;
+    inset-inline-start: 8px;
+  }
+  .flower-3 {
+    transform: rotate(0deg);
+    inset-block-end: -15px;
+    inset-inline-start: calc(50% - 10px);
+  }
+  .flower-4 {
+    transform: rotate(15deg);
+    inset-block-start: -14px;
+    inset-inline-start: calc(50% - 10px);
+  }
+  .flower-5 {
+    transform: rotate(25deg);
+    inset-block-start: -3px;
+    inset-inline-end: 11px;
+  }
+  .flower-6 {
+    transform: rotate(30deg);
+    inset-block-end: -15px;
+    inset-inline-end: -15px;
+  }
+
+  @keyframes flower-spin-1 {
+    from {
+      transform: rotate(5deg);
+    }
+    to {
+      transform: rotate(365deg);
+    }
+  }
+  @keyframes flower-spin-2 {
+    from {
+      transform: rotate(35deg);
+    }
+    to {
+      transform: rotate(-325deg);
+    }
+  }
+  @keyframes flower-spin-3 {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes flower-spin-4 {
+    from {
+      transform: rotate(15deg);
+    }
+    to {
+      transform: rotate(375deg);
+    }
+  }
+  @keyframes flower-spin-5 {
+    from {
+      transform: rotate(25deg);
+    }
+    to {
+      transform: rotate(-335deg);
+    }
+  }
+  @keyframes flower-spin-6 {
+    from {
+      transform: rotate(30deg);
+    }
+    to {
+      transform: rotate(390deg);
     }
   }
 }

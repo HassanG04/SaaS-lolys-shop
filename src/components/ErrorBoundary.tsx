@@ -43,6 +43,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         return this.props.fallback
       }
 
+      const isEn = typeof document !== 'undefined' && document.documentElement.lang === 'en'
       return (
         <div className="flex min-h-[50vh] items-center justify-center p-4">
           <div
@@ -63,9 +64,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 <path d="M12 8v4m0 4h.01" />
               </svg>
             </div>
-            <h3 className="text-h3 font-bold text-brand">حدث خطأ غير متوقع في الصفحة</h3>
+            <h3 className="text-h3 font-bold text-brand">
+              {isEn ? 'Unexpected error' : 'حدث خطأ غير متوقع في الصفحة'}
+            </h3>
             <p className="mt-2 max-w-md text-small text-text-muted">
-              نعتذر عن هذا الخطأ. يمكنك محاولة إعادة التحميل أو العودة لاحقًا.
+              {isEn ? 'Please refresh or try again.' : 'يرجى تحديث الصفحة أو المحاولة.'}
             </p>
             <button
               type="button"
@@ -73,7 +76,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               className="ui-control ui-button mt-6 rounded-pill px-6 py-2 font-semibold"
               onClick={this.resetError}
             >
-              إعادة المحاولة
+              {isEn ? 'Retry' : 'إعادة المحاولة'}
             </button>
           </div>
         </div>

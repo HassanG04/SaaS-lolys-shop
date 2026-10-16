@@ -145,8 +145,7 @@ const fallbackCart = new Proxy(
     isDrawerOpen: false,
   } as unknown as CartContextValue,
   {
-    get: (target, prop) =>
-      prop in target ? (target as unknown as Record<string, unknown>)[prop as string] : () => {},
+    get: (t, p) => (p in t ? (t as unknown as Record<string, unknown>)[p as string] : () => {}),
   },
 )
 

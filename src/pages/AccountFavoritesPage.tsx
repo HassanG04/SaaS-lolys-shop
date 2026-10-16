@@ -12,7 +12,7 @@ import type { Product, ProductWithCategory } from '@/features/catalog/types'
 
 export default function AccountFavoritesPage() {
   const { user } = useAuth()
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const { addItem } = useCart()
   const { success: toastSuccess } = useToast()
 
@@ -21,7 +21,9 @@ export default function AccountFavoritesPage() {
   const handleAddToCart = (product: Product | ProductWithCategory) => {
     if (!product.in_stock || product.stock_quantity <= 0) return
     addItem(product.id, 1, product.stock_quantity)
-    toastSuccess(t('product.addedToCart', { count: 1 }), product.name_ar || product.name)
+    const productName =
+      lang === 'en' ? product.name || product.name_ar || '' : product.name_ar || product.name
+    toastSuccess(t('product.addedToCart', { count: 1 }), productName)
   }
 
   const count = favorites?.length ?? 0
@@ -44,9 +46,7 @@ export default function AccountFavoritesPage() {
               </span>
             )}
           </div>
-          <p className="mt-2 text-body text-text-muted">
-            المنتجات والإكسسوارات المفضلة التي قمت بحفظها للرجوع إليها في أي وقت.
-          </p>
+          <p className="mt-2 text-body text-text-muted">{t.favorites.subtitle}</p>
         </div>
 
         {/* Sub-Navigation Pills */}
@@ -82,7 +82,7 @@ export default function AccountFavoritesPage() {
       {isLoading ? (
         <div
           role="status"
-          aria-label="جارٍ تحميل المنتجات المفضلة"
+          aria-label={t.favorites.loading}
           className="rounded-card border border-border bg-surface p-12 flex justify-center items-center text-brand"
         >
           <PearlLoader loading />

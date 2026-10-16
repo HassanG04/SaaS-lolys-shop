@@ -7,6 +7,7 @@ import { Turnstile } from '../features/auth/Turnstile'
 import type { AuthErrorCode } from '../features/auth/types'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { Button } from '@/components/ui/Button'
+import { PasswordField } from '@/components/ui/PasswordField'
 
 export default function LoginPage() {
   const { signIn } = useAuth()
@@ -140,16 +141,16 @@ export default function LoginPage() {
                 {t.auth.forgot}
               </Link>
             </div>
-            <input
+            <PasswordField
               id="password-input"
-              type="password"
+              label=""
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) px-4 text-small text-(--color-text) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+              autoComplete="current-password"
+              hint={t.auth.passwordMinLength}
             />
-            <p className="text-caption text-(--color-text-muted)">{t.auth.passwordMinLength}</p>
           </div>
 
           <Turnstile onVerify={(token) => setCaptchaToken(token)} />
