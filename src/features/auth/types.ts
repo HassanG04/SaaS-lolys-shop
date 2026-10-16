@@ -33,6 +33,8 @@ export type AuthErrorCode =
   | 'AUTH-010'
   | 'AUTH-011'
   | 'AUTH-012'
+  | 'AUTH-013'
+  | 'AUTH-014'
   | 'ADM-001'
   | 'ADM-002'
   | 'ADM-003'

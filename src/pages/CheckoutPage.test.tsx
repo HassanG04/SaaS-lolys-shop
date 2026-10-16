@@ -96,6 +96,7 @@ function renderCheckoutPage(options?: {
   cartItems?: CartLine[]
   clearCart?: () => void
   profile?: UserProfile | null
+  user?: AuthContextValue['user']
 }) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -123,7 +124,14 @@ function renderCheckoutPage(options?: {
 
   const authValue: AuthContextValue = {
     session: null,
-    user: { id: 'usr-123', email: 'test@example.com' } as unknown as AuthContextValue['user'],
+    user:
+      options?.user !== undefined
+        ? options.user
+        : ({
+            id: 'usr-123',
+            email: 'test@example.com',
+            email_confirmed_at: '2026-10-10T00:00:00Z',
+          } as unknown as AuthContextValue['user']),
     profile: options?.profile !== undefined ? options.profile : mockProfile,
     role: 'customer',
     aal: 'aal1',
@@ -322,5 +330,24 @@ describe('CheckoutPage (T-4.02)', () => {
         }),
       )
     })
+  })
+
+  it('blocks order placement and shows verification banner when email is not confirmed', async () => {
+    const unconfirmedUser = {
+      id: 'usr-unconfirmed',
+      email: 'unconfirmed@example.com',
+      email_confirmed_at: null,
+    } as unknown as AuthContextValue['user']
+
+    renderCheckoutPage({ user: unconfirmedUser })
+
+    await waitFor(() => {
+      expect(screen.getByText('تحقق من بريدك الإلكتروني')).toBeInTheDocument()
+    })
+
+    const submitBtn = screen.getByRole('button', {
+      name: /يرجى تأكيد بريدك الإلكتروني لتتمكن من إتمام الطلب/i,
+    })
+    expect(submitBtn).toBeDisabled()
   })
 })

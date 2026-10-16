@@ -43,15 +43,15 @@
   },
   "hero": {
     "title": "Up to {{n}}% off",
-    "subtitle": "Accessories and home touches that add charm to your style and space",
+    "subtitle": "Accessories and home touches for your space and style",
     "cta": "Shop Offers",
     "eyebrow": "Little details. Lovely moments.",
     "cozyTitle": "A little lovely for you. A little warmth for home.",
     "shopCta": "Find your little lovely",
     "littleThings": "For everyday rituals and special moments",
     "photoCaption": "Warm cups & little treasures",
-    "collectionsSubtitle": "From the finishing touch to your outfit to your favourite quiet-morning cup",
-    "returnsSummary": "Visit our returns policy for return and exchange conditions."
+    "collectionsSubtitle": "Accessories for your style and cozy mugs for your moments.",
+    "returnsSummary": "Check return and exchange terms on the return policy page."
   },
   "section": {
     "categories": "Shop by Category",
@@ -205,11 +205,15 @@
     "resendNoticeLink": "Didn't receive the email? Resend",
     "linkExpiredTitle": "This link has expired. You can request a new one:",
     "requestNewConfirmationLink": "Resend account confirmation link",
-    "requestNewResetLink": "Request new password reset link"
+    "requestNewResetLink": "Request new password reset link",
+    "confirmPassword": "Confirm Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "emailVerificationRequired": "Please verify your email address to complete your order."
   },
   "about": {
     "title": "About Lolys' Store",
-    "p1": "Lolys' offers elegant accessories and warm home touches for your style and space.",
+    "p1": "Elegant accessories and warm home touches for your space.",
     "p2": "Curated pieces, gift packaging, and delivery across Egypt.",
     "browse": "Browse Collections"
   },

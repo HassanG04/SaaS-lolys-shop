@@ -26,9 +26,24 @@ import { useSeo } from '@/features/seo'
 
 export default function CheckoutPage() {
   const { t, lang } = useLanguage()
-  const { profile } = useAuth()
+  const { user, profile, resendConfirmation } = useAuth()
   const { lines, subtotal, clearCart } = useCart()
   const navigate = useNavigate()
+
+  const isEmailVerified = !user || Boolean(user.email_confirmed_at || user.confirmed_at)
+  const [isResendingConfirm, setIsResendingConfirm] = useState(false)
+  const [confirmResent, setConfirmResent] = useState(false)
+
+  async function handleResendEmail() {
+    if (isResendingConfirm || !user?.email) return
+    setIsResendingConfirm(true)
+    try {
+      await resendConfirmation({ email: user.email })
+      setConfirmResent(true)
+    } finally {
+      setIsResendingConfirm(false)
+    }
+  }
 
   useSeo({
     title: t.checkout.title,
@@ -135,6 +150,11 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitError(null)
+
+    if (user && !isEmailVerified) {
+      setSubmitError(new AppError('AUTH-014'))
+      return
+    }
 
     const validation = validateShippingForm(formData, {
       isDeliveryMethodSelected: Boolean(activeDeliveryMethod),
@@ -243,6 +263,52 @@ export default function CheckoutPage() {
           onRetry={() => void handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
           retryLabel={t.ui.retry}
         />
+      )}
+
+      {user && !isEmailVerified && (
+        <div
+          role="alert"
+          className="rounded-card border border-warning/40 bg-warning/10 p-4 text-text space-y-3"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-pill bg-warning/20 text-warning">
+              <svg
+                className="size-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-body font-bold text-text">{t.auth.checkYourEmail}</h2>
+              <p className="text-small text-text-muted">{t.auth.emailVerificationRequired}</p>
+            </div>
+          </div>
+          <div className="pt-1">
+            {confirmResent ? (
+              <p role="status" className="text-small font-semibold text-brand">
+                {t.auth.checkEmailDesc}
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={handleResendEmail}
+                disabled={isResendingConfirm}
+                className="inline-flex h-9 items-center justify-center rounded-pill border border-border bg-surface px-4 text-caption font-semibold text-brand hover:bg-surface-tint focus:outline-none focus:ring-2 focus:ring-focus disabled:opacity-50"
+              >
+                {isResendingConfirm ? t.auth.sendingConfirmationLink : t.auth.resendNoticeLink}
+              </button>
+            )}
+          </div>
+        </div>
       )}
 
       <form
@@ -703,14 +769,16 @@ export default function CheckoutPage() {
             <div className="space-y-3 pt-2">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || (Boolean(user) && !isEmailVerified)}
                 className="w-full h-12 flex items-center justify-center rounded-pill bg-brand px-6 text-body font-semibold text-brand-contrast transition-opacity hover:opacity-90 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-focus shadow-pill"
               >
                 {isSubmitting
                   ? t.checkout.submitting
-                  : activePaymentMethod === 'instapay_qr' && requireApproval
-                    ? t.checkout.submit_request || 'إرسال الطلب'
-                    : t.checkout.submit}
+                  : Boolean(user) && !isEmailVerified
+                    ? t.auth.emailVerificationRequired
+                    : activePaymentMethod === 'instapay_qr' && requireApproval
+                      ? t.checkout.submit_request || 'إرسال الطلب'
+                      : t.checkout.submit}
               </button>
 
               {activePaymentMethod === 'instapay_qr' && requireApproval && (

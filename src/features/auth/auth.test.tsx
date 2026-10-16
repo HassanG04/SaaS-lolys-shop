@@ -219,11 +219,13 @@ describe('Authentication unit tests (T-2.04)', () => {
       const nameInput = await screen.findByLabelText('الاسم الكامل')
       const emailInput = screen.getByLabelText('البريد الإلكتروني')
       const passwordInput = screen.getByLabelText('كلمة المرور')
+      const confirmPasswordInput = screen.getByLabelText('تأكيد كلمة المرور')
       const submitBtn = screen.getByRole('button', { name: 'إنشاء حساب' })
 
       await user.type(nameInput, 'فاطمة أحمد')
       await user.type(emailInput, 'fatima@example.com')
       await user.type(passwordInput, 'SecurePass1234')
+      await user.type(confirmPasswordInput, 'SecurePass1234')
       await user.click(submitBtn)
 
       expect(

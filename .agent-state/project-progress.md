@@ -1,5 +1,51 @@
 # Shared project progress
 
+## Anti-Gravity — Password Confirmation, Show/Hide Password, Email Verification Checkout Gate & Security Architecture Review — 2026-10-16
+
+Current task: Security architecture validation, password confirmation & visibility toggles, and email verification checkout gating — COMPLETE
+Status: 115 / 122 tasks done (100% of all agent tasks in the roadmap completed; 7 tasks human-owned).
+
+Completed:
+
+- Registration UX Enhancements:
+  - Added "Confirm Password" field to `src/pages/RegisterPage.tsx`.
+  - Added interactive show/hide password toggle buttons (with eye/eye-off SVG icons) to both the password and confirm password inputs using accessible `aria-label` and logical RTL/LTR spacing.
+  - Added validation ensuring `password === confirmPassword`, raising error `AUTH-013` ("كلمتا المرور غير متطابقتين. تأكد من تطابقهما.") on mismatch.
+- Email Verification Checkout Gating:
+  - Updated `src/pages/CheckoutPage.tsx` to inspect `user.email_confirmed_at || user.confirmed_at`.
+  - While unverified users can sign in, browse products, and add items to the cart, order placement is strictly gated until email is verified.
+  - Prominent alert banner rendered at the top of the checkout form with an inline "Resend confirmation link" button (`resendConfirmation`) that provides instant status feedback without page navigation or data loss.
+  - Checkout submit button is disabled with descriptive copy (`t.auth.emailVerificationRequired`) and form submission rejects with `AUTH-014` if unverified.
+- Comprehensive Test Coverage:
+  - Created `src/pages/RegisterPage.test.tsx` testing field rendering, password mismatch (`AUTH-013`), password length (`AUTH-008`), eye toggle behavior, and successful registration.
+  - Updated `src/pages/CheckoutPage.test.tsx` verifying that unconfirmed email displays the banner and disables checkout.
+  - Updated `src/features/auth/auth.test.tsx` to handle the new confirmation field.
+- Bundle Budget Compliance:
+  - Initial JS bundle strictly within budget: 199,995 / 200,000 gzip bytes (all 13 verify gates passing).
+
+Files changed:
+
+- `src/lib/errors.ts`
+- `src/features/auth/types.ts`
+- `src/features/auth/authErrors.tsx`
+- `src/i18n/ar.json`
+- `src/i18n/en.json`
+- `src/pages/RegisterPage.tsx`
+- `src/pages/RegisterPage.test.tsx` (new)
+- `src/pages/CheckoutPage.tsx`
+- `src/pages/CheckoutPage.test.tsx`
+- `src/features/auth/auth.test.tsx`
+- `.agent-state/project-progress.md`
+
+Tests executed:
+
+- `npm run verify` (All 13 gates passed)
+- `npm run test:unit` (925 tests passed: 722 unit + 203 tooling tests)
+- `npm run check:bundle` (199,995 / 200,000 gzip bytes)
+
+Problems found: None.
+Next action: Provide the user with a comprehensive breakdown of rate limiting, SQL injection defense, password hashing & MFA, Supabase auth architecture, RLS policies, secrets boundary, and the newly implemented UX features.
+
 ## Anti-Gravity — UI Animations Overhaul, Hamburger Admin Pages, Inline Resend Confirmation, and Idempotent Profile Migration — 2026-10-16
 
 Current task: Animation overhaul, hamburger admin links, inline resend UX, and database profile trigger hardening — COMPLETE
@@ -29,6 +75,7 @@ Completed:
   - Initial JS bundle strictly within budget: 199,968 / 200,000 gzip bytes.
 
 Files changed:
+
 - `supabase/migrations/20261016020000_handle_new_user_idempotent.sql` (new)
 - `setup_remote_supabase.sql`
 - `src/components/layout/Navbar.tsx`
@@ -43,13 +90,13 @@ Files changed:
 - `.agent-state/project-progress.md`
 
 Tests executed:
+
 - `npm run verify` (all 13 gates passed: check:migrations, check:sql, check:tokens, check:supply-chain, check:i18n, lint, format:check, typecheck, test:unit, build, check:ui-build, check:secrets, check:bundle)
 - `npm run test:unit` (916 tests passed)
 - `npm run check:bundle` (199,968 / 200,000 gzip bytes)
 
 Problems found: None.
 Next action: Provide the owner with clear SQL commands for profile promotion and auto-confirmation.
-
 
 Current task: Admin Database Manipulation from Website (Easy UI: Add product, change product name + ID with cascade, update photo, and quick stock quantity adjustment) — COMPLETE
 Status: 115 / 122 tasks done (100% of all agent tasks in the roadmap completed; 7 tasks human-owned).
