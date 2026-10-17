@@ -689,6 +689,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Cross-user access denied by database/storage tests; both languages/themes and upload failure paths checked.
 - **Verify:** `npm run db:reset && npm run db:test && npm run verify`
 
+#### T-2.12a: Reliable authentication challenge lifecycle
+`status: done` `owner: agent` `needs: T-2.04` `size: M`
+- **Do:** Repair Turnstile cleanup and callback stability, discard expired/failed/consumed tokens, renew challenges for login/signup/reset/resend, reject dummy keys in production, and isolate synthetic tokens to tests. This supports SEC-05/06; it is not a custom risk engine or proof of hosted CAPTCHA enforcement.
+- **Done when:** Missing/expired challenges cannot submit from the forms; retries remain usable; Strict Mode and late callbacks are safe; neutral auth responses and full verify pass. Hosted controls remain separately owner-verified.
+- **Verify:** `npm run verify`; authentication lifecycle regression tests.
+
 ### Phase 3: Storefront
 
 #### T-3.01: Catalog API
@@ -1566,4 +1572,6 @@ What gets easier, what gets harder, what to watch.
 | 0004 | Analytics stack and synthetic time series pipeline | accepted (T-9.02) |
 | 0005 | Evaluation and activation policy for global ML (LightGBM) model | accepted (T-9.06) |
 
-| 2026-10-18 | T-3.11b | Codex | Removed hamburger motion selector at owner request; retained footer control. Isolated checkout; npm ci and full verify passed (777 app + 203 tooling tests; 199,716/200,000 gzip bytes). No hosted deployment or production acceptance claimed. | pending |
+| 2026-10-18 | T-3.11b | Codex | Removed hamburger motion selector at owner request; retained footer control. Isolated checkout; npm ci and full verify passed (779 app + 203 tooling tests; 199,716/200,000 gzip bytes). No hosted deployment or production acceptance claimed. | pending |
+
+| 2026-10-18 | T-2.12a | Codex | Fixed challenge teardown on typing, Strict Mode cleanup and stale callbacks; removed production dummy-key fallback and synthetic test token; auth forms renew consumed challenges and discard failed/expired tokens. SEC-05/06 owner review required. All 12 verify gates pass: 786 app + 203 tooling tests; 199,717/200,000 gzip bytes. Hosted CAPTCHA/rate-limit enforcement is not verified. | pending |
