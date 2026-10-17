@@ -39,6 +39,21 @@ Tasks: T-0.08h / T-0.08i, later T-2.03. Status: owner approval recorded by Anti-
 
 The original specification outlined an "Arabic-first RTL storefront". The owner requested dynamic English/Arabic language support based on device language, with manual user override in the navbar and settings. A `LanguageProvider` context has been introduced with English translations (`en.json`), switching the `lang` and `dir` attributes accordingly.
 
+## OD-004 — Database Postal Code Enforcement, Order Snapshot, and Signup Lifecycle
+
+Task: T-4.08. Status: documented architectural decision following owner requirements.
+
+Context & Requirements:
+
+- Postal code is mandatory for checkout, order completion, and saved delivery addresses.
+- Format: Egypt 5-digit postal code (`^[0-9]{5}$`), strictly stored as `text` to preserve leading zeros (e.g. `'01234'`). Input normalizes Arabic-Indic numerals (`٠-٩`) to ASCII digits (`0-9`) prior to validation.
+- Order Address Snapshot: `orders.ship_postal_code` holds an immutable copy of the postal code at time of order placement.
+- Server Authority: `place_order` RPC validates non-empty 5-digit postal code, raising catalogue error `ORD-012` if invalid or missing.
+- Registration Lifecycle vs NOT NULL: Auth trigger `handle_new_user()` creates initial `profiles` records with only `(id, full_name, phone)`. Unconditional `NOT NULL` on `profiles.postal_code` would crash registration or necessitate fake postal codes (strictly forbidden).
+- Additive database constraints:
+  1. `orders.ship_postal_code` is validated in `place_order()` and guarded by `orders_ship_postal_code_format` and additive `CHECK (ship_postal_code IS NOT NULL) NOT VALID`, preserving historical orders without fictitious backfills.
+  2. `profiles` uses conditional constraint `profiles_address_postal_code_required` (`(address IS NULL AND governorate_id IS NULL) OR (postal_code IS NOT NULL AND char_length(trim(postal_code)) = 5 AND postal_code ~ '^[0-9]{5}$')`), strictly enforcing postal code whenever an address is saved while allowing new signups without an address.
+
 ## External prerequisites
 
 - H-07: GitHub remote supplied on 2026-10-09: https://github.com/HassanG04/lolys

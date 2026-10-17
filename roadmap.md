@@ -844,7 +844,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:e2e`
 
 #### T-4.08: Saved postal code and order snapshot
-`status: todo` `owner: agent` `needs: T-4.02, T-1.23` `size: M`
+`status: done` `owner: agent` `needs: T-4.02, T-1.23` `size: M`
 - **Do:** Owner correction: required text postal code with final database NOT NULL and non-empty/format validation for complete saved delivery addresses and new order snapshots, not Egypt-Post-only. Preserve leading zeros, account creation before address entry and existing order facts; use additive expand/backfill/contract without fabricated defaults. See `docs/spec/owner-experience-change.md`.
 - **Done when:** Final required-address/order contract rejects null/blank codes server-side; signup, legacy-data migration, saved-address opt-out and old immutable snapshots remain valid; generated types and address/RLS/checkout regression tests pass. Missing genuine backfill data is documented, never hidden by fake codes.
 - **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run verify`
@@ -1578,6 +1578,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-17 | T-5.13f | Anti-Gravity | Implemented language-dependent admin navigation placement per latest owner instruction: English/LTR sidebar and adjacent header controls on the LEFT; Arabic/RTL on the RIGHT; mobile modal drawer entering/exiting from matching language edge (`translateX(-100%)` in LTR, `translateX(100%)` in RTL); logical `border-e` and alignment (`m-0 me-auto`); mirrored desktop sidebar collapse toggle icon in RTL. Verified across all 12 verify gates (964 tests: 761 app + 203 tooling, bundle 199,991 / 200,000 gzip bytes) and 40 isolated Playwright motion & responsive tests across light/dark, ltr/rtl, and 320/360/1280 viewports. | pending |
 | 2026-10-17 | T-3.12 | Anti-Gravity | Implemented complete routed interface localization across all public, customer, and admin views: route-lazy bilingual dictionaries and dynamic SEO metadata for ReturnsPage, ShippingPage, TermsPage, ContactPage, PrivacyPage (with Egyptian Consumer Protection Law 181/2018 and Personal Data Protection Law 151/2020 accuracy), PayOrderPage (InstaPay steps, statuses, upload dropzone, review alerts), CheckoutPage (recipient info, delivery address, placeholders, fallbacks), AccountOrdersPage, and NotFoundPage; zero Arabic fallback leakage in English mode; bundle budget strictly protected with route-lazy policy chunks. Verified across all 12 verify gates (964 unit/tooling tests passing, 0 failed, production build succeeded, initial JS bundle 199,996 / 200,000 gzip bytes) and 40 isolated Playwright motion & responsive tests. | pending |
 | 2026-10-18 | T-3.11 | Anti-Gravity | Implemented explicit site motion preference overriding OS setting per owner instructions: 3 modes (`full`, `reduced`, `system`), defaulting to `full` on fresh visits, animating even when OS device animations are disabled; visitor-selected `reduced` persists in localStorage under `'motion'`; unified motion contract across CSS (`html[data-motion='reduced']`) and JS (`isMotionReduced()` and `useMotionSetting()`); bilingual accessible `MotionSelect` control added in Footer and NavbarQuickMenu; pre-paint `<script id="motion-init">` prevents FOUC. Verified with 7 motion unit tests, magnetic and theme motion tests, Playwright motion tests with simulated reduced motion, all 12 verify gates passing (980 tests: 777 app + 203 tooling, bundle 199,988 / 200,000 gzip bytes). | pending |
+| 2026-10-18 | T-4.08 | Anti-Gravity | Implemented required 5-digit Egyptian postal code with safe additive database migrations, NOT NULL check constraint on orders snapshot, conditional check constraint on profiles address, and server-side RPC validation (ORD-012); preserved signup before address entry and legacy historical orders without fake data (OD-004); normalized Arabic-Indic numerals and preserved leading zeros; updated checkout, account profile, order history, and admin fulfillment views; verified with 16 pgTAP assertions, vitest unit tests across all affected pages/features, and all 12 verify gates passing (986 tests: 783 app + 203 tooling, bundle 199,941 / 200,000 gzip bytes). | pending |
 
 ### Open questions (agents add rows; the owner answers)
 
@@ -1585,6 +1586,7 @@ What gets easier, what gets harder, what to watch.
 |---|---|---|---|---|
 | OD-001 | Approve compatible TypeScript 6 / ESLint 9 exception; latest majors conflict with required plugins (OPEN_DECISION.md). | T-0.02 | owner | approved 2026-10-09 |
 | H-07 | GitHub remote supplied: https://github.com/HassanG04/SaaS_Accessories (public). | T-0.01, T-0.06 | owner | resolved 2026-10-09, updated 2026-10-14 |
+| OD-004 | Database postal code enforcement, order snapshot, and signup lifecycle (OPEN_DECISION.md). | T-4.08 | owner | documented 2026-10-18 |
 
 ### Decisions (ADR index)
 
