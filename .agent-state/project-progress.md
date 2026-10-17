@@ -1,5 +1,107 @@
 # Shared project progress
 
+## Codex — Owner acceptance and required postal code — 2026-10-17
+
+Current task: continuation prompt/status documentation on `agent/T-5.13e-admin-slide-transitions`, application baseline unchanged from `65e3558`, prior handoff `60089dc`.
+
+Completed: recorded the owner's confirmation that the existing complete order → approval → payment → shipping flow, permissions, stock handling and database behavior were tested. That baseline is owner-confirmed, not still globally untested. Updated T-4.08 to required text postal code with final database NOT NULL/non-empty validation, preserving signup and real legacy address data.
+
+Files changed: latest owner follow-up, both handoff entry files, owner-experience spec, roadmap and this progress file. Documentation only.
+
+Tests executed: roadmap status read (139 tasks: 116 done, 7 doing, 16 todo); documentation consistency/format/diff/secret validation. No new application or database tests; owner testing is attributed to the owner, not a claimed Codex rerun.
+
+Problems found: NOT NULL on existing profile/address fields needs a safe backfill and registration strategy; no fake postal codes, empty defaults or historic order rewrites. Local Docker limits new schema regression testing, not the validity of the owner's previous testing. Remaining features and distinct owner launch tasks stay open.
+
+Next action: Anti-Gravity continues from latest handoff, implements remaining UI/editor/data tasks, prioritizes required postal code when the approved DB test environment is available, and regression-tests changed behavior while preserving the owner-confirmed transactional baseline.
+
+## Codex — Latest owner correction handoff — 2026-10-17
+
+Current task: documentation-only owner handoff on `agent/T-5.13e-admin-slide-transitions`, starting at `65e3558`. Preserve Anti-Gravity's homepage `0395a0e` and admin-motion `8714d4c` implementation.
+
+Completed: created `docs/handoff/OWNER-FOLLOWUP-2026-10-17.md`, updated both entry handoffs/spec/roadmap. Recorded visible Admin entry vs separate unfinished mouse editor, actual unsupported card-position class selectors, left English/right Arabic dashboard, complete policy/route localization and the owner's explicit new site motion policy. Production blockers and evidence boundaries included.
+
+Files changed: latest owner follow-up, `HANDOVER_TO_ANTI_GRAVITY.md`, `CODEX-TO-ANTI-GRAVITY.md`, owner-experience spec, roadmap and this file. No application code changed.
+
+Tests executed: read AG report of 758 app + 203 tooling tests and 36 isolated browser checks; NOT independently rerun here. Inspected current source and compiled CSS: `inset-inline-start-2` and `inset-inline-end-2` selectors absent. Docker server probe still fails with absent `dockerDesktopLinuxEngine` pipe. Handoff validation: formatting/roadmap/diff/secret checks only.
+
+Problems found: Returns/Shipping/Terms/Contact remain hard-coded Arabic; Admin entry only in menu, persistent editor absent; OS motion suppression exists in multiple CSS/JS paths; current admin location contradicts latest owner preference. Owner launch tasks/evidence, data features and full approval/payment/shipping verification remain outstanding. Do not report a readiness percentage from task counts.
+
+Next action: Anti-Gravity reads latest follow-up first, creates `agent/T-3.10b-admin-entry-and-card-badges` from this branch, then follows the documented correction order. User has now explicitly authorized motion independent of device preference; preserve an explicit visitor Reduced mode. No merge/deploy/dashboard/reset action.
+
+## Anti-Gravity — Admin Slide Transitions & Experience Completion (T-5.13e) — 2026-10-17
+
+Current task: T-5.13e completed on `agent/T-5.13e-admin-slide-transitions`. Next: review remaining tasks / handoff to Codex.
+
+Completed:
+
+- Desktop admin sidebar smooth collapse & expand: slides smoothly to width 0 with inner container translated off-canvas, border collapse, and keyboard interactivity suppression via `inert` attribute when collapsed.
+- Mobile admin drawer modal slide transition: native `<dialog>` with `showModal()`, smooth cubic-bezier slide-in and slide-out from physical right (`transform: translateX(100%)` to `translateX(0)` and back), backdrop opacity transition, focus return to opener element on close, backdrop click handler, and reduced-motion fallback.
+- Persistent header & inner route transition: keyed route wrapper (`<div key={location.pathname} className="admin-page-transition">`) animating entry on pathname navigation without replays on filter/query string changes, and inner scroll reset on `#admin-main` (`scrollTop = 0`).
+- Localized AdminFallback skeleton loader: replaces raw loader with token-compliant skeleton cards using `t.ui.loading` across Arabic and English locales.
+- Updated Playwright test suites: 36 tests (24 motion + 12 responsive) all passing across light/dark, ltr/rtl, 320/360/1280, reduced-motion, and hover/focus/transition states.
+
+Files changed: `src/features/admin/AdminSidebar.tsx`, `src/features/admin/AdminShell.tsx`, `src/features/admin/AdminRoutes.tsx`, `src/features/admin/admin.test.tsx`, `src/features/admin/adminTransitions.test.tsx`, `src/styles/storefront.css`, `e2e/ui/motion.spec.ts`, `roadmap.md`.
+
+Tests executed:
+
+- All 12 `npm run verify` gates passed exit code 0:
+  - `check:migrations`: Existing migrations unchanged.
+  - `check:sql`: SQL guards passed.
+  - `check:tokens`: Documented tokens verified.
+  - `check:supply-chain`: Supply-chain dependencies passed.
+  - `check:i18n`: All translation keys synchronized across ar/en.
+  - `lint`: ESLint passed cleanly.
+  - `format:check`: Prettier passed.
+  - `typecheck`: TypeScript compiler passed (`tsc -b`).
+  - `test:unit`: 758 application tests + 203 tooling tests passed (961 total tests passed, 0 failed).
+  - `build` & `check:ui-build`: Production build succeeded.
+  - `check:secrets`: Tracked files and build passed.
+  - `check:bundle`: 199,990 / 200,000 gzip bytes passed (10 bytes headroom).
+- Playwright motion & responsive suite (`npx playwright test --config playwright.motion.config.ts`): all 36 tests passed (24 motion + 12 responsive).
+- `npm run roadmap:check`: Valid (135 tasks).
+
+Problems found: None.
+
+Next action: Commit changes on `agent/T-5.13e-admin-slide-transitions` and write `HANDOVER_TO_CODEX.md` summarizing the verified owner-experience deliverables, exact acceptance checks, and remaining launch blockers.
+
+## Anti-Gravity — Homepage Visual Repairs & Truthful Presentation (T-3.10a) — 2026-10-17
+
+Current task: T-3.10a completed on `agent/T-3.10a-homepage-visual-repair`. Next implementation: T-5.13e (Admin sidebar, drawer, and page transitions).
+
+Completed:
+
+- Replaced active `ArchFrame` on routed `HomePage` with rounded landscape/square photo (`storefront-photo`, `aspect-[4/3]`, `rounded-card`) and caption (`storefront-caption`).
+- Replaced invented 50% discount fallback: truthfully computes `salePercent` (strictly finite > 0), rendering sale badge only when active promotion exists; otherwise displays neutral `t.hero.eyebrow`, `t.hero.cozyTitle`, and `t.hero.shopCta`.
+- Fixed bilingual copy leaks in About tagline (`t.brand.tagline`) and Returns details (`t.catalog.returnsDetails`), with synchronized i18n dictionary keys across `ar.json` and `en.json`.
+- Filtered delivery payment badges dynamically based on `settings?.payment_methods_enabled`.
+- Implemented hover and focus-within enlargement on `.feature-card` (1.02 scale with popover shadow and brand border) guarded under `@media (prefers-reduced-motion: no-preference)`, with smooth reversal on pointer leave / blur and transform suppression under reduced motion.
+- Wrapped `#about` section in `<SectionReveal>` for viewport entry animation.
+- Streamlined route title lookup in `useRouteSeo.ts` to maintain initial JS bundle strictly under the 200,000 gzip bytes limit (199,993 bytes in 3 initial chunks).
+
+Files changed: `src/pages/HomePage.tsx`, `src/pages/HomePage.test.tsx`, `src/App.test.tsx`, `src/styles/storefront.css`, `src/features/seo/useRouteSeo.ts`, `src/i18n/ar.json`, `src/i18n/en.json`, `e2e/ui/motion.spec.ts`, `roadmap.md`.
+
+Tests executed:
+
+- All 12 `npm run verify` gates passed exit code 0:
+  - `check:migrations`: Existing migrations unchanged.
+  - `check:sql`: SQL guards passed.
+  - `check:tokens`: Documented tokens verified.
+  - `check:supply-chain`: Supply-chain dependencies passed.
+  - `check:i18n`: All translation keys synchronized across ar/en.
+  - `lint`: ESLint passed.
+  - `format:check`: Prettier passed.
+  - `typecheck`: TypeScript compiler passed (`tsc -b`).
+  - `test:unit`: 752 application tests + 203 tooling tests passed (955 total tests passed, 0 failed).
+  - `build`: Production build succeeded.
+  - `check:secrets`: Passed.
+  - `check:bundle`: 199,993 / 200,000 gzip bytes passed.
+- Playwright motion & responsive suite (`npx playwright test --config playwright.motion.config.ts`): all 32 tests passed (20 motion + 12 responsive).
+- `npm run roadmap:check`: Valid (135 tasks).
+
+Problems found: None. Initial bundle budget remains strictly compliant at 199,993 bytes (7 bytes headroom).
+
+Next action: Switch to branch `agent/T-5.13e-admin-slide-transitions` to implement admin sidebar slide transition, mobile drawer entry/exit animation, persistent-header inner route transition, and localized visible skeleton loaders.
+
 ## Codex — Complete owner-request handoff — 2026-10-17
 
 Current task: owner-requested documentation handoff on `agent/T-5.13d-responsive-evidence`, application/evidence baseline `b17371e`. Next implementation: T-3.10a homepage visual repairs, then T-5.13e admin transitions.

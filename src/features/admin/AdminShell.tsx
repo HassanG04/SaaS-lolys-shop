@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { AdminHeader } from './AdminHeader'
 import { AdminSidebar } from './AdminSidebar'
 import { AdminRoutes } from './AdminRoutes'
@@ -6,6 +7,15 @@ import { AdminRoutes } from './AdminRoutes'
 export default function AdminShell() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [desktopCollapsed, setDesktopCollapsed] = useState(false)
+  const location = useLocation()
+  const mainRef = useRef<HTMLDivElement>(null)
+
+  // Reset inner scroll container on pathname change (not on search param changes)
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0
+    }
+  }, [location.pathname])
 
   return (
     <div className="admin-workspace h-dvh min-h-0 overflow-hidden flex lg:flex-row-reverse rtl:lg:flex-row bg-bg text-text font-sans antialiased">
@@ -26,11 +36,14 @@ export default function AdminShell() {
         />
 
         <div
+          ref={mainRef}
           id="admin-main"
           tabIndex={-1}
           className="flex-1 min-h-0 p-4 sm:p-6 lg:p-8 overflow-y-auto focus:outline-none"
         >
-          <AdminRoutes />
+          <div key={location.pathname} className="admin-page-transition">
+            <AdminRoutes />
+          </div>
         </div>
       </div>
     </div>

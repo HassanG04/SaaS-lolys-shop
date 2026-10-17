@@ -20,10 +20,15 @@ English must both work. No production change is authorized by this document.
    must match actual discounts (no fixed 50% claim). Editable category shortcut
    list with add control; catalogue sections keep their existing behavior.
    Hover/focus enlarges the informational cards without clipping text.
-3. **T-4.08 — Postal addresses:** add postal code to saved cloud addresses and
-   immutable order address snapshots; validate it for postal delivery and show
-   it to fulfilment staff. Preserve existing addresses/orders through additive
-   migrations. Confirm applicable postal format from an authoritative source.
+3. **T-4.08 — Postal addresses:** owner correction: postal code is required,
+   database `NOT NULL`, with non-empty/format validation, on complete saved
+   delivery addresses and new immutable order address snapshots. It is not an
+   optional field or limited to Egypt Post. Store as text, preserve leading zeros,
+   show it to fulfilment staff, and preserve signup before address entry. Use
+   additive expand/backfill/contract migrations; no fabricated codes, empty-string
+   defaults, deleted records or rewritten historical facts. Missing legacy data
+   must be resolved explicitly before the final constraint is claimed complete.
+   Confirm the postal format from an authoritative source.
 4. **T-2.10 — Customer updates:** hamburger My Orders link; in-app notification
    bell for a wishlisted product entering a sale, order approval and general
    sales. Wishlist data also informs admin demand. Customers can submit
@@ -43,6 +48,32 @@ English must both work. No production change is authorized by this document.
    admin idle timeout; ordinary reloads must not re-enroll an authenticator.
 
 ## Motion and reset
+
+### Owner-confirmed transactional baseline (2026-10-17)
+
+The owner confirms testing of the complete order → approval → payment → shipping
+flow, permissions, stock handling and database behavior. Treat that existing flow
+as owner-confirmed; do not list it wholesale as untested. New changes need their
+affected regression tests. This confirmation is not an invented automated-test
+run, CI result, SMTP check, recovery rehearsal or blanket completion of all launch
+tasks. Local Docker unavailability still limits verification of new schema work.
+
+### Latest owner correction (2026-10-17; takes precedence)
+
+The owner now requires English admin navigation on the left, Arabic on the right,
+with matching header toggle and mobile slide direction. This overrides earlier
+physical-right-in-both-languages wording below. Add visible storefront Admin
+access for the resolved admin role; the separate mouse-icon homepage editor
+still needs real persistent functionality. Sale ribbon and wishlist occupy
+opposite logical edges. Fully translate policy pages and all other routes,
+including body copy, validation, accessible names and errors.
+
+The owner explicitly requests motion even when device animation settings are
+off. Implement site modes Full (new default), Reduced and Follow device, with
+one persisted policy for CSS/JS. A visitor's explicit Reduced mode must suppress
+decorative motion; Follow device honors the OS. This replaces the earlier
+OS-always-wins default without removing the visitor's ability to reduce motion.
+See `docs/handoff/OWNER-FOLLOWUP-2026-10-17.md` for scope and acceptance tests.
 
 ### Explicit missed-feature handoff (2026-10-17)
 

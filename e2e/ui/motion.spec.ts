@@ -21,6 +21,10 @@ for (const theme of ['light', 'dark']) {
             <span class="flower-container"><span class="flower flower-1"><span class="flower-petal"></span><span class="flower-petal"></span><span class="flower-petal"></span><span class="flower-petal"></span></span></span>Buy</button>
           <div class="ui-skeleton" style="width:160px;height:120px"></div>
           <div class="catalog-grid" style="display:flex;gap:30px;margin:30px"><article class="ui-card catalog-product-card" style="width:160px;height:120px">Item</article><article class="ui-card catalog-product-card" style="width:160px;height:120px">Other item</article></div>
+          <article class="ui-card feature-card" style="width:160px;height:120px;margin:30px"><a href="#returns" class="returns-link">Returns</a></article>
+          <aside id="admin-desktop-sidebar" class="admin-desktop-sidebar is-expanded"><div class="admin-desktop-sidebar-inner" style="width:256px">Content</div></aside>
+          <dialog open id="admin-mobile-sidebar" class="admin-mobile-drawer is-closed" style="width:288px">Drawer</dialog>
+          <div class="admin-page-transition">Page Content</div>
         </body></html>`)
       })
 
@@ -94,6 +98,53 @@ for (const theme of ['light', 'dark']) {
         await expect(cards.nth(1)).toHaveCSS('filter', 'none')
       })
 
+      test('feature-card enlarges on hover and focus-within and reverses on leave/blur', async ({
+        page,
+      }) => {
+        const card = page.locator('.feature-card')
+        await card.hover()
+        await expect
+          .poll(() => card.evaluate((el) => getComputedStyle(el).transform))
+          .toContain('1.02')
+        await page.mouse.move(0, 0)
+        await expect(card).toHaveCSS('transform', 'none')
+
+        const link = page.locator('.returns-link')
+        await link.focus()
+        await expect
+          .poll(() => card.evaluate((el) => getComputedStyle(el).transform))
+          .toContain('1.02')
+        await link.blur()
+        await expect(card).toHaveCSS('transform', 'none')
+      })
+
+      test('admin desktop sidebar collapses and mobile drawer transitions from physical right', async ({
+        page,
+      }) => {
+        const desktopSidebar = page.locator('#admin-desktop-sidebar')
+        await expect(desktopSidebar).toHaveCSS('width', '256px')
+
+        await desktopSidebar.evaluate((el) => {
+          el.classList.remove('is-expanded')
+          el.classList.add('is-collapsed')
+        })
+        await expect(desktopSidebar).toHaveCSS('width', '0px')
+        await expect(desktopSidebar).toHaveCSS('visibility', 'hidden')
+
+        const drawer = page.locator('#admin-mobile-sidebar')
+        await drawer.evaluate((el) => {
+          el.classList.remove('is-closed')
+          el.classList.add('is-open')
+        })
+        await expect(drawer).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)')
+
+        await drawer.evaluate((el) => {
+          el.classList.remove('is-open')
+          el.classList.add('is-closing')
+        })
+        await expect(drawer).not.toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)')
+      })
+
       test('reduced motion stops animation while keeping skeletons visible', async ({ page }) => {
         await page.emulateMedia({ reducedMotion: 'reduce' })
         await page.getByRole('button').hover()
@@ -105,6 +156,16 @@ for (const theme of ['light', 'dark']) {
           'background-color',
           'rgba(0, 0, 0, 0)',
         )
+        await page.locator('.feature-card').hover()
+        await expect(page.locator('.feature-card')).toHaveCSS('transform', 'none')
+
+        const drawer = page.locator('#admin-mobile-sidebar')
+        await drawer.evaluate((el) => {
+          el.classList.remove('is-closed')
+          el.classList.add('is-open')
+        })
+        await expect(drawer).toHaveCSS('transform', 'none')
+        await expect(page.locator('.admin-page-transition')).toHaveCSS('animation-name', 'none')
       })
     })
   }
