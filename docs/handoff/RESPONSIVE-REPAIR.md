@@ -60,9 +60,10 @@ review complete.
 
 Editable hero/category shortcuts, postal code persistence, customer notifications,
 suggestions and profile photos remain unfinished database-dependent slices in
-`docs/spec/owner-experience-change.md`. The QR image at `ip/ip.jpeg` visibly names
-`alaa.ahm9624@instapay`, but its encoded payload has not been verified. A receiver
-fallback correction alone does not update the hosted shop setting. Existing
+`docs/spec/owner-experience-change.md`. The QR image at `ip/ip.jpeg` matches the
+SHA-256 of the historically decoded asset in `DATABASE-INTEGRATION.md`, which
+records the matching recipient. No fresh decode/bank verification was performed
+in this repair session. A receiver fallback correction alone does not update the hosted shop setting. Existing
 settings upload still uses the public product-images bucket; privacy of the
 setting does not make the file private. Review that with the payment amendment
 before claiming the complete QR flow is fixed.
@@ -71,3 +72,7 @@ The prepared reset SQL defaults to rollback and deliberately refuses a reset
 that would mutate the append-only stock ledger or leave owned Storage files.
 It has not been executed or database-tested. It is not a guaranteed working
 reset for a shop with stock history. Never disable those protections to force it.
+
+The complete continuation ledger now lives in root `HANDOVER_TO_ANTI_GRAVITY.md`.
+Draft PRs 29–33 are pushed to the owner-confirmed `HassanG04/SaaS-lolys-shop`;
+no PR has been merged and no remote CI success is claimed.

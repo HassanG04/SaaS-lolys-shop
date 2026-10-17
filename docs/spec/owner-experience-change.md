@@ -32,7 +32,8 @@ English must both work. No production change is authorized by this document.
 5. **T-2.11 — Profile photo:** user-owned storage path, safe image validation,
    re-encoding, size cap, access policies and replacement cleanup.
 6. **T-5.14 — InstaPay:** approved recipient is `alaa.ahm9624@instapay`.
-   Use the owner's `ip/ip.png` when available; verify the QR payload before
+   The actual owner asset is `ip/ip.jpeg` (original request called it `ip.png`);
+   reconcile its hash with historical decode evidence in `docs/handoff/DATABASE-INTEGRATION.md` and verify asset access before
    deploying it. Payment instructions remain private until order approval and
    come from the database. A screenshot marks an order under review, never paid;
    admin checks the actual transfer plus reference before confirming payment.
@@ -42,6 +43,19 @@ English must both work. No production change is authorized by this document.
    admin idle timeout; ordinary reloads must not re-enroll an authenticator.
 
 ## Motion and reset
+
+### Explicit missed-feature handoff (2026-10-17)
+
+The owner repeated the complete request and identified missing About Us effects
+and admin slide transitions. T-3.10a prioritizes active HomePage visual repairs:
+the rounded hero, truthful sale copy, bilingual informational cards, enabled-method
+badges and hover/focus enlargement with visible section entry. T-5.13e adds admin
+sidebar/drawer entry and exit, inner-page transitions, localized loading skeletons
+and persistent-header behavior. These visual slices can proceed without Docker.
+The persistent editor, postal code, notifications, suggestions and photos remain
+separate unfinished data-backed tasks. See `HANDOVER_TO_ANTI_GRAVITY.md` for the
+full ledger and exact acceptance criteria; no requirement is satisfied merely by
+an unused component, a CSS class or a mocked test.
 
 ### Responsive follow-up (T-5.13c, 2026-10-17)
 

@@ -751,6 +751,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Admin AAL2/audit/allow-list enforced; settings persist; no false promotion; responsive visual and database tests pass.
 - **Verify:** `npm run db:reset && npm run db:test && npm run verify && npm run test:e2e`
 
+#### T-3.10a: Visible homepage repairs before the editor
+`status: todo` `owner: agent` `needs: T-3.03` `size: M`
+- **Do:** Owner handoff priority: replace the active HomePage arch, remove invented 50% fallback, fix About/Returns English leaks and enabled-method badges, enlarge the three informational cards on hover/focus and reveal them when reached. Existing unused StorefrontHero is a reuse candidate, not proof of implementation. See `HANDOVER_TO_ANTI_GRAVITY.md`.
+- **Done when:** Actual routed page shows the changes at 320/360/1280 in both themes/languages; absent/zero promotion, long copy, touch and reduced motion behave correctly; no false sale or clipped cards; tests and verify pass. No schema changes required for this visual slice.
+- **Verify:** `npm run verify`; focused homepage tests and real-route browser acceptance with recorded evidence.
+
 ### Phase 4: Checkout and orders
 
 #### T-4.01: Delivery options API
@@ -899,9 +905,15 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Component and compiled-CSS tests pass; full verify passes; browser screenshots reviewed; database-backed E2E and remote review evidence recorded before claiming the parent repair complete.
 - **Verify:** `npm run verify && npm run test:e2e`; fixture commands in `docs/handoff/RESPONSIVE-REPAIR.md`.
 
+#### T-5.13e: Admin sidebar, drawer and page transitions
+`status: todo` `owner: agent` `needs: T-5.01, T-5.02` `size: M`
+- **Do:** Animate physical-right sidebar collapse/expansion and mobile dialog entry/exit, preserve modality/focus and persistent header/shell, animate only inner page content and reset its scroll on pathname navigation. Localize admin loading and use visible skeleton geometry. See `HANDOVER_TO_ANTI_GRAVITY.md`.
+- **Done when:** Open/close and rapid reversal work after scrolling on phones; hidden links are not tabbable; focus returns; route changes preserve shell/session; both languages/themes and reduced motion pass visible checks and verify.
+- **Verify:** `npm run verify`; responsive/motion regressions plus actual admin-route browser acceptance.
+
 #### T-5.14: Verify owner InstaPay recipient and QR
 `status: todo` `owner: agent` `needs: T-4.06, T-5.09` `size: S`
-- **Do:** Inspect `ip/ip.png`, verify QR payload, prepare owner-reviewed settings correction to `alaa.ahm9624@instapay`; follow `docs/spec/payment-flow-change.md` and `docs/spec/owner-experience-change.md`.
+- **Do:** Inspect the actual `ip/ip.jpeg` and historical decode evidence in `docs/handoff/DATABASE-INTEGRATION.md`; verify asset delivery and prepare owner-reviewed settings correction to `alaa.ahm9624@instapay`; follow `docs/spec/payment-flow-change.md` and `docs/spec/owner-experience-change.md`. A public file URL is not private merely because its setting has RLS.
 - **Done when:** Owner confirms correct merchant QR in authenticated post-approval flow; no public QR or invented payment URI; payment review remains authoritative.
 - **Verify:** `npm run verify && npm run test:e2e`
 
@@ -1494,6 +1506,8 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-17 | T-2.06b, T-5.13, T-5.13b | Codex | Local checkpoints 52dfb0b/a561e3c/5580295 repair MFA enrollment/session refresh, admin workspace/product controls and order/payment review navigation. Full verify at 5580295 passed (740 app + 203 tooling). Owner confirmed MFA enrollment and Windows motion setting. Docker absent blocks local DB/E2E; no cloud changes or launch claim. | pending |
 | 2026-10-17 | T-5.13c, T-5.13d | Codex | Right-side header, persistent mobile controls, centered switch and owner social links implemented. Split production changes (T-5.13c) from regression evidence (T-5.13d) for review size. Combined working tree passed all 12 verify gates (748 app + 203 tooling; bundle 199971/200000), plus 28 isolated browser checks (16 motion, 12 responsive). Screenshots reviewed; these fixtures do not test hosted data. Both tasks remain doing for database-backed E2E/remote review. | pending |
+
+| 2026-10-17 | T-3.10a, T-5.13e | Codex | Owner requested explicit Anti-Gravity handoff for missed features. Audited current routed source: arch/50% fallback, Arabic returns/tagline leaks, entrance-only About cards and instantaneous admin sidebar remain. Registered independent visual slices; replaced obsolete handoff with complete requirement ledger, file targets, acceptance checks and data blockers. No feature implementation in this handoff. Repairs pushed to owner-confirmed SaaS-lolys-shop; draft PRs 29–33 opened, no merges or remote CI success claimed. | [#33](https://github.com/HassanG04/SaaS-lolys-shop/pull/33) |
 
 ### Open questions (agents add rows; the owner answers)
 
