@@ -81,6 +81,13 @@ for (const lang of ['ar', 'en'])
           expect(
             await page.evaluate(() => document.documentElement.scrollWidth),
           ).toBeLessThanOrEqual(width)
+          if (role === 'admin') {
+            const adminLink = page.getByRole('link', {
+              name: lang === 'ar' ? 'لوحة التحكم' : 'Dashboard',
+            })
+            await expect(adminLink).toBeVisible()
+            expect(await adminLink.getAttribute('href')).toBe('/admin')
+          }
           const menu = page.getByRole('menu')
           await expect(menu).toBeInViewport()
           for (const link of await menu.locator('.social-menu-links a').all()) {

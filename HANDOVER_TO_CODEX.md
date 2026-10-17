@@ -19,6 +19,7 @@ All tasks requested for this session were implemented, verified with comprehensi
    - Status: `done` (marked in `roadmap.md` and Appendix G)
 
 ### Verification Metrics
+
 - **Verification Gates**: All 12 `npm run verify` checks passed cleanly (exit code 0):
   - `check:migrations`: Existing migrations unchanged.
   - `check:sql`: All migrations passed SQL guard rules.
@@ -44,6 +45,7 @@ All tasks requested for this session were implemented, verified with comprehensi
 ## 2. Deliverables by Owner Requirement
 
 ### Requirement A: Homepage Photo Frame, Truthful Copy & Card Enlargement (`T-3.10a`)
+
 - **Hero Frame**: Active routed `src/pages/HomePage.tsx` now renders rounded landscape/square photo frame (`storefront-photo`, `aspect-[4/3]`, `rounded-card`) with structured caption overlay (`storefront-caption`).
 - **Truthful Presentation**: Eliminated false 50% discount fallback. Truthfully checks `salePercent > 0`; when no active promotion exists, renders neutral eyebrow (`t.hero.eyebrow`), cozy title (`t.hero.cozyTitle`), and shop CTA (`t.hero.shopCta`).
 - **Bilingual Cleanliness**: Removed Arabic text leaks in English Returns summary (`t.catalog.returnsDetails`) and brand tagline (`t.brand.tagline`); synchronized keys in `ar.json` and `en.json`.
@@ -52,6 +54,7 @@ All tasks requested for this session were implemented, verified with comprehensi
 - **Viewport Entrance**: Wrapped `#about` section in `<SectionReveal>`.
 
 ### Requirement B: Admin Sidebar Slide, Mobile Drawer & Inner Route Transitions (`T-5.13e`)
+
 - **Desktop Sidebar Collapse**:
   - Desktop `<aside id="admin-desktop-sidebar">` collapses smoothly to width 0 (`transition: width 300ms cubic-bezier(0.25, 1, 0.5, 1)`).
   - Inner container translates off-canvas (`transform: translateX(100%)` for LTR, `-100%` for RTL).
@@ -79,6 +82,7 @@ All tasks requested for this session were implemented, verified with comprehensi
 ## 3. Files Changed Across Sessions
 
 ### Branch `agent/T-3.10a-homepage-visual-repair` (`0395a0e`):
+
 - `src/pages/HomePage.tsx`
 - `src/pages/HomePage.test.tsx`
 - `src/App.test.tsx`
@@ -91,6 +95,7 @@ All tasks requested for this session were implemented, verified with comprehensi
 - `.agent-state/project-progress.md`
 
 ### Branch `agent/T-5.13e-admin-slide-transitions` (`8714d4c`):
+
 - `src/features/admin/AdminRoutes.tsx`
 - `src/features/admin/AdminShell.tsx`
 - `src/features/admin/AdminSidebar.tsx`
@@ -106,6 +111,7 @@ All tasks requested for this session were implemented, verified with comprehensi
 ## 4. Remaining Owner Work & Known Blockers
 
 Per `roadmap:next`, the active upcoming task is:
+
 - **`T-2.10` (Customer notifications and suggestions)**:
   - Add wishlist sale notifications, order approval notifications, and general sale alerts.
   - Customer suggestion submission with rate limits and owner-scoped RLS.
@@ -113,6 +119,7 @@ Per `roadmap:next`, the active upcoming task is:
   - Bounded data retention documentation.
 
 ### External / Environment Blockers
+
 1. **Docker Engine**: Unavailable on host system. Commands `db:reset`, `db:test`, and `test:e2e` cannot be executed locally without Docker.
 2. **Payment QR Asset Delivery**: InstaPay QR asset verified offline against historical hash, but delivery via public storage conflicts with approval-only privacy rules until owner confirms publication mode.
 3. **Reset Database Script**: Destructive reset script exists but intentionally fails on ledger/storage constraints; awaiting owner decision on test data retention.
@@ -123,10 +130,13 @@ Per `roadmap:next`, the active upcoming task is:
 ## 5. Next Recommended Command
 
 To inspect the next task or begin work on `T-2.10`:
+
 ```bash
 npm run roadmap:next
 ```
+
 Or to switch to a new task branch:
+
 ```bash
 git checkout -b agent/T-2.10-notifications-suggestions
 ```

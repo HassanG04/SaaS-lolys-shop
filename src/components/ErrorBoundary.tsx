@@ -49,7 +49,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           <div
             role="alert"
             aria-live="assertive"
-            className="flex flex-col items-center justify-center rounded-card border border-border bg-surface p-6 text-center text-text shadow-pill sm:p-8"
+            className="flex flex-col items-center justify-center rounded-card border border-border bg-surface p-6 text-center shadow-pill sm:p-8"
           >
             <div className="mb-4 flex size-12 items-center justify-center rounded-pill bg-surface-tint text-danger">
               <svg
@@ -60,8 +60,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 strokeWidth="2"
                 className="size-6"
               >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 8v4m0 4h.01" />
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m0 6v4m0 4h.01" />
               </svg>
             </div>
             <h3 className="text-h3 font-bold text-brand">

@@ -83,7 +83,7 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
           </Link>
 
           {!user ? (
-            <Link to="/login" className={`hidden sm:flex ${pill}`} aria-label={t.nav.loginRegister}>
+            <Link to="/login" className={`hidden sm:flex ${pill}`}>
               {t.nav.loginRegister}
             </Link>
           ) : (
@@ -94,6 +94,26 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
               title={profile?.full_name || user.email || ''}
             >
               {initials(profile?.full_name, user.email)}
+            </Link>
+          )}
+
+          {!auth?.loading && user && auth?.role === 'admin' && (
+            <Link
+              to="/admin"
+              className={`ui-control flex gap-1.5 ${pill} border-brand/40 bg-brand/10 text-brand font-semibold shrink-0`}
+              aria-label={t.admin.dashboard}
+            >
+              <svg
+                className="size-5 shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <path d="M3 3h7v9H3zm11 0h7v5h-7zm0 9h7v9h-7zM3 16h7v5H3z" />
+              </svg>
+              <span className="hidden md:inline">{t.admin.dashboard}</span>
             </Link>
           )}
 

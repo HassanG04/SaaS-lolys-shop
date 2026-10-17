@@ -643,4 +643,32 @@
       transform: none !important;
     }
   }
+
+  /* Opposite product card badges and wishlist toggle */
+  .product-badges-overlay {
+    inset-inline-start: 0.5rem;
+    top: 0.5rem;
+  }
+  .product-favorite-overlay {
+    inset-inline-end: 0.5rem;
+    top: 0.5rem;
+  }
+
+  /* Compact storefront header controls on narrow viewports */
+  @media (max-width: 639px) {
+    header > div {
+      padding-inline: 0.5rem !important;
+      gap: 0.25rem !important;
+    }
+    header > div > div.flex {
+      gap: 0.25rem !important;
+    }
+    header > div > div.flex > *,
+    header > div > div.flex button {
+      width: 2.25rem !important;
+      height: 2.25rem !important;
+      min-width: 2.25rem !important;
+      padding-inline: 0.25rem !important;
+    }
+  }
 }

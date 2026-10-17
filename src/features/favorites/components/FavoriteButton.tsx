@@ -24,7 +24,7 @@ export function FavoriteButton({
 }: FavoriteButtonProps) {
   const auth = useOptionalAuth()
   const user = auth?.user ?? null
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const toast = useContext(ToastContext)
   const location = useLocation()
   const [loginDialogOpen, setLoginDialogOpen] = useState(false)
@@ -33,6 +33,8 @@ export function FavoriteButton({
   const toggleMutation = useToggleFavorite(user?.id)
 
   const isFavorite = favoriteIds.includes(product.id)
+  const productName =
+    lang === 'ar' ? product.name_ar || product.name : product.name || product.name_ar
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
@@ -71,8 +73,8 @@ export function FavoriteButton({
         aria-pressed={isFavorite}
         aria-label={
           isFavorite
-            ? `${t.favorites?.remove || 'إزالة من المفضلة'} - ${product.name_ar || product.name}`
-            : `${t.favorites?.add || 'إضافة إلى المفضلة'} - ${product.name_ar || product.name}`
+            ? `${t.favorites?.remove || 'إزالة من المفضلة'} - ${productName}`
+            : `${t.favorites?.add || 'إضافة إلى المفضلة'} - ${productName}`
         }
         data-testid={`favorite-button-${product.id}`}
         data-favorited={isFavorite ? 'true' : 'false'}

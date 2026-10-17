@@ -107,6 +107,20 @@ for (const lang of ['ar', 'en'] as const) {
         expect(
           within(menu).getByRole('menuitem', { name: lang === 'ar' ? 'طلباتي' : 'My Orders' }),
         ).toHaveAttribute('href', '/account/orders')
+
+      if (role === 'admin') {
+        const adminHeaderLink = screen.getByRole('link', {
+          name: lang === 'ar' ? 'لوحة التحكم' : 'Dashboard',
+        })
+        expect(adminHeaderLink).toHaveAttribute('href', '/admin')
+      } else {
+        expect(
+          screen.queryByRole('link', {
+            name: lang === 'ar' ? 'لوحة التحكم' : 'Dashboard',
+          }),
+        ).not.toBeInTheDocument()
+      }
+
       fixture(`${lang}-store-${role}`, container)
       await user.keyboard('{Escape}')
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()

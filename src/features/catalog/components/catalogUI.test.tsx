@@ -241,6 +241,32 @@ describe('Catalog UI Components (T-3.02)', () => {
       await user.click(btn)
       expect(onAdd).not.toHaveBeenCalled()
     })
+
+    it('places offer badge opposite wishlist button using logical start and end classes (T-3.10b)', () => {
+      const { container } = renderWithProviders(
+        <ProductCard product={mockAvailableProduct} />,
+        'ar',
+      )
+
+      const badgeOverlay = container.querySelector('.product-badges-overlay')
+      const favoriteOverlay = container.querySelector('.product-favorite-overlay')
+
+      expect(badgeOverlay).toBeInTheDocument()
+      expect(badgeOverlay?.className).toContain('start-2')
+      expect(favoriteOverlay).toBeInTheDocument()
+      expect(favoriteOverlay?.className).toContain('end-2')
+
+      // In Arabic, favorite button accessible name uses Arabic name
+      const favBtnAr = screen.getByRole('button', { name: /إضافة إلى المفضلة - سوار ذهبي/ })
+      expect(favBtnAr).toBeInTheDocument()
+    })
+
+    it('renders English product name in favorite button accessible name when language is en (T-3.10b)', () => {
+      renderWithProviders(<ProductCard product={mockAvailableProduct} />, 'en')
+
+      const favBtnEn = screen.getByRole('button', { name: /Add to favorites - Golden Bracelet/ })
+      expect(favBtnEn).toBeInTheDocument()
+    })
   })
 
   describe('CategoryTile', () => {

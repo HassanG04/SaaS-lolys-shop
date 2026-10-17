@@ -66,13 +66,13 @@ export function ProductCard({
           </Link>
 
           {/* Badges Overlay */}
-          <div className="pointer-events-none absolute inset-inline-start-2 top-2 flex flex-col items-start gap-1">
+          <div className="product-badges-overlay pointer-events-none absolute start-2 top-2 z-10 flex max-w-[calc(100%-3.5rem)] flex-col items-start gap-1">
             {hasDiscount && <Badge variant="sale" label={`-${product.discount_percent}%`} />}
             {isSoldOut && <Badge variant="sold-out" label={t.product.soldout} />}
           </div>
 
           {/* Bow-shaped Heart Favorite Button */}
-          <div className="absolute top-2 inset-inline-end-2 z-10">
+          <div className="product-favorite-overlay absolute end-2 top-2 z-10">
             <FavoriteButton product={product} size="sm" />
           </div>
         </div>

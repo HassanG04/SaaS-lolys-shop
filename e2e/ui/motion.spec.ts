@@ -20,7 +20,20 @@ for (const theme of ['light', 'dark']) {
           <button class="ui-button flower-button" style="margin:80px; width:180px; height:48px; --magnetic-x:5px; --magnetic-y:3px">
             <span class="flower-container"><span class="flower flower-1"><span class="flower-petal"></span><span class="flower-petal"></span><span class="flower-petal"></span><span class="flower-petal"></span></span></span>Buy</button>
           <div class="ui-skeleton" style="width:160px;height:120px"></div>
-          <div class="catalog-grid" style="display:flex;gap:30px;margin:30px"><article class="ui-card catalog-product-card" style="width:160px;height:120px">Item</article><article class="ui-card catalog-product-card" style="width:160px;height:120px">Other item</article></div>
+          <div class="catalog-grid" style="display:flex;gap:30px;margin:30px">
+            <article class="ui-card catalog-product-card" style="position:relative;width:280px;height:320px">
+              <div class="rounded-image" style="position:relative;width:100%;height:200px">
+                <div class="product-badges-overlay absolute start-2 top-2 z-10 flex max-w-[calc(100%-3.5rem)] flex-col items-start gap-1">
+                  <span class="ui-badge bg-brand text-brand-contrast">-50% OFF</span>
+                  <span class="ui-badge bg-surface-tint text-text-muted">Sold out</span>
+                </div>
+                <div class="product-favorite-overlay absolute end-2 top-2 z-10">
+                  <button type="button" class="min-h-[44px] min-w-[44px]" style="width:44px;height:44px">Heart</button>
+                </div>
+              </div>
+            </article>
+            <article class="ui-card catalog-product-card" style="width:160px;height:120px">Other item</article>
+          </div>
           <article class="ui-card feature-card" style="width:160px;height:120px;margin:30px"><a href="#returns" class="returns-link">Returns</a></article>
           <aside id="admin-desktop-sidebar" class="admin-desktop-sidebar is-expanded"><div class="admin-desktop-sidebar-inner" style="width:256px">Content</div></aside>
           <dialog open id="admin-mobile-sidebar" class="admin-mobile-drawer is-closed" style="width:288px">Drawer</dialog>
@@ -92,7 +105,7 @@ for (const theme of ['light', 'dark']) {
           .poll(() => cards.first().evaluate((el) => getComputedStyle(el).transform))
           .toContain('1.035')
         await expect(cards.nth(1)).toHaveCSS('filter', 'blur(2px)')
-        await expect(page.getByRole('button')).toHaveCSS('filter', 'none')
+        await expect(page.getByRole('button', { name: 'Buy' })).toHaveCSS('filter', 'none')
         await page.mouse.move(0, 0)
         await expect(cards.first()).toHaveCSS('transform', 'none')
         await expect(cards.nth(1)).toHaveCSS('filter', 'none')
@@ -116,6 +129,28 @@ for (const theme of ['light', 'dark']) {
           .toContain('1.02')
         await link.blur()
         await expect(card).toHaveCSS('transform', 'none')
+      })
+
+      test('offer badge and wishlist button are on opposite edges and do not overlap (T-3.10b)', async ({
+        page,
+      }) => {
+        const badge = page.locator('.product-badges-overlay')
+        const heart = page.locator('.product-favorite-overlay')
+        const badgeBox = await badge.boundingBox()
+        const heartBox = await heart.boundingBox()
+        expect(badgeBox).not.toBeNull()
+        expect(heartBox).not.toBeNull()
+        if (!badgeBox || !heartBox) return
+
+        if (direction === 'ltr') {
+          // English: offer on left, heart on right
+          expect(badgeBox.x).toBeLessThan(heartBox.x)
+          expect(badgeBox.x + badgeBox.width).toBeLessThan(heartBox.x)
+        } else {
+          // Arabic: offer on right, heart on left
+          expect(heartBox.x).toBeLessThan(badgeBox.x)
+          expect(heartBox.x + heartBox.width).toBeLessThan(badgeBox.x)
+        }
       })
 
       test('admin desktop sidebar collapses and mobile drawer transitions from physical right', async ({
@@ -147,8 +182,9 @@ for (const theme of ['light', 'dark']) {
 
       test('reduced motion stops animation while keeping skeletons visible', async ({ page }) => {
         await page.emulateMedia({ reducedMotion: 'reduce' })
-        await page.getByRole('button').hover()
-        await expect(page.getByRole('button')).toHaveCSS('transform', 'none')
+        const buyButton = page.getByRole('button', { name: 'Buy' })
+        await buyButton.hover()
+        await expect(buyButton).toHaveCSS('transform', 'none')
         await expect(page.locator('.flower')).toHaveCSS('animation-name', 'none')
         await expect(page.locator('.ui-skeleton')).toHaveCSS('animation-name', 'none')
         await expect(page.locator('.ui-skeleton')).toBeVisible()

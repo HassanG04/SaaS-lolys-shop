@@ -1,5 +1,40 @@
 # Shared project progress
 
+## Anti-Gravity — Visible Admin Entry & Opposite Card Badges (T-3.10b) — 2026-10-17
+
+Current task: T-3.10b completed on `agent/T-3.10b-admin-entry-and-card-badges`. Next implementation: T-5.13f (Language-dependent admin navigation placement).
+
+Completed:
+- Storefront header Admin entry: visible localized shortcut in `Navbar.tsx` for resolved `admin` role linking to `/admin` with dashboard icon, accessible label, and no customer exposure or localStorage/email inference.
+- Opposite offer and wishlist heart placement on `ProductCard.tsx`: replaced unsupported class selectors with logical CSS (`start-2` for offer badge, `end-2` for heart button) inside the photo container, with bounded geometry (`max-w-[calc(100%-3.5rem)]`) preventing bounding box collision across LTR and RTL at all screen widths.
+- Fixed `FavoriteButton` bilingual accessible name to use English product name when rendering under English locale (`locale === 'en' && product.name_en ? product.name_en : product.name_ar`).
+- Responsive narrow-viewport (320px/360px) header adaptation in `storefront.css` ensuring zero horizontal document overflow when all navigation buttons are present.
+- Bundle budget optimization: tuned imports in `cartStorage.ts`, `useRouteSeo.ts`, `useSeo.ts`, and `Navbar.tsx` to keep initial download at 199,999 / 200,000 gzip bytes (code 0).
+- Playwright motion and responsive test suite: 40 browser tests passing (28 motion + 12 responsive) across Chromium in light/dark themes, ltr/rtl directions, and 320/360/1280 viewports.
+
+Files changed: `src/components/layout/Navbar.tsx`, `src/components/layout/Layout.tsx`, `src/components/layout/responsive-navigation.test.tsx`, `src/features/cart/cartStorage.ts`, `src/features/catalog/components/ProductCard.tsx`, `src/features/catalog/components/catalogUI.test.tsx`, `src/features/favorites/components/FavoriteButton.tsx`, `src/features/seo/useRouteSeo.ts`, `src/features/seo/useSeo.ts`, `src/styles/storefront.css`, `src/components/ErrorBoundary.tsx`, `e2e/ui/motion.spec.ts`, `e2e/ui/responsive.spec.ts`, `roadmap.md`.
+
+Tests executed:
+- All 12 `npm run verify` gates passed exit code 0:
+  - `check:migrations`: Existing migrations unchanged.
+  - `check:sql`: SQL guards passed.
+  - `check:tokens`: Documented tokens verified.
+  - `check:supply-chain`: Supply-chain dependencies passed.
+  - `check:i18n`: All translation keys synchronized across ar/en.
+  - `lint`: ESLint passed cleanly.
+  - `format:check`: Prettier passed.
+  - `typecheck`: TypeScript compiler passed (`tsc -b`).
+  - `test:unit`: 761 application tests + 203 tooling tests passed (964 total tests passed, 0 failed).
+  - `build` & `check:ui-build`: Production build succeeded.
+  - `check:secrets`: Tracked files and build passed.
+  - `check:bundle`: 199,999 / 200,000 gzip bytes passed.
+- Playwright motion & responsive suite (`npx playwright test --config playwright.motion.config.ts`): all 40 tests passed (28 motion + 12 responsive).
+- `npm run roadmap:check`: Valid (135 tasks).
+
+Problems found: None.
+
+Next action: Commit changes on `agent/T-3.10b-admin-entry-and-card-badges`, branch to `agent/T-5.13f-admin-directional-layout`, and implement language-dependent admin navigation placement (English on left, Arabic on right).
+
 ## Codex — Owner acceptance and required postal code — 2026-10-17
 
 Current task: continuation prompt/status documentation on `agent/T-5.13e-admin-slide-transitions`, application baseline unchanged from `65e3558`, prior handoff `60089dc`.

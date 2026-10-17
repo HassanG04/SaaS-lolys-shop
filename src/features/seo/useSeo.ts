@@ -6,23 +6,15 @@ export const DEFAULT_DESCRIPTION_AR = 'إكسسوارات راقية ولمسا�
 export const DEFAULT_DESCRIPTION_EN = 'Elegant accessories and warm home touches'
 export const DEFAULT_IMAGE = '/brand/logo.png'
 
-function setMetaTag(selector: string, attrName: string, attrValue: string, content: string) {
+function setMeta(attr: string, name: string, content: string) {
   if (typeof document === 'undefined') return
-  let meta = document.head.querySelector<HTMLMetaElement>(selector)
+  let meta = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${name}"]`)
   if (!meta) {
     meta = document.createElement('meta')
-    meta.setAttribute(attrName, attrValue)
+    meta.setAttribute(attr, name)
     document.head.appendChild(meta)
   }
   meta.setAttribute('content', content)
-}
-
-function removeMetaTag(selector: string) {
-  if (typeof document === 'undefined') return
-  const meta = document.head.querySelector<HTMLMetaElement>(selector)
-  if (meta) {
-    meta.remove()
-  }
 }
 
 export function formatDocumentTitle(title?: string): string {
@@ -46,32 +38,27 @@ export function useSeo({
     document.title = fullTitle
 
     const isEnglish = document.documentElement.lang === 'en'
-    const finalDescription =
+    const desc =
       description?.trim() || (isEnglish ? DEFAULT_DESCRIPTION_EN : DEFAULT_DESCRIPTION_AR)
     const locale = isEnglish ? 'en_US' : 'ar_EG'
 
-    const tags: [string, string, boolean?][] = [
-      ['description', finalDescription],
-      ['og:site_name', BRAND_NAME, true],
-      ['og:type', type, true],
-      ['og:title', fullTitle, true],
-      ['og:description', finalDescription, true],
-      ['og:image', image, true],
-      ['og:locale', locale, true],
-      ['twitter:card', 'summary_large_image'],
-      ['twitter:title', fullTitle],
-      ['twitter:description', finalDescription],
-      ['twitter:image', image],
-    ]
-    for (const [key, val, isProp] of tags) {
-      const a = isProp ? 'property' : 'name'
-      setMetaTag(`meta[${a}="${key}"]`, a, key, val)
-    }
+    const set = (attr: string, name: string, val: string) => setMeta(attr, name, val)
+    set('name', 'description', desc)
+    set('property', 'og:site_name', BRAND_NAME)
+    set('property', 'og:type', type)
+    set('property', 'og:title', fullTitle)
+    set('property', 'og:description', desc)
+    set('property', 'og:image', image)
+    set('property', 'og:locale', locale)
+    set('name', 'twitter:card', 'summary_large_image')
+    set('name', 'twitter:title', fullTitle)
+    set('name', 'twitter:description', desc)
+    set('name', 'twitter:image', image)
 
     if (noindex) {
-      setMetaTag('meta[name="robots"]', 'name', 'robots', 'noindex, nofollow')
+      set('name', 'robots', 'noindex, nofollow')
     } else {
-      removeMetaTag('meta[name="robots"]')
+      document.head.querySelector('meta[name="robots"]')?.remove()
     }
   }, [title, description, image, type, noindex])
 }

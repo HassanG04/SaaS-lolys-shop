@@ -4,9 +4,6 @@ import { useSeo } from './useSeo'
 import type { SeoOptions } from './types'
 
 const SPECIAL_TITLES: Record<string, string> = {
-  '/account/orders': 'orders',
-  '/account/favorites': 'favorites',
-  '/account/security': 'security',
   '/account/mfa/enroll': 'mfaEnroll',
   '/mfa/challenge': 'mfaChallenge',
   '/admin/mfa/enroll': 'adminMfaEnroll',
@@ -24,11 +21,11 @@ export function getRouteMetadata(
   if (p === '/') return { title: s.home, description: s.defaultDescription }
   if (p === '/account') return { title: t.account.details, noindex: true }
 
-  const k = SPECIAL_TITLES[p] || p.slice(1)
+  const k = SPECIAL_TITLES[p] || (p.startsWith('/account/') ? p.slice(9) : p.slice(1))
   if (k && k in s)
     return {
       title: (s as Record<string, string>)[k],
-      noindex: /account|admin|checkout|reset|resend|mfa/.test(p),
+      noindex: /account|admin|checkout|res|mfa/.test(p),
     }
 
   if (p.startsWith('/category')) return { title: s.category }

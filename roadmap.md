@@ -758,7 +758,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`; focused homepage tests and real-route browser acceptance with recorded evidence.
 
 #### T-3.10b: Visible admin entry and opposite product badges
-`status: todo` `owner: agent` `needs: T-2.02, T-3.03` `size: S`
+`status: done` `owner: agent` `needs: T-2.02, T-3.03` `size: S`
 - **Do:** Add a visible localized storefront Admin entry for the resolved admin role through existing MFA guards. Position offer/sold-out badges opposite the wishlist control with generated logical CSS. The persistent mouse editor remains T-3.10, not satisfied by a navigation link. See `docs/handoff/OWNER-FOLLOWUP-2026-10-17.md`.
 - **Done when:** Guest/customer/admin loading and resolved states behave correctly; offer and heart bounding boxes do not intersect at 320/360/1280 in either direction; controls remain accessible; actual-route checks and verify pass.
 - **Verify:** `npm run verify`; focused role/navigation tests and compiled-CSS plus actual-route collision checks.
@@ -1538,6 +1538,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-17 | T-3.10b, T-3.11, T-3.12, T-5.13f | Codex | Owner follow-up handed to Anti-Gravity: visible admin entry plus still-missing mouse editor, opposite offer/heart edges, English-left/Arabic-right dashboard, complete policy/route translations, explicit Full/Reduced/Follow-device motion policy (owner now wants motion despite OS setting). Preserved AG commits 0395a0e/8714d4c/65e3558; their reported tests were not rerun here. Docker server still unavailable; product remains pre-launch. Documentation-only change with precise source evidence and acceptance checks. | pending |
 
 | 2026-10-17 | T-4.08, T-4.07, T-5.12 | Owner + Codex | Owner confirms the complete order/approval/payment/shipping flow, permissions, stock handling and database behavior tested. Record as owner-confirmed acceptance, not a fabricated CI/local rerun; preserve baseline and regression-test affected changes. Postal code explicitly required with final database NOT NULL and non-empty validation; safe legacy-data/signup handling documented. No task status automatically changed and no cloud action. | [#34](https://github.com/HassanG04/SaaS-lolys-shop/pull/34) |
+| 2026-10-17 | T-3.10b | Anti-Gravity | Added visible localized storefront Admin entry in Navbar for resolved admin role (links to `/admin` with dashboard icon, accessible label, and no customer exposure/local inference); positioned offer badge and wishlist heart button on opposite edges using logical CSS (`start-2` / `end-2`) with bounded geometry (`max-w-[calc(100%-3.5rem)]`) preventing bounding box collision at 320/360/1280 in LTR and RTL; fixed FavoriteButton accessible name bilingual localization; adapted 320/360px header controls. Verified with 964 unit/tooling tests (all 12 verify gates passing, bundle 199,999 / 200,000 gzip bytes) and 40 isolated Playwright motion & responsive tests. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 
