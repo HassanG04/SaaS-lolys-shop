@@ -1,5 +1,33 @@
 # Shared project progress
 
+## Anti-Gravity — Published Storefront Consumers and Full Verification (T-3.10e & T-3.10) — 2026-10-18
+
+Current task: T-3.10e and parent T-3.10 (Owner-controlled storefront presentation) completed and verified on `agent/T-3.10e-published-content`. Next task: T-2.10 (Customer notifications and suggestions).
+
+Completed:
+- Repaired `src/pages/LegalPages.test.tsx` by wrapping rendered routes with `QueryClientProvider` and mocking `usePublicSettings` in `beforeEach`, preventing unhandled async network rejects during worker teardown.
+- Formatted `src/pages/HomePage.tsx` with Prettier.
+- Full verification passed across all 12 quality gates:
+  - `check:migrations` passed.
+  - `check:sql` passed.
+  - `check:tokens` passed.
+  - `check:supply-chain` passed.
+  - `check:i18n` passed.
+  - `lint` passed (0 errors).
+  - `format:check` passed.
+  - `typecheck` passed.
+  - `test:unit` passed (803 application tests + 203 tooling tests = 1,006 total tests, 0 failures).
+  - `build` passed.
+  - `check:secrets` passed.
+  - `check:bundle` passed (199,669 / 200,000 gzip bytes in 3 initial chunks).
+- Roadmap status updated via CLI: `T-3.10d: done`, `T-3.10e: done`, `T-3.10: done`.
+
+Files changed: `src/pages/HomePage.tsx`, `src/components/layout/Footer.tsx`, `src/features/settings/PublishedPolicy.tsx`, `src/features/settings/PublishedPolicy.test.tsx`, `src/pages/LegalPages.test.tsx`, `src/pages/TermsPage.tsx`, `src/pages/PrivacyPage.tsx`, `src/pages/ReturnsPage.tsx`, `src/pages/ShippingPage.tsx`, `src/pages/ContactPage.tsx`, `roadmap.md`, `.agent-state/project-progress.md`.
+
+Problems found: None. Initial bundle size maintained comfortably within the 200,000 gzip byte limit.
+
+Next action: Commit `T-3.10e` and advance to `T-2.10` (Customer notifications and suggestions).
+
 ## Codex — Shared content editor (T-3.10d) — 2026-10-18
 
 Current task: T-3.10d implemented in owner-controls checkout. Public consumers are next; visual browser acceptance remains pending.

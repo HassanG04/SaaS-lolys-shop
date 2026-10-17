@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { RibbonBow } from '../components/ui/ornaments'
 import { useLanguage } from '../i18n/LanguageProvider'
-import { useSeo } from '../features/seo'
+import { PublishedPolicy } from '../features/settings/PublishedPolicy'
 
 const content = {
   ar: {
@@ -77,83 +77,80 @@ export default function ShippingPage() {
   const { lang } = useLanguage()
   const c = content[lang === 'en' ? 'en' : 'ar']
 
-  useSeo({
-    title: c.seoTitle,
-    description: c.seoDesc,
-  })
-
   return (
-    <article className="mx-auto max-w-3xl space-y-8 pb-12">
-      <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
-        {/* Header */}
-        <header className="space-y-3 border-b border-border pb-6">
-          <div className="flex items-center gap-3">
-            <RibbonBow className="size-8 text-brand" />
-            <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
-          </div>
-          <p className="text-caption text-text-muted">{c.intro}</p>
-        </header>
-
-        {/* Section 1: Coverage and Carriers */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec1Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p>{c.sec1P}</p>
-            <ul className="list-disc list-inside space-y-2 ps-2">
-              <li>
-                <strong className="text-text">{c.sec1PostLabel}</strong>
-                {c.sec1PostDesc}
-              </li>
-              <li>
-                <strong className="text-text">{c.sec1CourierLabel}</strong>
-                {c.sec1CourierDesc}
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        {/* Section 2: Delivery Times */}
-        <section className="space-y-4 rounded-card border border-border bg-surface-2 p-5 sm:p-6">
-          <h2 className="text-h3 font-semibold text-brand">{c.sec2Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p>{c.sec2P}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div className="rounded-chip border border-border bg-surface p-4">
-                <h3 className="font-semibold text-text mb-1">{c.sec2Card1Title}</h3>
-                <p className="text-small text-brand font-medium">{c.sec2Card1Desc}</p>
-              </div>
-              <div className="rounded-chip border border-border bg-surface p-4">
-                <h3 className="font-semibold text-text mb-1">{c.sec2Card2Title}</h3>
-                <p className="text-small text-brand font-medium">{c.sec2Card2Desc}</p>
-              </div>
+    <PublishedPolicy route="shipping" title={c.seoTitle} description={c.seoDesc}>
+      <article className="mx-auto max-w-3xl space-y-8 pb-12">
+        <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
+          {/* Header */}
+          <header className="space-y-3 border-b border-border pb-6">
+            <div className="flex items-center gap-3">
+              <RibbonBow className="size-8 text-brand" />
+              <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
             </div>
-            <p className="text-caption text-text-muted pt-2">{c.sec2Note}</p>
-          </div>
-        </section>
+            <p className="text-caption text-text-muted">{c.intro}</p>
+          </header>
 
-        {/* Section 3: Shipping Fees */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec3Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p>{c.sec3P1}</p>
-            <p>{c.sec3P2}</p>
-          </div>
-        </section>
+          {/* Section 1: Coverage and Carriers */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec1Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p>{c.sec1P}</p>
+              <ul className="list-disc list-inside space-y-2 ps-2">
+                <li>
+                  <strong className="text-text">{c.sec1PostLabel}</strong>
+                  {c.sec1PostDesc}
+                </li>
+                <li>
+                  <strong className="text-text">{c.sec1CourierLabel}</strong>
+                  {c.sec1CourierDesc}
+                </li>
+              </ul>
+            </div>
+          </section>
 
-        {/* Section 4: Receipt and Inspection */}
-        <section className="space-y-4 border-t border-border pt-6">
-          <h2 className="text-h3 font-semibold text-text">{c.sec4Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p>
-              {c.sec4Pre}
-              <Link to="/contact" className="text-brand underline hover:opacity-80">
-                {c.sec4Link}
-              </Link>
-              {c.sec4Post}
-            </p>
-          </div>
-        </section>
-      </div>
-    </article>
+          {/* Section 2: Delivery Times */}
+          <section className="space-y-4 rounded-card border border-border bg-surface-2 p-5 sm:p-6">
+            <h2 className="text-h3 font-semibold text-brand">{c.sec2Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p>{c.sec2P}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div className="rounded-chip border border-border bg-surface p-4">
+                  <h3 className="font-semibold text-text mb-1">{c.sec2Card1Title}</h3>
+                  <p className="text-small text-brand font-medium">{c.sec2Card1Desc}</p>
+                </div>
+                <div className="rounded-chip border border-border bg-surface p-4">
+                  <h3 className="font-semibold text-text mb-1">{c.sec2Card2Title}</h3>
+                  <p className="text-small text-brand font-medium">{c.sec2Card2Desc}</p>
+                </div>
+              </div>
+              <p className="text-caption text-text-muted pt-2">{c.sec2Note}</p>
+            </div>
+          </section>
+
+          {/* Section 3: Shipping Fees */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec3Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p>{c.sec3P1}</p>
+              <p>{c.sec3P2}</p>
+            </div>
+          </section>
+
+          {/* Section 4: Receipt and Inspection */}
+          <section className="space-y-4 border-t border-border pt-6">
+            <h2 className="text-h3 font-semibold text-text">{c.sec4Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p>
+                {c.sec4Pre}
+                <Link to="/contact" className="text-brand underline hover:opacity-80">
+                  {c.sec4Link}
+                </Link>
+                {c.sec4Post}
+              </p>
+            </div>
+          </section>
+        </div>
+      </article>
+    </PublishedPolicy>
   )
 }

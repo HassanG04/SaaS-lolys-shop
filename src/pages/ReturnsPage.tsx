@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { RibbonBow } from '../components/ui/ornaments'
 import { useLanguage } from '../i18n/LanguageProvider'
-import { useSeo } from '../features/seo'
+import { PublishedPolicy } from '../features/settings/PublishedPolicy'
 
 const content = {
   ar: {
@@ -95,89 +95,86 @@ export default function ReturnsPage() {
   const { lang } = useLanguage()
   const c = content[lang === 'en' ? 'en' : 'ar']
 
-  useSeo({
-    title: c.seoTitle,
-    description: c.seoDesc,
-  })
-
   return (
-    <article className="mx-auto max-w-3xl space-y-8 pb-12">
-      <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
-        {/* Header */}
-        <header className="space-y-3 border-b border-border pb-6">
-          <div className="flex items-center gap-3">
-            <RibbonBow className="size-8 text-brand" />
-            <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
-          </div>
-          <p className="text-caption text-text-muted">{c.intro}</p>
-        </header>
+    <PublishedPolicy route="returns" title={c.seoTitle} description={c.seoDesc}>
+      <article className="mx-auto max-w-3xl space-y-8 pb-12">
+        <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
+          {/* Header */}
+          <header className="space-y-3 border-b border-border pb-6">
+            <div className="flex items-center gap-3">
+              <RibbonBow className="size-8 text-brand" />
+              <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
+            </div>
+            <p className="text-caption text-text-muted">{c.intro}</p>
+          </header>
 
-        {/* Section 1: Period and Eligibility */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec1Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p>{c.sec1P1}</p>
-            <p>{c.sec1P2}</p>
-          </div>
-        </section>
+          {/* Section 1: Period and Eligibility */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec1Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p>{c.sec1P1}</p>
+              <p>{c.sec1P2}</p>
+            </div>
+          </section>
 
-        {/* Section 2: Return Conditions */}
-        <section className="space-y-4 rounded-card border border-border bg-surface-2 p-5 sm:p-6">
-          <h2 className="text-h3 font-semibold text-brand">{c.sec2Title}</h2>
-          <ul className="list-disc list-inside space-y-2 text-body text-text-muted leading-relaxed">
-            {c.sec2List.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Section 3: Non-returnable Items */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec3Title}</h2>
-          <p className="text-body text-text-muted leading-relaxed">{c.sec3P}</p>
-          <ul className="list-disc list-inside space-y-2 text-body text-text-muted leading-relaxed">
-            {c.sec3List.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Section 4: Return Process */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec4Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <ol className="list-decimal list-inside space-y-2">
-              <li>
-                {c.sec4Step1Pre}
-                <Link to="/contact" className="text-brand underline hover:opacity-80">
-                  {c.sec4Step1Link}
-                </Link>
-                {c.sec4Step1Post}
-              </li>
-              <li>{c.sec4Step2}</li>
-              <li>{c.sec4Step3}</li>
-            </ol>
-          </div>
-        </section>
-
-        {/* Section 5: Refunds */}
-        <section className="space-y-4 border-t border-border pt-6">
-          <h2 className="text-h3 font-semibold text-text">{c.sec5Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p>{c.sec5P}</p>
-            <ul className="list-disc list-inside space-y-2 text-small">
-              <li>
-                <strong className="text-text">{c.sec5InstaPayLabel}</strong>
-                {c.sec5InstaPayDesc}
-              </li>
-              <li>
-                <strong className="text-text">{c.sec5CodLabel}</strong>
-                {c.sec5CodDesc}
-              </li>
+          {/* Section 2: Return Conditions */}
+          <section className="space-y-4 rounded-card border border-border bg-surface-2 p-5 sm:p-6">
+            <h2 className="text-h3 font-semibold text-brand">{c.sec2Title}</h2>
+            <ul className="list-disc list-inside space-y-2 text-body text-text-muted leading-relaxed">
+              {c.sec2List.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
             </ul>
-          </div>
-        </section>
-      </div>
-    </article>
+          </section>
+
+          {/* Section 3: Non-returnable Items */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec3Title}</h2>
+            <p className="text-body text-text-muted leading-relaxed">{c.sec3P}</p>
+            <ul className="list-disc list-inside space-y-2 text-body text-text-muted leading-relaxed">
+              {c.sec3List.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Section 4: Return Process */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec4Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <ol className="list-decimal list-inside space-y-2">
+                <li>
+                  {c.sec4Step1Pre}
+                  <Link to="/contact" className="text-brand underline hover:opacity-80">
+                    {c.sec4Step1Link}
+                  </Link>
+                  {c.sec4Step1Post}
+                </li>
+                <li>{c.sec4Step2}</li>
+                <li>{c.sec4Step3}</li>
+              </ol>
+            </div>
+          </section>
+
+          {/* Section 5: Refunds */}
+          <section className="space-y-4 border-t border-border pt-6">
+            <h2 className="text-h3 font-semibold text-text">{c.sec5Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p>{c.sec5P}</p>
+              <ul className="list-disc list-inside space-y-2 text-small">
+                <li>
+                  <strong className="text-text">{c.sec5InstaPayLabel}</strong>
+                  {c.sec5InstaPayDesc}
+                </li>
+                <li>
+                  <strong className="text-text">{c.sec5CodLabel}</strong>
+                  {c.sec5CodDesc}
+                </li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </article>
+    </PublishedPolicy>
   )
 }

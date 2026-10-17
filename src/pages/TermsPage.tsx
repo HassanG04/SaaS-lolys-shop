@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { RibbonBow } from '../components/ui/ornaments'
 import { useLanguage } from '../i18n/LanguageProvider'
-import { useSeo } from '../features/seo'
+import { PublishedPolicy } from '../features/settings/PublishedPolicy'
 
 const content = {
   ar: {
@@ -95,94 +95,91 @@ export default function TermsPage() {
   const { lang } = useLanguage()
   const c = content[lang === 'en' ? 'en' : 'ar']
 
-  useSeo({
-    title: c.seoTitle,
-    description: c.seoDesc,
-  })
-
   return (
-    <article className="mx-auto max-w-3xl space-y-8 pb-12">
-      <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
-        {/* Header */}
-        <header className="space-y-3 border-b border-border pb-6">
-          <div className="flex items-center gap-3">
-            <RibbonBow className="size-8 text-brand" />
-            <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
-          </div>
-          <p className="text-caption text-text-muted">{c.intro}</p>
-        </header>
-
-        {/* Section 1: Ordering and Contract */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec1Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p>{c.sec1P1}</p>
-            <p>{c.sec1P2}</p>
-          </div>
-        </section>
-
-        {/* Section 2: Pricing and Currency */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec2Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p>
-              {c.sec2P1Prefix}
-              <strong className="text-text">{c.sec2P1Bold}</strong>
-              {c.sec2P1Suffix}
-            </p>
-            <p>{c.sec2P2}</p>
-          </div>
-        </section>
-
-        {/* Section 3: Payment Methods & Order Approval Flow */}
-        <section className="space-y-4 rounded-card border border-border bg-surface-2 p-5 sm:p-6">
-          <h2 className="text-h3 font-semibold text-brand">{c.sec3Title}</h2>
-          <div className="space-y-4 text-body text-text-muted leading-relaxed">
-            <div>
-              <h3 className="font-semibold text-text mb-1">{c.sec3Sub1Title}</h3>
-              <p>{c.sec3Sub1P}</p>
+    <PublishedPolicy route="terms" title={c.seoTitle} description={c.seoDesc}>
+      <article className="mx-auto max-w-3xl space-y-8 pb-12">
+        <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
+          {/* Header */}
+          <header className="space-y-3 border-b border-border pb-6">
+            <div className="flex items-center gap-3">
+              <RibbonBow className="size-8 text-brand" />
+              <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
             </div>
-            <div>
-              <h3 className="font-semibold text-text mb-1">{c.sec3Sub2Title}</h3>
-              <p>{c.sec3Sub2P1}</p>
-              <p className="pt-2 text-small">{c.sec3Sub2P2}</p>
+            <p className="text-caption text-text-muted">{c.intro}</p>
+          </header>
+
+          {/* Section 1: Ordering and Contract */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec1Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p>{c.sec1P1}</p>
+              <p>{c.sec1P2}</p>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Section 4: Shipping and Delivery */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec4Title}</h2>
-          <p className="text-body text-text-muted leading-relaxed">
-            {c.sec4Pre}
-            <Link to="/shipping" className="text-brand underline hover:opacity-80">
-              {c.sec4Link}
-            </Link>
-            {c.sec4Post}
-          </p>
-        </section>
+          {/* Section 2: Pricing and Currency */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec2Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p>
+                {c.sec2P1Prefix}
+                <strong className="text-text">{c.sec2P1Bold}</strong>
+                {c.sec2P1Suffix}
+              </p>
+              <p>{c.sec2P2}</p>
+            </div>
+          </section>
 
-        {/* Section 5: Returns and Cancellations */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec5Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p>{c.sec5P1}</p>
-            <p>
-              {c.sec5P2Pre}
-              <Link to="/returns" className="text-brand underline hover:opacity-80">
-                {c.sec5P2Link}
+          {/* Section 3: Payment Methods & Order Approval Flow */}
+          <section className="space-y-4 rounded-card border border-border bg-surface-2 p-5 sm:p-6">
+            <h2 className="text-h3 font-semibold text-brand">{c.sec3Title}</h2>
+            <div className="space-y-4 text-body text-text-muted leading-relaxed">
+              <div>
+                <h3 className="font-semibold text-text mb-1">{c.sec3Sub1Title}</h3>
+                <p>{c.sec3Sub1P}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-text mb-1">{c.sec3Sub2Title}</h3>
+                <p>{c.sec3Sub2P1}</p>
+                <p className="pt-2 text-small">{c.sec3Sub2P2}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 4: Shipping and Delivery */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec4Title}</h2>
+            <p className="text-body text-text-muted leading-relaxed">
+              {c.sec4Pre}
+              <Link to="/shipping" className="text-brand underline hover:opacity-80">
+                {c.sec4Link}
               </Link>
-              {c.sec5P2Post}
+              {c.sec4Post}
             </p>
-          </div>
-        </section>
+          </section>
 
-        {/* Section 6: Intellectual Property */}
-        <section className="space-y-4 border-t border-border pt-6">
-          <h2 className="text-h3 font-semibold text-text">{c.sec6Title}</h2>
-          <p className="text-body text-text-muted leading-relaxed">{c.sec6P}</p>
-        </section>
-      </div>
-    </article>
+          {/* Section 5: Returns and Cancellations */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec5Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p>{c.sec5P1}</p>
+              <p>
+                {c.sec5P2Pre}
+                <Link to="/returns" className="text-brand underline hover:opacity-80">
+                  {c.sec5P2Link}
+                </Link>
+                {c.sec5P2Post}
+              </p>
+            </div>
+          </section>
+
+          {/* Section 6: Intellectual Property */}
+          <section className="space-y-4 border-t border-border pt-6">
+            <h2 className="text-h3 font-semibold text-text">{c.sec6Title}</h2>
+            <p className="text-body text-text-muted leading-relaxed">{c.sec6P}</p>
+          </section>
+        </div>
+      </article>
+    </PublishedPolicy>
   )
 }

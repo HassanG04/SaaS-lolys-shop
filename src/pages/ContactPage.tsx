@@ -1,7 +1,7 @@
 import { RibbonBow } from '../components/ui/ornaments'
 import { Ltr } from '../components/ui/Ltr'
 import { useLanguage } from '../i18n/LanguageProvider'
-import { useSeo } from '../features/seo'
+import { PublishedPolicy } from '../features/settings/PublishedPolicy'
 
 const content = {
   ar: {
@@ -76,96 +76,93 @@ export default function ContactPage() {
   const { lang } = useLanguage()
   const c = content[lang === 'en' ? 'en' : 'ar']
 
-  useSeo({
-    title: c.seoTitle,
-    description: c.seoDesc,
-  })
-
   return (
-    <article className="mx-auto max-w-3xl space-y-8 pb-12">
-      <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
-        {/* Header */}
-        <header className="space-y-3 border-b border-border pb-6 text-center sm:text-start">
-          <div className="flex items-center justify-center sm:justify-start gap-3">
-            <RibbonBow className="size-8 text-brand" />
-            <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
-          </div>
-          <p className="text-body text-text-muted leading-relaxed">{c.intro}</p>
-        </header>
+    <PublishedPolicy route="contact" title={c.seoTitle} description={c.seoDesc}>
+      <article className="mx-auto max-w-3xl space-y-8 pb-12">
+        <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
+          {/* Header */}
+          <header className="space-y-3 border-b border-border pb-6 text-center sm:text-start">
+            <div className="flex items-center justify-center sm:justify-start gap-3">
+              <RibbonBow className="size-8 text-brand" />
+              <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
+            </div>
+            <p className="text-body text-text-muted leading-relaxed">{c.intro}</p>
+          </header>
 
-        {/* Contact Channels Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* WhatsApp Card */}
-          <div className="rounded-card border border-border bg-surface-2 p-5 space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="text-h3 font-bold text-brand">{c.waTitle}</span>
-              <span className="rounded-chip bg-surface px-2 py-0.5 text-caption font-semibold text-success">
-                {c.waBadge}
-              </span>
+          {/* Contact Channels Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* WhatsApp Card */}
+            <div className="rounded-card border border-border bg-surface-2 p-5 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-h3 font-bold text-brand">{c.waTitle}</span>
+                <span className="rounded-chip bg-surface px-2 py-0.5 text-caption font-semibold text-success">
+                  {c.waBadge}
+                </span>
+              </div>
+              <p className="text-small text-text-muted">{c.waDesc}</p>
+              <div className="pt-2">
+                <a
+                  href="https://wa.me/201011119999"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-10 items-center justify-center rounded-pill bg-brand px-5 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90"
+                >
+                  {c.waBtn}
+                </a>
+              </div>
             </div>
-            <p className="text-small text-text-muted">{c.waDesc}</p>
-            <div className="pt-2">
-              <a
-                href="https://wa.me/201011119999"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex h-10 items-center justify-center rounded-pill bg-brand px-5 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90"
-              >
-                {c.waBtn}
-              </a>
+
+            {/* Email Card */}
+            <div className="rounded-card border border-border bg-surface-2 p-5 space-y-3">
+              <span className="text-h3 font-bold text-brand">{c.emailTitle}</span>
+              <p className="text-small text-text-muted">{c.emailDesc}</p>
+              <div className="pt-2">
+                <a
+                  href="mailto:support@lolys.com"
+                  className="inline-flex h-10 items-center justify-center rounded-pill border border-border bg-surface px-5 text-small font-semibold text-text hover:border-brand"
+                >
+                  <Ltr>support@lolys.com</Ltr>
+                </a>
+              </div>
             </div>
           </div>
 
-          {/* Email Card */}
-          <div className="rounded-card border border-border bg-surface-2 p-5 space-y-3">
-            <span className="text-h3 font-bold text-brand">{c.emailTitle}</span>
-            <p className="text-small text-text-muted">{c.emailDesc}</p>
-            <div className="pt-2">
-              <a
-                href="mailto:support@lolys.com"
-                className="inline-flex h-10 items-center justify-center rounded-pill border border-border bg-surface px-5 text-small font-semibold text-text hover:border-brand"
-              >
-                <Ltr>support@lolys.com</Ltr>
-              </a>
+          {/* Service Hours */}
+          <section className="rounded-card border border-border bg-surface-2 p-5 space-y-3">
+            <h2 className="text-h3 font-semibold text-text">{c.hoursTitle}</h2>
+            <div className="space-y-1 text-body text-text-muted">
+              <p>
+                <strong className="text-text">{c.hoursDaysLabel}</strong> {c.hoursDaysVal}
+              </p>
+              <p>
+                <strong className="text-text">{c.hoursTimeLabel}</strong> {c.hoursTimeValPrefix}
+                <Ltr>{c.hoursTimeValFrom}</Ltr>
+                {c.hoursTimeValMid}
+                <Ltr>{c.hoursTimeValTo}</Ltr>
+                {c.hoursTimeValSuffix}
+              </p>
+              <p className="text-caption text-text-muted pt-1">{c.hoursNote}</p>
             </div>
-          </div>
+          </section>
+
+          {/* Quick Guidance */}
+          <section className="space-y-4 border-t border-border pt-6">
+            <h2 className="text-h3 font-semibold text-text">{c.guidanceTitle}</h2>
+            <div className="space-y-3 text-small text-text-muted leading-relaxed">
+              <p>
+                • <strong className="text-text">{c.guidanceTip1Label}</strong>
+                {c.guidanceTip1Text}
+              </p>
+              <p>
+                • <strong className="text-text">{c.guidanceTip2Label}</strong>
+                {c.guidanceTip2Pre}
+                <Ltr>privacy@lolys.com</Ltr>
+                {c.guidanceTip2Post}
+              </p>
+            </div>
+          </section>
         </div>
-
-        {/* Service Hours */}
-        <section className="rounded-card border border-border bg-surface-2 p-5 space-y-3">
-          <h2 className="text-h3 font-semibold text-text">{c.hoursTitle}</h2>
-          <div className="space-y-1 text-body text-text-muted">
-            <p>
-              <strong className="text-text">{c.hoursDaysLabel}</strong> {c.hoursDaysVal}
-            </p>
-            <p>
-              <strong className="text-text">{c.hoursTimeLabel}</strong> {c.hoursTimeValPrefix}
-              <Ltr>{c.hoursTimeValFrom}</Ltr>
-              {c.hoursTimeValMid}
-              <Ltr>{c.hoursTimeValTo}</Ltr>
-              {c.hoursTimeValSuffix}
-            </p>
-            <p className="text-caption text-text-muted pt-1">{c.hoursNote}</p>
-          </div>
-        </section>
-
-        {/* Quick Guidance */}
-        <section className="space-y-4 border-t border-border pt-6">
-          <h2 className="text-h3 font-semibold text-text">{c.guidanceTitle}</h2>
-          <div className="space-y-3 text-small text-text-muted leading-relaxed">
-            <p>
-              • <strong className="text-text">{c.guidanceTip1Label}</strong>
-              {c.guidanceTip1Text}
-            </p>
-            <p>
-              • <strong className="text-text">{c.guidanceTip2Label}</strong>
-              {c.guidanceTip2Pre}
-              <Ltr>privacy@lolys.com</Ltr>
-              {c.guidanceTip2Post}
-            </p>
-          </div>
-        </section>
-      </div>
-    </article>
+      </article>
+    </PublishedPolicy>
   )
 }

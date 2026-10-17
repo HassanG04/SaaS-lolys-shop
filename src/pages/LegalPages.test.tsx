@@ -1,24 +1,39 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import PrivacyPage from './PrivacyPage'
 import TermsPage from './TermsPage'
 import ShippingPage from './ShippingPage'
 import ReturnsPage from './ReturnsPage'
 import ContactPage from './ContactPage'
 import { Footer } from '../components/layout/Footer'
-import { LanguageProvider } from '../i18n/LanguageProvider'
+import { LanguageProvider, type Language } from '../i18n/LanguageProvider'
+import * as settingsHooks from '../features/settings/hooks'
+
+function renderWithProviders(ui: React.ReactElement, initialLanguage: Language = 'ar') {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider initialLanguage={initialLanguage}>
+        <MemoryRouter>{ui}</MemoryRouter>
+      </LanguageProvider>
+    </QueryClientProvider>,
+  )
+}
 
 describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
+  beforeEach(() => {
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: { storefront_content: {} },
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+  })
+
   describe('Arabic (Default)', () => {
     it('renders PrivacyPage with Arabic headings, storage notice, and retention schedule', () => {
-      render(
-        <LanguageProvider initialLanguage="ar">
-          <MemoryRouter>
-            <PrivacyPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<PrivacyPage />, 'ar')
 
       expect(screen.getByRole('heading', { level: 1, name: 'سياسة الخصوصية' })).toBeInTheDocument()
       expect(screen.getByText(/إشعار التخزين المحلي/i)).toBeInTheDocument()
@@ -28,13 +43,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
     })
 
     it('renders TermsPage with Arabic headings and terms of sale', () => {
-      render(
-        <LanguageProvider initialLanguage="ar">
-          <MemoryRouter>
-            <TermsPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<TermsPage />, 'ar')
 
       expect(screen.getByRole('heading', { level: 1, name: 'الشروط والأحكام' })).toBeInTheDocument()
       expect(screen.getByText(/أهلية الشراء والتعاقد/i)).toBeInTheDocument()
@@ -43,13 +52,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
     })
 
     it('renders ShippingPage with carriers and delivery information', () => {
-      render(
-        <LanguageProvider initialLanguage="ar">
-          <MemoryRouter>
-            <ShippingPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<ShippingPage />, 'ar')
 
       expect(screen.getByRole('heading', { level: 1, name: 'الشحن والتوصيل' })).toBeInTheDocument()
       expect(screen.getAllByText(/البريد المصري/i).length).toBeGreaterThan(0)
@@ -58,13 +61,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
     })
 
     it('renders ReturnsPage with 14-day return period and conditions', () => {
-      render(
-        <LanguageProvider initialLanguage="ar">
-          <MemoryRouter>
-            <ReturnsPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<ReturnsPage />, 'ar')
 
       expect(
         screen.getByRole('heading', { level: 1, name: 'سياسة الاستبدال والاسترجاع' }),
@@ -74,13 +71,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
     })
 
     it('renders ContactPage with support channels and hours', () => {
-      render(
-        <LanguageProvider initialLanguage="ar">
-          <MemoryRouter>
-            <ContactPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<ContactPage />, 'ar')
 
       expect(screen.getByRole('heading', { level: 1, name: 'تواصل معنا' })).toBeInTheDocument()
       expect(screen.getByText('واتساب')).toBeInTheDocument()
@@ -92,13 +83,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
 
   describe('English (T-3.12)', () => {
     it('renders PrivacyPage with full English body, storage notice, and retention schedule', () => {
-      render(
-        <LanguageProvider initialLanguage="en">
-          <MemoryRouter>
-            <PrivacyPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<PrivacyPage />, 'en')
 
       expect(screen.getByRole('heading', { level: 1, name: 'Privacy Policy' })).toBeInTheDocument()
       expect(screen.getByText(/Local Storage Notice & Cookies/i)).toBeInTheDocument()
@@ -111,13 +96,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
     })
 
     it('renders TermsPage with English headings and sale terms without Arabic fallback', () => {
-      render(
-        <LanguageProvider initialLanguage="en">
-          <MemoryRouter>
-            <TermsPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<TermsPage />, 'en')
 
       expect(
         screen.getByRole('heading', { level: 1, name: 'Terms & Conditions' }),
@@ -129,13 +108,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
     })
 
     it('renders ShippingPage with English carriers and delivery zones', () => {
-      render(
-        <LanguageProvider initialLanguage="en">
-          <MemoryRouter>
-            <ShippingPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<ShippingPage />, 'en')
 
       expect(
         screen.getByRole('heading', { level: 1, name: 'Shipping & Delivery' }),
@@ -147,13 +120,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
     })
 
     it('renders ReturnsPage with 14-day return period and conditions in English', () => {
-      render(
-        <LanguageProvider initialLanguage="en">
-          <MemoryRouter>
-            <ReturnsPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<ReturnsPage />, 'en')
 
       expect(
         screen.getByRole('heading', { level: 1, name: 'Return & Exchange Policy' }),
@@ -164,13 +131,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
     })
 
     it('renders ContactPage with English channels, support hours, and tips', () => {
-      render(
-        <LanguageProvider initialLanguage="en">
-          <MemoryRouter>
-            <ContactPage />
-          </MemoryRouter>
-        </LanguageProvider>,
-      )
+      renderWithProviders(<ContactPage />, 'en')
 
       expect(screen.getByRole('heading', { level: 1, name: 'Contact Us' })).toBeInTheDocument()
       expect(screen.getByText('WhatsApp')).toBeInTheDocument()
@@ -182,13 +143,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
   })
 
   it('Footer renders navigation links in Arabic when initialLanguage is ar', () => {
-    render(
-      <LanguageProvider initialLanguage="ar">
-        <MemoryRouter>
-          <Footer />
-        </MemoryRouter>
-      </LanguageProvider>,
-    )
+    renderWithProviders(<Footer />, 'ar')
 
     expect(screen.getByRole('link', { name: 'الشروط والأحكام' })).toHaveAttribute('href', '/terms')
     expect(screen.getByRole('link', { name: 'سياسة الخصوصية' })).toHaveAttribute('href', '/privacy')
@@ -204,13 +159,7 @@ describe('Legal & Policy Pages (T-7.11 & T-3.12)', () => {
   })
 
   it('Footer renders navigation links in English when initialLanguage is en', () => {
-    render(
-      <LanguageProvider initialLanguage="en">
-        <MemoryRouter>
-          <Footer />
-        </MemoryRouter>
-      </LanguageProvider>,
-    )
+    renderWithProviders(<Footer />, 'en')
 
     expect(screen.getByRole('link', { name: 'Terms & Conditions' })).toHaveAttribute(
       'href',

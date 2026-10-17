@@ -758,7 +758,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify` and `npx playwright test --config playwright.motion.config.ts` after build.
 
 #### T-3.10: Owner-controlled storefront presentation
-`status: todo` `owner: agent` `needs: T-3.03, T-5.09` `size: L`
+`status: done` `owner: agent` `needs: T-3.03, T-5.09` `size: L`
 - **Do:** Follow `docs/spec/owner-experience-change.md`: replace arch, truthful sale copy, editable bilingual hero/showcase and category shortcuts with admin control toggle; enlarge info cards on hover/focus. Split database/UI work before implementation.
 - **Done when:** Admin AAL2/audit/allow-list enforced; settings persist; no false promotion; responsive visual and database tests pass.
 - **Verify:** `npm run db:reset && npm run db:test && npm run verify && npm run test:e2e`
@@ -782,10 +782,16 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run verify`
 
 #### T-3.10d: Shared bilingual storefront content editor
-`status: doing` `owner: agent` `needs: T-3.10c` `size: M`
+`status: done` `owner: agent` `needs: T-3.10c` `size: M`
 - **Do:** Build one lazy editor for Settings and the homepage mouse control, using the audited content API. Include image upload, product search, category ordering, bilingual content, safe preview, conflict handling and cache invalidation. Public rendering follows as a separate T-3.10e/T-5.15 slice.
 - **Done when:** Authorized admins can edit and persist the document; drafts survive conflicts, protected writes remain server-enforced, and editor tests/verify pass.
 - **Verify:** `npm run verify`
+
+#### T-3.10e: Publish storefront content to customer routes
+`status: done` `owner: agent` `needs: T-3.10c, T-3.10d` `size: M`
+- **Do:** Render the published bilingual hero, image, featured product, category shortcuts, storefront copy, footer labels/order and policy bodies on the existing customer routes. Keep audited route fallbacks when a field is empty and keep catalogue prices, stock and payment settings live.
+- **Done when:** Published values are visible in both languages, unsafe or incomplete content remains escaped and bounded, selected featured products remain active database records, all five policy routes remain reachable, and focused plus full verification pass.
+- **Verify:** `npm run verify` and focused homepage/policy tests.
 
 #### T-3.11: Explicit site motion preference
 `status: done` `owner: agent` `needs: T-3.09` `size: M`

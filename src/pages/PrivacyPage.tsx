@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { RibbonBow } from '../components/ui/ornaments'
 import { useLanguage } from '../i18n/LanguageProvider'
-import { useSeo } from '../features/seo'
+import { PublishedPolicy } from '../features/settings/PublishedPolicy'
 
 const content = {
   ar: {
@@ -149,162 +149,159 @@ export default function PrivacyPage() {
   const { lang } = useLanguage()
   const c = content[lang === 'en' ? 'en' : 'ar']
 
-  useSeo({
-    title: c.seoTitle,
-    description: c.seoDesc,
-  })
-
   return (
-    <article className="mx-auto max-w-3xl space-y-8 pb-12">
-      <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
-        {/* Header */}
-        <header className="space-y-3 border-b border-border pb-6">
-          <div className="flex items-center gap-3">
-            <RibbonBow className="size-8 text-brand" />
-            <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
-          </div>
-          <p className="text-caption text-text-muted">{c.subtitle}</p>
-        </header>
+    <PublishedPolicy route="privacy" title={c.seoTitle} description={c.seoDesc}>
+      <article className="mx-auto max-w-3xl space-y-8 pb-12">
+        <div className="rounded-card border border-border bg-surface p-6 sm:p-10 space-y-8">
+          {/* Header */}
+          <header className="space-y-3 border-b border-border pb-6">
+            <div className="flex items-center gap-3">
+              <RibbonBow className="size-8 text-brand" />
+              <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
+            </div>
+            <p className="text-caption text-text-muted">{c.subtitle}</p>
+          </header>
 
-        {/* Section 1: Intro */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec1Title}</h2>
-          <p className="text-body text-text-muted leading-relaxed">{c.sec1P}</p>
-        </section>
+          {/* Section 1: Intro */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec1Title}</h2>
+            <p className="text-body text-text-muted leading-relaxed">{c.sec1P}</p>
+          </section>
 
-        {/* Section 2: Storage & Cookies Notice */}
-        <section className="space-y-4 rounded-card border border-border bg-surface-2 p-5 sm:p-6">
-          <h2 className="text-h3 font-semibold text-brand">{c.sec2Title}</h2>
-          <div className="space-y-3 text-body text-text-muted leading-relaxed">
-            <p className="font-medium text-text">{c.sec2Intro}</p>
-            <ul className="list-disc list-inside space-y-2 ps-2">
+          {/* Section 2: Storage & Cookies Notice */}
+          <section className="space-y-4 rounded-card border border-border bg-surface-2 p-5 sm:p-6">
+            <h2 className="text-h3 font-semibold text-brand">{c.sec2Title}</h2>
+            <div className="space-y-3 text-body text-text-muted leading-relaxed">
+              <p className="font-medium text-text">{c.sec2Intro}</p>
+              <ul className="list-disc list-inside space-y-2 ps-2">
+                <li>
+                  <strong className="text-text">{c.sec2ThemeLabel}</strong>
+                  {c.sec2ThemeDesc}
+                  <code className="text-caption">{c.sec2ThemeCode}</code>
+                  {c.sec2ThemeDescSuffix}
+                </li>
+                <li>
+                  <strong className="text-text">{c.sec2CartLabel}</strong>
+                  {c.sec2CartDesc}
+                  <code className="text-caption">{c.sec2CartCode}</code>
+                  {c.sec2CartDescSuffix}
+                </li>
+                <li>
+                  <strong className="text-text">{c.sec2SessionLabel}</strong>
+                  {c.sec2SessionDesc}
+                </li>
+              </ul>
+              <div className="rounded-chip border border-border bg-surface p-4 text-small text-text">
+                <p className="font-semibold text-success">{c.sec2BadgeText}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 3: Data We Collect */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec3Title}</h2>
+            <p className="text-body text-text-muted leading-relaxed">{c.sec3Intro}</p>
+            <ul className="list-disc list-inside space-y-2 ps-2 text-body text-text-muted leading-relaxed">
               <li>
-                <strong className="text-text">{c.sec2ThemeLabel}</strong>
-                {c.sec2ThemeDesc}
-                <code className="text-caption">{c.sec2ThemeCode}</code>
-                {c.sec2ThemeDescSuffix}
+                <strong className="text-text">{c.sec3ContactLabel}</strong>
+                {c.sec3ContactDesc}
               </li>
               <li>
-                <strong className="text-text">{c.sec2CartLabel}</strong>
-                {c.sec2CartDesc}
-                <code className="text-caption">{c.sec2CartCode}</code>
-                {c.sec2CartDescSuffix}
+                <strong className="text-text">{c.sec3AddressLabel}</strong>
+                {c.sec3AddressDesc}
               </li>
               <li>
-                <strong className="text-text">{c.sec2SessionLabel}</strong>
-                {c.sec2SessionDesc}
+                <strong className="text-text">{c.sec3ProofLabel}</strong>
+                {c.sec3ProofDesc}
               </li>
             </ul>
-            <div className="rounded-chip border border-border bg-surface p-4 text-small text-text">
-              <p className="font-semibold text-success">{c.sec2BadgeText}</p>
+          </section>
+
+          {/* Section 4: Data Retention Schedule */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec4Title}</h2>
+            <p className="text-body text-text-muted leading-relaxed">{c.sec4Intro}</p>
+            <div className="overflow-x-auto rounded-card border border-border">
+              <table className="w-full text-start text-small text-text-muted">
+                <thead className="border-b border-border bg-surface-2 text-text font-semibold">
+                  <tr>
+                    <th scope="col" className="p-3 text-start">
+                      {c.sec4Col1}
+                    </th>
+                    <th scope="col" className="p-3 text-start">
+                      {c.sec4Col2}
+                    </th>
+                    <th scope="col" className="p-3 text-start">
+                      {c.sec4Col3}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  <tr>
+                    <td className="p-3 font-medium text-text">{c.sec4Row1Type}</td>
+                    <td className="p-3 text-brand font-semibold">{c.sec4Row1Period}</td>
+                    <td className="p-3">{c.sec4Row1Purpose}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-text">{c.sec4Row2Type}</td>
+                    <td className="p-3">{c.sec4Row2Period}</td>
+                    <td className="p-3">{c.sec4Row2Purpose}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-text">{c.sec4Row3Type}</td>
+                    <td className="p-3">{c.sec4Row3Period}</td>
+                    <td className="p-3">{c.sec4Row3Purpose}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Section 3: Data We Collect */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec3Title}</h2>
-          <p className="text-body text-text-muted leading-relaxed">{c.sec3Intro}</p>
-          <ul className="list-disc list-inside space-y-2 ps-2 text-body text-text-muted leading-relaxed">
-            <li>
-              <strong className="text-text">{c.sec3ContactLabel}</strong>
-              {c.sec3ContactDesc}
-            </li>
-            <li>
-              <strong className="text-text">{c.sec3AddressLabel}</strong>
-              {c.sec3AddressDesc}
-            </li>
-            <li>
-              <strong className="text-text">{c.sec3ProofLabel}</strong>
-              {c.sec3ProofDesc}
-            </li>
-          </ul>
-        </section>
+          {/* Section 5: Your Statutory Rights */}
+          <section className="space-y-4">
+            <h2 className="text-h3 font-semibold text-text">{c.sec5Title}</h2>
+            <p className="text-body text-text-muted leading-relaxed">{c.sec5Intro}</p>
+            <ul className="list-disc list-inside space-y-2 ps-2 text-body text-text-muted leading-relaxed">
+              <li>
+                <strong className="text-text">{c.sec5Right1Label}</strong>
+                {c.sec5Right1Desc}
+              </li>
+              <li>
+                <strong className="text-text">{c.sec5Right2Label}</strong>
+                {c.sec5Right2Pre}
+                <Link to="/account" className="text-brand underline hover:opacity-80">
+                  {c.sec5Right2Link}
+                </Link>
+                {c.sec5Right2Post}
+              </li>
+              <li>
+                <strong className="text-text">{c.sec5Right3Label}</strong>
+                {c.sec5Right3Desc}
+              </li>
+            </ul>
+          </section>
 
-        {/* Section 4: Data Retention Schedule */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec4Title}</h2>
-          <p className="text-body text-text-muted leading-relaxed">{c.sec4Intro}</p>
-          <div className="overflow-x-auto rounded-card border border-border">
-            <table className="w-full text-start text-small text-text-muted">
-              <thead className="border-b border-border bg-surface-2 text-text font-semibold">
-                <tr>
-                  <th scope="col" className="p-3 text-start">
-                    {c.sec4Col1}
-                  </th>
-                  <th scope="col" className="p-3 text-start">
-                    {c.sec4Col2}
-                  </th>
-                  <th scope="col" className="p-3 text-start">
-                    {c.sec4Col3}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                <tr>
-                  <td className="p-3 font-medium text-text">{c.sec4Row1Type}</td>
-                  <td className="p-3 text-brand font-semibold">{c.sec4Row1Period}</td>
-                  <td className="p-3">{c.sec4Row1Purpose}</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-medium text-text">{c.sec4Row2Type}</td>
-                  <td className="p-3">{c.sec4Row2Period}</td>
-                  <td className="p-3">{c.sec4Row2Purpose}</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-medium text-text">{c.sec4Row3Type}</td>
-                  <td className="p-3">{c.sec4Row3Period}</td>
-                  <td className="p-3">{c.sec4Row3Purpose}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Section 5: Your Statutory Rights */}
-        <section className="space-y-4">
-          <h2 className="text-h3 font-semibold text-text">{c.sec5Title}</h2>
-          <p className="text-body text-text-muted leading-relaxed">{c.sec5Intro}</p>
-          <ul className="list-disc list-inside space-y-2 ps-2 text-body text-text-muted leading-relaxed">
-            <li>
-              <strong className="text-text">{c.sec5Right1Label}</strong>
-              {c.sec5Right1Desc}
-            </li>
-            <li>
-              <strong className="text-text">{c.sec5Right2Label}</strong>
-              {c.sec5Right2Pre}
-              <Link to="/account" className="text-brand underline hover:opacity-80">
-                {c.sec5Right2Link}
+          {/* Section 6: How to Contact */}
+          <section className="space-y-4 border-t border-border pt-6">
+            <h2 className="text-h3 font-semibold text-text">{c.sec6Title}</h2>
+            <p className="text-body text-text-muted leading-relaxed">{c.sec6Intro}</p>
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <Link
+                to="/contact"
+                className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90"
+              >
+                {c.sec6ContactBtn}
               </Link>
-              {c.sec5Right2Post}
-            </li>
-            <li>
-              <strong className="text-text">{c.sec5Right3Label}</strong>
-              {c.sec5Right3Desc}
-            </li>
-          </ul>
-        </section>
-
-        {/* Section 6: How to Contact */}
-        <section className="space-y-4 border-t border-border pt-6">
-          <h2 className="text-h3 font-semibold text-text">{c.sec6Title}</h2>
-          <p className="text-body text-text-muted leading-relaxed">{c.sec6Intro}</p>
-          <div className="flex flex-col sm:flex-row gap-4 pt-2">
-            <Link
-              to="/contact"
-              className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90"
-            >
-              {c.sec6ContactBtn}
-            </Link>
-            <a
-              href="mailto:privacy@lolys.com"
-              className="inline-flex h-11 items-center justify-center rounded-pill border border-border bg-surface-2 px-6 text-small font-semibold text-text hover:border-brand"
-            >
-              privacy@lolys.com
-            </a>
-          </div>
-        </section>
-      </div>
-    </article>
+              <a
+                href="mailto:privacy@lolys.com"
+                className="inline-flex h-11 items-center justify-center rounded-pill border border-border bg-surface-2 px-6 text-small font-semibold text-text hover:border-brand"
+              >
+                privacy@lolys.com
+              </a>
+            </div>
+          </section>
+        </div>
+      </article>
+    </PublishedPolicy>
   )
 }

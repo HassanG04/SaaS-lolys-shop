@@ -6,12 +6,14 @@ import {
   useCategories,
   useBestSellers,
   useBrowseProducts,
+  useProduct,
   ProductCard,
   ProductImage,
   CategoryTile,
   type ProductSortOption,
 } from '@/features/catalog'
 import { usePublicSettings } from '@/features/settings'
+import { readStorefrontContent } from '@/features/settings/content'
 import { Sparkle, RibbonBow, RibbonDivider, PearlOrnament } from '@/components/ui/ornaments'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorPanel } from '@/components/ui/ErrorPanel'
@@ -27,12 +29,19 @@ export default function HomePage() {
   const auth = useContext(AuthContext)
   const { t, lang } = useLanguage()
   const { data: settings } = usePublicSettings()
+  const storefrontContent = useMemo(
+    () => readStorefrontContent(settings?.storefront_content),
+    [settings?.storefront_content],
+  )
   const {
     data: categories = [],
     isLoading: isCategoriesLoading,
     error: categoriesError,
   } = useCategories()
   const { data: bestSellers = [], isLoading: isBestSellersLoading } = useBestSellers(4)
+  const { data: selectedFeaturedProduct, isLoading: isFeaturedProductLoading } = useProduct(
+    storefrontContent.featured_product_id,
+  )
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [sortBy, setSortBy] = useState<ProductSortOption>('best_sellers')
@@ -56,20 +65,30 @@ export default function HomePage() {
       ? rawSalePercent
       : 0
 
+  const localizedContent = (field: string): string => {
+    const value =
+      storefrontContent[`${field}_${lang === 'en' ? 'en' : 'ar'}` as keyof typeof storefrontContent]
+    return typeof value === 'string' ? value.trim() : ''
+  }
+
   const heroTitle =
+    localizedContent('hero_title') ||
     (lang === 'ar' ? (settings?.hero_title_ar as string) : (settings?.hero_title_en as string)) ||
     (salePercent > 0 ? t('hero.title', { n: salePercent }) : t.hero.cozyTitle)
 
   const heroSubtitle =
+    localizedContent('hero_subtitle') ||
     (lang === 'ar'
       ? (settings?.hero_subtitle_ar as string)
       : (settings?.hero_subtitle_en as string)) ||
     (salePercent > 0 ? t.hero.subtitle : t.hero.collectionsSubtitle)
 
   const returnsText =
+    localizedContent('returns_summary') ||
     (lang === 'ar'
       ? (settings?.returns_text_ar as string)
-      : (settings?.returns_text_en as string)) || t.catalog.returnsDetails
+      : (settings?.returns_text_en as string)) ||
+    t.catalog.returnsDetails
 
   const enabledPaymentMethods = useMemo(() => {
     const fromSettings = settings?.payment_methods_enabled
@@ -78,6 +97,23 @@ export default function HomePage() {
     }
     return ['cod', 'instapay_qr']
   }, [settings?.payment_methods_enabled])
+
+  const quickCategories = useMemo(() => {
+    const configuredIds = storefrontContent.category_ids
+    if (!configuredIds?.length) return categories
+    const byId = new Map(categories.map((category) => [category.id, category]))
+    return configuredIds
+      .map((id) => byId.get(id))
+      .filter((category): category is (typeof categories)[number] => Boolean(category))
+  }, [categories, storefrontContent.category_ids])
+
+  const featuredProduct =
+    storefrontContent.featured_product_id === null
+      ? null
+      : (selectedFeaturedProduct ?? bestSellers[0])
+  const featuredLoading =
+    isBestSellersLoading ||
+    (storefrontContent.featured_product_id !== undefined && isFeaturedProductLoading)
 
   const handleCategorySelect = (slug: string, isKeyboard = false) => {
     setSelectedCategory(slug)
@@ -125,7 +161,13 @@ export default function HomePage() {
           {/* Hero text & CTA */}
           <div className="max-w-xl space-y-6 text-center lg:text-start">
             {/* Sale Banner tag or Eyebrow */}
-            {salePercent > 0 ? (
+            {localizedContent('hero_badge') ? (
+              <div className="inline-flex items-center gap-2 rounded-pill bg-surface-tint border border-border px-4 py-1.5 text-caption font-semibold text-brand shadow-pill">
+                <Sparkle className="size-4 text-brand" />
+                <span>{localizedContent('hero_badge')}</span>
+                <RibbonBow className="size-4 text-brand" />
+              </div>
+            ) : salePercent > 0 ? (
               <div className="inline-flex items-center gap-2 rounded-pill bg-surface-tint border border-border px-4 py-1.5 text-caption font-semibold text-brand shadow-pill">
                 <Sparkle className="size-4 text-brand" />
                 <span>{t('hero.title', { n: salePercent })}</span>
@@ -171,8 +213,8 @@ export default function HomePage() {
             <figure className="relative">
               <div className="storefront-photo w-64 sm:w-72 aspect-[4/3] rounded-card border border-border bg-surface p-2 shadow-card sm:p-3">
                 <ProductImage
-                  src="categories/earrings-cover.webp"
-                  alt="Lolys Jewelry Hero"
+                  src={storefrontContent.hero_image_path || 'categories/earrings-cover.webp'}
+                  alt={localizedContent('hero_caption') || 'Lolys Jewelry Hero'}
                   loading="eager"
                   fetchPriority="high"
                   aspectRatio="4/3"
@@ -182,20 +224,20 @@ export default function HomePage() {
               </div>
               <figcaption className="storefront-caption flex items-center gap-2 rounded-pill border border-border bg-surface px-4 py-2 text-caption sm:text-small font-semibold text-brand shadow-pill">
                 <RibbonBow className="size-4 sm:size-5 shrink-0" />
-                <span>{t.hero.photoCaption}</span>
+                <span>{localizedContent('hero_caption') || t.hero.photoCaption}</span>
               </figcaption>
             </figure>
 
             {/* Floating best seller card */}
-            {isBestSellersLoading ? (
+            {featuredLoading ? (
               <div className="hidden sm:block w-48 space-y-3 p-3 rounded-card border border-border bg-surface shadow-card">
                 <Skeleton className="aspect-square w-full rounded-image" />
                 <Skeleton className="h-4 w-3/4 rounded-chip" />
                 <Skeleton className="h-4 w-1/2 rounded-chip" />
               </div>
-            ) : bestSellers[0] ? (
+            ) : featuredProduct ? (
               <div className="hidden sm:block w-52 transform transition-transform hover:-translate-y-1">
-                <ProductCard product={bestSellers[0]} className="shadow-card" />
+                <ProductCard product={featuredProduct} className="shadow-card" />
               </div>
             ) : null}
           </div>
@@ -217,7 +259,7 @@ export default function HomePage() {
           >
             {t.catalog.allCategories}
           </button>
-          {categories.map((cat) => {
+          {quickCategories.map((cat) => {
             const isSelected = selectedCategory === cat.slug
             const displayName = lang === 'ar' ? cat.name_ar || cat.name : cat.name
             return (
@@ -370,12 +412,14 @@ export default function HomePage() {
           <div className="space-y-8">
             <div className="text-center space-y-2 section-heading-reveal">
               <h2 id="about-heading" className="font-accent text-h2 font-bold text-brand">
-                {t.section.about}
+                {localizedContent('about_title') || t.section.about}
               </h2>
               <p className="text-body text-text-muted">
-                {(lang === 'ar'
-                  ? (settings?.tagline_ar as string)
-                  : (settings?.tagline_en as string)) || t.brand.tagline}
+                {localizedContent('tagline') ||
+                  (lang === 'ar'
+                    ? (settings?.tagline_ar as string)
+                    : (settings?.tagline_en as string)) ||
+                  t.brand.tagline}
               </p>
             </div>
 
@@ -385,8 +429,12 @@ export default function HomePage() {
                 <div className="inline-flex size-12 items-center justify-center rounded-pill bg-surface-tint text-brand">
                   <RibbonBow className="size-6 text-brand" />
                 </div>
-                <h3 className="text-h3 font-bold text-brand">{t.section.about}</h3>
-                <p className="text-body text-text-muted leading-relaxed">{t.catalog.aboutStory}</p>
+                <h3 className="text-h3 font-bold text-brand">
+                  {localizedContent('about_title') || t.section.about}
+                </h3>
+                <p className="text-body text-text-muted leading-relaxed whitespace-pre-wrap break-words">
+                  {localizedContent('about_body') || t.catalog.aboutStory}
+                </p>
               </Card>
 
               {/* Delivery & Payment card */}
@@ -394,9 +442,11 @@ export default function HomePage() {
                 <div className="inline-flex size-12 items-center justify-center rounded-pill bg-surface-tint text-brand">
                   <Sparkle className="size-6 text-brand" />
                 </div>
-                <h3 className="text-h3 font-bold text-brand">{t.section.delivery}</h3>
-                <p className="text-body text-text-muted leading-relaxed">
-                  {t.catalog.shippingDetails}
+                <h3 className="text-h3 font-bold text-brand">
+                  {localizedContent('delivery_title') || t.section.delivery}
+                </h3>
+                <p className="text-body text-text-muted leading-relaxed whitespace-pre-wrap break-words">
+                  {localizedContent('delivery_body') || t.catalog.shippingDetails}
                 </p>
                 {enabledPaymentMethods.length > 0 && (
                   <div className="flex flex-wrap gap-2 pt-2">
@@ -419,8 +469,12 @@ export default function HomePage() {
                 <div className="inline-flex size-12 items-center justify-center rounded-pill bg-surface-tint text-brand">
                   <PearlOrnament className="h-6 w-12 text-brand" />
                 </div>
-                <h3 className="text-h3 font-bold text-brand">{t.catalog.returnsPolicy}</h3>
-                <p className="text-body text-text-muted leading-relaxed">{returnsText}</p>
+                <h3 className="text-h3 font-bold text-brand">
+                  {localizedContent('returns_title') || t.catalog.returnsPolicy}
+                </h3>
+                <p className="text-body text-text-muted leading-relaxed whitespace-pre-wrap break-words">
+                  {returnsText}
+                </p>
                 <div className="pt-2">
                   <Link
                     to="/returns"

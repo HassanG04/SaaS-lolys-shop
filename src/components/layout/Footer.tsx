@@ -2,12 +2,39 @@ import { Link } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { RibbonDivider } from '../ui/RibbonDivider'
 import { MotionSelect } from '../ui/MotionSelect'
+import { usePublicSettings } from '../../features/settings'
+import {
+  POLICY_ROUTES,
+  readStorefrontContent,
+  type PolicyRoute,
+} from '../../features/settings/content'
 
 export function Footer() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const { data: settings } = usePublicSettings()
+  const content = readStorefrontContent(settings?.storefront_content)
   const year = new Date().getFullYear()
 
-  const brandName = "Lolys' Accessories & Home"
+  const suffix = lang === 'en' ? 'en' : 'ar'
+  const localized = (field: string, fallback: string) => {
+    const value = content[`${field}_${suffix}` as keyof typeof content]
+    return typeof value === 'string' && value.trim() ? value.trim() : fallback
+  }
+  const brandName = localized('brand_name', "Lolys' Accessories & Home")
+  const tagline = localized('tagline', t.footer.tagline)
+  const copyright = localized('copyright', t.footer.rights)
+  const configuredOrder = content.footer_order ?? []
+  const footerOrder = [
+    ...configuredOrder,
+    ...POLICY_ROUTES.filter((route) => !configuredOrder.includes(route)),
+  ]
+  const labels: Record<PolicyRoute, string> = {
+    terms: localized('terms_label', t.footer.terms),
+    privacy: localized('privacy_label', t.footer.privacy),
+    returns: localized('returns_label', t.footer.returns),
+    shipping: localized('shipping_label', t.footer.shipping),
+    contact: localized('contact_label', t.footer.contact),
+  }
 
   return (
     <footer className="w-full border-t border-border bg-brand text-brand-contrast mt-auto">
@@ -18,7 +45,9 @@ export function Footer() {
             <span className="font-accent text-h2 font-bold tracking-normal text-brand-contrast">
               {brandName}
             </span>
-            <p className="text-body text-brand-contrast/90 max-w-md">{t.footer.tagline}</p>
+            <p className="text-body text-brand-contrast/90 max-w-md whitespace-pre-wrap break-words">
+              {tagline}
+            </p>
           </div>
 
           {/* Ribbon Divider Ornament */}
@@ -31,19 +60,13 @@ export function Footer() {
             aria-label="Policy Links"
             className="flex flex-wrap justify-center gap-4 sm:gap-6 text-small"
           >
-            {[
-              ['/terms', t.footer.terms],
-              ['/privacy', t.footer.privacy],
-              ['/returns', t.footer.returns],
-              ['/shipping', t.footer.shipping],
-              ['/contact', t.footer.contact],
-            ].map(([to, label]) => (
+            {footerOrder.map((route) => (
               <Link
-                key={to}
-                to={to}
+                key={route}
+                to={`/${route}`}
                 className="transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-chip px-2 py-1"
               >
-                {label}
+                {labels[route]}
               </Link>
             ))}
           </nav>
@@ -56,7 +79,7 @@ export function Footer() {
           {/* Copyright */}
           <div className="border-t border-brand-contrast/20 pt-6 w-full text-center text-caption text-brand-contrast/80">
             <p>
-              &copy; {year} {brandName}. {t.footer.rights}.
+              &copy; {year} {brandName}. {copyright}.
             </p>
           </div>
         </div>
