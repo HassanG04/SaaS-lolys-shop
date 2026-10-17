@@ -4,6 +4,11 @@ Updated 2026-10-17. The earlier brief is superseded and preserved in Git history
 Read [the latest owner corrections](docs/handoff/OWNER-FOLLOWUP-2026-10-17.md)
 FIRST. They supersede the old right-in-both-languages and OS-always-wins motion
 directions. Preserve your completed homepage/admin-motion commits.
+Latest owner correction: postal code must be required and database NOT NULL,
+with genuine backfill and signup-safe migration, not an optional Egypt-Post-only
+field. The owner confirms the complete order/approval/payment/shipping flow,
+permissions, stock and database behavior were tested; preserve that accepted
+baseline and run affected regressions for new work. Do not keep calling it untested.
 Read [HANDOVER_TO_ANTI_GRAVITY.md](HANDOVER_TO_ANTI_GRAVITY.md) completely, then
 .agent-state/project-progress.md, git status, git diff, untracked files,
 AGENTS.md and the referenced roadmap/spec sections.

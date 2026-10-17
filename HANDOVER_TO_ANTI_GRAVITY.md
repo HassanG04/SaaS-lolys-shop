@@ -2,6 +2,13 @@
 
 ## Latest owner corrections — read first (2026-10-17)
 
+Additional owner confirmation: the existing complete order/approval/payment/
+shipping flow, permissions, stock handling and database behavior were tested and
+confirmed. Treat older “whole flow unverified” wording as superseded; record
+owner-confirmed evidence without inventing automated results. Postal code is
+mandatory with final database NOT NULL/non-empty validation. The latest follow-up
+defines safe migration, signup and legacy-data requirements for that correction.
+
 The current checkpoint is `65e3558` on `agent/T-5.13e-admin-slide-transitions`,
 which includes Anti-Gravity's `0395a0e` homepage and `8714d4c` admin-motion work.
 Preserve those changes. The older baseline and “missing” visual rows below are

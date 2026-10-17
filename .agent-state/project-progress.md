@@ -1,5 +1,19 @@
 # Shared project progress
 
+## Codex — Owner acceptance and required postal code — 2026-10-17
+
+Current task: continuation prompt/status documentation on `agent/T-5.13e-admin-slide-transitions`, application baseline unchanged from `65e3558`, prior handoff `60089dc`.
+
+Completed: recorded the owner's confirmation that the existing complete order → approval → payment → shipping flow, permissions, stock handling and database behavior were tested. That baseline is owner-confirmed, not still globally untested. Updated T-4.08 to required text postal code with final database NOT NULL/non-empty validation, preserving signup and real legacy address data.
+
+Files changed: latest owner follow-up, both handoff entry files, owner-experience spec, roadmap and this progress file. Documentation only.
+
+Tests executed: roadmap status read (139 tasks: 116 done, 7 doing, 16 todo); documentation consistency/format/diff/secret validation. No new application or database tests; owner testing is attributed to the owner, not a claimed Codex rerun.
+
+Problems found: NOT NULL on existing profile/address fields needs a safe backfill and registration strategy; no fake postal codes, empty defaults or historic order rewrites. Local Docker limits new schema regression testing, not the validity of the owner's previous testing. Remaining features and distinct owner launch tasks stay open.
+
+Next action: Anti-Gravity continues from latest handoff, implements remaining UI/editor/data tasks, prioritizes required postal code when the approved DB test environment is available, and regression-tests changed behavior while preserving the owner-confirmed transactional baseline.
+
 ## Codex — Latest owner correction handoff — 2026-10-17
 
 Current task: documentation-only owner handoff on `agent/T-5.13e-admin-slide-transitions`, starting at `65e3558`. Preserve Anti-Gravity's homepage `0395a0e` and admin-motion `8714d4c` implementation.

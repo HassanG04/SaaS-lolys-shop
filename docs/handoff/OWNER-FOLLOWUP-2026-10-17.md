@@ -4,6 +4,36 @@ Read this before the earlier HANDOVER_TO_ANTI_GRAVITY.md requirement ledger.
 The owner explicitly requests these corrections and continuation by Anti-Gravity.
 This Codex session changes documentation only; it does not implement the fixes.
 
+## Latest owner confirmation and postal-code correction
+
+The owner explicitly confirms that the complete order → approval → payment →
+shipping flow, permissions, stock handling and database behavior were tested and
+confirmed. Record this as owner-confirmed acceptance of the existing flow; do not
+keep presenting that entire baseline as untested or unfinished. It is not a claim
+that Codex reran tests or that a particular CI run passed. Local Docker being
+unavailable does not invalidate the owner's completed testing. After changing
+address/schema/order code, run the affected regression checks rather than treating
+the whole working flow as a new implementation task.
+
+Postal code (T-4.08) is REQUIRED with database NOT NULL enforcement, not an
+optional text input and not required only when Egypt Post is selected. Persist
+it with a complete saved delivery address and each new order's immutable address
+snapshot. Store it as text, reject null/empty/whitespace values server-side and
+in the form, validate the documented format and preserve leading zeros.
+
+Use additive expand/backfill/contract migrations. Do not invent codes, use an
+empty-string default to bypass NOT NULL, rewrite historic address facts or delete
+records to make a migration pass. Account creation currently precedes address
+entry: preserve signup without silently inventing a postal code. Inspect the
+existing profile/address model and document a compatible enforcement strategy;
+if missing legacy data or registration behavior makes the final constraint
+impossible without an owner decision, record the exact conflict. A transitional
+nullable column is not completion of the final NOT NULL requirement.
+
+Keep old orders readable and unchanged, preserve the save-address opt-out, and
+show the code in account/checkout/order/fulfilment views. Test first-time signup,
+missing/null/blank values, genuine backfill, repeat checkout and old snapshots.
+
 ## Current code and evidence
 
 - Root: D:/Projects/Programming/الاء.
@@ -175,8 +205,11 @@ Retain these motion/accessibility tests under the new explicit policy.
 3. T-3.12: route-by-route full localization.
 4. T-3.11: explicit motion policy overriding device settings.
 5. T-3.10: real persistent homepage editor, once local DB verification is available.
-6. Continue postal code, customer notifications/suggestions/demand, profile photo,
-   approval-only QR delivery and full payment verification from the main handoff.
+6. Prioritize the mandatory postal-code contract when local database testing is
+   available; continue customer notifications/suggestions/demand and profile photo.
+   Preserve the owner-confirmed order/payment flow; recheck affected behavior
+   after modifications. Any specific remaining QR asset issue is distinct from
+   declaring the entire confirmed flow untested.
 
 Do not discard already completed homepage/admin animation code. Read current diff
 before editing. Split tasks, update progress, use existing architecture and tokens.
@@ -188,9 +221,10 @@ The shop is not ready for public production use yet. Required remaining groups:
 
 1. These visible defects and the unfinished editor, postal code, notifications,
    suggestions, profile photo and correct QR flow.
-2. Database/security acceptance: current migrations, RLS/AAL2, saved address/order
-   snapshots, approval → private instructions → proof → admin confirmation →
-   shipping, expiry/restock and concurrency. Local Docker is currently blocked.
+2. The existing order → approval → payment → shipping flow, permissions, stock
+   handling and database behavior are now owner-confirmed tested. New postal-code
+   and other schema changes still need their own migration/regression evidence;
+   local Docker remains unavailable for those new checks.
 3. Hosted release setup and evidence: SMTP/auth email delivery (T-8.02),
    production hardening/configuration (T-8.03), real catalogue/shipping data
    (T-8.04), admin recovery/onboarding (T-8.09), backed-up/restore-tested data,
@@ -201,8 +235,9 @@ The shop is not ready for public production use yet. Required remaining groups:
 Some human-owned tasks are marked done in roadmap. That is not evidence that
 their exact acceptance criteria were confirmed. Require existing owner evidence;
 do not fabricate it or claim a runbook alone means the operation was completed.
-The owner confirms cloud projects exist; this does not prove SMTP, live QR,
-security gates, recovery or the payment journey.
+The owner confirms cloud projects exist and the core transactional flow was
+tested. This does not automatically complete separate SMTP, recovery, remaining
+feature, security-scan or launch-signoff tasks.
 
 No reliable launch date or “90% ready” claim until the remaining implementation
 and end-to-end validation have evidence. No merge, production deployment,

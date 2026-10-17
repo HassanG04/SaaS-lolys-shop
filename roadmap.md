@@ -821,8 +821,8 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 
 #### T-4.08: Saved postal code and order snapshot
 `status: todo` `owner: agent` `needs: T-4.02, T-1.23` `size: M`
-- **Do:** Add saved postal code and immutable order snapshot with documented validation for Egypt Post; see `docs/spec/owner-experience-change.md`.
-- **Done when:** Existing orders remain readable; required postal delivery code validated in database, generated types and RLS/checkout tests pass.
+- **Do:** Owner correction: required text postal code with final database NOT NULL and non-empty/format validation for complete saved delivery addresses and new order snapshots, not Egypt-Post-only. Preserve leading zeros, account creation before address entry and existing order facts; use additive expand/backfill/contract without fabricated defaults. See `docs/spec/owner-experience-change.md`.
+- **Done when:** Final required-address/order contract rejects null/blank codes server-side; signup, legacy-data migration, saved-address opt-out and old immutable snapshots remain valid; generated types and address/RLS/checkout regression tests pass. Missing genuine backfill data is documented, never hidden by fake codes.
 - **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run verify`
 
 ### Phase 5: Admin
@@ -1536,6 +1536,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-17 | T-5.13e | Anti-Gravity | Implemented admin desktop sidebar slide & collapse (`.is-collapsed` / `.is-expanded` with inert attribute and inner container transform), mobile modal drawer animated slide in and out from physical right with native `<dialog>` showModal/close lifecycle and backdrop opacity fade, inner admin route transitions keyed by `location.pathname` with inner scroll reset on `#admin-main`, and localized token-compliant AdminFallback skeleton card loaders. Verified with 10 admin shell unit tests, 6 admin transition unit tests, 36 Playwright motion and responsive tests across all themes and viewports, and all 12 verify gates passing (961 tests: 758 app + 203 tooling; bundle 199,990 / 200,000 gzip bytes). | pending |
 
 | 2026-10-17 | T-3.10b, T-3.11, T-3.12, T-5.13f | Codex | Owner follow-up handed to Anti-Gravity: visible admin entry plus still-missing mouse editor, opposite offer/heart edges, English-left/Arabic-right dashboard, complete policy/route translations, explicit Full/Reduced/Follow-device motion policy (owner now wants motion despite OS setting). Preserved AG commits 0395a0e/8714d4c/65e3558; their reported tests were not rerun here. Docker server still unavailable; product remains pre-launch. Documentation-only change with precise source evidence and acceptance checks. | pending |
+
+| 2026-10-17 | T-4.08, T-4.07, T-5.12 | Owner + Codex | Owner confirms the complete order/approval/payment/shipping flow, permissions, stock handling and database behavior tested. Record as owner-confirmed acceptance, not a fabricated CI/local rerun; preserve baseline and regression-test affected changes. Postal code explicitly required with final database NOT NULL and non-empty validation; safe legacy-data/signup handling documented. No task status automatically changed and no cloud action. | [#34](https://github.com/HassanG04/SaaS-lolys-shop/pull/34) |
 
 ### Open questions (agents add rows; the owner answers)
 
