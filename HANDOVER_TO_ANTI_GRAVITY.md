@@ -1,340 +1,287 @@
-# Database integration handover — 2026-10-15
+# Handover to Anti-Gravity — complete owner request
 
-## Current Objective
+Prepared by Codex, 2026-10-17. Supersedes the older handover and 2026-10-16 brief.
+This handoff session changes documentation only.
 
-Prepare `agent/T-1.09-database-integration` from main `4dfb26c` in
-`D:/Projects/Programming/الاء/.tools/merge-day-plan`. Do not switch or reset the
-root analytics checkout. This supersedes the static-analysis continuation below.
+## Current objective and starting point
 
-## Completed
+Finish the owner's full experience request, including the omitted About Us hover
+effects and admin slide transitions. Track every row below; a blanket “verify
+passed” report does not demonstrate that each requested feature exists.
 
-Database-only extraction through cfac9d5, owner-role/audit fixes, isolated local
-stack, DB CI, 259 passing pgTAP assertions, five negative probes and recovery,
-real blocked-buyer concurrency proof, deterministic regenerated types. Full verify passed: 57
-application tests and 114 tooling tests, plus lint, formatting, types, build and guards. Detailed files and
-evidence are in shared progress and `docs/handoff/DATABASE-INTEGRATION.md`.
+- Repository: D:/Projects/Programming/الاء.
+- Owner-confirmed remote: https://github.com/HassanG04/SaaS-lolys-shop.git.
+- Current branch: agent/T-5.13d-responsive-evidence.
+- Last application/evidence checkpoint: b17371e34d2ae443d0f8f53a0f89fd94f05c1929.
+  Fetch the newer documentation-only handoff commit on this same branch.
+- main was fetched during this handoff: 315f01d. Do NOT restart from main or
+  analytics e79d047; they omit these repairs.
+- Root checkout was clean before this documentation update. Read git status,
+  git diff and untracked files. Preserve other agents' work.
+- Read AGENTS.md, .agent-state/project-progress.md, this handoff, roadmap sections
+  0/1, the selected task, docs/spec/owner-experience-change.md,
+  docs/spec/payment-flow-change.md and related design/security/database/error specs.
+- Use Node 24.21.0 from .nvmrc; portable runtime is
+  .tools/node-v24.21.0-win-x64/node.exe.
+- Run roadmap:next, then resume this owner-directed unfinished repair. One task
+  per branch; split at the documented review-size limit.
+- Preserve .tools/cozy-storefront and its uncommitted work. PR28 is older visual
+  work: compare selectively, never merge that checkout wholesale.
 
-## Remaining
+## Saved checkpoints and draft PRs
 
-At `4c04816`, all seven implemented checks and the preview passed. The owner
-explicitly authorized the main merge on 2026-10-15. The normal merge API refused
-it with HTTP 405: one approving review from a write-access reviewer is required,
-and required status check `e2e` is expected. Main remains `4dfb26c`; PR26 is open.
-Prepare the actual application/E2E integration and obtain an eligible GitHub
-review before retrying the authorized merge. Do not bypass or weaken gates, or
-import held payment branches before they satisfy the amendment.
+| Commit  | Branch                                 | Scope                                                        | Draft PR                                                   |
+| ------- | -------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------------- |
+| 52dfb0b | agent/T-2.06b-mfa-experience-repair    | MFA/session repair, includes AG's unpublished 66877e4 parent | [29](https://github.com/HassanG04/SaaS-lolys-shop/pull/29) |
+| a561e3c | agent/T-5.13-admin-workspace-usability | Workspace, thumbnails, duplicate actions, analytics fallback | [30](https://github.com/HassanG04/SaaS-lolys-shop/pull/30) |
+| 5580295 | agent/T-5.13b-review-navigation        | Orders/payment links, count, reset preparation               | [31](https://github.com/HassanG04/SaaS-lolys-shop/pull/31) |
+| 169b452 | agent/T-5.13c-responsive-navigation    | Right header, mobile scrolling, switch, social links         | [32](https://github.com/HassanG04/SaaS-lolys-shop/pull/32) |
+| b17371e | agent/T-5.13d-responsive-evidence      | Component/browser regressions and handoff                    | [33](https://github.com/HassanG04/SaaS-lolys-shop/pull/33) |
 
-The owner's payment QR is `D:/Projects/Programming/الاء/ip/ip.jpeg`, not `ip.png`.
-Its QR payload decodes to an InstaPay link matching the supplied recipient.
-See the asset receipt in `docs/handoff/DATABASE-INTEGRATION.md`. It has not been
-uploaded or configured in cloud settings. Use the supplied QR through the
-reviewed admin settings flow; do not invent a per-order QR payload or publish
-payment details in frontend defaults.
+All five branches were pushed. PR29 targets the analytics branch; each next PR
+targets its predecessor. No merge or deployment. Remote CI was not verified.
 
-## Current Files
+## Complete requirement ledger
 
-The latest follow-up changes only `.agent-state/project-progress.md`, this
-handover, `docs/handoff/DATABASE-INTEGRATION.md` and `roadmap.md`. Earlier database
-implementation files are listed in shared progress. Preserve root analytics
-work and the owner's untracked `ip/` folder.
+“Implemented” means code/local evidence exists, not production acceptance.
 
-## Current Error
+| Owner requirement                                                 | Current state                                                                                    | Remaining work                                               |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| Magnetic buttons, flowers, themes, skeletons                      | Implemented; owner confirms motion after enabling Windows effects; 16 isolated motion tests pass | Check actual pages; preserve reduced motion                  |
+| Thumbnail opens image selection                                   | Implemented ProductPhotoButton + existing safe upload API                                        | Real upload/replace/failure test when local DB works         |
+| Duplicate quick buttons/crowded products                          | Duplicate actions removed; wider workspace implemented                                           | Actual long bilingual rows and phone overflow review         |
+| Right collapsible sidebar                                         | Position/collapse implemented                                                                    | Slide animation MISSING: T-5.13e                             |
+| Dashboard label beside toggle; mobile reachability                | Implemented T-5.13c, 12 responsive cases                                                         | Preserve while animating/navigation                          |
+| Misshapen Active switch                                           | Implemented centered ToggleSwitch, RTL/LTR, 44px target                                          | Preserve mutation rollback                                   |
+| Protruding corners / undefined percentage                         | Table containment and finite-number fallback implemented                                         | Populated/empty/error data review                            |
+| Replace hero arch                                                 | NOT wired on actual HomePage                                                                     | T-3.10a first; editing unused StorefrontHero is insufficient |
+| Editable hero image/item/headline/promotion                       | NOT implemented                                                                                  | T-3.10 admin mouse-icon control mode and cloud persistence   |
+| Editable category shortcuts and plus control                      | NOT implemented                                                                                  | T-3.10; leave Shop by category/products behavior intact      |
+| About/Delivery/Returns card enlargement                           | NOT implemented as requested; entrance only                                                      | T-3.10a actual hover/focus enlargement and smooth reversal   |
+| Complete English/Arabic parity                                    | PARTIAL                                                                                          | Known HomePage returns/tagline and checkout validation leaks |
+| Saved postal code                                                 | NOT implemented                                                                                  | T-4.08 schema/address/order snapshot/fulfilment              |
+| Pending card opens Orders                                         | Implemented                                                                                      | Real pending-order navigation check                          |
+| My Orders in hamburger                                            | Implemented                                                                                      | Preserve both languages                                      |
+| Customer notification bell: wishlist sale, approval, general sale | NOT implemented                                                                                  | T-2.10 database events, isolation, unread handling           |
+| Admin wishlist demand                                             | Customer favorites exist; demand view NOT implemented                                            | Extend favorites securely; don't expose unnecessary identity |
+| Suggestions and admin inbox                                       | NOT implemented                                                                                  | T-2.10 persistence, RLS, bounded submission                  |
+| Profile photo                                                     | NOT implemented                                                                                  | T-2.11 safe upload, owner policy, cleanup                    |
+| Correct InstaPay QR/recipient                                     | Only empty receiver fallback corrected; hosted setting unchanged                                 | T-5.14 approved instructions and asset delivery              |
+| Preserve verified MFA                                             | Repair implemented; owner confirms enrollment                                                    | Reload/refresh/logout/sensitive-action verification          |
+| Payment-proof alert and order/payment link                        | Admin count and exact-order link implemented                                                     | DB-backed approval/proof/review/shipping flow                |
+| Delete all accounts/orders SQL                                    | Prepared, NOT executed/tested; refuses ledger/storage conflicts                                  | Review limitations below; no unconditional reset claim       |
+| All-user TikTok/Instagram/WhatsApp links                          | Implemented, exact URLs tested                                                                   | Preserve named narrow icons and wider text                   |
 
-Error: GitHub merge API HTTP 405, repository rule violations.
-Expected: squash-merge verified PR26 after the owner's explicit authorization.
-Actual: no merge; one write-access approving review and the `e2e` check are missing.
-Cause: the rule requires application E2E before that implementation reaches this
-database-only branch; chat approval does not create a GitHub PR review.
-No known database test failure; all seven implemented remote checks passed.
+## First: T-3.10a — actual homepage repairs
 
-## Next Exact Command
+Inspect:
+
+- src/pages/HomePage.tsx (actual routed page).
+- src/features/catalog/components/StorefrontHero.tsx (existing candidate, currently unused).
+- CategoryTile.tsx / ProductImage.tsx in that directory.
+- src/styles/storefront.css, src/components/ui/SectionReveal.tsx.
+- src/i18n/ar.json and en.json; homepage/catalogue tests.
+
+Fresh source findings:
+
+1. HomePage imports ArchFrame and renders a tall rounded-arch. A new component
+   existing on disk has not changed the active page.
+2. salePercent defaults to 50 and the promotional badge is always shown.
+   Missing/invalid/zero settings must get neutral copy, not an invented sale.
+   A promotion must match the selected product/current discount; a generic
+   sale_percent setting alone does not prove all items are discounted.
+3. Hero saved text uses only hero_title_ar/hero_subtitle_ar. English saved
+   counterparts do not exist yet.
+4. returnsText falls back to a literal Arabic paragraph in English.
+   The About heading reads tagline_ar regardless of language.
+   Delivery badges always show both payment methods, even when disabled.
+5. feature-card CSS has only a timed entrance, no requested hover enlargement.
+   Mount animations may finish before the user scrolls to About.
+
+Implement without waiting for new schema:
+
+- Replace the active arch with a rounded square/landscape frame suitable for
+  accessories/mugs. Reuse documented tokens and existing safe image/skeleton/error
+  behavior; don't fabricate product photography.
+- Enlarge the real About/Delivery/Returns cards on fine-pointer hover and
+  focus-within where they contain controls. Smoothly reverse on leave/blur.
+  Avoid layout shifts, clipped text, hidden controls or viewport overflow.
+  Don't create fake buttons on informational cards just to animate them.
+- Trigger section entrances on reaching the viewport.
+- Fix known bilingual leaks and display only enabled payment methods.
+- Preserve catalogue filtering and category/product section behavior.
+- Test routed HomePage with absent/zero sale settings, long bilingual copy,
+  enabled-method variations, keyboard/touch/reduced motion.
+- Show actual-page evidence at 320/360/1280 in both themes/directions. Isolated
+  CSS checks alone do not prove this feature is visible.
+
+## Second: T-5.13e — admin slide transitions
+
+Files: src/features/admin/{AdminShell,AdminSidebar,AdminRoutes}.tsx,
+src/components/layout/Layout.tsx and src/styles/storefront.css.
+
+Desktop currently switches hidden/lg:flex instantly; native mobile dialog opens
+and closes instantly. Admin route transitions are absent because Layout now
+preserves the shell. Do not restore whole-shell pathname remounts.
+
+Implement:
+
+- Desktop sidebar slides/collapses from the physical right; content takes the
+  released width smoothly. Hidden controls must leave keyboard navigation.
+- Mobile modal slides in AND out from the right. Preserve native modality, Escape,
+  focus containment, focus return and dismissal behavior. Keep modality until exit
+  finishes; handle rapid reversals and browsers without transition events.
+- Animate only inner page content on pathname changes. Keep header, session,
+  sidebar state and shell mounted. Reset inner scroll on a new page, not just
+  window.scrollTo. Don't replay for each filter keystroke/search-param change.
+- AdminRoutes has a hard-coded Loading aria-label and only PearlLoader. Localize
+  and provide appropriate visible lazy/data skeletons without artificial delays
+  or discarding cached rows.
+- Reduced motion removes sliding/scaling but leaves every state operable.
+- Test mid-scroll open/close on mobile, focus return, collapse widths, route changes,
+  rapid toggles, both languages/themes and reduced motion.
+
+## Data-backed work — split schema and UI, never fake persistence
+
+T-3.10 editor:
+
+- Mouse-icon control mode visible to authorized admin only, with image selection,
+  featured product, bilingual headline/promo and category shortcut plus/edit controls.
+- Persist through existing typed settings/API patterns. Inspect shop_settings and
+  admin_update_setting allow-lists; hidden controls alone are not authorization.
+- Targets: src/features/admin/settings, src/features/settings, HomePage.
+- Reference migrations 20261012044500_shop_settings.sql and
+  20261014023000_order_approval_and_saved_address.sql; never edit merged migrations.
+- Add allowed keys/validation/RLS/AAL2/audit with tests and regenerated types.
+- Separate shortcut configuration from categories.show_on_home so changing pills
+  does not unexpectedly alter the Shop by category section.
+- Test save/cancel, pending/error, lost permissions, reload persistence, deleted/
+  inactive selections and missing values. No fake successful save.
+
+T-4.08 postal code:
+
+- Targets: src/features/account/{api,types,hooks}.ts, src/features/checkout,
+  src/pages/{AccountPage,CheckoutPage,AccountOrdersPage}.tsx and admin order details.
+- Verify current Egypt Post format with an authoritative source; keep a string,
+  normalize digits without losing leading zeros; never infer a code from a city.
+- Add profile and immutable order snapshot fields through an additive migration,
+  validated by place_order, saved for next checkout and visible to fulfilment.
+- Require for postal delivery while preserving old data; do not invent backfill.
+- Test invalid server input, saved defaults, unticked alternate-address save,
+  account edits and historic order immutability.
+
+T-2.10 notifications/suggestions:
+
+- Reuse src/features/favorites, not a second wishlist.
+- Split database events/schema from bell/inbox/menu/admin UI.
+- Approval events follow committed order transitions; wishlist-sale/general-sale
+  events need deduplication, unread state, privacy, limits and documented retention.
+- Customer cannot write other users' notifications or payment status.
+- Persist suggestions with owner-scoped RLS and an authorized admin inbox.
+  Decisions without defaults go in OPEN_DECISION.md + Appendix G.
+- Existing PaymentReviewCount is a 30-second ADMIN polling badge, not the requested
+  customer notification system.
+
+T-2.11 photo:
+
+- Owner-scoped path/metadata and storage policy; JPEG/PNG/WebP signature checks,
+  size cap, renamed and re-encoded files; upload/remove/error states.
+- Cleanup replaced files after successful profile persistence.
+- Test cross-user access and failure rollback; no privileged browser key or
+  localStorage-only photo database.
+
+## InstaPay and reset limits
+
+Approved receiver: alaa.ahm9624@instapay.
+Actual asset: ip/ip.jpeg, NOT ip/ip.png.
+SHA-256 rechecked during this handoff:
+B432667B3ACF96B8CBA2C48CAD0710486789DB0459BD223863B0E41D9B66F6AA.
+
+Historical evidence in docs/handoff/DATABASE-INTEGRATION.md records zxing-cpp 2.3.0
+decoding one ipn.eg link with the matching recipient. Today's identical hash links
+the same asset to that evidence. No fresh decode or payment-link visit was made;
+bank ownership/live payment acceptance remain unverified. Don't invent QR payloads.
+
+Outstanding:
+
+- Corrected fallback does not fix a wrong hosted shop setting.
+- uploadInstaPayQrImage uses public product-images; getPublicQrUrl exposes it.
+  Private shop_settings RLS does NOT make the QR file private. Apply the
+  approval-first contract to asset delivery and metadata.
+- Missing payment instructions must show a mapped localized unavailable/error
+  state, not silently route money through a hard-coded default.
+- No instructions/proof before approval; owner-only instructions; screenshot sets
+  under_review, never paid. Admin verifies actual bank transfer/reference and uses
+  admin_review_payment. Database rejects unpaid InstaPay shipping/delivery.
+- Preserve exact-order payment links, pending cards and admin review count.
+- Hosted configuration remains owner-run; don't modify dashboards/cloud SQL.
+
+Reset:
+
+- docs/runbooks/reset-development-data.sql/.md exist; default is ROLLBACK.
+- They refuse stock_movements references and owned Storage objects. User/order
+  deletion can attempt forbidden ledger updates; SQL Storage metadata deletion
+  can orphan real files.
+- Stock is not rebuilt. Script is unexecuted and untested; it is NOT a universal
+  working reset for a database with history.
+- Resolve incompatible reset requirements with owner review. Never disable RLS,
+  triggers or audit/ledger protection, or execute destructive cloud SQL.
+
+## Current error and verified baseline
+
+Error: dockerDesktopLinuxEngine pipe absent.
+Expected: approved local Docker/Supabase stack reachable.
+Actual: db:reset failed; database-backed E2E failed before tests could execute.
+Possible cause: Docker Desktop stopped/unavailable.
+Don't substitute cloud endpoints. Continue independent visual repairs.
+
+Verified combined application/evidence tree b17371e:
+
+- Full npm run verify EXIT 0, all 12 gates.
+- 748 application tests in 65 files + 203 tooling tests.
+- Build, secret scan, SQL/migration/token/i18n/supply-chain checks pass.
+- Initial JS 199971/200000 gzip bytes: 29 bytes headroom. Don't raise the budget;
+  lazy-load feature-only code and remove actual duplication as needed.
+- 28 isolated browser checks pass (16 motion, 12 responsive): real component HTML,
+  compiled CSS, synthetic session, network aborted. Screenshots reviewed.
+  These do not certify live data, font/image loading or complete app flows.
+- Roadmap valid at 133 tasks before adding this handoff's two repair slices.
+- No remote CI green, hosted acceptance, new DB test pass or launch claim.
+
+Pinned runtime wrapper:
 
 ```powershell
-$env:Path='D:\Projects\Programming\الاء\.tools\node-v24.21.0-win-x64;'+$env:Path
-$env:npm_config_script_shell='C:\Windows\System32\cmd.exe'
-$env:VITEST_MAX_WORKERS='2'
-Set-Location -LiteralPath 'D:\Projects\Programming\الاء\.tools\merge-day-plan'
-npm run verify
+& .tools/node-v24.21.0-win-x64/node.exe .tools/cozy-storefront/.tools/run-node.mjs npm run verify
 ```
 
-## Historical handover — 2026-10-13
+Offline geometry reproduction: docs/handoff/RESPONSIVE-REPAIR.md.
+Once Docker works: local db:reset, db:test, db:test:concurrency, db:types and relevant
+E2E/security checks. Only report tests that ran. Preserve every quality gate.
 
-## Current Objective
+## Next exact command
 
-Finish T-7.06 on `agent/T-7.06-semgrep`, stacked on repository-security PR 18.
-Your app is at 56529b3 (T-5.04); next app task is T-5.05. Its checkout is untouched.
-
-## Completed / Remaining
-
-Seven project rules plus maintained TypeScript/React packs, a digest-pinned
-read-only `sast` workflow, redacted scanner runner and real-binary fixtures.
-Both source trees scanned without high findings. Real-scanner fixtures pass;
-PR checks are pending. Owner workflow review remains required.
-Preserve your newer application/dependencies when integrating this tooling patch.
-
-## Current Files
-
-`.semgrep/project.yml`, `.semgrep/README.md`, `.semgrepignore`,
-`.github/workflows/sast.yml`, `.github/CODEOWNERS`, `scripts/check-sast.mjs`,
-`scripts/test-semgrep.mjs`, `roadmap.md`, `.agent-state/project-progress.md`,
-`.agent-state/sast-pr.md`, `HANDOVER_TO_ANTI_GRAVITY.md`.
-
-## Current Error
-
-No known application scan finding. Expected: fixture and remote PR verification.
-Actual: local verify and fixtures pass; PR checks pending. Parser prefiltering and
-cross-function taint limits are documented; lint/typecheck and error tests remain.
-
-## Next Exact Command
-
-`git status --short --branch` then read this handover, progress and the PR checks.
-Run `node --test scripts/test-semgrep.mjs` with Semgrep 1.179.0 on PATH.
-No agent merges, cloud deployments or dashboard changes.
-
-# Previous repository-security handover — 2026-10-12
-
-## Current Objective
-
-T-0.12 on `agent/T-0.12-repository-security`, stacked on migration guard PR 17.
-Your published application stack through T-8.01 is unchanged.
-
-## Completed / Remaining
-
-Implemented private email reporting using the owner-approved temporary mailbox,
-security.txt, owner review rules, weekly dependency updates, and checksum-pinned
-Gitleaks with three real-binary tests. Read progress for final verification/PR
-evidence. Owner workflow review remains required (SEC-15, SEC-16, SEC-24).
-PR 18 is open. Full verify passes (166 tests) plus three scanner tests. CI run
-38176155631 proves rejection on a synthetic runner-only commit; the probe has
-been removed. All five clean-head jobs passed at b2da8dc in run 38176275898.
-The next independent task in this checkout is T-7.06 (Semgrep).
-No main merge, dashboard action or cloud deployment is authorized for agents.
-
-## Current Files
-
-`SECURITY.md`, `public/.well-known/security.txt`, `.github/CODEOWNERS`,
-`.github/dependabot.yml`, `.github/workflows/ci.yml`, `.gitleaksignore`,
-`scripts/check-history-secrets.mjs`, `scripts/test-gitleaks.mjs`, `roadmap.md`,
-`.agent-state/project-progress.md`, `HANDOVER_TO_ANTI_GRAVITY.md`.
-
-## Current Error
-
-No failing implementation check remains. Expected next: owner workflow review.
-History scanning found three false positives in your historical unit tests.
-They are mock values, not operational credentials; exact fingerprint exceptions
-are documented in `.gitleaksignore`. Do not replace these with broad exclusions.
-GitHub private reporting is unavailable for this private repo; use H-14 email.
-
-## Next Exact Command
-
-`git status --short --branch` — then read progress and PR checks before integrating.
-Preserve your newer app dependencies and migrations when reconciling guard work.
-
-# Previous cloud-prerequisite handover — 2026-10-11
-
-## Current Objective
-
-T-1.09b migration protection on `agent/T-1.09b-migration-guard`, stacked on PR 16.
-The owner confirmed there is no cloud project yet. Setup checklist and remaining
-cloud gates are in `.agent-state/cloud-database.md`. Your newer T-8.01 stack at
-7986020 is published and remains separate from this older application tree.
-
-## Completed / Remaining
-
-Git-based append-only guard and five rejection/recovery tests are implemented.
-PR 17: all four checks passed at 697e8c5, run 38137004058; 166 local tests pass.
-Local/CI wiring preserves existing checks. Full verification and publication are
-recorded in project-progress.md. Owner workflow review remains necessary.
-T-1.09 still owns database CI and type checks; T-1.12 still owns deployment
-workflows. No schema, Supabase commands, resets or cloud deployment were run.
-
-## Current Files
-
-`scripts/check-migrations.mjs`, `scripts/check-migrations.test.mjs`,
-`scripts/pending.mjs`, `package.json`, `.github/workflows/ci.yml`, `roadmap.md`,
-`.agent-state/project-progress.md`, `.agent-state/cloud-database.md`,
-`HANDOVER_TO_ANTI_GRAVITY.md`; the original checkout's coordination notice only.
-
-## Current Error
-
-No known implementation failure. Cloud remains unprovisioned; expected next is
-owner-created staging plus reviewed database CI/deployment workflows.
-The approval-service usage-limit failure was retried successfully; no bypass.
-
-## Next Exact Command
-
-`git status --short --branch` — read progress before any branch integration.
-Preserve your newer dependencies and migrations; never replace them with this
-older app tree. Main merges and cloud deployment remain owner-controlled.
-
-# Previous guard handover — 2026-10-11
-
-## Current Objective
-
-T-0.09b is implemented on `agent/T-0.09b-bundle-guard` in the isolated
-`C:/Users/Hassan-PC/.codex/worktrees/main-polish/الاء` checkout. Preserve your
-active T-5.01 checkout; do not switch it to this older application tree.
-
-## Completed
-
-- Secret guard PR 15: four checks pass at cdb6836, run 38134935611.
-- Bundle guard PR 16: four checks pass at bf9a87d, run 38135767780.
-- Full local verify: 55 app + 106 tooling tests, build and both guards pass.
-- Initial JS is 69,655/200,000 gzip bytes. Tests prove oversized shared-import
-  rejection/recovery and eager-admin rejection versus lazy-admin acceptance.
-
-## Remaining
-
-Owner review of both guard PRs. T-0.09b stays doing until workflow review is met.
-PR 16 is stacked on PR 15; integrate 15 first, retarget 16 to main and rerun CI.
-Latest user-supplied AGENTS instructions prohibit agent merges/deployments.
-Reconcile npm scripts with your newer app instead of replacing its manifest.
-Next independent tooling task: T-0.12. Your active app task remains yours.
-
-## Current Files
-
-`scripts/bundle-graph.ts`, `scripts/check-bundle.mjs`,
-`scripts/check-bundle.test.mjs`, `scripts/pending.mjs`, `vite.config.ts`,
-`package.json`, `.github/workflows/ci.yml`, `roadmap.md`,
-`.agent-state/project-progress.md`, `.agent-state/repo-guards.md`,
-`HANDOVER_TO_ANTI_GRAVITY.md`.
-The original checkout also has an updated `.agent-state/codex-parallel-work.md`.
-
-## Current Error
-
-Error: no failing implementation check. Expected: owner workflow review.
-Actual: PRs remain open; main unchanged. Possible cause: human review pending.
-
-## Next Exact Command
+After status/diff inspection and fetching the current handoff branch:
 
 ```powershell
-git status --short --branch
-git diff --stat
+git switch -c agent/T-3.10a-homepage-visual-repair
 ```
 
-Read progress and this handover before continuing. The following integration
-notice and older handover are historical; their pending-task claims are stale.
+Start with actual HomePage About cards, arch, false sale fallback and English copy.
+Then admin motion T-5.13e. Don't wait on Docker for these independent repairs.
 
-# Previous integration notice — 2026-10-11
+## Return to Codex
 
-The owner explicitly requested updating the published branches and merging
-verified work into main. PR 13 consolidated PRs 1–12 and was squash-merged as
-`f5e36db225676191679e1ffacf67245811314dc5`, including the README and supplied logo.
-All four final PR and post-merge main checks passed. The superseded PRs are closed
-and all 13 obsolete remote branches were removed; local branches remain intact.
-See `.agent-state/main-integration.md`. The older handover below is historical.
+Update shared progress after each session. Create HANDOVER_TO_CODEX.md with:
 
-Your active checkout and newer database/Phase 2 work were not modified. It had
-advanced to `agent/T-2.02-routing-and-layout` during integration. Finish and commit
-your active task before integrating updated main into
-that branch. Fetch main, merge it normally and preserve your newer database and
-task-status changes when resolving documentation conflicts. Never reset or restore
-the older main package manifest over your newer implementation.
+- exact branch/commit and every changed file;
+- each ledger row's implemented/partial/missing/blocked state;
+- actual-route before/after evidence, viewport/theme/language;
+- commands, exit codes/counts, distinguishing mocks/isolated browser/local DB/CI/
+  owner acceptance;
+- remaining error, expected/actual, possible cause and next exact command.
 
-Exact first command in your existing checkout: `git status --short --branch`.
-Branch protection remains unavailable until the private repository's account plan
-supports it. Squash-only merging and automatic branch cleanup are enabled.
-
-## Archived handover
-
-# Handover to Anti-Gravity
-
-## Current Objective
-
-Continue from `agent/T-0.08i-language-verification`. Codex reviewed the incoming
-commits, preserved them, repaired guards/language support and opened draft PRs
-8–11. T-0.08e/h/i are implemented but retain the visual acceptance gate.
-
-Read this file, `.agent-state/project-progress.md`, `git status`, `git diff`
-(including untracked files), roadmap sections 0/1 and the current task first.
-Do not restart the theme/UI implementation or restore old drafts wholesale.
-
-## Completed
-
-- Original commits 6c18be3, a47889f and 96ad75f remain on the original
-  `agent/T-0.08d-labels-ornaments` branch; no reset or discarded work.
-- PR 8: labels/ornaments at 6c18be3; four green jobs, run 38081096113.
-- PR 9: token guard now scans CSS/SVG/literal utilities with negative CLI tests;
-  build guard excludes development copy/assets. Four green jobs at 4ac7126,
-  run 38081098408. CI change retains SEC-16/SEC-24 and needs owner review.
-- PR 10: repaired bilingual dictionaries exclude kit copy in production;
-  language switch uses Button and Arabic catalogue errors are retained.
-  ADR-0002 records the OD-003 decision inherited from your handover.
-  Four green jobs at 8a6786d, run 38081350854.
-- PR 11: Arabic locale detection, direction before paint, 12 language tests.
-  All four remote jobs pass at e8774dd in run 38081581119.
-  Latest local npm run verify passes: 54 app + 97 tooling tests (151 total),
-  lint, format, types, token negatives, production build/preview exclusion.
-- Roadmap validates 118 tasks. No new dependency or lockfile change.
-- OD-001 compatible versions and OD-002 loading-only pearl bounce remain approved.
-
-## Remaining
-
-- Read `.agent-state/ui-acceptance.md`; the incoming browser report does not
-  provide the full matrix. Record actual results in a permitted session before
-  marking T-0.08e/h/i done. Do not bypass the prior Codex browser URL denial.
-- Owner reviews PR 1 (T-0.06) and PR 9's read-only CI addition. No agent merges.
-  T-0.09/T-0.12 stay gated; do not copy the old unreviewed guards into production.
-- H-08 Docker remains absent according to the incoming inspection. T-1.01 stays
-  blocked; no database check or launch readiness is claimed.
-- T-2.03 still owns i18next, pluralization, formatting and the full i18n scanner.
-- No catalog, checkout, admin or production backend is ready. This is Phase 0.
-
-## Current Error
-
-Error: No failing code check; visual evidence and human prerequisites remain.
-Expected: Full acceptance matrix, owner workflow review, Docker for local DB work.
-Actual: Automated checks pass; those remaining prerequisites are not evidenced.
-Possible cause: Incoming report lacked detailed results; host/session limits.
-
-## Next Exact Command
-
-```powershell
-$env:Path=(Join-Path (Get-Location) '.tools/node-v24.21.0-win-x64')+';'+$env:Path
-$env:npm_config_script_shell='C:\Windows\System32\cmd.exe'
-npm run roadmap:next
-npm run verify
-```
-
-Use the command-shell override only in this shell: the configured PowerShell
-profile caused stalled npm children and a Conda encoding error. No user-level
-shell settings were changed. Do not read/print environment-file values.
-
-## Current Files
-
-Net session changes relative to incoming 96ad75f (including this handover and
-acceptance checklist). Full diff: `git diff 96ad75f`.
-
-- `.agent-state/anti-gravity-review.md`
-- `.agent-state/language-pr.md`
-- `.agent-state/language-verification-pr.md`
-- `.agent-state/project-progress.md`
-- `.agent-state/ui-acceptance.md`
-- `.agent-state/ui-guard-pr.md`
-- `.agent-state/ui-ornaments-pr.md`
-- `.github/workflows/ci.yml`
-- `docs/adr/0002-bilingual-interface.md`
-- `docs/spec/design-system.md`
-- `HANDOVER_TO_ANTI_GRAVITY.md`
-- `HANDOVER_TO_CODEX.md`
-- `OPEN_DECISION.md`
-- `package.json`
-- `roadmap.md`
-- `scripts/check-tokens.mjs`
-- `scripts/check-tokens.test.mjs`
-- `scripts/check-ui-build.mjs`
-- `scripts/check-ui-build.test.mjs`
-- `scripts/README.md`
-- `src/components/ui/LanguageToggle.tsx`
-- `src/dev/ChoiceExamples.tsx`
-- `src/dev/DialogExample.tsx`
-- `src/dev/FeedbackExamples.tsx`
-- `src/dev/FormExamples.tsx`
-- `src/dev/KitPage.tsx`
-- `src/dev/OrnamentExamples.tsx`
-- `src/dev/useKitCopy.ts`
-- `src/i18n/ar.json`
-- `src/i18n/en.json`
-- `src/i18n/language.test.tsx`
-- `src/i18n/LanguageProvider.tsx`
-- `src/i18n/translations.ts`
+A dictionary-parity check, unused component, CSS class or green mocked test is not
+evidence that the requested feature works. Don't mark owner tasks done.
+Keep the confirmed MFA behavior: verified session survives reload, fresh login
+after logout and sensitive actions require MFA. Respect reduced motion; a site
+override must be an explicit user preference, never silent forced motion.

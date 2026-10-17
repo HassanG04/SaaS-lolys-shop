@@ -1,8 +1,22 @@
 # Shared project progress
 
+## Codex — Complete owner-request handoff — 2026-10-17
+
+Current task: owner-requested documentation handoff on `agent/T-5.13d-responsive-evidence`, application/evidence baseline `b17371e`. Next implementation: T-3.10a homepage visual repairs, then T-5.13e admin transitions.
+
+Completed: audited every repeated owner requirement against current routed code; replaced obsolete `HANDOVER_TO_ANTI_GRAVITY.md` and `CODEX-TO-ANTI-GRAVITY.md`; registered missed visual tasks and exact acceptance checks. All five repair branches pushed to owner-confirmed `HassanG04/SaaS-lolys-shop`; draft PRs 29–33 opened and attached. Main/deployment unchanged.
+
+Files changed: both handoff documents, owner-experience spec, roadmap, responsive repair record and this progress file. No feature code in the handoff update.
+
+Tests executed: prior combined tree full verify passed (748 app + 203 tooling), 28 isolated browser checks passed. Handoff-only update runs documentation formatting, roadmap consistency, diff and secret checks; no new app/DB/CI success claimed. QR SHA-256 matches the historically decoded JPEG recorded in DATABASE-INTEGRATION.md; no fresh payment verification.
+
+Problems found: active homepage still renders arch and false 50% fallback; English returns/tagline leak Arabic; About cards lack hover enlargement; admin sidebar/dialog changes instantly and inner routes lack transitions. Editor, postal code, customer notifications/suggestions/photos remain unfinished. Docker remains unavailable; QR public-storage delivery conflicts with approval-only privacy; reset SQL is untested and refuses ledger/storage conflicts.
+
+Next action: Anti-Gravity reads the complete handoff, current status/diff and creates `agent/T-3.10a-homepage-visual-repair` from the latest current branch. Do independent visual work first; preserve repairs and do not restart from old analytics/main. Return per-feature evidence in HANDOVER_TO_CODEX.md.
+
 ## Codex — Responsive follow-up — 2026-10-17
 
-Current task: T-5.13c on `agent/T-5.13c-responsive-navigation`, based on `5580295`.
+Current task: T-5.13d on `agent/T-5.13d-responsive-evidence`, based on responsive implementation `169b452`; parent T-5.13c on `agent/T-5.13c-responsive-navigation`.
 
 Completed: right-side dashboard header/toggle; viewport-height admin with independent content scrolling; centered logical visibility switch with 44px target; social links for guest/customer/admin and admin sidebar with named narrow icons; My Orders menu link; narrow navbar sizing and bounded scrolling menus. Earlier review-navigation checkpoint is `5580295` and workspace checkpoint is `a561e3c`.
 
@@ -12,7 +26,7 @@ Tests executed: final full verify exited 0 (748 application + 203 tooling tests;
 
 Problems found: local DB reset failed; E2E setup confirms absent Docker engine pipe. No hosted DB or live-preview inspection performed. Initial bundle has very little headroom. QR payload and hosted settings still unverified; public storage must not be described as private simply because payment settings have RLS.
 
-Next action: checkpoint production changes, then T-5.13d regression evidence on a child branch to respect review-size limits; prepare PR review. Continue remaining database features only when local stack is available. Exact reproduction and limitations: `docs/handoff/RESPONSIVE-REPAIR.md`. No merge, production change or reset SQL execution.
+Next action: checkpoint regression evidence and prepare draft PR review. Continue remaining database features only when the local stack is available. Exact reproduction and limitations: `docs/handoff/RESPONSIVE-REPAIR.md`. No merge, production change or reset SQL execution.
 
 ## Codex — Admin workspace repair — 2026-10-17
 
