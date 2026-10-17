@@ -17,7 +17,7 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       onPointerMove={(e) => {
-        if (e.pointerType !== 'mouse' || matchMedia('(prefers-reduced-motion: reduce)').matches)
+        if (e.pointerType !== 'mouse' || document.documentElement.dataset.motion === 'reduced')
           return
         const r = e.currentTarget.getBoundingClientRect()
         if (!r.width) return

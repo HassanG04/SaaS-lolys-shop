@@ -41,6 +41,35 @@
         document.documentElement.setAttribute('data-theme', theme)
       })()
     </script>
+    <script id="motion-init">
+      ;(function () {
+        var setting = 'full'
+        try {
+          var stored = localStorage.getItem('motion')
+          if (stored === 'full' || stored === 'reduced' || stored === 'system') {
+            setting = stored
+          }
+        } catch (_) {}
+        var effective =
+          setting === 'system'
+            ? window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+              ? 'reduced'
+              : 'full'
+            : setting
+        document.documentElement.setAttribute('data-motion', effective)
+        document.documentElement.setAttribute('data-motion-setting', setting)
+        if (window.matchMedia) {
+          var media = window.matchMedia('(prefers-reduced-motion: reduce)')
+          var onMediaChange = function (e) {
+            if (document.documentElement.getAttribute('data-motion-setting') === 'system') {
+              document.documentElement.setAttribute('data-motion', e.matches ? 'reduced' : 'full')
+            }
+          }
+          if (media.addEventListener) media.addEventListener('change', onMediaChange)
+          else if (media.addListener) media.addListener(onMediaChange)
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

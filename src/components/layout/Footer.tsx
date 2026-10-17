@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { RibbonDivider } from '../ui/RibbonDivider'
+import { MotionSelect } from '../ui/MotionSelect'
 
 export function Footer() {
   const { t } = useLanguage()
@@ -46,6 +47,11 @@ export function Footer() {
               </Link>
             ))}
           </nav>
+
+          {/* Accessible Motion Preference Selector */}
+          <div className="flex justify-center">
+            <MotionSelect variant="footer" id="footer-motion-select" />
+          </div>
 
           {/* Copyright */}
           <div className="border-t border-brand-contrast/20 pt-6 w-full text-center text-caption text-brand-contrast/80">

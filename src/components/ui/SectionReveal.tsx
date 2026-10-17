@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { isMotionReduced } from '../../lib/motion'
 
 export interface SectionRevealProps {
   children: ReactNode
@@ -7,11 +8,7 @@ export interface SectionRevealProps {
 }
 
 function shouldSkipMotion() {
-  return (
-    typeof window === 'undefined' ||
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-    !('IntersectionObserver' in window)
-  )
+  return typeof window === 'undefined' || isMotionReduced() || !('IntersectionObserver' in window)
 }
 
 export function SectionReveal({ children, className = '', replayKey }: SectionRevealProps) {
@@ -29,8 +26,18 @@ export function SectionReveal({ children, className = '', replayKey }: SectionRe
   useEffect(() => {
     if (shouldSkipMotion()) return
 
+    const handleMotion = () => {
+      if (shouldSkipMotion()) {
+        setIsVisible(true)
+      }
+    }
+    window.addEventListener('motionchange', handleMotion)
+
     const el = ref.current
-    if (!el) return
+    if (!el) {
+      window.removeEventListener('motionchange', handleMotion)
+      return
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -43,7 +50,10 @@ export function SectionReveal({ children, className = '', replayKey }: SectionRe
     )
 
     observer.observe(el)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('motionchange', handleMotion)
+    }
   }, [replayKey])
 
   return (

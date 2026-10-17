@@ -4,6 +4,7 @@ import { useLanguage } from '../../i18n/LanguageProvider'
 import type { AdminNavItem } from './types'
 import { PaymentReviewCount } from './payments/PaymentReviewCount'
 import { SocialMenuLinks } from '@/components/layout/SocialMenuLinks'
+import { isMotionReduced } from '@/lib/motion'
 
 function NavIcon({ type }: { type: AdminNavItem['icon'] }): ReactNode {
   switch (type) {
@@ -250,8 +251,7 @@ export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: Admi
     const dialog = drawer.current
     if (!dialog) return
 
-    const prefersReduced =
-      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const prefersReduced = isMotionReduced()
 
     const finishClosing = () => {
       if (dialog.open) {

@@ -16,7 +16,10 @@ beforeEach(() => {
     matches: query.includes('reduced-motion') ? reducedMotion : finePointer,
   }))
 })
-afterEach(() => vi.restoreAllMocks())
+afterEach(() => {
+  delete document.documentElement.dataset.motion
+  vi.restoreAllMocks()
+})
 
 function move(element: HTMLElement, pointerType = 'mouse') {
   vi.spyOn(element, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 200, 48))
@@ -58,6 +61,11 @@ it.each(['touch', 'reduced', 'coarse', 'disabled', 'busy', 'prevented'])(
   'does not move controls for %s input/state',
   (mode) => {
     reducedMotion = mode === 'reduced'
+    if (mode === 'reduced') {
+      document.documentElement.dataset.motion = 'reduced'
+    } else {
+      delete document.documentElement.dataset.motion
+    }
     finePointer = mode !== 'coarse'
     render(
       <Button
@@ -75,6 +83,16 @@ it.each(['touch', 'reduced', 'coarse', 'disabled', 'busy', 'prevented'])(
     expect(button.style.getPropertyValue('--magnetic-x')).toBe('')
   },
 )
+
+it('moves controls for fine pointer under default full motion even when device reduced motion is active (T-3.11)', () => {
+  reducedMotion = true
+  document.documentElement.dataset.motion = 'full'
+  finePointer = true
+  render(<Button>Shop</Button>)
+  const button = screen.getByRole('button')
+  move(button)
+  expect(button.style.getPropertyValue('--magnetic-x')).not.toBe('')
+})
 
 it('keeps anchor navigation and clears offsets when keyboard focus or pointer cancellation arrives', () => {
   const ref = createRef<HTMLAnchorElement>()

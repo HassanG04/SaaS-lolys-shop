@@ -1,8 +1,44 @@
 # Shared project progress
 
-## Anti-Gravity — Routed Interface Language Coverage (T-3.12) — 2026-10-17
+## Anti-Gravity — Explicit Site Motion Preference (T-3.11) — 2026-10-18
 
-Current task: T-3.12 completed on `agent/T-3.12-interface-localization`. Next implementation: T-3.11 (Explicit site motion preference) or T-3.10 (Homepage mouse-icon persistent editor).
+Current task: T-3.11 completed on `agent/T-3.11-motion-preference`. Next implementation: T-4.08 (Required postal code and address snapshot) or T-3.10 (Homepage persistent mouse editor).
+
+Completed:
+
+- Centralized motion preferences infrastructure (`src/lib/motion.ts`):
+  - Supported 3 explicit settings: `full` (Full motion, default), `reduced` (Reduced motion), and `system` (Follow device OS setting).
+  - Persists visitor choice in `localStorage` under key `'motion'`.
+  - Dispatches `motionchange` window events for synchronized live updates across the app.
+  - Provided `isMotionReduced()`, `getMotionSetting()`, `setMotionSetting(mode)`, and `useMotionSetting()` hook.
+- Pre-paint synchronous script in `index.html` (`<script id="motion-init">`):
+  - Applies `data-motion="full" | "reduced"` and `data-motion-setting="full" | "reduced" | "system"` to `document.documentElement` before React mounts, preventing FOUC and flash of un-reduced motion.
+  - Dynamically registers OS `matchMedia('(prefers-reduced-motion: reduce)')` change listeners only when in `system` mode.
+- Complete CSS motion architecture overhaul:
+  - Replaced indiscriminate `@media (prefers-reduced-motion: reduce)` in `src/styles/index.css` with `html[data-motion='reduced']` rules (`scroll-behavior: auto !important`, 0.001ms duration/transition).
+  - Removed `@media (prefers-reduced-motion: no-preference)` wrappers in `src/styles/storefront.css` and `src/styles/ui.css`, ensuring full animations execute even if the visitor's OS setting has animations disabled (per the owner's explicit mandate).
+  - Explicit `html[data-motion='reduced']` rules immediately disable decorative animations (`.flower`, `.ui-skeleton`, `.admin-page-transition`, `.section-reveal-enter`, `.page-transition`, `.cart-badge-pop`, `.theme-icon-spin`, hover zoom/blur, sparkles, pearl bounce) while keeping skeletons and content fully visible.
+- JS component motion integration:
+  - `SectionReveal.tsx`: checks `isMotionReduced()` and listens to live `motionchange` events so section content is immediately revealed if reduced motion is toggled.
+  - `AdminSidebar.tsx`: drawer open/close transitions respect `isMotionReduced()`.
+  - `HomePage.tsx`: category scrolling respects `isMotionReduced()`.
+  - `ThemeToggle.tsx`, `ThemeProvider.tsx`, `magnetic.ts`: inline check `document.documentElement.dataset.motion === 'reduced'` to protect initial chunk budget.
+- Accessible bilingual UI selector (`src/components/ui/MotionSelect.tsx`):
+  - Added to `Footer.tsx` (variant="footer") and `NavbarQuickMenu.tsx` (variant="compact").
+  - Accessible label `aria-label` with options: Full (`full` / حركة كاملة), Reduced (`reduced` / حركة مخففة), Follow device (`system` / حسب الجهاز).
+- Initial bundle budget maintained under strict 200,000 gzip bytes limit: **199,988 / 200,000 gzip bytes** in 3 initial chunks.
+- Test suites:
+  - 7 motion unit tests in `src/lib/motion.test.ts`.
+  - Updated `magnetic.test.tsx` and `theme.test.tsx`.
+  - Updated `e2e/ui/motion.spec.ts` with comprehensive browser tests for Full (animating under OS reduce), Reduced (suppressing motion), and Follow-device (tracking OS changes).
+  - All 12 `npm run verify` gates passed exit code 0 (980 total tests passed: 777 app + 203 tooling).
+  - Motion playwright tests passed.
+
+Files changed: `src/lib/motion.ts`, `src/lib/motion.test.ts`, `src/components/ui/MotionSelect.tsx`, `src/components/layout/Footer.tsx`, `src/components/layout/NavbarQuickMenu.tsx`, `src/components/ui/SectionReveal.tsx`, `src/components/ui/ThemeToggle.tsx`, `src/components/ui/ThemeProvider.tsx`, `src/components/ui/theme.test.tsx`, `src/components/ui/magnetic.ts`, `src/components/ui/magnetic.test.tsx`, `src/features/admin/AdminSidebar.tsx`, `src/pages/HomePage.tsx`, `src/styles/index.css`, `src/styles/storefront.css`, `src/styles/ui.css`, `index.html`, `e2e/ui/motion.spec.ts`, `roadmap.md`, `.agent-state/project-progress.md`.
+
+Problems found: None.
+
+Next action: Commit T-3.11 and advance to next owner task.
 
 Completed:
 

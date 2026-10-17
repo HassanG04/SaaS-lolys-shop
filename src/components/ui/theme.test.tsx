@@ -37,6 +37,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
   localStorage.clear()
   document.documentElement.removeAttribute('data-theme')
+  delete document.documentElement.dataset.motion
 })
 
 it('ends the color transition after the latest rapid toggle and cleans up on unmount', () => {
@@ -57,11 +58,19 @@ it('ends the color transition after the latest rapid toggle and cleans up on unm
 })
 
 it('changes theme immediately without color animation when reduced motion is enabled', () => {
-  reducedMotion = true
+  document.documentElement.dataset.motion = 'reduced'
   renderTheme()
   fireEvent.click(toggle())
   expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
   expect(document.documentElement).not.toHaveClass('theme-transition')
+})
+
+it('animates theme transitions under default full motion even when device reduced motion is active (T-3.11)', () => {
+  reducedMotion = true
+  document.documentElement.dataset.motion = 'full'
+  renderTheme()
+  fireEvent.click(toggle())
+  expect(document.documentElement).toHaveClass('theme-transition')
 })
 
 it('uses system dark mode and toggles away from the resolved theme on the first click', async () => {

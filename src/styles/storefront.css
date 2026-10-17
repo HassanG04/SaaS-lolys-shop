@@ -75,174 +75,191 @@
       box-shadow 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
       border-color 300ms ease;
   }
-  @media (prefers-reduced-motion: no-preference) {
-    @media (hover: hover) and (pointer: fine) {
-      .feature-card:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: var(--shadow-popover-val);
-        border-color: var(--color-brand-val);
-      }
-    }
-    .feature-card:focus-within {
+  @media (hover: hover) and (pointer: fine) {
+    .feature-card:hover {
       transform: translateY(-4px) scale(1.02);
       box-shadow: var(--shadow-popover-val);
       border-color: var(--color-brand-val);
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .feature-card {
-      transition: border-color 200ms ease;
+  .feature-card:focus-within {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--shadow-popover-val);
+    border-color: var(--color-brand-val);
+  }
+  html[data-motion='reduced'] .feature-card {
+    transition: border-color 200ms ease !important;
+  }
+  html[data-motion='reduced'] .feature-card:hover,
+  html[data-motion='reduced'] .feature-card:focus-within {
+    transform: none !important;
+    box-shadow: var(--shadow-card-val) !important;
+    border-color: var(--color-brand-val) !important;
+  }
+  .page-transition {
+    animation: page-arrive 320ms ease-out both;
+  }
+  .route-loader {
+    animation: page-arrive 220ms ease-out both;
+  }
+  .theme-icon {
+    animation: theme-icon-arrive 360ms ease-out;
+  }
+
+  .storefront-enter {
+    animation: storefront-arrive 240ms ease-out both;
+  }
+  .ui-skeleton {
+    position: relative;
+    overflow: hidden;
+    background-image: linear-gradient(
+      105deg,
+      transparent 25%,
+      var(--color-sand-val) 48%,
+      transparent 70%
+    );
+    background-size: 220% 100%;
+    animation:
+      storefront-breathe 1.6s ease-in-out infinite,
+      storefront-shimmer 1.8s ease-in-out infinite;
+  }
+  @media (hover: hover) {
+    .catalog-category:hover,
+    .catalog-product:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-popover-val);
     }
-    .feature-card:hover,
-    .feature-card:focus-within {
-      transform: none;
-      box-shadow: var(--shadow-card-val);
-      border-color: var(--color-brand-val);
+    .catalog-category:hover .catalog-photo,
+    .catalog-product:hover .catalog-photo {
+      transform: scale(1.035);
     }
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .page-transition {
-      animation: page-arrive 320ms ease-out both;
-    }
-    .route-loader {
-      animation: page-arrive 220ms ease-out both;
-    }
-    .theme-icon {
-      animation: theme-icon-arrive 360ms ease-out;
-    }
+  html[data-motion='reduced'] .page-transition,
+  html[data-motion='reduced'] .route-loader,
+  html[data-motion='reduced'] .theme-icon,
+  html[data-motion='reduced'] .storefront-enter,
+  html[data-motion='reduced'] .catalog-stagger-item,
+  html[data-motion='reduced'] .ui-skeleton {
+    animation: none !important;
+    animation-name: none !important;
+  }
+  html[data-motion='reduced'] .catalog-category:hover,
+  html[data-motion='reduced'] .catalog-product:hover,
+  html[data-motion='reduced'] .catalog-category:hover .catalog-photo,
+  html[data-motion='reduced'] .catalog-product:hover .catalog-photo {
+    transform: none !important;
+  }
 
-    .storefront-enter {
-      animation: storefront-arrive 240ms ease-out both;
-    }
-    .ui-skeleton {
-      position: relative;
-      overflow: hidden;
-      background-image: linear-gradient(
-        105deg,
-        transparent 25%,
-        var(--color-sand-val) 48%,
-        transparent 70%
-      );
-      background-size: 220% 100%;
-      animation:
-        storefront-breathe 1.6s ease-in-out infinite,
-        storefront-shimmer 1.8s ease-in-out infinite;
-    }
-    @media (hover: hover) {
-      .catalog-category:hover,
-      .catalog-product:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-popover-val);
-      }
-      .catalog-category:hover .catalog-photo,
-      .catalog-product:hover .catalog-photo {
-        transform: scale(1.035);
-      }
-    }
+  /* Scroll-triggered stagger for product/category grid items */
+  .catalog-stagger-item {
+    animation: storefront-arrive 320ms ease-out both;
+  }
+  .catalog-stagger-item:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .catalog-stagger-item:nth-child(2) {
+    animation-delay: 50ms;
+  }
+  .catalog-stagger-item:nth-child(3) {
+    animation-delay: 100ms;
+  }
+  .catalog-stagger-item:nth-child(4) {
+    animation-delay: 150ms;
+  }
+  .catalog-stagger-item:nth-child(5) {
+    animation-delay: 200ms;
+  }
+  .catalog-stagger-item:nth-child(6) {
+    animation-delay: 250ms;
+  }
+  .catalog-stagger-item:nth-child(7) {
+    animation-delay: 300ms;
+  }
+  .catalog-stagger-item:nth-child(8) {
+    animation-delay: 350ms;
+  }
+  .catalog-stagger-item:nth-child(9) {
+    animation-delay: 400ms;
+  }
+  .catalog-stagger-item:nth-child(10) {
+    animation-delay: 450ms;
+  }
+  .catalog-stagger-item:nth-child(11) {
+    animation-delay: 500ms;
+  }
+  .catalog-stagger-item:nth-child(12) {
+    animation-delay: 550ms;
+  }
 
-    /* Scroll-triggered stagger for product/category grid items */
-    .catalog-stagger-item {
-      animation: storefront-arrive 320ms ease-out both;
-    }
-    .catalog-stagger-item:nth-child(1) {
-      animation-delay: 0ms;
-    }
-    .catalog-stagger-item:nth-child(2) {
-      animation-delay: 50ms;
-    }
-    .catalog-stagger-item:nth-child(3) {
-      animation-delay: 100ms;
-    }
-    .catalog-stagger-item:nth-child(4) {
-      animation-delay: 150ms;
-    }
-    .catalog-stagger-item:nth-child(5) {
-      animation-delay: 200ms;
-    }
-    .catalog-stagger-item:nth-child(6) {
-      animation-delay: 250ms;
-    }
-    .catalog-stagger-item:nth-child(7) {
-      animation-delay: 300ms;
-    }
-    .catalog-stagger-item:nth-child(8) {
-      animation-delay: 350ms;
-    }
-    .catalog-stagger-item:nth-child(9) {
-      animation-delay: 400ms;
-    }
-    .catalog-stagger-item:nth-child(10) {
-      animation-delay: 450ms;
-    }
-    .catalog-stagger-item:nth-child(11) {
-      animation-delay: 500ms;
-    }
-    .catalog-stagger-item:nth-child(12) {
-      animation-delay: 550ms;
-    }
+  /* Navbar hamburger morph animation */
+  .hamburger-line {
+    transform-origin: center;
+    transition:
+      transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 200ms ease;
+  }
+  .hamburger-open .hamburger-line-1 {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .hamburger-open .hamburger-line-2 {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .hamburger-open .hamburger-line-3 {
+    transform: translateY(-6px) rotate(-45deg);
+  }
 
-    /* Navbar hamburger morph animation */
-    .hamburger-line {
-      transform-origin: center;
-      transition:
-        transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 200ms ease;
-    }
-    .hamburger-open .hamburger-line-1 {
-      transform: translateY(6px) rotate(45deg);
-    }
-    .hamburger-open .hamburger-line-2 {
-      opacity: 0;
-      transform: scaleX(0);
-    }
-    .hamburger-open .hamburger-line-3 {
-      transform: translateY(-6px) rotate(-45deg);
-    }
+  /* Cart badge bounce */
+  .cart-badge-pop {
+    animation: cart-badge-pop 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
 
-    /* Cart badge bounce */
-    .cart-badge-pop {
-      animation: cart-badge-pop 380ms cubic-bezier(0.22, 1, 0.36, 1);
-    }
+  /* Dialog entrance */
+  .dialog-arrive {
+    animation: dialog-arrive 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
 
-    /* Dialog entrance */
-    .dialog-arrive {
-      animation: dialog-arrive 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
+  /* Theme toggle rotation */
+  .theme-icon-spin {
+    animation: theme-icon-spin 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
 
-    /* Theme toggle rotation */
-    .theme-icon-spin {
-      animation: theme-icon-spin 320ms cubic-bezier(0.22, 1, 0.36, 1);
-    }
+  /* Hero arch glow */
+  .hero-arch-glow {
+    animation: hero-pulse-glow 3s ease-in-out infinite;
+  }
 
-    /* Hero arch glow */
-    .hero-arch-glow {
-      animation: hero-pulse-glow 3s ease-in-out infinite;
-    }
+  /* Section heading reveal */
+  .section-heading-reveal {
+    animation: storefront-arrive 400ms ease-out both;
+    animation-delay: 80ms;
+  }
 
-    /* Section heading reveal */
-    .section-heading-reveal {
-      animation: storefront-arrive 400ms ease-out both;
-      animation-delay: 80ms;
-    }
+  /* Feature card stagger on section reveal */
+  .section-reveal-enter .feature-card {
+    animation: storefront-arrive 360ms ease-out;
+  }
+  .section-reveal-enter .feature-card:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .section-reveal-enter .feature-card:nth-child(2) {
+    animation-delay: 100ms;
+  }
+  .section-reveal-enter .feature-card:nth-child(3) {
+    animation-delay: 200ms;
+  }
 
-    /* Feature card stagger on section reveal */
-    .section-reveal-enter .feature-card {
-      animation: storefront-arrive 360ms ease-out;
-    }
-    .section-reveal-enter .feature-card:nth-child(1) {
-      animation-delay: 0ms;
-    }
-    .section-reveal-enter .feature-card:nth-child(2) {
-      animation-delay: 100ms;
-    }
-    .section-reveal-enter .feature-card:nth-child(3) {
-      animation-delay: 200ms;
-    }
+  /* Favorite button heart pop */
+  .heart-pop {
+    animation: heart-pop 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
 
-    /* Favorite button heart pop */
-    .heart-pop {
-      animation: heart-pop 380ms cubic-bezier(0.22, 1, 0.36, 1);
-    }
+  html[data-motion='reduced'] .cart-badge-pop,
+  html[data-motion='reduced'] .theme-icon-spin,
+  html[data-motion='reduced'] .hero-arch-glow,
+  html[data-motion='reduced'] .heart-pop {
+    animation: none !important;
+    animation-name: none !important;
   }
   @keyframes theme-icon-arrive {
     from {
@@ -348,7 +365,7 @@
   }
 
   /* Animista shadow-drop-2-center & grid-local sibling card softening */
-  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  @media (hover: hover) and (pointer: fine) {
     :is(.grid, .catalog-grid):has(.catalog-product-card:hover) .catalog-product-card:not(:hover) {
       filter: blur(2px);
       opacity: 0.85;
@@ -384,37 +401,66 @@
     }
   }
 
+  html[data-motion='reduced']
+    :is(.grid, .catalog-grid):has(.catalog-product-card:hover)
+    .catalog-product-card:not(:hover) {
+    filter: none !important;
+    opacity: 1 !important;
+  }
+  html[data-motion='reduced'] .catalog-product-card:hover {
+    transform: none !important;
+  }
+  html[data-motion='reduced'] .flower,
+  html[data-motion='reduced'] .flower-button:hover .flower-1,
+  html[data-motion='reduced'] .flower-button:hover .flower-2,
+  html[data-motion='reduced'] .flower-button:hover .flower-3,
+  html[data-motion='reduced'] .flower-button:hover .flower-4,
+  html[data-motion='reduced'] .flower-button:hover .flower-5,
+  html[data-motion='reduced'] .flower-button:hover .flower-6 {
+    animation: none !important;
+    animation-name: none !important;
+  }
+  html[data-motion='reduced'] .flower-button:hover .flower-petal {
+    transform: none !important;
+    scale: 1 !important;
+  }
+
   /* Section roll-in-blurred-left (Animista adapted for responsive translation & RTL) */
-  @media (prefers-reduced-motion: no-preference) {
-    .section-reveal-enter {
-      animation: section-roll-in 650ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  .section-reveal-enter {
+    animation: section-roll-in 650ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  [dir='rtl'] .section-reveal-enter {
+    animation-name: section-roll-in-rtl;
+  }
+  html[data-motion='reduced'] .section-reveal-enter {
+    animation: none !important;
+    animation-name: none !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+  @keyframes section-roll-in {
+    from {
+      transform: translateX(-32px) rotate(-6deg);
+      filter: blur(6px);
+      opacity: 0;
     }
-    @keyframes section-roll-in {
-      from {
-        transform: translateX(-32px) rotate(-6deg);
-        filter: blur(6px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0) rotate(0deg);
-        filter: blur(0);
-        opacity: 1;
-      }
+    to {
+      transform: translateX(0) rotate(0deg);
+      filter: blur(0);
+      opacity: 1;
     }
-    [dir='rtl'] .section-reveal-enter {
-      animation-name: section-roll-in-rtl;
+  }
+  @keyframes section-roll-in-rtl {
+    from {
+      transform: translateX(32px) rotate(6deg);
+      filter: blur(6px);
+      opacity: 0;
     }
-    @keyframes section-roll-in-rtl {
-      from {
-        transform: translateX(32px) rotate(6deg);
-        filter: blur(6px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0) rotate(0deg);
-        filter: blur(0);
-        opacity: 1;
-      }
+    to {
+      transform: translateX(0) rotate(0deg);
+      filter: blur(0);
+      opacity: 1;
     }
   }
 
@@ -629,26 +675,25 @@
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .admin-desktop-sidebar,
-    .admin-desktop-sidebar-inner {
-      transition: none !important;
-      transform: none !important;
-    }
-    .admin-mobile-drawer {
-      transition: opacity 150ms ease !important;
-      transform: none !important;
-    }
-    .admin-mobile-drawer.is-open {
-      opacity: 1;
-    }
-    .admin-mobile-drawer.is-closing {
-      opacity: 0;
-    }
-    .admin-page-transition {
-      animation: none !important;
-      transform: none !important;
-    }
+  html[data-motion='reduced'] .admin-desktop-sidebar,
+  html[data-motion='reduced'] .admin-desktop-sidebar-inner {
+    transition: none !important;
+    transform: none !important;
+  }
+  html[data-motion='reduced'] .admin-mobile-drawer {
+    transition: opacity 150ms ease !important;
+    transform: none !important;
+  }
+  html[data-motion='reduced'] .admin-mobile-drawer.is-open {
+    opacity: 1;
+  }
+  html[data-motion='reduced'] .admin-mobile-drawer.is-closing {
+    opacity: 0;
+  }
+  html[data-motion='reduced'] .admin-page-transition {
+    animation: none !important;
+    animation-name: none !important;
+    transform: none !important;
   }
 
   /* Opposite product card badges and wishlist toggle */

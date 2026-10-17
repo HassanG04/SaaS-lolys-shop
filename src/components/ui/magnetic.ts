@@ -21,7 +21,7 @@ export function magneticHandlers<T extends HTMLElement>(props: MotionHandlers<T>
         event.pointerType !== 'mouse' ||
         element.matches(':disabled, [aria-disabled="true"], [aria-busy="true"], :focus-visible') ||
         !window.matchMedia('(hover: hover) and (pointer: fine)').matches ||
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        (typeof document !== 'undefined' && document.documentElement.dataset.motion === 'reduced')
       ) {
         reset(event)
         return

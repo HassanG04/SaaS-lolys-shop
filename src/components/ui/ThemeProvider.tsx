@@ -57,7 +57,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     theme,
     resolvedTheme,
     setTheme: (nextTheme) => {
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (document.documentElement.dataset.motion !== 'reduced') {
         document.documentElement.classList.add('theme-transition')
         window.clearTimeout(themeTransitionTimer.current)
         themeTransitionTimer.current = window.setTimeout(() => {

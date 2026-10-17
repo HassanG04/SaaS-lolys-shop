@@ -18,6 +18,7 @@ import { Skeleton, SkeletonCard } from '@/components/ui/Skeleton'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { SectionReveal } from '@/components/ui/SectionReveal'
+import { isMotionReduced } from '@/lib/motion'
 
 export default function HomePage() {
   const { t, lang } = useLanguage()
@@ -79,9 +80,7 @@ export default function HomePage() {
     setLimit(12)
     const el = document.getElementById('browse-heading') ?? document.getElementById('browse')
     if (el) {
-      const prefersReduced =
-        typeof window !== 'undefined' &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const prefersReduced = isMotionReduced()
       if (typeof el.scrollIntoView === 'function') {
         el.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' })
       }

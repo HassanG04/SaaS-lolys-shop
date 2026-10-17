@@ -22,10 +22,11 @@
     inset-inline-start: calc(100% - 20px);
     background-color: var(--color-brand-contrast-val);
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .ui-switch-thumb {
-      transition: inset-inline-start 180ms ease;
-    }
+  .ui-switch-thumb {
+    transition: inset-inline-start 180ms ease;
+  }
+  html[data-motion='reduced'] .ui-switch-thumb {
+    transition: none !important;
   }
   .ui-button,
   .magnetic-control {
@@ -137,7 +138,7 @@
       display: none !important;
     }
   }
-  @media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  @media (hover: hover) {
     .ui-sparkle:hover,
     .ui-badge:hover .ui-sparkle {
       animation: ui-twinkle 200ms ease-out;
@@ -149,16 +150,14 @@
       transform: translateY(-2px);
     }
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .ui-pearls circle {
-      animation: ui-pearl-bounce 250ms ease-out infinite alternate;
-    }
-    .ui-pearls circle:nth-child(2) {
-      animation-delay: 75ms;
-    }
-    .ui-pearls circle:nth-child(3) {
-      animation-delay: 150ms;
-    }
+  .ui-pearls circle {
+    animation: ui-pearl-bounce 250ms ease-out infinite alternate;
+  }
+  .ui-pearls circle:nth-child(2) {
+    animation-delay: 75ms;
+  }
+  .ui-pearls circle:nth-child(3) {
+    animation-delay: 150ms;
   }
   @keyframes ui-pearl-bounce {
     to {
@@ -183,7 +182,7 @@
       opacity: 0;
     }
   }
-  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  @media (hover: hover) and (pointer: fine) {
     :is(.ui-button, .magnetic-control):hover:not(
         :disabled,
         [aria-disabled='true'],
@@ -208,6 +207,22 @@
       ) {
       transform: translateY(1px) scale(0.985);
     }
+  }
+  html[data-motion='reduced'] .ui-sparkle:hover,
+  html[data-motion='reduced'] .ui-badge:hover .ui-sparkle,
+  html[data-motion='reduced'] .ui-pearls circle {
+    animation: none !important;
+    animation-name: none !important;
+  }
+  html[data-motion='reduced'] .ui-card:hover,
+  html[data-motion='reduced'] :is(.ui-button, .magnetic-control):hover,
+  html[data-motion='reduced'] :is(.ui-button, .magnetic-control):active {
+    transform: none !important;
+  }
+  html[data-motion='reduced'] :is(.ui-button, .magnetic-control):hover::after {
+    animation: none !important;
+    animation-name: none !important;
+    opacity: 0 !important;
   }
   @media print {
     .ui-print-card {

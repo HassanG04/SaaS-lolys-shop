@@ -195,8 +195,31 @@ for (const theme of ['light', 'dark']) {
         await expect(drawer).not.toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)')
       })
 
-      test('reduced motion stops animation while keeping skeletons visible', async ({ page }) => {
+      test('OS reduced motion with default Full mode still animates (T-3.11)', async ({ page }) => {
         await page.emulateMedia({ reducedMotion: 'reduce' })
+        const button = page.getByRole('button', { name: 'Buy' })
+        await button.hover()
+        await expect
+          .poll(() => button.evaluate((el) => getComputedStyle(el).transform))
+          .toContain('1.015')
+        const flower = page.locator('.flower')
+        const first = await flower.evaluate((el) => getComputedStyle(el).transform)
+        await expect
+          .poll(() => flower.evaluate((el) => getComputedStyle(el).transform))
+          .not.toBe(first)
+        const skeleton = page.locator('.ui-skeleton')
+        const firstOpacity = await skeleton.evaluate((el) => getComputedStyle(el).opacity)
+        await expect
+          .poll(() => skeleton.evaluate((el) => getComputedStyle(el).opacity))
+          .not.toBe(firstOpacity)
+      })
+
+      test('explicit reduced motion setting stops animation while keeping skeletons visible (T-3.11)', async ({
+        page,
+      }) => {
+        await page.evaluate(() => {
+          document.documentElement.dataset.motion = 'reduced'
+        })
         const buyButton = page.getByRole('button', { name: 'Buy' })
         await buyButton.hover()
         await expect(buyButton).toHaveCSS('transform', 'none')
@@ -217,6 +240,23 @@ for (const theme of ['light', 'dark']) {
         })
         await expect(drawer).toHaveCSS('transform', 'none')
         await expect(page.locator('.admin-page-transition')).toHaveCSS('animation-name', 'none')
+      })
+
+      test('follow device mode tracks OS reduced-motion changes (T-3.11)', async ({ page }) => {
+        await page.evaluate(() => {
+          document.documentElement.dataset.motionSetting = 'system'
+          const m = window.matchMedia('(prefers-reduced-motion: reduce)')
+          document.documentElement.dataset.motion = m.matches ? 'reduced' : 'full'
+        })
+        await expect(page.locator('html')).toHaveAttribute('data-motion', 'full')
+
+        await page.emulateMedia({ reducedMotion: 'reduce' })
+        await page.evaluate(() => {
+          const m = window.matchMedia('(prefers-reduced-motion: reduce)')
+          document.documentElement.dataset.motion = m.matches ? 'reduced' : 'full'
+        })
+        await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced')
+        await expect(page.locator('.ui-skeleton')).toHaveCSS('animation-name', 'none')
       })
     })
   }
