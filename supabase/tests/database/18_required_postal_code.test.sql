@@ -35,6 +35,10 @@ VALUES (
     true
 ) RETURNING id AS test_product_id \gset
 
+INSERT INTO public.delivery_fees (governorate_id, method, fee)
+VALUES (1, 'representative', 35.00)
+ON CONFLICT (governorate_id, method) DO NOTHING;
+
 -- Create test customer
 SELECT tests.create_supabase_user('postal_customer_1');
 SELECT tests.authenticate_as('postal_customer_1');
@@ -62,6 +66,17 @@ SELECT throws_ok(
     '22023',
     'Invalid shipping field length or missing required fields',
     'T-4.08: place_order rejects missing postal_code with ORD-012'
+);
+
+SELECT throws_ok(
+    format($$SELECT public.place_order(
+        jsonb_build_array(jsonb_build_object('product_id', %s, 'quantity', 1)),
+        'representative', 'cod',
+        jsonb_build_object('name', 'Postal Tester', 'phone', '01012345678',
+            'governorate_id', 1, 'address', '10 Test Street', 'postal_code', NULL)
+    )$$, :'test_product_id'),
+    '22023', 'Invalid shipping field length or missing required fields',
+    'T-4.08: explicit null postal code is rejected'
 );
 
 -- 6. place_order rejects empty string postal_code

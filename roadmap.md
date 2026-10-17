@@ -844,10 +844,16 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:e2e`
 
 #### T-4.08: Saved postal code and order snapshot
-`status: done` `owner: agent` `needs: T-4.02, T-1.23` `size: M`
+`status: doing` `owner: agent` `needs: T-4.02, T-1.23` `size: M`
 - **Do:** Owner correction: required text postal code with final database NOT NULL and non-empty/format validation for complete saved delivery addresses and new order snapshots, not Egypt-Post-only. Preserve leading zeros, account creation before address entry and existing order facts; use additive expand/backfill/contract without fabricated defaults. See `docs/spec/owner-experience-change.md`.
 - **Done when:** Final required-address/order contract rejects null/blank codes server-side; signup, legacy-data migration, saved-address opt-out and old immutable snapshots remain valid; generated types and address/RLS/checkout regression tests pass. Missing genuine backfill data is documented, never hidden by fake codes.
 - **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run verify`
+
+#### T-4.08b: Postal database integration and historical updates
+`status: done` `owner: agent` `needs: T-4.02, T-1.23` `size: M`
+- **Do:** Repair the postal handoff's failing database fixtures and legacy UPDATE constraints without weakening required new-address validation. Preserve uniform auth errors, order/stock assertions and existing migrations. Reopen T-4.08 until integration evidence is available.
+- **Done when:** Existing order, approval, RLS, payment and stock tests run with valid postal fixtures; legacy orders can progress, unrelated profile edits work, new missing codes are rejected, generated types match and concurrency passes. Hosted legacy backfill remains owner work.
+- **Verify:** `npm run db:reset && npm run db:test && npm run db:test:concurrency && npm run db:types && npm run verify`
 
 ### Phase 5: Admin
 
@@ -1603,3 +1609,5 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-18 | T-2.12a | Codex | Fixed challenge teardown on typing, Strict Mode cleanup and stale callbacks; removed production dummy-key fallback and synthetic test token; auth forms renew consumed challenges and discard failed/expired tokens. SEC-05/06 owner review required. All 12 verify gates pass: 786 app + 203 tooling tests; 199,717/200,000 gzip bytes. Hosted CAPTCHA/rate-limit enforcement is not verified. | pending |
 
 | 2026-10-18 | T-2.12, T-3.10c, T-5.15, T-9.14 | Codex | Recorded owner scope: limited Arabic settings write contract, fixed hero image/featured item, coded policy bodies and missing occasion notifications. Supabase Free confirmed; native breach screening unavailable. Registered separate content/RLS, editor and calendar reminder slices. Docker now responds; check concurrent agent use before database resets. | pending |
+
+| 2026-10-18 | T-4.08b | Codex | Repaired postal integration and historical UPDATE guards without fabricated backfills. Local reset, 535 pgTAP assertions, S7 concurrency, generated types/check, all 12 verify gates (790 app + 203 tooling), roadmap check pass. Kept T-4.08 doing for genuine hosted backfill/final contract. Original owner transaction acceptance preserved. | pending |

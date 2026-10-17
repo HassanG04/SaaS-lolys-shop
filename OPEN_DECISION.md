@@ -51,8 +51,8 @@ Context & Requirements:
 - Server Authority: `place_order` RPC validates non-empty 5-digit postal code, raising catalogue error `ORD-012` if invalid or missing.
 - Registration Lifecycle vs NOT NULL: Auth trigger `handle_new_user()` creates initial `profiles` records with only `(id, full_name, phone)`. Unconditional `NOT NULL` on `profiles.postal_code` would crash registration or necessitate fake postal codes (strictly forbidden).
 - Additive database constraints:
-  1. `orders.ship_postal_code` is validated in `place_order()` and guarded by `orders_ship_postal_code_format` and additive `CHECK (ship_postal_code IS NOT NULL) NOT VALID`, preserving historical orders without fictitious backfills.
-  2. `profiles` uses conditional constraint `profiles_address_postal_code_required` (`(address IS NULL AND governorate_id IS NULL) OR (postal_code IS NOT NULL AND char_length(trim(postal_code)) = 5 AND postal_code ~ '^[0-9]{5}$')`), strictly enforcing postal code whenever an address is saved while allowing new signups without an address.
+  1. `orders.ship_postal_code` is validated in `place_order()` and guarded by its format constraint. Fresh databases retain physical NOT NULL. On upgraded databases with missing historical codes, an additive trigger rejects missing codes on INSERT and invalid code changes while allowing unchanged historical snapshots to proceed through fulfillment. The earlier NOT VALID check also checked unrelated UPDATEs and therefore did not safely preserve fulfillment; T-4.08b replaces it without inventing data.
+  2. A profile trigger requires a valid code on any new/changed saved delivery address. It allows signup without an address, full address erasure and unrelated edits to an unchanged historical address. Format checks remain. After the owner supplies genuine legacy backfill data, a later contract migration can enforce physical NOT NULL on order snapshots; this owner step is not claimed complete.
 
 ## External prerequisites
 

@@ -234,7 +234,7 @@ describe('placeOrderApi', () => {
     const rpcSpy = vi.spyOn(getSupabase(), 'rpc').mockResolvedValue({
       data: 1045,
       error: null,
-    } as unknown as ReturnType<ReturnType<typeof getSupabase>['rpc']>)
+    } as unknown as Awaited<ReturnType<ReturnType<typeof getSupabase>['rpc']>>)
 
     const result = await placeOrderApi({
       items: [{ product_id: 1, quantity: 2 }],
@@ -274,7 +274,7 @@ describe('placeOrderApi', () => {
         hint: 'ORD-007',
         detail: 'left=2',
       },
-    } as unknown as ReturnType<ReturnType<typeof getSupabase>['rpc']>)
+    } as unknown as Awaited<ReturnType<ReturnType<typeof getSupabase>['rpc']>>)
 
     await expect(
       placeOrderApi({

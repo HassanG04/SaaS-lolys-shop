@@ -1,5 +1,19 @@
 # Shared project progress
 
+## Codex — Postal integration review (T-4.08b) — 2026-10-18
+
+Current task: T-4.08b in isolated owner-controls checkout, branch agent/T-4.08b-postal-integration. Anti-Gravity paused by owner.
+
+Completed: Integrated a1be8de as cad2187. Updated order fixtures to the current postal contract; repaired missing delivery fixture and explicit-null assertion. Added append-only legacy UPDATE guards, preserving physical NOT NULL in fresh databases and requiring valid codes for new orders/new or changed saved addresses. Historical missing codes no longer block fulfillment or unrelated profile edits. Restored the established safe AUTH-004 API behavior. Kept legacy API error-code coverage.
+
+Files changed: Additive migration 20261018090000, database test fixtures 02–19, scripts/run-concurrency.mjs, generated database types, OPEN_DECISION.md, roadmap.md and this state file. Full inventory: git diff --name-only plus untracked files.
+
+Tests executed: Isolated local db:reset passed; all 535 pgTAP assertions passed; S7 real concurrent stock-reservation test passed; db:types generated. All 12 verify gates passed: 790 application + 203 tooling tests (993 total), no failures; bundle 199,673/200,000 gzip bytes. db:types:check and roadmap:check passed. Regeneration exposed stale test-only RPC response casts, now corrected.
+
+Problems found: Incoming T-4.08 claimed database evidence but its full database suite stopped early. The original NOT VALID checks also blocked unrelated historical UPDATEs. T-4.08 reopened; genuine hosted legacy backfill and final contract remain owner work. Docker now works, superseding older unavailable notes below.
+
+Next action: Publish a draft repair PR, then implement T-3.10c persistent content contract and T-3.10/T-5.15 editors. No merge, hosted database change or deployment.
+
 ## Codex — Authentication challenge lifecycle (T-2.12a) — 2026-10-18
 
 Current task: T-2.12a locally verified on `agent/T-2.12a-challenge-lifecycle` in the isolated owner-controls checkout.
@@ -29,6 +43,7 @@ Problems found: Root checkout is actively changing on the postal task. Docker Li
 Next action: Repair authentication challenge lifecycle under a separate task; document expanded content controls and risk-based login requirements. Preserve the owner-confirmed transaction baseline and Anti-Gravity's postal changes.
 
 ## Anti-Gravity — Explicit Site Motion Preference (T-3.11) — 2026-10-18
+
 ## Anti-Gravity — Required Postal Code and Address Snapshots (T-4.08) — 2026-10-18
 
 Current task: T-4.08 completed on `agent/T-4.08-required-postal-code`. Next implementation: T-3.10 (Owner-controlled storefront presentation / mouse-icon homepage editor).
