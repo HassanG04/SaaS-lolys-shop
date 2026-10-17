@@ -49,7 +49,10 @@ export default function CheckoutPage() {
 
   useSeo({
     title: t.checkout.title,
-    description: 'إتمام الطلب وبيانات التوصيل في متجر لوليز',
+    description:
+      lang === 'ar'
+        ? 'إتمام الطلب وبيانات التوصيل في متجر لوليز'
+        : 'Complete your order and delivery details at Lolys store',
   })
 
   // Form State
@@ -322,7 +325,9 @@ export default function CheckoutPage() {
         <div className="lg:col-span-7 space-y-8">
           {/* 1. Contact Information Card */}
           <Card className="p-6 sm:p-8 space-y-6">
-            <h2 className="text-h3 font-bold font-accent text-brand">معلومات المستلم</h2>
+            <h2 className="text-h3 font-bold font-accent text-brand">
+              {lang === 'ar' ? 'معلومات المستلم' : 'Recipient Information'}
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Full Name */}
@@ -405,7 +410,9 @@ export default function CheckoutPage() {
 
           {/* 2. Delivery Address Card */}
           <Card className="p-6 sm:p-8 space-y-6">
-            <h2 className="text-h3 font-bold font-accent text-brand">عنوان التوصيل</h2>
+            <h2 className="text-h3 font-bold font-accent text-brand">
+              {lang === 'ar' ? 'عنوان التوصيل' : 'Delivery Address'}
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Governorate Dropdown */}
@@ -429,7 +436,9 @@ export default function CheckoutPage() {
                   aria-invalid={Boolean(errors.governorate_id)}
                   aria-describedby={errors.governorate_id ? `${govId}-error` : undefined}
                 >
-                  <option value="">-- اختر المحافظة --</option>
+                  <option value="">
+                    {lang === 'ar' ? '-- اختر المحافظة --' : '-- Select Governorate --'}
+                  </option>
                   {(governorates ?? []).map((gov) => (
                     <option key={gov.id} value={gov.id}>
                       {lang === 'ar' ? gov.name_ar : gov.name_en}
@@ -484,7 +493,9 @@ export default function CheckoutPage() {
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   maxLength={150}
-                  placeholder="اسم الشارع ورقم المبنى"
+                  placeholder={
+                    lang === 'ar' ? 'اسم الشارع ورقم المبنى' : 'Street name and building number'
+                  }
                   className={`w-full h-11 rounded-pill border bg-surface px-4 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus ${
                     errors.address ? 'border-danger' : 'border-border-input'
                   }`}
@@ -539,7 +550,11 @@ export default function CheckoutPage() {
                   value={formData.landmark}
                   onChange={(e) => handleInputChange('landmark', e.target.value)}
                   maxLength={150}
-                  placeholder="بجوار مدرسة أو مسجد أو متجر معروف"
+                  placeholder={
+                    lang === 'ar'
+                      ? 'بجوار مدرسة أو مسجد أو متجر معروف'
+                      : 'Near a school, mosque, or landmark'
+                  }
                   className="w-full h-11 rounded-pill border border-border-input bg-surface px-4 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                 />
               </div>
@@ -555,7 +570,11 @@ export default function CheckoutPage() {
                   value={formData.notes}
                   onChange={(e) => handleInputChange('notes', e.target.value)}
                   maxLength={500}
-                  placeholder="أي تعليمات إضافية لمندوب التوصيل"
+                  placeholder={
+                    lang === 'ar'
+                      ? 'أي تعليمات إضافية لمندوب التوصيل'
+                      : 'Any additional instructions for the delivery courier'
+                  }
                   className="w-full rounded-image border border-border-input bg-surface p-3 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                 />
               </div>
@@ -574,7 +593,10 @@ export default function CheckoutPage() {
                     className="size-5 rounded-chip border-border-input text-brand focus:ring-focus"
                   />
                   <span className="text-small font-medium text-text">
-                    {t.checkout.save_address || 'احفظ هذا العنوان لطلباتي القادمة'}
+                    {t.checkout.save_address ||
+                      (lang === 'ar'
+                        ? 'احفظ هذا العنوان لطلباتي القادمة'
+                        : 'Save this address for future orders')}
                   </span>
                 </label>
               </div>
@@ -779,13 +801,17 @@ export default function CheckoutPage() {
                   : Boolean(user) && !isEmailVerified
                     ? t.auth.emailVerificationRequired
                     : activePaymentMethod === 'instapay_qr' && requireApproval
-                      ? t.checkout.submit_request || 'إرسال الطلب'
+                      ? t.checkout.submit_request ||
+                        (lang === 'ar' ? 'إرسال الطلب' : 'Submit Order Request')
                       : t.checkout.submit}
               </button>
 
               {activePaymentMethod === 'instapay_qr' && requireApproval && (
                 <p className="text-center text-caption text-text-muted">
-                  {t.checkout.approval_note || 'سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع.'}
+                  {t.checkout.approval_note ||
+                    (lang === 'ar'
+                      ? 'سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع.'
+                      : 'We will review your order first, then send you the payment link.')}
                 </p>
               )}
 

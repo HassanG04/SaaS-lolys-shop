@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useLanguage } from '@/i18n/LanguageProvider'
+import { useSeo } from '@/features/seo'
 import { useAuth } from '@/features/auth/AuthProvider'
 import {
   useOrderPaymentDetails,
@@ -17,9 +19,153 @@ import { ErrorMessage } from '@/lib/errors'
 import { useToast } from '@/components/ui/ToastProvider'
 import { Ltr } from '@/components/ui/Ltr'
 
+const copy = {
+  ar: {
+    loading: 'جارٍ تحميل بيانات الدفع',
+    fetchError: 'تعذّر تحميل بيانات الدفع',
+    retry: 'إعادة المحاولة',
+    codTitle: 'الدفع عند الاستلام',
+    codDesc: (id: number) =>
+      `هذا الطلب (#${id}) مسجل بطريقة الدفع عند الاستلام، ولا يتطلب تحويلًا عبر إنستاباي.`,
+    viewOrderDetails: 'عرض تفاصيل الطلب',
+    payOrder: 'دفع الطلب',
+    statusAwaitingApproval: 'بانتظار موافقة المتجر',
+    statusPaid: 'تم تأكيد الدفع',
+    statusUnderReview: 'قيد المراجعة',
+    statusAwaitingProof: 'بانتظار الدفع',
+    statusRejected: 'مرفوض',
+    statusExpired: 'ملغي / انتهت المهلة',
+    deadlineExpired: 'انتهت مهلة الدفع المحددة لهذا الطلب',
+    deadlineRemaining: 'الوقت المتبقي لإتمام التحويل:',
+    exactAmount: 'المبلغ المطلوب بدقة:',
+    approvalTitle: 'طلبك قيد المراجعة والموافقة',
+    approvalDesc: 'وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا.',
+    backToOrders: 'العودة إلى طلباتي',
+    stepsTitle: 'خطوات الدفع عبر إنستاباي',
+    step1: 'افتح تطبيق إنستاباي أو تطبيق البنك الخاص بك.',
+    step2: 'امسح رمز QR أدناه أو حوّل إلى معرّف إنستاباي الموضح.',
+    step3Pre: 'اكتب رقم الطلب ',
+    step3Post: ' في خانة ملاحظات التحويل.',
+    step4: 'التقط لقطة شاشة لإشعار نجاح التحويل وارفعها أدناه مع رقم العملية.',
+    qrAlt: 'رمز QR لإنستاباي',
+    ipaLabel: 'معرّف إنستاباي (IPA):',
+    orderNumLabel: 'رقم الطلب (يكتب في الملاحظات):',
+    copy: 'نسخ',
+    copied: 'تم النسخ ✓',
+    paidTitle: 'تم تأكيد الدفع بنجاح!',
+    paidDesc: 'طلبك مؤكد وجارٍ تحضيره للشحن والتوصيل. يمكنك متابعة حالة الشحن في صفحة طلباتك.',
+    viewMyOrders: 'عرض طلباتي',
+    underReviewTitle: 'إثبات التحويل قيد المراجعة',
+    underReviewDesc:
+      'تم استلام إشعار التحويل ورقم العملية بنجاح. يقوم فريق العمل بمطابقة التحويل في أسرع وقت.',
+    registeredRef: 'رقم العملية المسجل: ',
+    uploadTitle: 'رفع إثبات التحويل',
+    uploadHints: 'الصور المقبولة: JPG أو PNG أو WebP بحجم 5 ميجابايت كحد أقصى.',
+    proofRejected: 'تم رفض إثبات الدفع السابق.',
+    adminNote: 'ملاحظة الإدارة: ',
+    reuploadTip: 'يرجى التأكد من صحة رقم العملية ووضوح إشعار التحويل قبل إعادة الرفع.',
+    refLabel: 'رقم عملية التحويل (Reference Number)',
+    refPlaceholder: 'مثال: 0123456789 أو Ref-987654',
+    refHint: 'الرقم الظاهر في إشعار التحويل من تطبيق إنستاباي أو البنك.',
+    receiptLabel: 'صورة إشعار التحويل',
+    receiptPreviewAlt: 'معاينة إشعار التحويل',
+    clickToChange: '(انقر للتغيير)',
+    clickToSelect: 'انقر لاختيار صورة إشعار التحويل',
+    formatsAllowed: 'JPG أو PNG أو WebP حتى 5 ميجابايت',
+    submitting: 'جارٍ رفع الإثبات وتأكيد الطلب...',
+    submitBtn: 'تأكيد وإرسال إثبات التحويل',
+    toastSuccessMsg: 'إشعار التحويل قيد المراجعة من قبل إدارة المتجر.',
+    toastSuccessTitle: 'تم إرسال إثبات الدفع',
+    windowExpiredTitle: 'انتهت مهلة الدفع المحددة',
+    windowExpiredDesc: 'انتهت مهلة الدفع لهذا الطلب. تم إلغاء الطلب واسترجاع المنتجات إلى المخزون.',
+    trackOrders: 'متابعة طلباتي',
+    backToShopping: 'العودة للتسوق',
+    seoTitle: (id?: number) => (id ? `دفع الطلب #${id} | لوليز` : 'دفع الطلب | لوليز'),
+    seoDescription: 'سداد قيمة الطلب عبر تحويل إنستاباي ورفع إشعار الدفع',
+  },
+  en: {
+    loading: 'Loading payment details...',
+    fetchError: 'Failed to load payment details',
+    retry: 'Retry',
+    codTitle: 'Cash on Delivery',
+    codDesc: (id: number) =>
+      `This order (#${id}) is registered for Cash on Delivery and does not require an InstaPay transfer.`,
+    viewOrderDetails: 'View Order Details',
+    payOrder: 'Pay Order',
+    statusAwaitingApproval: 'Awaiting store approval',
+    statusPaid: 'Payment confirmed',
+    statusUnderReview: 'Under review',
+    statusAwaitingProof: 'Awaiting payment',
+    statusRejected: 'Rejected',
+    statusExpired: 'Cancelled / Expired',
+    deadlineExpired: 'Payment deadline has expired for this order',
+    deadlineRemaining: 'Time remaining to complete payment:',
+    exactAmount: 'Exact amount required:',
+    approvalTitle: 'Your order is under review and approval',
+    approvalDesc:
+      'Your order has been received. We will review it and send your payment link shortly.',
+    backToOrders: 'Back to My Orders',
+    stepsTitle: 'InstaPay Payment Steps',
+    step1: 'Open the InstaPay app or your mobile banking app.',
+    step2: 'Scan the QR code below or transfer to the indicated InstaPay handle.',
+    step3Pre: 'Enter the order number ',
+    step3Post: ' in the transfer notes/reference field.',
+    step4:
+      'Take a screenshot of the transfer confirmation and upload it below with the reference number.',
+    qrAlt: 'InstaPay QR Code',
+    ipaLabel: 'InstaPay Handle (IPA):',
+    orderNumLabel: 'Order Number (include in notes):',
+    copy: 'Copy',
+    copied: 'Copied ✓',
+    paidTitle: 'Payment Confirmed Successfully!',
+    paidDesc:
+      'Your order is confirmed and being prepared for shipping. You can track shipping status on your orders page.',
+    viewMyOrders: 'View My Orders',
+    underReviewTitle: 'Payment Proof Under Review',
+    underReviewDesc:
+      'We have received your transfer receipt and reference number. Our team will verify the payment as quickly as possible.',
+    registeredRef: 'Registered reference number: ',
+    uploadTitle: 'Upload Payment Proof',
+    uploadHints: 'Accepted formats: JPG, PNG, or WebP up to 5MB.',
+    proofRejected: 'Previous payment proof was rejected.',
+    adminNote: 'Admin note: ',
+    reuploadTip:
+      'Please verify the reference number and ensure the receipt is clear before re-uploading.',
+    refLabel: 'Transfer Reference Number',
+    refPlaceholder: 'e.g. 0123456789 or Ref-987654',
+    refHint: 'The reference number shown on your InstaPay or bank receipt.',
+    receiptLabel: 'Transfer Receipt Image',
+    receiptPreviewAlt: 'Transfer receipt preview',
+    clickToChange: '(Click to change)',
+    clickToSelect: 'Click to select transfer receipt image',
+    formatsAllowed: 'JPG, PNG, or WebP up to 5MB',
+    submitting: 'Uploading proof and confirming...',
+    submitBtn: 'Confirm and Submit Payment Proof',
+    toastSuccessMsg: 'Transfer proof is under review by store administration.',
+    toastSuccessTitle: 'Payment proof submitted',
+    windowExpiredTitle: 'Payment Window Expired',
+    windowExpiredDesc:
+      'The payment deadline for this order has expired. The order was cancelled and items returned to stock.',
+    trackOrders: 'View My Orders',
+    backToShopping: 'Back to Shopping',
+    seoTitle: (id?: number) => (id ? `Pay Order #${id} | Lolys` : 'Pay Order | Lolys'),
+    seoDescription: 'Pay for your order via InstaPay transfer and upload proof of payment',
+  },
+}
+
 export default function PayOrderPage() {
   const { orderId } = useParams<{ orderId: string }>()
   const parsedOrderId = orderId ? parseInt(orderId, 10) : undefined
+
+  const { lang } = useLanguage()
+  const isAr = lang === 'ar'
+  const tPage = isAr ? copy.ar : copy.en
+
+  useSeo({
+    title: tPage.seoTitle(parsedOrderId),
+    description: tPage.seoDescription,
+    noindex: true,
+  })
 
   const { user } = useAuth()
   const { success: toastSuccess } = useToast()
@@ -96,7 +242,7 @@ export default function PayOrderPage() {
         file: selectedFile,
       })
 
-      toastSuccess('إشعار التحويل قيد المراجعة من قبل إدارة المتجر.', 'تم إرسال إثبات الدفع')
+      toastSuccess(tPage.toastSuccessMsg, tPage.toastSuccessTitle)
       setSelectedFile(null)
       setFilePreviewUrl(null)
       setReferenceInput('')
@@ -109,7 +255,7 @@ export default function PayOrderPage() {
     return (
       <div
         role="status"
-        aria-label="جارٍ تحميل بيانات الدفع"
+        aria-label={tPage.loading}
         className="flex min-h-[50vh] w-full items-center justify-center text-brand"
       >
         <PearlLoader loading />
@@ -120,7 +266,12 @@ export default function PayOrderPage() {
   if (error || !order) {
     return (
       <div className="mx-auto max-w-xl py-12">
-        <ErrorPanel error={error} title="تعذّر تحميل بيانات الدفع" onRetry={() => void refetch()} />
+        <ErrorPanel
+          error={error}
+          title={tPage.fetchError}
+          retryLabel={tPage.retry}
+          onRetry={() => void refetch()}
+        />
       </div>
     )
   }
@@ -130,17 +281,14 @@ export default function PayOrderPage() {
     return (
       <div className="mx-auto max-w-xl space-y-6 py-12">
         <div className="rounded-card border border-border bg-surface p-6 sm:p-8 text-center space-y-4">
-          <h1 className="text-h2 font-bold font-accent text-brand">الدفع عند الاستلام</h1>
-          <p className="text-body text-text-muted">
-            هذا الطلب (<Ltr>#{order.id}</Ltr>) مسجل بطريقة الدفع عند الاستلام، ولا يتطلب تحويلًا عبر
-            إنستاباي.
-          </p>
+          <h1 className="text-h2 font-bold font-accent text-brand">{tPage.codTitle}</h1>
+          <p className="text-body text-text-muted">{tPage.codDesc(order.id)}</p>
           <div className="pt-4 flex justify-center gap-4">
             <Link
               to="/account/orders"
               className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
             >
-              عرض تفاصيل الطلب
+              {tPage.viewOrderDetails}
             </Link>
           </div>
         </div>
@@ -173,7 +321,7 @@ export default function PayOrderPage() {
       <div className="rounded-card border border-border bg-surface p-6 sm:p-8 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
           <div>
-            <span className="text-caption font-medium text-text-muted">دفع الطلب</span>
+            <span className="text-caption font-medium text-text-muted">{tPage.payOrder}</span>
             <h1 className="text-h2 font-bold font-accent text-brand">
               <Ltr>#{order.id}</Ltr>
             </h1>
@@ -184,37 +332,37 @@ export default function PayOrderPage() {
             {isAwaitingApproval && (
               <span className="inline-flex items-center gap-1.5 rounded-pill border border-brand bg-surface-tint px-3 py-1 text-small font-semibold text-brand">
                 <span className="size-2 rounded-pill bg-brand animate-pulse" aria-hidden="true" />
-                بانتظار موافقة المتجر
+                {tPage.statusAwaitingApproval}
               </span>
             )}
             {isPaid && (
               <span className="inline-flex items-center gap-1.5 rounded-pill border border-success bg-surface-tint px-3 py-1 text-small font-semibold text-success">
                 <span className="size-2 rounded-pill bg-success" aria-hidden="true" />
-                تم تأكيد الدفع
+                {tPage.statusPaid}
               </span>
             )}
             {isUnderReview && (
               <span className="inline-flex items-center gap-1.5 rounded-pill border border-caramel bg-surface-tint px-3 py-1 text-small font-semibold text-caramel">
                 <span className="size-2 rounded-pill bg-caramel" aria-hidden="true" />
-                قيد المراجعة
+                {tPage.statusUnderReview}
               </span>
             )}
             {isAwaitingProof && !isExpired && (
               <span className="inline-flex items-center gap-1.5 rounded-pill border border-warning bg-surface-tint px-3 py-1 text-small font-semibold text-warning">
                 <span className="size-2 rounded-pill bg-warning" aria-hidden="true" />
-                بانتظار الدفع
+                {tPage.statusAwaitingProof}
               </span>
             )}
             {isRejected && !isExpired && (
               <span className="inline-flex items-center gap-1.5 rounded-pill border border-danger bg-surface-tint px-3 py-1 text-small font-semibold text-danger">
                 <span className="size-2 rounded-pill bg-danger" aria-hidden="true" />
-                مرفوض
+                {tPage.statusRejected}
               </span>
             )}
             {isExpired && !isPaid && !isAwaitingApproval && (
               <span className="inline-flex items-center gap-1.5 rounded-pill border border-danger bg-surface-tint px-3 py-1 text-small font-semibold text-danger">
                 <span className="size-2 rounded-pill bg-danger" aria-hidden="true" />
-                ملغي / انتهت المهلة
+                {tPage.statusExpired}
               </span>
             )}
           </div>
@@ -230,7 +378,7 @@ export default function PayOrderPage() {
             }`}
           >
             <span className="font-medium">
-              {isExpired ? 'انتهت مهلة الدفع المحددة لهذا الطلب' : 'الوقت المتبقي لإتمام التحويل:'}
+              {isExpired ? tPage.deadlineExpired : tPage.deadlineRemaining}
             </span>
             {!isExpired && (
               <span dir="ltr" className="font-mono text-body font-bold text-brand">
@@ -242,7 +390,7 @@ export default function PayOrderPage() {
 
         {/* Total Amount Card */}
         <div className="flex items-center justify-between rounded-chip bg-surface-2 p-4">
-          <span className="text-body font-medium text-text">المبلغ المطلوب بدقة:</span>
+          <span className="text-body font-medium text-text">{tPage.exactAmount}</span>
           <span className="text-h3 font-bold text-brand">{formatEGP(effectiveTotal)}</span>
         </div>
       </div>
@@ -265,16 +413,14 @@ export default function PayOrderPage() {
               />
             </svg>
           </div>
-          <h2 className="text-h3 font-bold font-accent text-brand">طلبك قيد المراجعة والموافقة</h2>
-          <p className="text-body text-text-muted max-w-md mx-auto">
-            وصل طلبك للمتجر. سنراجعه ونرسل لك رابط الدفع قريبًا.
-          </p>
+          <h2 className="text-h3 font-bold font-accent text-brand">{tPage.approvalTitle}</h2>
+          <p className="text-body text-text-muted max-w-md mx-auto">{tPage.approvalDesc}</p>
           <div className="pt-2">
             <Link
               to="/account/orders"
               className="inline-flex h-11 items-center justify-center rounded-pill border border-border bg-surface px-6 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
             >
-              العودة إلى طلباتي
+              {tPage.backToOrders}
             </Link>
           </div>
         </div>
@@ -282,19 +428,19 @@ export default function PayOrderPage() {
         <>
           {/* Step by step instructions & QR details */}
           <div className="rounded-card border border-border bg-surface p-6 sm:p-8 space-y-6">
-            <h2 className="text-h3 font-bold text-text">خطوات الدفع عبر إنستاباي</h2>
+            <h2 className="text-h3 font-bold text-text">{tPage.stepsTitle}</h2>
 
             <ol className="space-y-3 text-body text-text-muted list-decimal list-inside">
-              <li>افتح تطبيق إنستاباي أو تطبيق البنك الخاص بك.</li>
-              <li>امسح رمز QR أدناه أو حوّل إلى معرّف إنستاباي الموضح.</li>
+              <li>{tPage.step1}</li>
+              <li>{tPage.step2}</li>
               <li>
-                اكتب رقم الطلب{' '}
+                {tPage.step3Pre}
                 <strong className="text-brand">
                   <Ltr>#{order.id}</Ltr>
-                </strong>{' '}
-                في خانة ملاحظات التحويل.
+                </strong>
+                {tPage.step3Post}
               </li>
-              <li>التقط لقطة شاشة لإشعار نجاح التحويل وارفعها أدناه مع رقم العملية.</li>
+              <li>{tPage.step4}</li>
             </ol>
 
             {/* QR Code and Handle Container */}
@@ -302,7 +448,7 @@ export default function PayOrderPage() {
               <div className="relative size-48 shrink-0 overflow-hidden rounded-chip border border-border bg-bg p-2">
                 <img
                   src={qrImageUrl}
-                  alt="رمز QR لإنستاباي"
+                  alt={tPage.qrAlt}
                   className="size-full object-contain"
                   onError={(e) => {
                     e.currentTarget.src = '/placeholders/instapay-qr.svg'
@@ -312,9 +458,7 @@ export default function PayOrderPage() {
 
               <div className="flex-1 space-y-4 w-full">
                 <div>
-                  <span className="text-caption font-medium text-text-muted">
-                    معرّف إنستاباي (IPA):
-                  </span>
+                  <span className="text-caption font-medium text-text-muted">{tPage.ipaLabel}</span>
                   <div className="flex items-center gap-2 mt-1">
                     <code
                       dir="ltr"
@@ -327,14 +471,14 @@ export default function PayOrderPage() {
                       onClick={() => handleCopy(instapayHandle, 'handle')}
                       className="rounded-pill border border-border bg-surface px-3 py-2 text-caption font-semibold text-text transition-colors hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                     >
-                      {copiedField === 'handle' ? 'تم النسخ ✓' : 'نسخ'}
+                      {copiedField === 'handle' ? tPage.copied : tPage.copy}
                     </button>
                   </div>
                 </div>
 
                 <div>
                   <span className="text-caption font-medium text-text-muted">
-                    رقم الطلب (يكتب في الملاحظات):
+                    {tPage.orderNumLabel}
                   </span>
                   <div className="flex items-center gap-2 mt-1">
                     <code
@@ -348,7 +492,7 @@ export default function PayOrderPage() {
                       onClick={() => handleCopy(String(order.id), 'reference')}
                       className="rounded-pill border border-border bg-surface px-3 py-2 text-caption font-semibold text-text transition-colors hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                     >
-                      {copiedField === 'reference' ? 'تم النسخ ✓' : 'نسخ'}
+                      {copiedField === 'reference' ? tPage.copied : tPage.copy}
                     </button>
                   </div>
                 </div>
@@ -359,29 +503,24 @@ export default function PayOrderPage() {
           {/* Proof upload or status banner */}
           {isPaid ? (
             <div className="rounded-card border border-success/30 bg-success/5 p-6 sm:p-8 text-center space-y-4">
-              <h2 className="text-h3 font-bold text-success">تم تأكيد الدفع بنجاح!</h2>
-              <p className="text-body text-text-muted">
-                طلبك مؤكد وجارٍ تحضيره للشحن والتوصيل. يمكنك متابعة حالة الشحن في صفحة طلباتك.
-              </p>
+              <h2 className="text-h3 font-bold text-success">{tPage.paidTitle}</h2>
+              <p className="text-body text-text-muted">{tPage.paidDesc}</p>
               <div className="pt-2">
                 <Link
                   to="/account/orders"
                   className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
                 >
-                  عرض طلباتي
+                  {tPage.viewMyOrders}
                 </Link>
               </div>
             </div>
           ) : isUnderReview ? (
             <div className="rounded-card border border-caramel/30 bg-caramel/5 p-6 sm:p-8 space-y-4 text-center">
-              <h2 className="text-h3 font-bold text-caramel">إثبات التحويل قيد المراجعة</h2>
-              <p className="text-body text-text-muted max-w-md mx-auto">
-                تم استلام إشعار التحويل ورقم العملية بنجاح. يقوم فريق العمل بمطابقة التحويل في أسرع
-                وقت.
-              </p>
+              <h2 className="text-h3 font-bold text-caramel">{tPage.underReviewTitle}</h2>
+              <p className="text-body text-text-muted max-w-md mx-auto">{tPage.underReviewDesc}</p>
               {order.payment_reference && (
                 <p className="text-caption text-text-muted">
-                  رقم العملية المسجل:{' '}
+                  {tPage.registeredRef}
                   <span dir="ltr" className="font-mono font-bold text-text">
                     {order.payment_reference}
                   </span>
@@ -392,7 +531,7 @@ export default function PayOrderPage() {
                   to="/account/orders"
                   className="inline-flex h-11 items-center justify-center rounded-pill border border-border bg-surface px-6 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                 >
-                  العودة إلى طلباتي
+                  {tPage.backToOrders}
                 </Link>
               </div>
             </div>
@@ -402,20 +541,21 @@ export default function PayOrderPage() {
               className="rounded-card border border-border bg-surface p-6 sm:p-8 space-y-6"
             >
               <div>
-                <h2 className="text-h3 font-bold text-text">رفع إثبات التحويل</h2>
-                <p className="text-caption text-text-muted mt-1">
-                  الصور المقبولة: JPG أو PNG أو WebP بحجم 5 ميجابايت كحد أقصى.
-                </p>
+                <h2 className="text-h3 font-bold text-text">{tPage.uploadTitle}</h2>
+                <p className="text-caption text-text-muted mt-1">{tPage.uploadHints}</p>
               </div>
 
               {/* Rejection alert if prior proof was rejected */}
               {isRejected && (
                 <div className="rounded-chip border border-danger/30 bg-danger/10 p-4 text-small text-danger space-y-1">
-                  <p className="font-bold">تم رفض إثبات الدفع السابق.</p>
+                  <p className="font-bold">{tPage.proofRejected}</p>
                   {order.payment_review_note ? (
-                    <p>ملاحظة الإدارة: {order.payment_review_note}</p>
+                    <p>
+                      {tPage.adminNote}
+                      {order.payment_review_note}
+                    </p>
                   ) : (
-                    <p>يرجى التأكد من صحة رقم العملية ووضوح إشعار التحويل قبل إعادة الرفع.</p>
+                    <p>{tPage.reuploadTip}</p>
                   )}
                 </div>
               )}
@@ -426,7 +566,7 @@ export default function PayOrderPage() {
                   htmlFor="transfer-reference"
                   className="block text-small font-semibold text-text"
                 >
-                  رقم عملية التحويل (Reference Number) <span className="text-danger">*</span>
+                  {tPage.refLabel} <span className="text-danger">*</span>
                 </label>
                 <input
                   id="transfer-reference"
@@ -434,12 +574,10 @@ export default function PayOrderPage() {
                   required
                   value={referenceInput}
                   onChange={(e) => setReferenceInput(e.target.value)}
-                  placeholder="مثال: 0123456789 أو Ref-987654"
+                  placeholder={tPage.refPlaceholder}
                   className="h-11 w-full rounded-chip border border-border-input bg-bg px-3 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                 />
-                <p className="text-caption text-text-muted">
-                  الرقم الظاهر في إشعار التحويل من تطبيق إنستاباي أو البنك.
-                </p>
+                <p className="text-caption text-text-muted">{tPage.refHint}</p>
               </div>
 
               {/* File Upload Dropzone */}
@@ -448,7 +586,7 @@ export default function PayOrderPage() {
                   htmlFor="proof-file-input"
                   className="block text-small font-semibold text-text"
                 >
-                  صورة إشعار التحويل <span className="text-danger">*</span>
+                  {tPage.receiptLabel} <span className="text-danger">*</span>
                 </label>
 
                 <div
@@ -479,11 +617,11 @@ export default function PayOrderPage() {
                     <div className="space-y-3">
                       <img
                         src={filePreviewUrl}
-                        alt="معاينة إشعار التحويل"
+                        alt={tPage.receiptPreviewAlt}
                         className="max-h-40 rounded-chip object-contain mx-auto"
                       />
                       <p className="text-caption text-brand font-medium">
-                        {selectedFile?.name} (انقر للتغيير)
+                        {selectedFile?.name} {tPage.clickToChange}
                       </p>
                     </div>
                   ) : (
@@ -504,12 +642,8 @@ export default function PayOrderPage() {
                           />
                         </svg>
                       </div>
-                      <p className="text-body font-medium text-text">
-                        انقر لاختيار صورة إشعار التحويل
-                      </p>
-                      <p className="text-caption text-text-muted">
-                        JPG أو PNG أو WebP حتى 5 ميجابايت
-                      </p>
+                      <p className="text-body font-medium text-text">{tPage.clickToSelect}</p>
+                      <p className="text-caption text-text-muted">{tPage.formatsAllowed}</p>
                     </div>
                   )}
                 </div>
@@ -541,30 +675,26 @@ export default function PayOrderPage() {
                   }
                   className="inline-flex h-12 w-full items-center justify-center rounded-pill bg-brand px-6 text-body font-semibold text-brand-contrast transition-opacity hover:opacity-90 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-focus"
                 >
-                  {submitMutation.isPending
-                    ? 'جارٍ رفع الإثبات وتأكيد الطلب...'
-                    : 'تأكيد وإرسال إثبات التحويل'}
+                  {submitMutation.isPending ? tPage.submitting : tPage.submitBtn}
                 </button>
               </div>
             </form>
           ) : (
             <div className="rounded-card border border-danger/30 bg-danger/5 p-6 sm:p-8 text-center space-y-4">
-              <h2 className="text-h3 font-bold text-danger">انتهت مهلة الدفع المحددة</h2>
-              <p className="text-body text-text-muted">
-                انتهت مهلة الدفع لهذا الطلب. تم إلغاء الطلب واسترجاع المنتجات إلى المخزون.
-              </p>
+              <h2 className="text-h3 font-bold text-danger">{tPage.windowExpiredTitle}</h2>
+              <p className="text-body text-text-muted">{tPage.windowExpiredDesc}</p>
               <div className="pt-2 flex justify-center gap-4">
                 <Link
                   to="/account/orders"
                   className="inline-flex h-11 items-center justify-center rounded-pill border border-border bg-surface px-6 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                 >
-                  متابعة طلباتي
+                  {tPage.trackOrders}
                 </Link>
                 <Link
                   to="/"
                   className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-6 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
                 >
-                  العودة للتسوق
+                  {tPage.backToShopping}
                 </Link>
               </div>
             </div>

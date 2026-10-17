@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../i18n/LanguageProvider'
 import { RibbonBow } from '../components/ui/ornaments'
+import { useSeo } from '@/features/seo'
 
 export default function AboutPage() {
   const { t } = useLanguage()
+
+  useSeo({
+    title: t.about.title,
+    description: t.about.p1,
+  })
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

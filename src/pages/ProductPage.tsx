@@ -204,7 +204,7 @@ export default function ProductPage() {
         <div className="rounded-card border border-brand/30 bg-surface-tint p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-card">
           <div className="flex items-center gap-2">
             <span className="rounded-pill bg-brand text-brand-contrast px-2.5 py-0.5 text-caption font-bold">
-              لوحة الإدارة • Admin
+              {isAr ? 'لوحة الإدارة' : 'Admin Panel'}
             </span>
             <span className="text-small text-text">
               {isAr

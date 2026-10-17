@@ -34,9 +34,7 @@ export default function AccountFavoritesPage() {
       <div className="rounded-card border border-border bg-surface p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-card">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-h1 font-bold font-accent text-brand">
-              {t.favorites?.title || 'المفضلة'}
-            </h1>
+            <h1 className="text-h1 font-bold font-accent text-brand">{t.favorites.title}</h1>
             {!isLoading && (
               <span
                 className="inline-flex items-center rounded-pill bg-surface-tint border border-border px-3 py-1 text-small font-semibold text-brand"
@@ -55,25 +53,25 @@ export default function AccountFavoritesPage() {
             to="/account"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account?.details || 'بياناتي'}
+            {t.account.details}
           </Link>
           <Link
             to="/account/orders"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account?.orders || 'طلباتي'}
+            {t.account.orders}
           </Link>
           <span
             aria-current="page"
             className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-4 text-small font-semibold text-brand-contrast shadow-pill"
           >
-            {t.account?.favorites || 'المفضلة'}
+            {t.account.favorites}
           </span>
           <Link
             to="/account/security"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account?.security || 'الأمان'}
+            {t.account.security}
           </Link>
         </div>
       </div>
@@ -95,19 +93,14 @@ export default function AccountFavoritesPage() {
           <div className="flex size-16 mx-auto items-center justify-center rounded-pill bg-surface-tint text-accent-text border border-border">
             <BowHeartIcon filled className="size-8 text-accent-text" />
           </div>
-          <h2 className="text-h2 font-bold text-text">
-            {t.favorites?.emptyTitle || 'قائمة المفضلة فارغة'}
-          </h2>
-          <p className="text-body text-text-muted max-w-md mx-auto">
-            {t.favorites?.emptyDesc ||
-              'لم تقم بإضافة أي منتجات إلى المفضلة بعد. استكشف مجموعتنا وأضف ما يعجبك!'}
-          </p>
+          <h2 className="text-h2 font-bold text-text">{t.favorites.emptyTitle}</h2>
+          <p className="text-body text-text-muted max-w-md mx-auto">{t.favorites.emptyDesc}</p>
           <div className="pt-2">
             <Link
               to="/category/all"
               className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-8 text-small font-semibold text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus shadow-pill"
             >
-              {t.favorites?.browse || 'تصفّح المنتجات'}
+              {t.favorites.browse}
             </Link>
           </div>
         </Card>

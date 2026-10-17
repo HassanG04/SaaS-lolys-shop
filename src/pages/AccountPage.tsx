@@ -70,8 +70,11 @@ export default function AccountPage() {
   }>({})
 
   useSeo({
-    title: t.account.details || 'بيانات الحساب',
-    description: 'تعديل بيانات الحساب وعناوين التوصيل في متجر لوليز',
+    title: t.account.details,
+    description:
+      lang === 'ar'
+        ? 'تعديل بيانات الحساب وعناوين التوصيل في متجر لوليز'
+        : "Manage your account details and delivery addresses at Lolys' Accessories & Home",
   })
 
   const validate = (): boolean => {
@@ -136,9 +139,7 @@ export default function AccountPage() {
       <div className="rounded-card border border-border bg-surface p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-card">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-h1 font-bold font-accent text-brand">
-              {t.account.details || 'بيانات الحساب'}
-            </h1>
+            <h1 className="text-h1 font-bold font-accent text-brand">{t.account.details}</h1>
             {user?.email && (
               <span className="inline-flex items-center rounded-chip bg-surface-2 px-2.5 py-0.5 text-caption font-medium text-text-muted border border-border">
                 <Ltr>{user.email}</Ltr>
@@ -153,19 +154,19 @@ export default function AccountPage() {
             to="/account/orders"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account.orders || 'طلباتي'}
+            {t.account.orders}
           </Link>
           <Link
             to="/account/favorites"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account?.favorites || 'المفضلة'}
+            {t.account.favorites}
           </Link>
           <Link
             to="/account/security"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account.security || 'الأمان'}
+            {t.account.security}
           </Link>
           <button
             type="button"
@@ -175,7 +176,7 @@ export default function AccountPage() {
             }}
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-danger hover:text-danger focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account.logout || 'تسجيل الخروج'}
+            {t.account.logout}
           </button>
         </div>
       </div>

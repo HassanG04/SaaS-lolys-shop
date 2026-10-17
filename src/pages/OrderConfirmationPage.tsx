@@ -8,11 +8,14 @@ import { useSeo } from '@/features/seo'
 export default function OrderConfirmationPage() {
   const { id, orderId: orderIdParam } = useParams<{ id?: string; orderId?: string }>()
   const orderId = id || orderIdParam || ''
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const isEn = lang === 'en'
 
   useSeo({
-    title: `تأكيد الطلب #${orderId}`,
-    description: 'تم استلام طلبك بنجاح في متجر لوليز',
+    title: isEn ? `Order Confirmation #${orderId}` : `تأكيد الطلب #${orderId}`,
+    description: isEn
+      ? "Your order has been received at Lolys' Accessories & Home"
+      : 'تم استلام طلبك بنجاح في متجر لوليز',
   })
 
   return (
@@ -23,15 +26,21 @@ export default function OrderConfirmationPage() {
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-h1 font-bold font-accent text-brand">تم استلام طلبك بنجاح!</h1>
+          <h1 className="text-h1 font-bold font-accent text-brand">
+            {isEn ? 'Your order has been placed successfully!' : 'تم استلام طلبك بنجاح!'}
+          </h1>
           <p className="text-body text-text-muted">
-            شكرًا لطلبك من متجر لوليز. سنقوم بمراجعة الطلب وتجهيزه بعناية.
+            {isEn
+              ? 'Thank you for your order. We will review and pack your pieces with care.'
+              : 'شكرًا لطلبك من متجر لوليز. سنقوم بمراجعة الطلب وتجهيزه بعناية.'}
           </p>
         </div>
 
         {orderId && (
           <div className="rounded-card border border-border bg-surface-2 p-4 w-full max-w-md">
-            <span className="text-small text-text-muted block mb-1">رقم الطلب</span>
+            <span className="text-small text-text-muted block mb-1">
+              {isEn ? 'Order Number' : 'رقم الطلب'}
+            </span>
             <span className="text-h2 font-bold font-mono text-brand">
               <Ltr>#{orderId}</Ltr>
             </span>
@@ -39,7 +48,9 @@ export default function OrderConfirmationPage() {
         )}
 
         <div className="rounded-chip border border-border bg-surface-tint p-4 text-small text-text-muted max-w-md">
-          سنتواصل معك هاتفيًا أو عبر الواتساب لتأكيد موعد التوصيل والدفع عند الاستلام.
+          {isEn
+            ? 'We will reach out by phone or WhatsApp to coordinate your delivery and payment details.'
+            : 'سنتواصل معك هاتفيًا أو عبر الواتساب لتأكيد موعد التوصيل والدفع عند الاستلام.'}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto pt-4">
@@ -47,7 +58,7 @@ export default function OrderConfirmationPage() {
             to="/account/orders"
             className="inline-flex h-12 items-center justify-center rounded-pill bg-brand px-8 text-body font-semibold text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus shadow-pill"
           >
-            عرض تفاصيل طلباتي
+            {isEn ? 'View My Orders' : 'عرض تفاصيل طلباتي'}
           </Link>
           <Link
             to="/category/all"

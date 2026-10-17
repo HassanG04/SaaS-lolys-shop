@@ -97,6 +97,7 @@ function renderCheckoutPage(options?: {
   clearCart?: () => void
   profile?: UserProfile | null
   user?: AuthContextValue['user']
+  lang?: 'ar' | 'en'
 }) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -154,7 +155,7 @@ function renderCheckoutPage(options?: {
   }
 
   return render(
-    <LanguageProvider>
+    <LanguageProvider initialLanguage={options?.lang ?? 'ar'}>
       <QueryClientProvider client={queryClient}>
         <AuthContext.Provider value={authValue}>
           <CartContext.Provider value={cartValue}>
@@ -349,5 +350,26 @@ describe('CheckoutPage (T-4.02)', () => {
       name: /يرجى تأكيد بريدك الإلكتروني لتتمكن من إتمام الطلب/i,
     })
     expect(submitBtn).toBeDisabled()
+  })
+
+  it('renders checkout page completely in English without Arabic leak', async () => {
+    renderCheckoutPage({ lang: 'en' })
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Delivery Information' })).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('heading', { name: 'Recipient Information' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Delivery Address' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Delivery Method' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Payment Method' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Order summary (estimated)' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Confirm Order' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Back to Cart' })).toBeInTheDocument()
+
+    // Assert absence of Arabic text
+    expect(screen.queryByText('معلومات المستلم')).not.toBeInTheDocument()
+    expect(screen.queryByText('عنوان التوصيل')).not.toBeInTheDocument()
+    expect(screen.queryByText('العودة إلى السلة')).not.toBeInTheDocument()
   })
 })

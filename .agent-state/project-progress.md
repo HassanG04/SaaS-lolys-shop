@@ -1,5 +1,35 @@
 # Shared project progress
 
+## Anti-Gravity — Routed Interface Language Coverage (T-3.12) — 2026-10-17
+
+Current task: T-3.12 completed on `agent/T-3.12-interface-localization`. Next implementation: T-3.11 (Explicit site motion preference) or T-3.10 (Homepage mouse-icon persistent editor).
+
+Completed:
+
+- Full route-by-route English and Arabic coverage across all public, customer, and admin views:
+  - `ReturnsPage.tsx`: Full bilingual route-lazy copy deck (`copy.ar` and `copy.en`), dynamic SEO title/description, 14-day return period / 30-day manufacturing defect policy (Egyptian Consumer Protection Law 181/2018), hygiene exclusions, return pickup procedure, and refund workflows.
+  - `ShippingPage.tsx`: Full bilingual route-lazy copy deck, dynamic SEO, Egypt Post (tracking number) and certified couriers (representative phone number) delivery models, delivery turnaround windows (Cairo/Alex 2-3 days, regional 3-5 days), and package inspection notice.
+  - `TermsPage.tsx`: Full bilingual route-lazy copy deck, dynamic SEO, legal purchasing eligibility, tax-inclusive EGP currency, real-time stock notifications, COD and InstaPay QR approval / 24h proof window, pre-dispatch cancellation, and IP protection.
+  - `ContactPage.tsx`: Full bilingual route-lazy copy deck, dynamic SEO, WhatsApp direct chat link (+20 101 111 9999), general support email, DSR privacy email, and working hours (Sat-Thu 10:00 AM - 10:00 PM Cairo Time).
+  - `PrivacyPage.tsx`: Full bilingual route-lazy copy deck, dynamic SEO, local storage notice (theme, cart, session, zero tracking cookies, zero third-party data sales), personal data minimization scope, data retention schedule table (90 days payment proofs, 2 years audit logs, 5 years commercial records), statutory rights under Egyptian Personal Data Protection Law 151/2020 (access, export, rectification, erasure/anonymization), and DSR contact buttons.
+  - `PayOrderPage.tsx`: Route-lazy dictionary, dynamic SEO, localized loading/error states, Cash on Delivery notice, status chips (awaiting approval, paid, under review, awaiting payment, rejected, expired), deadline countdown, exact amount card, step-by-step InstaPay instructions, copy buttons, rejection alerts with admin review notes, transfer reference input, receipt dropzone with client-side image validation (UPL-001/UPL-002), and bilingual submission toasts.
+  - `CheckoutPage.tsx`: Localized SEO description, recipient information section header, delivery address header, governorate select placeholder, address/landmark/notes placeholders, save address fallback, order submission notes, and review alerts.
+  - `AccountOrdersPage.tsx`: Localized ordered products section, item names using English/Arabic product name resolution (`item.products?.name` in English, `item.products?.name_ar` in Arabic), unit prices, line totals, delivery and tracking details, and order cancellation dialog.
+  - `NotFoundPage.tsx`: Localized with `useLanguage()`, dynamic noindex SEO, bilingual 404 heading, body message, and home CTA.
+  - `OrderConfirmationPage.tsx`: Localized with dynamic SEO, order confirmation heading, order number card, phone/WhatsApp confirmation notice, and CTA.
+  - `AboutPage.tsx`: Added `useSeo()` metadata synchronization.
+- Initial bundle budget maintained under strict 200,000 gzip bytes limit: **199,996 / 200,000 gzip bytes** in 3 initial chunks (all policy copy strictly isolated inside route-lazy page chunks).
+- Test suites:
+  - Unit & tooling tests: 761 application tests + 203 tooling tests passed (964 total tests passed, 0 failed).
+  - Playwright motion & responsive tests: all 40 tests passed across light/dark themes, LTR/RTL directions, and 320/360/1280 viewports.
+  - All 12 `npm run verify` gates passed exit code 0.
+
+Files changed: `src/pages/ReturnsPage.tsx`, `src/pages/ShippingPage.tsx`, `src/pages/TermsPage.tsx`, `src/pages/ContactPage.tsx`, `src/pages/PrivacyPage.tsx`, `src/pages/PayOrderPage.tsx`, `src/pages/CheckoutPage.tsx`, `src/pages/AccountOrdersPage.tsx`, `src/pages/AccountFavoritesPage.tsx`, `src/pages/AccountPage.tsx`, `src/pages/NotFoundPage.tsx`, `src/pages/OrderConfirmationPage.tsx`, `src/pages/AboutPage.tsx`, `src/pages/ProductPage.tsx`, `src/pages/PayOrderPage.test.tsx`, `src/pages/CheckoutPage.test.tsx`, `src/pages/LegalPages.test.tsx`, `roadmap.md`, `.agent-state/project-progress.md`.
+
+Problems found: None.
+
+Next action: Commit T-3.12 on `agent/T-3.12-interface-localization`, branch to `agent/T-3.11-motion-preference`, and implement explicit site motion preference (Full / Reduced / Follow-device).
+
 ## Anti-Gravity — Language-Dependent Admin Navigation Placement (T-5.13f) — 2026-10-17
 
 Current task: T-5.13f completed on `agent/T-5.13f-admin-directional-layout`. Next implementation: T-3.12 (Complete routed interface language coverage) or T-3.11 (Explicit site motion preference).

@@ -59,7 +59,7 @@ const baseOrder: OrderPaymentDetails = {
   created_at: '2026-10-12T10:00:00Z',
 }
 
-function renderComponent(orderId = '101') {
+function renderComponent(orderId = '101', lang: 'ar' | 'en' = 'ar') {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false, gcTime: 0 },
@@ -68,7 +68,7 @@ function renderComponent(orderId = '101') {
   })
 
   return render(
-    <LanguageProvider>
+    <LanguageProvider initialLanguage={lang}>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
           <MemoryRouter initialEntries={[`/pay/${orderId}`]}>
@@ -291,5 +291,50 @@ describe('PayOrderPage', () => {
     expect(screen.queryByLabelText(/رقم عملية التحويل/)).not.toBeInTheDocument()
     expect(screen.queryByText(/خطوات الدفع عبر إنستاباي/)).not.toBeInTheDocument()
     expect(paymentsApi.getPaymentInstructionsApi).not.toHaveBeenCalled()
+  })
+
+  it('renders payment screen completely in English without Arabic leak', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    renderComponent('101', 'en')
+
+    expect(await screen.findByRole('heading', { name: '#101' })).toBeInTheDocument()
+    expect(screen.getByText('Awaiting payment')).toBeInTheDocument()
+    expect(screen.getByText('InstaPay Payment Steps')).toBeInTheDocument()
+    expect(
+      screen.getByText(/Open the InstaPay app or your mobile banking app\./),
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText(/Transfer Reference Number/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Confirm and Submit Payment Proof/ }),
+    ).toBeInTheDocument()
+
+    // Ensure no Arabic text remains in English mode
+    expect(screen.queryByText('بانتظار الدفع')).not.toBeInTheDocument()
+    expect(screen.queryByText('خطوات الدفع عبر إنستاباي')).not.toBeInTheDocument()
+    expect(screen.queryByText('تأكيد وإرسال إثبات التحويل')).not.toBeInTheDocument()
+  })
+
+  it('renders awaiting approval completely in English', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue({
+      ...baseOrder,
+      payment_status: 'awaiting_approval',
+      payment_deadline: null,
+    })
+    renderComponent('101', 'en')
+
+    expect(await screen.findByText('Awaiting store approval')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /Your order is under review and approval/ }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /Your order has been received\. We will review it and send your payment link shortly\./,
+      ),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Back to My Orders' })).toBeInTheDocument()
+
+    // No Arabic leakage
+    expect(screen.queryByText('بانتظار موافقة المتجر')).not.toBeInTheDocument()
+    expect(screen.queryByText('طلبك قيد المراجعة والموافقة')).not.toBeInTheDocument()
   })
 })

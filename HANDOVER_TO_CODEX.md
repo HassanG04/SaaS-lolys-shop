@@ -120,6 +120,7 @@ All tasks requested for this session were implemented, verified with comprehensi
 ## 3. Files Changed Across Sessions
 
 ### Branch `agent/T-3.10b-admin-entry-and-card-badges` (`e31c67f`):
+
 - `src/components/layout/Navbar.tsx`
 - `src/components/layout/Layout.tsx`
 - `src/components/layout/responsive-navigation.test.tsx`
@@ -137,6 +138,7 @@ All tasks requested for this session were implemented, verified with comprehensi
 - `.agent-state/project-progress.md`
 
 ### Branch `agent/T-5.13f-admin-directional-layout` (`a14d05e`):
+
 - `src/features/admin/AdminShell.tsx`
 - `src/features/admin/AdminHeader.tsx`
 - `src/features/admin/AdminSidebar.tsx`
