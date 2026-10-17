@@ -1,5 +1,41 @@
 # Shared project progress
 
+## Anti-Gravity — Homepage Visual Repairs & Truthful Presentation (T-3.10a) — 2026-10-17
+
+Current task: T-3.10a completed on `agent/T-3.10a-homepage-visual-repair`. Next implementation: T-5.13e (Admin sidebar, drawer, and page transitions).
+
+Completed:
+- Replaced active `ArchFrame` on routed `HomePage` with rounded landscape/square photo (`storefront-photo`, `aspect-[4/3]`, `rounded-card`) and caption (`storefront-caption`).
+- Replaced invented 50% discount fallback: truthfully computes `salePercent` (strictly finite > 0), rendering sale badge only when active promotion exists; otherwise displays neutral `t.hero.eyebrow`, `t.hero.cozyTitle`, and `t.hero.shopCta`.
+- Fixed bilingual copy leaks in About tagline (`t.brand.tagline`) and Returns details (`t.catalog.returnsDetails`), with synchronized i18n dictionary keys across `ar.json` and `en.json`.
+- Filtered delivery payment badges dynamically based on `settings?.payment_methods_enabled`.
+- Implemented hover and focus-within enlargement on `.feature-card` (1.02 scale with popover shadow and brand border) guarded under `@media (prefers-reduced-motion: no-preference)`, with smooth reversal on pointer leave / blur and transform suppression under reduced motion.
+- Wrapped `#about` section in `<SectionReveal>` for viewport entry animation.
+- Streamlined route title lookup in `useRouteSeo.ts` to maintain initial JS bundle strictly under the 200,000 gzip bytes limit (199,993 bytes in 3 initial chunks).
+
+Files changed: `src/pages/HomePage.tsx`, `src/pages/HomePage.test.tsx`, `src/App.test.tsx`, `src/styles/storefront.css`, `src/features/seo/useRouteSeo.ts`, `src/i18n/ar.json`, `src/i18n/en.json`, `e2e/ui/motion.spec.ts`, `roadmap.md`.
+
+Tests executed:
+- All 12 `npm run verify` gates passed exit code 0:
+  - `check:migrations`: Existing migrations unchanged.
+  - `check:sql`: SQL guards passed.
+  - `check:tokens`: Documented tokens verified.
+  - `check:supply-chain`: Supply-chain dependencies passed.
+  - `check:i18n`: All translation keys synchronized across ar/en.
+  - `lint`: ESLint passed.
+  - `format:check`: Prettier passed.
+  - `typecheck`: TypeScript compiler passed (`tsc -b`).
+  - `test:unit`: 752 application tests + 203 tooling tests passed (955 total tests passed, 0 failed).
+  - `build`: Production build succeeded.
+  - `check:secrets`: Passed.
+  - `check:bundle`: 199,993 / 200,000 gzip bytes passed.
+- Playwright motion & responsive suite (`npx playwright test --config playwright.motion.config.ts`): all 32 tests passed (20 motion + 12 responsive).
+- `npm run roadmap:check`: Valid (135 tasks).
+
+Problems found: None. Initial bundle budget remains strictly compliant at 199,993 bytes (7 bytes headroom).
+
+Next action: Switch to branch `agent/T-5.13e-admin-slide-transitions` to implement admin sidebar slide transition, mobile drawer entry/exit animation, persistent-header inner route transition, and localized visible skeleton loaders.
+
 ## Codex — Complete owner-request handoff — 2026-10-17
 
 Current task: owner-requested documentation handoff on `agent/T-5.13d-responsive-evidence`, application/evidence baseline `b17371e`. Next implementation: T-3.10a homepage visual repairs, then T-5.13e admin transitions.

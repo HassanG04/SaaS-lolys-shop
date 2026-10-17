@@ -21,6 +21,7 @@ for (const theme of ['light', 'dark']) {
             <span class="flower-container"><span class="flower flower-1"><span class="flower-petal"></span><span class="flower-petal"></span><span class="flower-petal"></span><span class="flower-petal"></span></span></span>Buy</button>
           <div class="ui-skeleton" style="width:160px;height:120px"></div>
           <div class="catalog-grid" style="display:flex;gap:30px;margin:30px"><article class="ui-card catalog-product-card" style="width:160px;height:120px">Item</article><article class="ui-card catalog-product-card" style="width:160px;height:120px">Other item</article></div>
+          <article class="ui-card feature-card" style="width:160px;height:120px;margin:30px"><a href="#returns" class="returns-link">Returns</a></article>
         </body></html>`)
       })
 
@@ -94,6 +95,26 @@ for (const theme of ['light', 'dark']) {
         await expect(cards.nth(1)).toHaveCSS('filter', 'none')
       })
 
+      test('feature-card enlarges on hover and focus-within and reverses on leave/blur', async ({
+        page,
+      }) => {
+        const card = page.locator('.feature-card')
+        await card.hover()
+        await expect
+          .poll(() => card.evaluate((el) => getComputedStyle(el).transform))
+          .toContain('1.02')
+        await page.mouse.move(0, 0)
+        await expect(card).toHaveCSS('transform', 'none')
+
+        const link = page.locator('.returns-link')
+        await link.focus()
+        await expect
+          .poll(() => card.evaluate((el) => getComputedStyle(el).transform))
+          .toContain('1.02')
+        await link.blur()
+        await expect(card).toHaveCSS('transform', 'none')
+      })
+
       test('reduced motion stops animation while keeping skeletons visible', async ({ page }) => {
         await page.emulateMedia({ reducedMotion: 'reduce' })
         await page.getByRole('button').hover()
@@ -105,6 +126,8 @@ for (const theme of ['light', 'dark']) {
           'background-color',
           'rgba(0, 0, 0, 0)',
         )
+        await page.locator('.feature-card').hover()
+        await expect(page.locator('.feature-card')).toHaveCSS('transform', 'none')
       })
     })
   }

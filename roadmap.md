@@ -752,7 +752,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:reset && npm run db:test && npm run verify && npm run test:e2e`
 
 #### T-3.10a: Visible homepage repairs before the editor
-`status: todo` `owner: agent` `needs: T-3.03` `size: M`
+`status: done` `owner: agent` `needs: T-3.03` `size: M`
 - **Do:** Owner handoff priority: replace the active HomePage arch, remove invented 50% fallback, fix About/Returns English leaks and enabled-method badges, enlarge the three informational cards on hover/focus and reveal them when reached. Existing unused StorefrontHero is a reuse candidate, not proof of implementation. See `HANDOVER_TO_ANTI_GRAVITY.md`.
 - **Done when:** Actual routed page shows the changes at 320/360/1280 in both themes/languages; absent/zero promotion, long copy, touch and reduced motion behave correctly; no false sale or clipped cards; tests and verify pass. No schema changes required for this visual slice.
 - **Verify:** `npm run verify`; focused homepage tests and real-route browser acceptance with recorded evidence.
@@ -1508,6 +1508,7 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-17 | T-5.13c, T-5.13d | Codex | Right-side header, persistent mobile controls, centered switch and owner social links implemented. Split production changes (T-5.13c) from regression evidence (T-5.13d) for review size. Combined working tree passed all 12 verify gates (748 app + 203 tooling; bundle 199971/200000), plus 28 isolated browser checks (16 motion, 12 responsive). Screenshots reviewed; these fixtures do not test hosted data. Both tasks remain doing for database-backed E2E/remote review. | pending |
 
 | 2026-10-17 | T-3.10a, T-5.13e | Codex | Owner requested explicit Anti-Gravity handoff for missed features. Audited current routed source: arch/50% fallback, Arabic returns/tagline leaks, entrance-only About cards and instantaneous admin sidebar remain. Registered independent visual slices; replaced obsolete handoff with complete requirement ledger, file targets, acceptance checks and data blockers. No feature implementation in this handoff. Repairs pushed to owner-confirmed SaaS-lolys-shop; draft PRs 29–33 opened, no merges or remote CI success claimed. | [#33](https://github.com/HassanG04/SaaS-lolys-shop/pull/33) |
+| 2026-10-17 | T-3.10a | Anti-Gravity | Replaced active HomePage hero arch with rounded landscape photo frame (`aspect-[4/3]`, `rounded-card`) and caption; replaced invented 50% discount fallback with truthful promotion/cozyTitle logic; fixed bilingual copy leaks in About tagline and Returns text; filtered delivery payment badges by public settings; implemented hover and focus-within enlargement on About/Delivery/Returns cards with smooth leave/blur reversal; wrapped section in SectionReveal. Verified with 9 HomePage unit tests, 32 Playwright motion & responsive tests, and all 12 verify gates passing (955 tests, bundle 199,993 bytes). | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

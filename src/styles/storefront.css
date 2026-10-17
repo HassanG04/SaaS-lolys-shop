@@ -69,6 +69,37 @@
       filter 300ms ease,
       opacity 300ms ease;
   }
+  .feature-card {
+    transition:
+      transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      border-color 300ms ease;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @media (hover: hover) and (pointer: fine) {
+      .feature-card:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: var(--shadow-popover-val);
+        border-color: var(--color-brand-val);
+      }
+    }
+    .feature-card:focus-within {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: var(--shadow-popover-val);
+      border-color: var(--color-brand-val);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .feature-card {
+      transition: border-color 200ms ease;
+    }
+    .feature-card:hover,
+    .feature-card:focus-within {
+      transform: none;
+      box-shadow: var(--shadow-card-val);
+      border-color: var(--color-brand-val);
+    }
+  }
   @media (prefers-reduced-motion: no-preference) {
     .page-transition {
       animation: page-arrive 320ms ease-out both;
@@ -194,17 +225,17 @@
       animation-delay: 80ms;
     }
 
-    /* Feature card stagger */
-    .feature-card {
-      animation: storefront-arrive 360ms ease-out both;
+    /* Feature card stagger on section reveal */
+    .section-reveal-enter .feature-card {
+      animation: storefront-arrive 360ms ease-out;
     }
-    .feature-card:nth-child(1) {
+    .section-reveal-enter .feature-card:nth-child(1) {
       animation-delay: 0ms;
     }
-    .feature-card:nth-child(2) {
+    .section-reveal-enter .feature-card:nth-child(2) {
       animation-delay: 100ms;
     }
-    .feature-card:nth-child(3) {
+    .section-reveal-enter .feature-card:nth-child(3) {
       animation-delay: 200ms;
     }
 
