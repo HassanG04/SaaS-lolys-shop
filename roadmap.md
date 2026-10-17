@@ -757,6 +757,24 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Actual routed page shows the changes at 320/360/1280 in both themes/languages; absent/zero promotion, long copy, touch and reduced motion behave correctly; no false sale or clipped cards; tests and verify pass. No schema changes required for this visual slice.
 - **Verify:** `npm run verify`; focused homepage tests and real-route browser acceptance with recorded evidence.
 
+#### T-3.10b: Visible admin entry and opposite product badges
+`status: todo` `owner: agent` `needs: T-2.02, T-3.03` `size: S`
+- **Do:** Add a visible localized storefront Admin entry for the resolved admin role through existing MFA guards. Position offer/sold-out badges opposite the wishlist control with generated logical CSS. The persistent mouse editor remains T-3.10, not satisfied by a navigation link. See `docs/handoff/OWNER-FOLLOWUP-2026-10-17.md`.
+- **Done when:** Guest/customer/admin loading and resolved states behave correctly; offer and heart bounding boxes do not intersect at 320/360/1280 in either direction; controls remain accessible; actual-route checks and verify pass.
+- **Verify:** `npm run verify`; focused role/navigation tests and compiled-CSS plus actual-route collision checks.
+
+#### T-3.11: Explicit site motion preference
+`status: todo` `owner: agent` `needs: T-3.09` `size: M`
+- **Do:** Implement the owner's new explicit request: Full animations by default even with device animations off; visitor-selectable Reduced and Follow device modes. Use a persisted effective policy shared by CSS/JS, replacing conflicting direct OS guards without breaking dialogs, touch behavior, skeletons or visible content. See the latest owner follow-up.
+- **Done when:** OS-reduced + Full animates; explicit Reduced suppresses decorative motion; Follow device responds to OS changes; reload/storage-denied/rapid-dialog cases pass; accessible bilingual control and full verify pass. No forced animation after a visitor selects Reduced.
+- **Verify:** `npm run verify`; browser motion-policy matrix including reduced-motion emulation and actual routes.
+
+#### T-3.12: Complete routed interface language coverage
+`status: todo` `owner: agent` `needs: T-2.02, T-3.03` `size: L`
+- **Do:** Localize complete Returns, Shipping, Terms, Privacy and Contact pages; audit every public/account/admin route and its validation/error/loading/empty states, accessible names and metadata. Preserve approved policy meaning; report unsupported claims. Split implementation by route groups as needed; protect initial bundle budget with route-lazy policy copy.
+- **Done when:** Route-by-route English/Arabic evidence includes full body content and errors, no Arabic interface fallback in English, correct lang/dir and persistent language after navigation/refresh; no invented business/legal policy; verify and actual-route review pass.
+- **Verify:** `npm run verify`; route localization tests and browser acceptance table per `docs/handoff/OWNER-FOLLOWUP-2026-10-17.md`.
+
 ### Phase 4: Checkout and orders
 
 #### T-4.01: Delivery options API
@@ -910,6 +928,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Do:** Animate physical-right sidebar collapse/expansion and mobile dialog entry/exit, preserve modality/focus and persistent header/shell, animate only inner page content and reset its scroll on pathname navigation. Localize admin loading and use visible skeleton geometry. See `HANDOVER_TO_ANTI_GRAVITY.md`.
 - **Done when:** Open/close and rapid reversal work after scrolling on phones; hidden links are not tabbable; focus returns; route changes preserve shell/session; both languages/themes and reduced motion pass visible checks and verify.
 - **Verify:** `npm run verify`; responsive/motion regressions plus actual admin-route browser acceptance.
+
+#### T-5.13f: Language-dependent admin navigation placement
+`status: todo` `owner: agent` `needs: T-5.01, T-5.02` `size: S`
+- **Do:** Latest owner correction supersedes physical right for both languages: English sidebar/header toggle on left, Arabic on right, drawer slides from matching edge. Preserve collapse, independent content scrolling, modality/focus and session. Update old right-only assertions instead of removing them.
+- **Done when:** Geometry and slide direction match language in expanded/collapsed/open-drawer states; live language switch and route navigation preserve focus/state; both themes and phone/desktop checks pass.
+- **Verify:** `npm run verify`; admin responsive/motion tests and actual-route language-switch acceptance.
 
 #### T-5.14: Verify owner InstaPay recipient and QR
 `status: todo` `owner: agent` `needs: T-4.06, T-5.09` `size: S`
@@ -1510,6 +1534,8 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-17 | T-3.10a, T-5.13e | Codex | Owner requested explicit Anti-Gravity handoff for missed features. Audited current routed source: arch/50% fallback, Arabic returns/tagline leaks, entrance-only About cards and instantaneous admin sidebar remain. Registered independent visual slices; replaced obsolete handoff with complete requirement ledger, file targets, acceptance checks and data blockers. No feature implementation in this handoff. Repairs pushed to owner-confirmed SaaS-lolys-shop; draft PRs 29–33 opened, no merges or remote CI success claimed. | [#33](https://github.com/HassanG04/SaaS-lolys-shop/pull/33) |
 | 2026-10-17 | T-3.10a | Anti-Gravity | Replaced active HomePage hero arch with rounded landscape photo frame (`aspect-[4/3]`, `rounded-card`) and caption; replaced invented 50% discount fallback with truthful promotion/cozyTitle logic; fixed bilingual copy leaks in About tagline and Returns text; filtered delivery payment badges by public settings; implemented hover and focus-within enlargement on About/Delivery/Returns cards with smooth leave/blur reversal; wrapped section in SectionReveal. Verified with 9 HomePage unit tests, 32 Playwright motion & responsive tests, and all 12 verify gates passing (955 tests, bundle 199,993 bytes). | pending |
 | 2026-10-17 | T-5.13e | Anti-Gravity | Implemented admin desktop sidebar slide & collapse (`.is-collapsed` / `.is-expanded` with inert attribute and inner container transform), mobile modal drawer animated slide in and out from physical right with native `<dialog>` showModal/close lifecycle and backdrop opacity fade, inner admin route transitions keyed by `location.pathname` with inner scroll reset on `#admin-main`, and localized token-compliant AdminFallback skeleton card loaders. Verified with 10 admin shell unit tests, 6 admin transition unit tests, 36 Playwright motion and responsive tests across all themes and viewports, and all 12 verify gates passing (961 tests: 758 app + 203 tooling; bundle 199,990 / 200,000 gzip bytes). | pending |
+
+| 2026-10-17 | T-3.10b, T-3.11, T-3.12, T-5.13f | Codex | Owner follow-up handed to Anti-Gravity: visible admin entry plus still-missing mouse editor, opposite offer/heart edges, English-left/Arabic-right dashboard, complete policy/route translations, explicit Full/Reduced/Follow-device motion policy (owner now wants motion despite OS setting). Preserved AG commits 0395a0e/8714d4c/65e3558; their reported tests were not rerun here. Docker server still unavailable; product remains pre-launch. Documentation-only change with precise source evidence and acceptance checks. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

@@ -1,5 +1,26 @@
 # Handover to Anti-Gravity — complete owner request
 
+## Latest owner corrections — read first (2026-10-17)
+
+The current checkpoint is `65e3558` on `agent/T-5.13e-admin-slide-transitions`,
+which includes Anti-Gravity's `0395a0e` homepage and `8714d4c` admin-motion work.
+Preserve those changes. The older baseline and “missing” visual rows below are
+historical; those two slices now have implementation and AG-reported tests.
+
+Read [OWNER-FOLLOWUP-2026-10-17.md](docs/handoff/OWNER-FOLLOWUP-2026-10-17.md)
+before following any older instruction below. It specifies visible Admin access
+and the still-missing mouse editor, opposite-edge offer/heart positioning,
+English-left/Arabic-right admin layout, full localization of policy and unvisited
+routes, and site animations that run even when device animations are disabled.
+The explicit new motion policy supersedes the older OS-always-wins default,
+while retaining a visitor-controlled Reduced mode.
+
+Next task is T-3.10b, followed by T-5.13f, T-3.12, T-3.11 and the remaining
+database-backed features. The new document includes exact files, evidence,
+acceptance tests and production blockers. No cloud or launch success is implied.
+
+## Earlier detailed handoff (read with the corrections above)
+
 Prepared by Codex, 2026-10-17. Supersedes the older handover and 2026-10-16 brief.
 This handoff session changes documentation only.
 

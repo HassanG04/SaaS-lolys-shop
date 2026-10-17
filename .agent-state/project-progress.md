@@ -1,5 +1,19 @@
 # Shared project progress
 
+## Codex — Latest owner correction handoff — 2026-10-17
+
+Current task: documentation-only owner handoff on `agent/T-5.13e-admin-slide-transitions`, starting at `65e3558`. Preserve Anti-Gravity's homepage `0395a0e` and admin-motion `8714d4c` implementation.
+
+Completed: created `docs/handoff/OWNER-FOLLOWUP-2026-10-17.md`, updated both entry handoffs/spec/roadmap. Recorded visible Admin entry vs separate unfinished mouse editor, actual unsupported card-position class selectors, left English/right Arabic dashboard, complete policy/route localization and the owner's explicit new site motion policy. Production blockers and evidence boundaries included.
+
+Files changed: latest owner follow-up, `HANDOVER_TO_ANTI_GRAVITY.md`, `CODEX-TO-ANTI-GRAVITY.md`, owner-experience spec, roadmap and this file. No application code changed.
+
+Tests executed: read AG report of 758 app + 203 tooling tests and 36 isolated browser checks; NOT independently rerun here. Inspected current source and compiled CSS: `inset-inline-start-2` and `inset-inline-end-2` selectors absent. Docker server probe still fails with absent `dockerDesktopLinuxEngine` pipe. Handoff validation: formatting/roadmap/diff/secret checks only.
+
+Problems found: Returns/Shipping/Terms/Contact remain hard-coded Arabic; Admin entry only in menu, persistent editor absent; OS motion suppression exists in multiple CSS/JS paths; current admin location contradicts latest owner preference. Owner launch tasks/evidence, data features and full approval/payment/shipping verification remain outstanding. Do not report a readiness percentage from task counts.
+
+Next action: Anti-Gravity reads latest follow-up first, creates `agent/T-3.10b-admin-entry-and-card-badges` from this branch, then follows the documented correction order. User has now explicitly authorized motion independent of device preference; preserve an explicit visitor Reduced mode. No merge/deploy/dashboard/reset action.
+
 ## Anti-Gravity — Admin Slide Transitions & Experience Completion (T-5.13e) — 2026-10-17
 
 Current task: T-5.13e completed on `agent/T-5.13e-admin-slide-transitions`. Next: review remaining tasks / handoff to Codex.

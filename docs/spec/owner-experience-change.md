@@ -44,6 +44,23 @@ English must both work. No production change is authorized by this document.
 
 ## Motion and reset
 
+### Latest owner correction (2026-10-17; takes precedence)
+
+The owner now requires English admin navigation on the left, Arabic on the right,
+with matching header toggle and mobile slide direction. This overrides earlier
+physical-right-in-both-languages wording below. Add visible storefront Admin
+access for the resolved admin role; the separate mouse-icon homepage editor
+still needs real persistent functionality. Sale ribbon and wishlist occupy
+opposite logical edges. Fully translate policy pages and all other routes,
+including body copy, validation, accessible names and errors.
+
+The owner explicitly requests motion even when device animation settings are
+off. Implement site modes Full (new default), Reduced and Follow device, with
+one persisted policy for CSS/JS. A visitor's explicit Reduced mode must suppress
+decorative motion; Follow device honors the OS. This replaces the earlier
+OS-always-wins default without removing the visitor's ability to reduce motion.
+See `docs/handoff/OWNER-FOLLOWUP-2026-10-17.md` for scope and acceptance tests.
+
 ### Explicit missed-feature handoff (2026-10-17)
 
 The owner repeated the complete request and identified missing About Us effects
