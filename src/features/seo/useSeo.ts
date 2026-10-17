@@ -18,10 +18,8 @@ function setMeta(attr: string, name: string, content: string) {
 }
 
 export function formatDocumentTitle(title?: string): string {
-  if (!title) return BRAND_NAME
-  const trimmed = title.trim()
-  if (!trimmed || trimmed === BRAND_NAME) return BRAND_NAME
-  return `${trimmed} | ${BRAND_NAME}`
+  const t = title?.trim()
+  return !t || t === BRAND_NAME ? BRAND_NAME : `${t} | ${BRAND_NAME}`
 }
 
 export function useSeo({

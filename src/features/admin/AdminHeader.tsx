@@ -21,8 +21,8 @@ export function AdminHeader({
   const { signOut, user } = useAuth()
 
   return (
-    <header className="admin-header relative z-30 flex h-16 w-full shrink-0 flex-row-reverse rtl:flex-row items-center justify-between gap-2 border-b border-border bg-surface px-3 sm:px-6">
-      <div className="flex min-w-0 flex-row-reverse rtl:flex-row items-center gap-2 sm:gap-3">
+    <header className="admin-header relative z-30 flex h-16 w-full shrink-0 items-center justify-between gap-2 border-b border-border bg-surface px-3 sm:px-6">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         {/* Mobile menu toggle */}
         <button
           type="button"
@@ -57,14 +57,14 @@ export function AdminHeader({
         >
           <svg
             viewBox="0 0 24 24"
-            className="size-5"
+            className="size-5 rtl:scale-x-[-1]"
             fill="none"
             stroke="currentColor"
             strokeWidth="1.75"
             aria-hidden="true"
           >
             <rect x="3" y="4" width="18" height="16" rx="2" />
-            <path d="M15 4v16m-7-8h4" />
+            <path d="M9 4v16m7-8h-4" />
           </svg>
         </button>
 

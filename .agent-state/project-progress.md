@@ -1,10 +1,59 @@
 # Shared project progress
 
+## Anti-Gravity — Language-Dependent Admin Navigation Placement (T-5.13f) — 2026-10-17
+
+Current task: T-5.13f completed on `agent/T-5.13f-admin-directional-layout`. Next implementation: T-3.12 (Complete routed interface language coverage) or T-3.11 (Explicit site motion preference).
+
+Completed:
+
+- English/LTR admin navigation mirrored to LEFT:
+  - Desktop `<aside id="admin-desktop-sidebar">` and its collapse rail are anchored on the LEFT edge.
+  - Desktop sidebar collapse translates inner content off-canvas to the left (`translateX(-100%)`).
+  - Adjacent header controls (`t.admin.dashboard` and collapse toggle) are positioned on the LEFT side of the header.
+  - Mobile modal drawer enters/exits from the LEFT edge (`translateX(-100%)` when closed, `translateX(0)` when open).
+- Arabic/RTL admin navigation mirrored to RIGHT:
+  - Desktop sidebar and its rail are anchored on the RIGHT edge.
+  - Desktop sidebar collapse translates inner content off-canvas to the right (`translateX(100%)`).
+  - Adjacent header controls (`t.admin.dashboard` and collapse toggle) are positioned on the RIGHT side of the header.
+  - Mobile modal drawer enters/exits from the RIGHT edge (`translateX(100%)` when closed, `translateX(0)` when open).
+- Clean logical properties in `AdminShell.tsx` and `AdminSidebar.tsx`:
+  - Removed artificial `lg:flex-row-reverse rtl:lg:flex-row` and `flex-row-reverse rtl:flex-row` overrides.
+  - Standardized on logical `border-e` and `m-0 me-auto` for drawer positioning and borders.
+  - Mirrored desktop sidebar collapse toggle icon in RTL with `rtl:scale-x-[-1]` and updated vector paths.
+- Preserved desktop sidebar collapse, mobile native `<dialog>` modality, focus return, independent scrolling, and session persistence.
+- Verified all 40 Playwright motion & responsive tests across light/dark themes, ltr/rtl directions, and 320/360/1280 viewports.
+- Bundle budget maintained under strict 200,000 gzip bytes limit: **199,991 / 200,000 gzip bytes** (9 bytes of safety headroom).
+
+Files changed: `src/features/admin/AdminShell.tsx`, `src/features/admin/AdminHeader.tsx`, `src/features/admin/AdminSidebar.tsx`, `src/styles/storefront.css`, `src/features/seo/useSeo.ts`, `e2e/ui/motion.spec.ts`, `e2e/ui/responsive.spec.ts`, `roadmap.md`, `.agent-state/project-progress.md`.
+
+Tests executed:
+
+- All 12 `npm run verify` gates passed exit code 0:
+  - `check:migrations`: Existing migrations unchanged.
+  - `check:sql`: SQL guards passed.
+  - `check:tokens`: Documented tokens verified.
+  - `check:supply-chain`: Supply-chain dependencies passed.
+  - `check:i18n`: All translation keys synchronized across ar/en.
+  - `lint`: ESLint passed cleanly.
+  - `format:check`: Prettier passed.
+  - `typecheck`: TypeScript compiler passed (`tsc -b`).
+  - `test:unit`: 761 application tests + 203 tooling tests passed (964 total tests passed, 0 failed).
+  - `build` & `check:ui-build`: Production build succeeded.
+  - `check:secrets`: Tracked files and build passed.
+  - `check:bundle`: 199,991 / 200,000 gzip bytes passed.
+- Playwright motion & responsive suite (`npx playwright test --config playwright.motion.config.ts`): all 40 tests passed (28 motion + 12 responsive).
+- `npm run roadmap:check`: Valid (135 tasks).
+
+Problems found: None.
+
+Next action: Commit changes on `agent/T-5.13f-admin-directional-layout` and write `HANDOVER_TO_CODEX.md`.
+
 ## Anti-Gravity — Visible Admin Entry & Opposite Card Badges (T-3.10b) — 2026-10-17
 
 Current task: T-3.10b completed on `agent/T-3.10b-admin-entry-and-card-badges`. Next implementation: T-5.13f (Language-dependent admin navigation placement).
 
 Completed:
+
 - Storefront header Admin entry: visible localized shortcut in `Navbar.tsx` for resolved `admin` role linking to `/admin` with dashboard icon, accessible label, and no customer exposure or localStorage/email inference.
 - Opposite offer and wishlist heart placement on `ProductCard.tsx`: replaced unsupported class selectors with logical CSS (`start-2` for offer badge, `end-2` for heart button) inside the photo container, with bounded geometry (`max-w-[calc(100%-3.5rem)]`) preventing bounding box collision across LTR and RTL at all screen widths.
 - Fixed `FavoriteButton` bilingual accessible name to use English product name when rendering under English locale (`locale === 'en' && product.name_en ? product.name_en : product.name_ar`).
@@ -15,6 +64,7 @@ Completed:
 Files changed: `src/components/layout/Navbar.tsx`, `src/components/layout/Layout.tsx`, `src/components/layout/responsive-navigation.test.tsx`, `src/features/cart/cartStorage.ts`, `src/features/catalog/components/ProductCard.tsx`, `src/features/catalog/components/catalogUI.test.tsx`, `src/features/favorites/components/FavoriteButton.tsx`, `src/features/seo/useRouteSeo.ts`, `src/features/seo/useSeo.ts`, `src/styles/storefront.css`, `src/components/ErrorBoundary.tsx`, `e2e/ui/motion.spec.ts`, `e2e/ui/responsive.spec.ts`, `roadmap.md`.
 
 Tests executed:
+
 - All 12 `npm run verify` gates passed exit code 0:
   - `check:migrations`: Existing migrations unchanged.
   - `check:sql`: SQL guards passed.

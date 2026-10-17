@@ -46,8 +46,15 @@ for (const lang of ['ar', 'en'])
         })
         const toggleBox = await box(toggle)
         const headingBox = await box(heading)
-        expect(headingBox.x).toBeGreaterThan(width < 1024 ? width / 2 - 50 : (width - 256) / 2)
-        expect(toggleBox.x).toBeGreaterThan(headingBox.x)
+        if (lang === 'ar') {
+          // Arabic: sidebar and controls on physical right
+          expect(headingBox.x).toBeGreaterThan(width < 1024 ? width / 2 - 50 : (width - 256) / 2)
+          expect(toggleBox.x).toBeGreaterThan(headingBox.x)
+        } else {
+          // English: sidebar and controls on physical left
+          expect(headingBox.x).toBeLessThan(width < 1024 ? width / 2 + 50 : 256 + (width - 256) / 2)
+          expect(toggleBox.x).toBeLessThan(headingBox.x)
+        }
         const originalY = (await box(header)).y
         await page.locator('#admin-main').evaluate((el) => {
           el.scrollTop = 900

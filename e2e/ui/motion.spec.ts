@@ -153,7 +153,7 @@ for (const theme of ['light', 'dark']) {
         }
       })
 
-      test('admin desktop sidebar collapses and mobile drawer transitions from physical right', async ({
+      test('admin desktop sidebar collapses and mobile drawer transitions from language edge (T-5.13f)', async ({
         page,
       }) => {
         const desktopSidebar = page.locator('#admin-desktop-sidebar')
@@ -166,7 +166,22 @@ for (const theme of ['light', 'dark']) {
         await expect(desktopSidebar).toHaveCSS('width', '0px')
         await expect(desktopSidebar).toHaveCSS('visibility', 'hidden')
 
+        const inner = page.locator('.admin-desktop-sidebar-inner')
+        const innerTransform = await inner.evaluate((el) => getComputedStyle(el).transform)
+        if (direction === 'ltr') {
+          expect(innerTransform).toContain('-256')
+        } else {
+          expect(innerTransform).toContain('256')
+        }
+
         const drawer = page.locator('#admin-mobile-sidebar')
+        const initialTransform = await drawer.evaluate((el) => getComputedStyle(el).transform)
+        if (direction === 'ltr') {
+          expect(initialTransform).toContain('-288')
+        } else {
+          expect(initialTransform).toContain('288')
+        }
+
         await drawer.evaluate((el) => {
           el.classList.remove('is-closed')
           el.classList.add('is-open')

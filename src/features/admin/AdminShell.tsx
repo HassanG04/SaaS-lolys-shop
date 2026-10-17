@@ -18,7 +18,7 @@ export default function AdminShell() {
   }, [location.pathname])
 
   return (
-    <div className="admin-workspace h-dvh min-h-0 overflow-hidden flex lg:flex-row-reverse rtl:lg:flex-row bg-bg text-text font-sans antialiased">
+    <div className="admin-workspace h-dvh min-h-0 overflow-hidden flex bg-bg text-text font-sans antialiased">
       {/* Sidebar Rail */}
       <AdminSidebar
         isOpen={isSidebarOpen}

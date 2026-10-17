@@ -427,7 +427,7 @@ export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: Admi
         id="admin-desktop-sidebar"
         aria-label={t.admin.dashboard}
         inert={desktopCollapsed ? true : undefined}
-        className={`hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col lg:border-s rtl:lg:border-e rtl:lg:border-s-0 lg:border-border lg:bg-surface lg:sticky lg:top-0 lg:h-screen lg:overflow-hidden admin-desktop-sidebar ${
+        className={`hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col lg:border-e lg:border-border lg:bg-surface lg:sticky lg:top-0 lg:h-screen lg:overflow-hidden admin-desktop-sidebar ${
           desktopCollapsed ? 'is-collapsed' : 'is-expanded'
         }`}
       >
@@ -446,7 +446,7 @@ export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: Admi
           if (isOpen && !event.currentTarget.open) onClose()
         }}
         data-state={isClosing ? 'closing' : isOpen ? 'open' : 'closed'}
-        className={`m-0 ms-auto rtl:ms-0 rtl:me-auto h-dvh max-h-none w-72 max-w-full border-s rtl:border-s-0 rtl:border-e border-border bg-surface p-4 text-text shadow-popover backdrop:bg-text/40 admin-mobile-drawer ${
+        className={`m-0 me-auto h-dvh max-h-none w-72 max-w-full border-e border-border bg-surface p-4 text-text shadow-popover backdrop:bg-text/40 admin-mobile-drawer ${
           isClosing ? 'is-closing' : isOpen ? 'is-open' : 'is-closed'
         }`}
       >

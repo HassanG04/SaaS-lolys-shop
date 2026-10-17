@@ -930,7 +930,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`; responsive/motion regressions plus actual admin-route browser acceptance.
 
 #### T-5.13f: Language-dependent admin navigation placement
-`status: todo` `owner: agent` `needs: T-5.01, T-5.02` `size: S`
+`status: done` `owner: agent` `needs: T-5.01, T-5.02` `size: S`
 - **Do:** Latest owner correction supersedes physical right for both languages: English sidebar/header toggle on left, Arabic on right, drawer slides from matching edge. Preserve collapse, independent content scrolling, modality/focus and session. Update old right-only assertions instead of removing them.
 - **Done when:** Geometry and slide direction match language in expanded/collapsed/open-drawer states; live language switch and route navigation preserve focus/state; both themes and phone/desktop checks pass.
 - **Verify:** `npm run verify`; admin responsive/motion tests and actual-route language-switch acceptance.
@@ -1539,6 +1539,7 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-17 | T-4.08, T-4.07, T-5.12 | Owner + Codex | Owner confirms the complete order/approval/payment/shipping flow, permissions, stock handling and database behavior tested. Record as owner-confirmed acceptance, not a fabricated CI/local rerun; preserve baseline and regression-test affected changes. Postal code explicitly required with final database NOT NULL and non-empty validation; safe legacy-data/signup handling documented. No task status automatically changed and no cloud action. | [#34](https://github.com/HassanG04/SaaS-lolys-shop/pull/34) |
 | 2026-10-17 | T-3.10b | Anti-Gravity | Added visible localized storefront Admin entry in Navbar for resolved admin role (links to `/admin` with dashboard icon, accessible label, and no customer exposure/local inference); positioned offer badge and wishlist heart button on opposite edges using logical CSS (`start-2` / `end-2`) with bounded geometry (`max-w-[calc(100%-3.5rem)]`) preventing bounding box collision at 320/360/1280 in LTR and RTL; fixed FavoriteButton accessible name bilingual localization; adapted 320/360px header controls. Verified with 964 unit/tooling tests (all 12 verify gates passing, bundle 199,999 / 200,000 gzip bytes) and 40 isolated Playwright motion & responsive tests. | pending |
+| 2026-10-17 | T-5.13f | Anti-Gravity | Implemented language-dependent admin navigation placement per latest owner instruction: English/LTR sidebar and adjacent header controls on the LEFT; Arabic/RTL on the RIGHT; mobile modal drawer entering/exiting from matching language edge (`translateX(-100%)` in LTR, `translateX(100%)` in RTL); logical `border-e` and alignment (`m-0 me-auto`); mirrored desktop sidebar collapse toggle icon in RTL. Verified across all 12 verify gates (964 tests: 761 app + 203 tooling, bundle 199,991 / 200,000 gzip bytes) and 40 isolated Playwright motion & responsive tests across light/dark, ltr/rtl, and 320/360/1280 viewports. | pending |
 
 ### Open questions (agents add rows; the owner answers)
 
