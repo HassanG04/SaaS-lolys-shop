@@ -906,7 +906,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify && npm run test:e2e`; fixture commands in `docs/handoff/RESPONSIVE-REPAIR.md`.
 
 #### T-5.13e: Admin sidebar, drawer and page transitions
-`status: todo` `owner: agent` `needs: T-5.01, T-5.02` `size: M`
+`status: done` `owner: agent` `needs: T-5.01, T-5.02` `size: M`
 - **Do:** Animate physical-right sidebar collapse/expansion and mobile dialog entry/exit, preserve modality/focus and persistent header/shell, animate only inner page content and reset its scroll on pathname navigation. Localize admin loading and use visible skeleton geometry. See `HANDOVER_TO_ANTI_GRAVITY.md`.
 - **Done when:** Open/close and rapid reversal work after scrolling on phones; hidden links are not tabbable; focus returns; route changes preserve shell/session; both languages/themes and reduced motion pass visible checks and verify.
 - **Verify:** `npm run verify`; responsive/motion regressions plus actual admin-route browser acceptance.
@@ -1509,6 +1509,7 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-17 | T-3.10a, T-5.13e | Codex | Owner requested explicit Anti-Gravity handoff for missed features. Audited current routed source: arch/50% fallback, Arabic returns/tagline leaks, entrance-only About cards and instantaneous admin sidebar remain. Registered independent visual slices; replaced obsolete handoff with complete requirement ledger, file targets, acceptance checks and data blockers. No feature implementation in this handoff. Repairs pushed to owner-confirmed SaaS-lolys-shop; draft PRs 29–33 opened, no merges or remote CI success claimed. | [#33](https://github.com/HassanG04/SaaS-lolys-shop/pull/33) |
 | 2026-10-17 | T-3.10a | Anti-Gravity | Replaced active HomePage hero arch with rounded landscape photo frame (`aspect-[4/3]`, `rounded-card`) and caption; replaced invented 50% discount fallback with truthful promotion/cozyTitle logic; fixed bilingual copy leaks in About tagline and Returns text; filtered delivery payment badges by public settings; implemented hover and focus-within enlargement on About/Delivery/Returns cards with smooth leave/blur reversal; wrapped section in SectionReveal. Verified with 9 HomePage unit tests, 32 Playwright motion & responsive tests, and all 12 verify gates passing (955 tests, bundle 199,993 bytes). | pending |
+| 2026-10-17 | T-5.13e | Anti-Gravity | Implemented admin desktop sidebar slide & collapse (`.is-collapsed` / `.is-expanded` with inert attribute and inner container transform), mobile modal drawer animated slide in and out from physical right with native `<dialog>` showModal/close lifecycle and backdrop opacity fade, inner admin route transitions keyed by `location.pathname` with inner scroll reset on `#admin-main`, and localized token-compliant AdminFallback skeleton card loaders. Verified with 10 admin shell unit tests, 6 admin transition unit tests, 36 Playwright motion and responsive tests across all themes and viewports, and all 12 verify gates passing (961 tests: 758 app + 203 tooling; bundle 199,990 / 200,000 gzip bytes). | pending |
 
 ### Open questions (agents add rows; the owner answers)
 

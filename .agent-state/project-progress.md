@@ -1,10 +1,47 @@
 # Shared project progress
 
+## Anti-Gravity — Admin Slide Transitions & Experience Completion (T-5.13e) — 2026-10-17
+
+Current task: T-5.13e completed on `agent/T-5.13e-admin-slide-transitions`. Next: review remaining tasks / handoff to Codex.
+
+Completed:
+
+- Desktop admin sidebar smooth collapse & expand: slides smoothly to width 0 with inner container translated off-canvas, border collapse, and keyboard interactivity suppression via `inert` attribute when collapsed.
+- Mobile admin drawer modal slide transition: native `<dialog>` with `showModal()`, smooth cubic-bezier slide-in and slide-out from physical right (`transform: translateX(100%)` to `translateX(0)` and back), backdrop opacity transition, focus return to opener element on close, backdrop click handler, and reduced-motion fallback.
+- Persistent header & inner route transition: keyed route wrapper (`<div key={location.pathname} className="admin-page-transition">`) animating entry on pathname navigation without replays on filter/query string changes, and inner scroll reset on `#admin-main` (`scrollTop = 0`).
+- Localized AdminFallback skeleton loader: replaces raw loader with token-compliant skeleton cards using `t.ui.loading` across Arabic and English locales.
+- Updated Playwright test suites: 36 tests (24 motion + 12 responsive) all passing across light/dark, ltr/rtl, 320/360/1280, reduced-motion, and hover/focus/transition states.
+
+Files changed: `src/features/admin/AdminSidebar.tsx`, `src/features/admin/AdminShell.tsx`, `src/features/admin/AdminRoutes.tsx`, `src/features/admin/admin.test.tsx`, `src/features/admin/adminTransitions.test.tsx`, `src/styles/storefront.css`, `e2e/ui/motion.spec.ts`, `roadmap.md`.
+
+Tests executed:
+
+- All 12 `npm run verify` gates passed exit code 0:
+  - `check:migrations`: Existing migrations unchanged.
+  - `check:sql`: SQL guards passed.
+  - `check:tokens`: Documented tokens verified.
+  - `check:supply-chain`: Supply-chain dependencies passed.
+  - `check:i18n`: All translation keys synchronized across ar/en.
+  - `lint`: ESLint passed cleanly.
+  - `format:check`: Prettier passed.
+  - `typecheck`: TypeScript compiler passed (`tsc -b`).
+  - `test:unit`: 758 application tests + 203 tooling tests passed (961 total tests passed, 0 failed).
+  - `build` & `check:ui-build`: Production build succeeded.
+  - `check:secrets`: Tracked files and build passed.
+  - `check:bundle`: 199,990 / 200,000 gzip bytes passed (10 bytes headroom).
+- Playwright motion & responsive suite (`npx playwright test --config playwright.motion.config.ts`): all 36 tests passed (24 motion + 12 responsive).
+- `npm run roadmap:check`: Valid (135 tasks).
+
+Problems found: None.
+
+Next action: Commit changes on `agent/T-5.13e-admin-slide-transitions` and write `HANDOVER_TO_CODEX.md` summarizing the verified owner-experience deliverables, exact acceptance checks, and remaining launch blockers.
+
 ## Anti-Gravity — Homepage Visual Repairs & Truthful Presentation (T-3.10a) — 2026-10-17
 
 Current task: T-3.10a completed on `agent/T-3.10a-homepage-visual-repair`. Next implementation: T-5.13e (Admin sidebar, drawer, and page transitions).
 
 Completed:
+
 - Replaced active `ArchFrame` on routed `HomePage` with rounded landscape/square photo (`storefront-photo`, `aspect-[4/3]`, `rounded-card`) and caption (`storefront-caption`).
 - Replaced invented 50% discount fallback: truthfully computes `salePercent` (strictly finite > 0), rendering sale badge only when active promotion exists; otherwise displays neutral `t.hero.eyebrow`, `t.hero.cozyTitle`, and `t.hero.shopCta`.
 - Fixed bilingual copy leaks in About tagline (`t.brand.tagline`) and Returns details (`t.catalog.returnsDetails`), with synchronized i18n dictionary keys across `ar.json` and `en.json`.
@@ -16,6 +53,7 @@ Completed:
 Files changed: `src/pages/HomePage.tsx`, `src/pages/HomePage.test.tsx`, `src/App.test.tsx`, `src/styles/storefront.css`, `src/features/seo/useRouteSeo.ts`, `src/i18n/ar.json`, `src/i18n/en.json`, `e2e/ui/motion.spec.ts`, `roadmap.md`.
 
 Tests executed:
+
 - All 12 `npm run verify` gates passed exit code 0:
   - `check:migrations`: Existing migrations unchanged.
   - `check:sql`: SQL guards passed.

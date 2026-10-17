@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import type { AdminNavItem } from './types'
@@ -205,16 +205,90 @@ interface AdminSidebarProps {
 export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: AdminSidebarProps) {
   const { t } = useLanguage()
   const drawer = useRef<HTMLDialogElement>(null)
+  const openerRef = useRef<HTMLElement | null>(null)
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen)
+  const [isClosing, setIsClosing] = useState(false)
+
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen)
+    if (!isOpen && prevIsOpen) {
+      setIsClosing(true)
+    } else if (isOpen) {
+      setIsClosing(false)
+    }
+  }
+
+  // Synchronize modal state with isOpen prop and slide transitions
   useEffect(() => {
     const dialog = drawer.current
-    if (!isOpen || !dialog) return
-    const opener = document.activeElement
-    dialog.showModal()
-    return () => {
-      if (dialog.open) dialog.close()
-      if (opener instanceof HTMLElement && opener.isConnected) opener.focus()
+    if (!dialog) return
+
+    if (isOpen && !dialog.open) {
+      openerRef.current = document.activeElement as HTMLElement | null
+      dialog.showModal()
     }
   }, [isOpen])
+
+  // Handle backdrop clicks on native dialog without jsx-a11y warnings
+  useEffect(() => {
+    const dialog = drawer.current
+    if (!dialog) return
+
+    const onDialogClick = (event: MouseEvent) => {
+      if (event.target === dialog) {
+        onClose()
+      }
+    }
+
+    dialog.addEventListener('click', onDialogClick)
+    return () => dialog.removeEventListener('click', onDialogClick)
+  }, [onClose])
+
+  // Handle transition completion when closing
+  useEffect(() => {
+    if (!isClosing) return
+    const dialog = drawer.current
+    if (!dialog) return
+
+    const prefersReduced =
+      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const finishClosing = () => {
+      if (dialog.open) {
+        dialog.close()
+      }
+      setIsClosing(false)
+      if (openerRef.current && openerRef.current.isConnected) {
+        openerRef.current.focus()
+      }
+    }
+
+    if (prefersReduced) {
+      const timer = setTimeout(finishClosing, 0)
+      return () => clearTimeout(timer)
+    }
+
+    // Safety timeout in case transitionend does not fire
+    const timer = setTimeout(finishClosing, 350)
+
+    const onTransitionEnd = (e: TransitionEvent) => {
+      if (e.target === dialog) {
+        clearTimeout(timer)
+        finishClosing()
+      }
+    }
+
+    dialog.addEventListener('transitionend', onTransitionEnd)
+    return () => {
+      clearTimeout(timer)
+      dialog.removeEventListener('transitionend', onTransitionEnd)
+    }
+  }, [isClosing])
+
+  const handleCancel = (event: React.SyntheticEvent) => {
+    event.preventDefault()
+    onClose()
+  }
 
   const navItems: AdminNavItem[] = [
     { to: '/admin', label: t.admin.dashboard, icon: 'dashboard', end: true },
@@ -352,9 +426,14 @@ export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: Admi
       <aside
         id="admin-desktop-sidebar"
         aria-label={t.admin.dashboard}
-        className={`${desktopCollapsed ? 'hidden' : 'hidden lg:flex'} lg:w-64 lg:shrink-0 lg:flex-col lg:border-s rtl:lg:border-e rtl:lg:border-s-0 lg:border-border lg:bg-surface lg:p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto`}
+        inert={desktopCollapsed ? true : undefined}
+        className={`hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col lg:border-s rtl:lg:border-e rtl:lg:border-s-0 lg:border-border lg:bg-surface lg:sticky lg:top-0 lg:h-screen lg:overflow-hidden admin-desktop-sidebar ${
+          desktopCollapsed ? 'is-collapsed' : 'is-expanded'
+        }`}
       >
-        {renderSidebarContent(false)}
+        <div className="admin-desktop-sidebar-inner w-64 h-full flex flex-col justify-between p-4 overflow-y-auto">
+          {renderSidebarContent(false)}
+        </div>
       </aside>
 
       {/* Native modality contains keyboard focus and makes background controls inert. */}
@@ -362,16 +441,16 @@ export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: Admi
         ref={drawer}
         id="admin-mobile-sidebar"
         aria-label={t.admin.sidebarToggle}
-        onCancel={(event) => {
-          event.preventDefault()
-          onClose()
-        }}
+        onCancel={handleCancel}
         onClose={(event) => {
           if (isOpen && !event.currentTarget.open) onClose()
         }}
-        className="m-0 ms-auto rtl:ms-0 rtl:me-auto h-dvh max-h-none w-72 max-w-full border-s border-border bg-surface p-4 text-text shadow-popover backdrop:bg-text/40"
+        data-state={isClosing ? 'closing' : isOpen ? 'open' : 'closed'}
+        className={`m-0 ms-auto rtl:ms-0 rtl:me-auto h-dvh max-h-none w-72 max-w-full border-s rtl:border-s-0 rtl:border-e border-border bg-surface p-4 text-text shadow-popover backdrop:bg-text/40 admin-mobile-drawer ${
+          isClosing ? 'is-closing' : isOpen ? 'is-open' : 'is-closed'
+        }`}
       >
-        {isOpen && renderSidebarContent(true)}
+        {(isOpen || isClosing) && renderSidebarContent(true)}
       </dialog>
     </>
   )

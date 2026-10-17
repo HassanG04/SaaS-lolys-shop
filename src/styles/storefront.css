@@ -539,4 +539,108 @@
       transform: rotate(390deg);
     }
   }
+
+  /* Admin desktop sidebar smooth slide & collapse */
+  #admin-desktop-sidebar,
+  .admin-desktop-sidebar {
+    width: 16rem;
+    flex-shrink: 0;
+    transition:
+      width 300ms cubic-bezier(0.25, 1, 0.5, 1),
+      border-color 300ms ease;
+    will-change: width;
+  }
+  #admin-desktop-sidebar.is-collapsed,
+  .admin-desktop-sidebar.is-collapsed {
+    width: 0 !important;
+    border-inline-width: 0 !important;
+    pointer-events: none;
+    visibility: hidden;
+    transition:
+      width 300ms cubic-bezier(0.25, 1, 0.5, 1),
+      border-color 300ms ease,
+      visibility 0s 300ms;
+  }
+  #admin-desktop-sidebar.is-expanded,
+  .admin-desktop-sidebar.is-expanded {
+    visibility: visible;
+    transition:
+      width 300ms cubic-bezier(0.25, 1, 0.5, 1),
+      border-color 300ms ease;
+  }
+  .admin-desktop-sidebar-inner {
+    width: 16rem;
+    transition:
+      transform 300ms cubic-bezier(0.25, 1, 0.5, 1),
+      opacity 200ms ease;
+  }
+  .admin-desktop-sidebar.is-collapsed .admin-desktop-sidebar-inner {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  :root[dir='rtl'] .admin-desktop-sidebar.is-collapsed .admin-desktop-sidebar-inner {
+    transform: translateX(-100%);
+  }
+
+  /* Admin mobile modal drawer slide in and out from physical right */
+  .admin-mobile-drawer {
+    transform: translateX(100%);
+    transition: transform 300ms cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+  .admin-mobile-drawer.is-open {
+    transform: translateX(0);
+  }
+  .admin-mobile-drawer.is-closing {
+    transform: translateX(100%);
+  }
+  .admin-mobile-drawer::backdrop {
+    background-color: var(--color-text-val);
+    opacity: 0;
+    transition: opacity 300ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .admin-mobile-drawer.is-open::backdrop {
+    opacity: 0.45;
+  }
+  .admin-mobile-drawer.is-closing::backdrop {
+    opacity: 0;
+  }
+
+  /* Admin inner page route transition on pathname navigation */
+  .admin-page-transition {
+    animation: admin-page-arrive 240ms ease-out both;
+  }
+
+  @keyframes admin-page-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .admin-desktop-sidebar,
+    .admin-desktop-sidebar-inner {
+      transition: none !important;
+      transform: none !important;
+    }
+    .admin-mobile-drawer {
+      transition: opacity 150ms ease !important;
+      transform: none !important;
+    }
+    .admin-mobile-drawer.is-open {
+      opacity: 1;
+    }
+    .admin-mobile-drawer.is-closing {
+      opacity: 0;
+    }
+    .admin-page-transition {
+      animation: none !important;
+      transform: none !important;
+    }
+  }
 }
