@@ -1078,7 +1078,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`, `npm run test:e2e -- e2e/admin.spec.ts e2e/storefront-order.spec.ts e2e/rtl-qa.spec.ts e2e/security/security.spec.ts`.
 
 #### T-7.03b: Restore mobile loading performance
-`status: todo` `owner: agent` `needs: T-7.03` `size: M`
+`status: blocked` `owner: agent` `needs: T-7.03` `size: M`
 - **Do:** Repair the mobile loading waterfall and layout shifts exposed after restoring the original performance checks during T-7.08b. Keep navigation animations, brand typography, the 200 kB initial JS budget and existing LCP/CLS thresholds.
 - **Done when:** Home and category pass LCP <= 2500 ms and CLS <= 0.1 under the existing mobile throttle; accessibility and verify pass.
 - **Verify:** `npm run test:e2e -- e2e/performance.spec.ts`; `npm run verify`.
@@ -1660,3 +1660,4 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-18 | T-7.08b, T-7.08c | Codex | Restored real Turnstile loading and original performance limits, corrected stale postal/QR/form fixtures, and authorized exact motion startup hash. Full base verify and coverage passed (889 app + 203 tooling); accessibility 10/10, admin 9/9, RTL 9/9, storefront 8/8 and security 9/9 passed in isolated local runs. Follow-up verify and remote CI pending; mobile performance remains open T-7.03b. | #41; follow-up pending |
 | 2026-10-18 | T-7.08c | Codex | Follow-up verify passed all 12 gates: 889 app + 203 tooling tests, no skips; 199,717/200,000 gzip bytes. Security 9/9 passes with real HTTP CSP and authenticated admin pages. Combined browser/remote CI pending; task remains doing. | draft follow-up |
+| 2026-10-18 | T-7.03b | Codex | Paused LCP tuning after three distinct attempts under section 1.5. Native preloading: 2592/2824 ms and 201107 bytes; automatic chunks: 2628/2940 ms and 203621 bytes; combined entry/immediate first paint: 2508/2500 ms, home CLS 0.1029, invalid entry attribution and about 203 kB. Reverted the failed bundle/animation experiments; retain only viewport-height reservation and stronger measurement assertions for verification. Next investigation: reduce initial dependency payload and profile font/data changes before choosing another implementation. No thresholds relaxed. | pending |
