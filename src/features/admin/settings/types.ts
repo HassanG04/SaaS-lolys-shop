@@ -12,6 +12,7 @@ export interface ShopSettingsMap {
   payment_methods_enabled: ('cod' | 'instapay_qr')[]
   instapay_qr_path: string
   instapay_handle: string
+  instapay_link: string
   returns_text_ar: string
   payment_window_hours: number
   pending_order_limit: number
@@ -26,6 +27,8 @@ export type UpdateSettingPayload = {
 export const SENSITIVE_SETTING_KEYS: readonly SettingKey[] = [
   'payment_methods_enabled',
   'instapay_qr_path',
+  'instapay_handle',
+  'instapay_link',
   'pending_order_limit',
   'payment_window_hours',
 ] as const

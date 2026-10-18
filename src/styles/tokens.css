@@ -29,6 +29,8 @@
   --color-danger: var(--color-danger-val);
   --color-warning: var(--color-warning-val);
   --color-focus: var(--color-focus-val);
+  --color-qr-light: var(--color-qr-light-val);
+  --color-qr-dark: var(--color-qr-dark-val);
 
   --radius-card: 28px;
   --radius-image: 20px;
@@ -83,6 +85,8 @@
     --color-danger-val: #b3261e;
     --color-warning-val: #8a5a00;
     --color-focus-val: #5a3322;
+    --color-qr-light-val: #fffaf5;
+    --color-qr-dark-val: #3b2118;
     --shadow-card-val: 0 8px 24px rgba(90, 51, 34, 0.1);
     --shadow-pill-val: 0 2px 8px rgba(90, 51, 34, 0.08);
     --shadow-popover-val: 0 12px 32px rgba(90, 51, 34, 0.16);
@@ -115,6 +119,8 @@
     --color-danger-val: #ff8a80;
     --color-warning-val: #f2c46d;
     --color-focus-val: #f0a9ba;
+    --color-qr-light-val: #fffaf5;
+    --color-qr-dark-val: #3b2118;
     --shadow-card-val: 0 0 24px rgba(240, 169, 186, 0.12);
     --shadow-pill-val: 0 0 24px rgba(240, 169, 186, 0.12);
     --shadow-popover-val: 0 0 24px rgba(240, 169, 186, 0.12);

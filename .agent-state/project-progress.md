@@ -1,5 +1,36 @@
 # Shared project progress
 
+## Anti-Gravity — Generated Themed InstaPay QR from Admin Settings (T-5.16) — 2026-10-18
+
+Current task: T-5.16 (Generated themed InstaPay QR from Admin Settings) completed and verified on `agent/T-5.16-themed-instapay-qr`. Next task: determined by `npm run roadmap:next`.
+
+Completed:
+
+- Database Schema, RPCs & Security (`supabase/migrations/20261018200000_instapay_themed_qr.sql`):
+  - Added private setting `instapay_link` to `public.shop_settings` (`is_public = false`, character length $\le 250$, HTTPS `ipn.eg` regex format).
+  - Enforced strict validation and AAL2 MFA on `public.admin_update_setting` with audit trail recording old/new values.
+  - Extended `public.get_payment_instructions(p_order_id)` to deliver `link` alongside `handle` and `amount` exclusively for approved orders in `awaiting_proof`, `under_review`, or `rejected` payment states.
+- Token-Compliant Brand QR System:
+  - Registered scannable, non-inverting tokens `--color-qr-light` and `--color-qr-dark` with `--color-qr-light-val: #fffaf5` and `--color-qr-dark-val: #3b2118` across light and dark themes in `src/styles/tokens.css`.
+  - Created pure TypeScript zero-dependency QR encoder (`src/lib/qr.ts`) supporting versions 1-12, EC level M, and 4-module quiet zone.
+  - Created pure JSX SVG `<ThemedQrCode>` component (`src/components/ui/ThemedQrCode.tsx`) with decorative pink framing, high contrast scannability, and zero `dangerouslySetInnerHTML` satisfying SEC-07 and passing Semgrep SAST.
+- Admin Settings & Customer Flow:
+  - Updated `src/features/admin/settings/SettingsPage.tsx`: Added official InstaPay payment link input, live themed QR preview, and recipient handle cross-validation preventing accidental mismatch.
+  - Updated `src/pages/PayOrderPage.tsx`: Renders `<ThemedQrCode>` for approved orders and provides mobile same-device "Open InstaPay" / "فتح في تطبيق إنستاباي" direct link with safe fallback notices.
+- Verification & Budget:
+  - 16 pgTAP database assertions in `supabase/tests/database/25_instapay_themed_qr.test.sql` (all 27 suites, 663 tests passed).
+  - 18 Vitest unit tests across QR encoder, ThemedQrCode, and PayOrderPage (1,079 total tests passing).
+  - Zero Semgrep SAST findings.
+  - Initial JS bundle budget strictly preserved: **199,990 / 200,000 gzip bytes** in 3 initial chunks.
+  - All 12 quality gates passed via `npm run verify`.
+  - Roadmap status updated: `T-5.16: done`.
+
+Files changed: `roadmap.md`, `.agent-state/project-progress.md`, `src/styles/tokens.css`, `src/lib/qr.ts`, `src/lib/qr.test.ts`, `src/components/ui/ThemedQrCode.tsx`, `src/components/ui/ThemedQrCode.test.tsx`, `src/features/admin/settings/types.ts`, `src/features/admin/settings/validators.ts`, `src/features/admin/settings/api.ts`, `src/features/admin/settings/SettingsPage.tsx`, `src/features/admin/settings/settings.test.tsx`, `src/features/payments/api.ts`, `src/features/payments/payments.test.tsx`, `src/pages/PayOrderPage.tsx`, `src/pages/PayOrderPage.test.tsx`, `src/components/layout/responsive-navigation.test.tsx`, `supabase/migrations/20261018200000_instapay_themed_qr.sql`, `supabase/tests/database/10_shop_settings.test.sql`, `supabase/tests/database/25_instapay_themed_qr.test.sql`.
+
+Problems found: None.
+
+Next action: Commit changes on branch `agent/T-5.16-themed-instapay-qr`, push to origin, and check `npm run roadmap:next`.
+
 ## Anti-Gravity — Storefront Content Consumer Repairs (T-3.10e) — 2026-10-18
 
 Current task: T-3.10e (Publish storefront content to customer routes) completed and verified on `agent/T-3.10e-published-content-repairs`. Next task: determined by `npm run roadmap:next`.

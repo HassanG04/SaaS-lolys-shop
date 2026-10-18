@@ -17,6 +17,7 @@ import { ErrorPanel } from '@/components/ui/ErrorPanel'
 import { ErrorMessage } from '@/lib/errors'
 import { useToast } from '@/components/ui/ToastProvider'
 import { Ltr } from '@/components/ui/Ltr'
+import { ThemedQrCode } from '@/components/ui/ThemedQrCode'
 
 const copy = {
   ar: {
@@ -51,6 +52,9 @@ const copy = {
     orderNumLabel: 'رقم الطلب (يكتب في الملاحظات):',
     copy: 'نسخ',
     copied: 'تم النسخ ✓',
+    openInstaPay: 'فتح في تطبيق إنستاباي',
+    qrUnavailable:
+      'رمز الاستجابة السريعة غير متوفر حالياً. يرجى التحويل مباشرة إلى معرّف إنستاباي الموضح أعلاه.',
     paidTitle: 'تم تأكيد الدفع بنجاح!',
     paidDesc: 'طلبك مؤكد وجارٍ تحضيره للشحن والتوصيل. يمكنك متابعة حالة الشحن في صفحة طلباتك.',
     viewMyOrders: 'عرض طلباتي',
@@ -116,6 +120,9 @@ const copy = {
     orderNumLabel: 'Order Number (include in notes):',
     copy: 'Copy',
     copied: 'Copied ✓',
+    openInstaPay: 'Open InstaPay App',
+    qrUnavailable:
+      'QR code is currently unavailable. Please transfer directly to the InstaPay handle shown above.',
     paidTitle: 'Payment Confirmed Successfully!',
     paidDesc:
       'Your order is confirmed and being prepared for shipping. You can track shipping status on your orders page.',
@@ -444,18 +451,60 @@ export default function PayOrderPage() {
 
             {/* QR Code and Handle Container */}
             <div className="flex flex-col sm:flex-row items-center gap-6 rounded-chip border border-border bg-surface-2 p-6">
-              <div className="relative size-48 shrink-0 overflow-hidden rounded-chip border border-border bg-bg p-2">
-                <img
-                  src={qrImageUrl}
-                  alt={tPage.qrAlt}
-                  className="size-full object-contain"
-                  onError={(e) => {
-                    e.currentTarget.src = '/placeholders/instapay-qr.svg'
-                  }}
-                />
+              <div className="shrink-0 flex flex-col items-center gap-3">
+                {instructions?.link ? (
+                  <ThemedQrCode
+                    value={instructions.link}
+                    handle={instapayHandle}
+                    alt={tPage.qrAlt}
+                    size={180}
+                  />
+                ) : qrImageUrl && qrImageUrl !== '/placeholders/instapay-qr.svg' ? (
+                  <div className="relative size-48 shrink-0 overflow-hidden rounded-chip border border-border bg-bg p-2">
+                    <img
+                      src={qrImageUrl}
+                      alt={tPage.qrAlt}
+                      className="size-full object-contain"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholders/instapay-qr.svg'
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex size-48 flex-col items-center justify-center rounded-card border border-dashed border-border p-4 text-center text-text-muted">
+                    <span className="text-small font-medium">{tPage.qrUnavailable}</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex-1 space-y-4 w-full">
+                {/* Mobile same-device direct open link */}
+                {instructions?.link && (
+                  <div>
+                    <a
+                      href={instructions.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-brand px-4 py-2.5 text-small font-semibold text-brand-contrast shadow-pill transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
+                    >
+                      <svg
+                        className="size-4 shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                        />
+                      </svg>
+                      <span>{tPage.openInstaPay}</span>
+                    </a>
+                  </div>
+                )}
+
                 <div>
                   <span className="text-caption font-medium text-text-muted">{tPage.ipaLabel}</span>
                   <div className="flex items-center gap-2 mt-1">

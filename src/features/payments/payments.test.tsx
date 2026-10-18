@@ -353,12 +353,29 @@ describe('payments api', () => {
         qr_path: 'settings/instapay-qr-123.jpg',
         handle: 'owner@instapay',
         instapay_handle: 'owner@instapay',
+        link: null,
         amount: 250,
         deadline: '2026-10-19T10:00:00Z',
       })
       expect(supabase.rpc).toHaveBeenCalledWith('get_payment_instructions', {
         p_order_id: 42,
       })
+    })
+
+    it('returns official payment link when provided by server', async () => {
+      vi.mocked(supabase.rpc).mockResolvedValue({
+        data: {
+          qr_path: 'settings/instapay-qr-123.jpg',
+          handle: 'alaa.ahm9624@instapay',
+          link: 'https://ipn.eg/S/alaa.ahm9624/token123',
+          amount: 300,
+          deadline: '2026-10-19T10:00:00Z',
+        },
+        error: null,
+      } as unknown as Awaited<ReturnType<typeof supabase.rpc>>)
+
+      const result = await getPaymentInstructionsApi(42)
+      expect(result.link).toBe('https://ipn.eg/S/alaa.ahm9624/token123')
     })
 
     it('defaults handle to alaa.ahm9624@instapay when missing or empty', async () => {
@@ -375,6 +392,7 @@ describe('payments api', () => {
       const result = await getPaymentInstructionsApi(43)
       expect(result.handle).toBe('alaa.ahm9624@instapay')
       expect(result.instapay_handle).toBe('alaa.ahm9624@instapay')
+      expect(result.link).toBeNull()
     })
 
     it('throws PAY-007 when called before store approval', async () => {

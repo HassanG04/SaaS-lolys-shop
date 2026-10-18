@@ -151,7 +151,8 @@ export async function createTestUser(params: {
            phone = '${params.phone}',
            governorate_id = 1,
            city = 'القاهرة',
-           address = 'شارع التحرير'
+           address = 'شارع التحرير',
+           postal_code = '11511'
      WHERE id = '${userId}';
   `)
 

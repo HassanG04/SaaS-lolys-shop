@@ -367,4 +367,56 @@ describe('PayOrderPage', () => {
       expect(qrImg).toHaveAttribute('src', 'https://cdn.example.com/custom-qr.png')
     })
   })
+
+  it('renders ThemedQrCode and Open InstaPay link when official link is returned by instructions', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: 'alaa.ahm9624@instapay',
+      qr_path: null,
+      link: 'https://ipn.eg/S/alaa.ahm9624/token123',
+    })
+    renderComponent('101')
+
+    // Scannable themed QR code SVG is mounted
+    const qrEl = await screen.findByRole('img', { name: /رمز QR لإنستاباي/ })
+    expect(qrEl.querySelector('svg')).toBeInTheDocument()
+
+    // Open InstaPay action link is rendered
+    const openLink = screen.getByRole('link', { name: /فتح في تطبيق إنستاباي/ })
+    expect(openLink).toBeInTheDocument()
+    expect(openLink).toHaveAttribute('href', 'https://ipn.eg/S/alaa.ahm9624/token123')
+    expect(openLink).toHaveAttribute('target', '_blank')
+  })
+
+  it('renders Open InstaPay link in English when viewing in English locale', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: 'alaa.ahm9624@instapay',
+      qr_path: null,
+      link: 'https://ipn.eg/S/alaa.ahm9624/token123',
+    })
+    renderComponent('101', 'en')
+
+    const openLink = await screen.findByRole('link', { name: /Open InstaPay App/ })
+    expect(openLink).toBeInTheDocument()
+    expect(openLink).toHaveAttribute('href', 'https://ipn.eg/S/alaa.ahm9624/token123')
+  })
+
+  it('renders unavailable fallback when neither link nor custom qr_path is present', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: 'alaa.ahm9624@instapay',
+      qr_path: null,
+      link: null,
+    })
+    renderComponent('101')
+
+    expect(await screen.findByText(/رمز الاستجابة السريعة غير متوفر حالياً/)).toBeInTheDocument()
+  })
 })

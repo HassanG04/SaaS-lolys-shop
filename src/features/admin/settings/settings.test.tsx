@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -587,5 +587,68 @@ describe('T-5.09: Admin Settings UI and step-up authorization', () => {
 
     // Switches to content editor
     expect(await screen.findByRole('button', { name: 'نشر التغييرات' })).toBeInTheDocument()
+  })
+
+  it('renders official instapay_link input and ThemedQrCode preview in payments tab (T-5.16)', async () => {
+    const user = userEvent.setup()
+    renderSettingsPage()
+
+    await screen.findByRole('heading', { name: 'إعدادات المتجر' })
+    await user.click(screen.getByRole('button', { name: 'طرق الدفع وإنستاباي' }))
+
+    // Label for official link exists
+    expect(screen.getByLabelText(/رابط مشاركة إنستاباي الرسمي/)).toBeInTheDocument()
+
+    // QR specifications card exists
+    expect(screen.getByText('معاينة رمز QR المولد بهوية المتجر:')).toBeInTheDocument()
+  })
+
+  it('saves instapay_link coherently with instapay_handle upon valid submission (T-5.16)', async () => {
+    mockIsConfirmed = true
+    const user = userEvent.setup()
+    vi.mocked(supabase.rpc).mockResolvedValue({
+      data: null,
+      error: null,
+    } as unknown as Awaited<ReturnType<typeof supabase.rpc>>)
+    renderSettingsPage()
+
+    await screen.findByRole('heading', { name: 'إعدادات المتجر' })
+    await user.click(screen.getByRole('button', { name: 'طرق الدفع وإنستاباي' }))
+
+    const linkInput = screen.getByLabelText(/رابط مشاركة إنستاباي الرسمي/)
+    await user.clear(linkInput)
+    await user.type(linkInput, 'https://ipn.eg/S/alaa.ahm9624/token456')
+
+    const saveBtn = screen.getByRole('button', { name: 'حفظ إعدادات الدفع' })
+    await user.click(saveBtn)
+
+    await waitFor(() => {
+      expect(supabase.rpc).toHaveBeenCalledWith('admin_update_setting', {
+        p_key: 'instapay_link',
+        p_value: 'https://ipn.eg/S/alaa.ahm9624/token456',
+      })
+    })
+  })
+
+  it('rejects saving mismatched instapay_link and shows error toast (T-5.16)', async () => {
+    const user = userEvent.setup()
+    renderSettingsPage()
+
+    await screen.findByRole('heading', { name: 'إعدادات المتجر' })
+    await user.click(screen.getByRole('button', { name: 'طرق الدفع وإنستاباي' }))
+
+    const linkInput = screen.getByLabelText(/رابط مشاركة إنستاباي الرسمي/)
+    await user.clear(linkInput)
+    // Mismatched recipient compared to default handle alaa.ahm9624@instapay
+    await user.type(linkInput, 'https://ipn.eg/S/other.person/token456')
+
+    const saveBtn = screen.getByRole('button', { name: 'حفظ إعدادات الدفع' })
+    await user.click(saveBtn)
+
+    // RPC was not called with the mismatched link
+    expect(supabase.rpc).not.toHaveBeenCalledWith('admin_update_setting', {
+      p_key: 'instapay_link',
+      p_value: 'https://ipn.eg/S/other.person/token456',
+    })
   })
 })

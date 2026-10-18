@@ -81,6 +81,7 @@ function mount(ui: ReactNode, lang: Language, role: 'guest' | 'customer' | 'admi
 function fixture(name: string, container: HTMLElement) {
   if (process.env.EXPORT_UI_FIXTURES !== '1') return
   mkdirSync('.tools/layout-fixtures', { recursive: true })
+  // nosemgrep: lolys-no-inner-html
   writeFileSync(`.tools/layout-fixtures/${name}.html`, container.innerHTML)
 }
 
