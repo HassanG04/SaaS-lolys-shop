@@ -275,7 +275,11 @@ describe('Authentication unit tests (T-2.04)', () => {
       expect(
         await screen.findByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
       ).toBeInTheDocument()
-      expect(screen.getByText(/رابط إعادة التعيين خلال دقائق/)).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة تحتوي على رابط إعادة التعيين.',
+        ),
+      ).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: 'لم تصلك الرسالة؟ أعد الإرسال' }))
       expect(screen.getByLabelText('البريد الإلكتروني')).toHaveValue('user@example.com')
       expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledTimes(1)

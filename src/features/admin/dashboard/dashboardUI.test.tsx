@@ -298,6 +298,9 @@ describe('Dashboard UI components (T-6.02)', () => {
     })
 
     it('renders full dashboard content when data is loaded', async () => {
+      // Load the real chart before the DOM wait; cold module transforms under the
+      // full worker pool must not race the UI assertion or outlive test cleanup.
+      await import('./DashboardChart')
       vi.spyOn(hooks, 'useAdminDashboard').mockReturnValue({
         data: fixtureData,
         isLoading: false,

@@ -1,12 +1,20 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath } from 'node:url'
+import { readFileSync } from 'node:fs'
 
 import tailwindcss from '@tailwindcss/vite'
 import { bundleGraph } from './scripts/bundle-graph.ts'
 
+const contentSecurityPolicy = readFileSync(
+  new URL('./public/_headers', import.meta.url),
+  'utf8',
+).match(/Content-Security-Policy:\s*(.+)$/m)?.[1]
+if (!contentSecurityPolicy) throw new Error('Missing preview Content-Security-Policy')
+
 export default defineConfig({
   plugins: [react(), tailwindcss(), bundleGraph()],
+  preview: { headers: { 'Content-Security-Policy': contentSecurityPolicy } },
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   build: {
     target: 'es2022',

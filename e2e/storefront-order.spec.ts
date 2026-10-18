@@ -91,7 +91,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
     await expect(page.locator('h1')).toContainText('بيانات التوصيل')
 
     // Select Cairo governorate
-    await page.locator('select').first().selectOption('1')
+    await page.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
 
     // Fill address if empty
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
@@ -133,7 +133,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     // Go to checkout
     await page.goto('/checkout')
-    await page.locator('select').first().selectOption('1')
+    await page.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
 
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
     if (await addressInput.isVisible()) {
@@ -171,7 +171,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
     await page.goto('/checkout')
 
     // Select Governorate 2 (Giza - has NO delivery fee configured)
-    await page.locator('select').first().selectOption('2')
+    await page.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('2')
 
     // Delivery message indicates unavailable
     await expect(page.getByText('لا تتوفر طرق توصيل لهذه المحافظة')).toBeVisible()
@@ -195,7 +195,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     // Checkout with COD
     await page.goto('/checkout')
-    await page.locator('select').first().selectOption('1')
+    await page.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
 
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
     if (await addressInput.isVisible()) {
@@ -243,7 +243,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     // Checkout choosing InstaPay QR
     await page.goto('/checkout')
-    await page.locator('select').first().selectOption('1')
+    await page.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
 
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
     if (await addressInput.isVisible()) {
@@ -272,7 +272,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
     await page.reload()
 
     // Verify QR placeholder / image
-    const qrImg = page.getByAltText('رمز QR لإنستاباي')
+    const qrImg = page.getByRole('img', { name: 'رمز QR لإنستاباي' })
     await expect(qrImg).toBeVisible()
 
     // Test non-image file refusal: magic bytes check triggers UPL-001
@@ -329,7 +329,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     // Checkout with InstaPay
     await page.goto('/checkout')
-    await page.locator('select').first().selectOption('1')
+    await page.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
 
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
     if (await addressInput.isVisible()) {

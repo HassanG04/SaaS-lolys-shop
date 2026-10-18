@@ -222,7 +222,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     // Open inline stock dialog
     const productRow = page.locator('tr', { hasText: 'سوار اللؤلؤ الفضي التجريبي' })
     await expect(productRow).toBeVisible()
-    await productRow.getByRole('button', { name: /تعديل/ }).first().click()
+    await productRow.getByRole('button', { name: /^تعديل مخزون / }).click()
 
     await expect(page.locator('#stock-new-quantity-input')).toBeVisible()
     await page.locator('#stock-new-quantity-input').fill('0')
@@ -271,8 +271,8 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
         v_order_id bigint;
       BEGIN
         SELECT id INTO v_uid FROM auth.users WHERE email = 'customer@example.com' LIMIT 1;
-        INSERT INTO public.orders (user_id, status, subtotal, shipping_fee, total, delivery_method, payment_method, ship_name, ship_phone, ship_governorate, ship_city, ship_address)
-        VALUES (v_uid, 'delivered', 250, 0, 250, 'representative', 'cod', 'Test Cust', '01000000000', 'Cairo', 'Nasr City', 'Street 1')
+        INSERT INTO public.orders (user_id, status, subtotal, shipping_fee, total, delivery_method, payment_method, ship_name, ship_phone, ship_governorate, ship_city, ship_address, ship_postal_code)
+        VALUES (v_uid, 'delivered', 250, 0, 250, 'representative', 'cod', 'Test Cust', '01000000000', 'Cairo', 'Nasr City', 'Street 1', '11511')
         RETURNING id INTO v_order_id;
         INSERT INTO public.order_items (order_id, product_id, product_name, quantity, unit_price)
         VALUES (v_order_id, 1, 'Pearl drop earrings', 1, 250);
@@ -325,7 +325,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
     await custPage.goto('/checkout')
     await expect(custPage.locator('h1')).toContainText('بيانات التوصيل')
-    await custPage.locator('select').first().selectOption('1')
+    await custPage.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
     const addressInput = custPage.locator('input[placeholder*="اسم الشارع"]').first()
     await expect(addressInput).toBeVisible()
     await addressInput.fill('شارع رمسيس عمارة 10')
@@ -397,7 +397,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await custPage.getByRole('button', { name: 'أضف إلى السلة', exact: true }).click()
     await custPage.goto('/checkout')
     await expect(custPage.locator('h1')).toContainText('بيانات التوصيل')
-    await custPage.locator('select').first().selectOption('1')
+    await custPage.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
     const addressInput = custPage.locator('input[placeholder*="اسم الشارع"]').first()
     await expect(addressInput).toBeVisible()
     await addressInput.fill('شارع النصر')

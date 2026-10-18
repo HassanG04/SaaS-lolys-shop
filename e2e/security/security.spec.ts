@@ -236,11 +236,11 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
       INSERT INTO public.orders (
         id, user_id, status, payment_status, payment_method, delivery_method,
         total, subtotal, shipping_fee,
-        ship_name, ship_phone, ship_address, ship_governorate, ship_city
+        ship_name, ship_phone, ship_address, ship_governorate, ship_city, ship_postal_code
       ) OVERRIDING SYSTEM VALUE VALUES (
         ${victimOrderId}, '${victimUserId}', 'pending', 'awaiting_proof', 'instapay_qr', 'representative',
         450.00, 400.00, 50.00,
-        'سعيد الحظ الضحية', '01011112222', 'شارع سري للغاية 15', 'القاهرة', 'القاهرة'
+        'سعيد الحظ الضحية', '01011112222', 'شارع سري للغاية 15', 'القاهرة', 'القاهرة', '11511'
       ) ON CONFLICT (id) DO UPDATE SET user_id = '${victimUserId}';
     `)
 
@@ -287,12 +287,12 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
       INSERT INTO public.orders (
         id, user_id, status, payment_status, payment_method, delivery_method,
         total, subtotal, shipping_fee,
-        ship_name, ship_phone, ship_address, ship_governorate, ship_city,
+        ship_name, ship_phone, ship_address, ship_governorate, ship_city, ship_postal_code,
         payment_deadline
       ) OVERRIDING SYSTEM VALUE VALUES (
         ${attackOrderId}, '${attackerUserId}', 'confirmed', 'awaiting_proof', 'instapay_qr', 'representative',
         200.00, 150.00, 50.00,
-        'المهاجم الفضولي', '01033334444', 'شارع التحرير', 'القاهرة', 'القاهرة',
+        'المهاجم الفضولي', '01033334444', 'شارع التحرير', 'القاهرة', 'القاهرة', '11511',
         now() + interval '24 hours'
       ) ON CONFLICT (id) DO UPDATE SET payment_status = 'awaiting_proof', status = 'confirmed', payment_deadline = now() + interval '24 hours';
     `)
@@ -489,20 +489,15 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
       })
     })
 
-    // Extract CSP policy from public/_headers and apply to responses
+    // Preview serves the real policy over HTTP; intercepted documents lose their
+    // loopback address space in Chromium and cannot reach the local Auth service.
     const headersFile = path.resolve('public/_headers')
     const headersContent = fs.readFileSync(headersFile, 'utf8')
     const cspMatch = headersContent.match(/Content-Security-Policy:\s*(.+)$/m)
     const cspPolicy = cspMatch ? cspMatch[1].trim() : ''
 
-    await page.route('**/*', async (route) => {
-      const response = await route.fetch()
-      const headers = response.headers()
-      if (headers['content-type']?.includes('text/html')) {
-        headers['content-security-policy'] = cspPolicy
-      }
-      await route.fulfill({ response, headers })
-    })
+    // Keep the real admin session so admin routes cannot pass by redirecting to login.
+    await loginAdmin(page)
 
     // Walk across core storefront and admin routes
     const routesToVisit = [
@@ -516,8 +511,13 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     ]
 
     for (const route of routesToVisit) {
-      await page.goto(route)
+      const response = await page.goto(route)
+      expect(response?.headers()['content-security-policy']).toBe(cspPolicy)
       await page.waitForLoadState('domcontentloaded')
+      if (route.startsWith('/admin/')) {
+        await expect(page).toHaveURL(new RegExp(`${route}$`))
+        await expect(page.locator('#admin-main h1')).toBeVisible()
+      }
       await page.waitForTimeout(300)
     }
 

@@ -1,5 +1,24 @@
 # Shared project progress
 
+## Codex — Browser fixtures and CSP repair (T-7.08c) — 2026-10-18
+
+Current task: Follow-up on isolated branch `agent/T-7.08c-browser-fixtures-and-csp`, stacked on authentication repair PR #41 (`75602ec`).
+
+Completed:
+
+- Corrected direct order fixtures to include the required postal code, selected the governorate by its accessible name instead of accidentally selecting the footer motion preference, and selected the actual stock editor.
+- Configured an explicitly local payment-link fixture and found generated QR codes by their accessible image role.
+- Added the missing exact CSP hash for motion initialization; the header test now checks every inline startup script and rejects unsafe-inline scripts.
+- Serve the real CSP from the preview server. Replacing HTML through Playwright routing made Chromium deny loopback Auth requests. The CSP test now verifies actual response headers and authenticated admin content without bypassing browser protections.
+
+Files changed: Browser specs/global setup, `public/_headers`, `scripts/headers.test.mjs`, `vite.config.ts`, roadmap and this file. No schema or production settings changed.
+
+Tests executed: All nine admin and nine RTL browser cases passed. All eight storefront order cases passed, including invalid proof rejection, valid proof submission and unpaid expiry/restock. All nine security cases now pass, including authenticated admin routes under the real CSP. Full follow-up verify passed all 12 gates: 889 application tests, 203 tooling tests, no skips; initial JS 199,717 / 200,000 gzip bytes. Updated the reset-copy assertion and awaited the real chart import before the loaded-dashboard assertion to avoid a cold-transform race.
+
+Problems found: Mobile loading performance remains a separate open repair (T-7.03b). Local browser checks simulate only the external CAPTCHA widget and do not prove hosted CAPTCHA enforcement. Earlier broad completion claims below are not current launch evidence.
+
+Next action: Publish the focused follow-up draft, then repair measured mobile loading shifts and latency. Combined full browser run and remote CI remain pending. Do not merge or deploy.
+
 ## Codex — CI regression repair (T-7.08b) — 2026-10-18
 
 Current task: Repair the owner-reported static, unit and checkout accessibility failures on isolated branch `agent/T-7.08b-ci-auth-repairs`, based on `9875853`.
