@@ -1,7 +1,8 @@
 import { test, expect, type Page } from '@playwright/test'
 import path from 'node:path'
 import { generateTotp } from './helpers/totp'
-import { queryDb, getProductStock, getAdminTotpSecret } from './helpers/db'
+import { queryDb, getProductStock, getAdminTotpSecret, getSupabaseStatus } from './helpers/db'
+import { createClient } from '@supabase/supabase-js'
 
 let adminTotpSecret = ''
 let createdCategorySlug = ''
@@ -212,6 +213,9 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
     await page.goto(`/category/${createdCategorySlug}`)
     await page.waitForLoadState('networkidle')
+    // Reload once to bypass any stale React Query cache from previous tests
+    await page.reload()
+    await page.waitForLoadState('networkidle')
     await expect(page.getByText('سوار اللؤلؤ الفضي التجريبي').first()).toBeVisible({
       timeout: 20000,
     })
@@ -271,20 +275,44 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await expect(page.getByRole('button', { name: 'أرشفة المنتج' })).toBeVisible()
 
     // Part C: Product delete constraint (ADM-004 when product was previously ordered)
-    queryDb(`
-      DO $$
-      DECLARE
-        v_uid uuid;
-        v_order_id bigint;
-      BEGIN
-        SELECT id INTO v_uid FROM auth.users WHERE email = 'customer@example.com' LIMIT 1;
-        INSERT INTO public.orders (user_id, status, subtotal, shipping_fee, total, delivery_method, payment_method, ship_name, ship_phone, ship_governorate, ship_city, ship_address)
-        VALUES (v_uid, 'delivered', 250, 0, 250, 'representative', 'cod', 'Test Cust', '01000000000', 'Cairo', 'Nasr City', 'Street 1')
-        RETURNING id INTO v_order_id;
-        INSERT INTO public.order_items (order_id, product_id, product_name, quantity, unit_price)
-        VALUES (v_order_id, 1, 'Pearl drop earrings', 1, 250);
-      END $$;
-    `)
+    // Use the Supabase REST client instead of execSync queryDb to avoid stdin-pipe
+    // hangs when called inside an async test body alongside an open browser context.
+    const status = getSupabaseStatus()
+    const adminClient = createClient(status.API_URL, status.SERVICE_ROLE_KEY, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    })
+    const { data: usersData } = await adminClient.auth.admin.listUsers()
+    const custUser = usersData?.users?.find((u) => u.email === 'customer@example.com')
+    if (custUser) {
+      const { data: ord } = await adminClient
+        .from('orders')
+        .insert({
+          user_id: custUser.id,
+          status: 'delivered',
+          subtotal: 250,
+          shipping_fee: 0,
+          total: 250,
+          delivery_method: 'representative',
+          payment_method: 'cod',
+          ship_name: 'Test Cust',
+          ship_phone: '01000000000',
+          ship_governorate: 'Cairo',
+          ship_city: 'Nasr City',
+          ship_address: 'Street 1',
+        })
+        .select('id')
+        .single()
+      if (ord) {
+        await adminClient.from('order_items').insert({
+          order_id: ord.id,
+          product_id: 1,
+          product_name: 'Pearl drop earrings',
+          quantity: 1,
+          unit_price: 250,
+        })
+      }
+    }
+
     await page.goto('/admin/products/1')
     await page.getByRole('button', { name: 'حذف نهائي' }).click()
     const deleteModal = page.locator('dialog', { hasText: 'تأكيد حذف المنتج' })

@@ -11,18 +11,26 @@ let attackerUserId = ''
 
 async function loginUser(page: Page, email: string, password = 'Password123!') {
   await page.goto('/login')
+  await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill(email)
   await page.locator('#password-input').fill(password)
-  await page.waitForTimeout(200)
+  await page
+    .getByRole('button', { name: 'تسجيل الدخول' })
+    .waitFor({ state: 'visible', timeout: 5000 })
+  await page.waitForTimeout(500)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 }
 
 async function loginAdmin(page: Page) {
   await page.goto('/login')
+  await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill('admin@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  await page
+    .getByRole('button', { name: 'تسجيل الدخول' })
+    .waitFor({ state: 'visible', timeout: 5000 })
+  await page.waitForTimeout(500)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
@@ -133,13 +141,16 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
   test('2. Same neutral message for password reset and sign-up (SEC-05)', async ({ page }) => {
     // Part A: Reset Password Neutrality
     await page.goto('/reset-password')
+    await page.waitForLoadState('networkidle')
 
     // Known email
     await page.locator('#email-input').fill('customer@example.com')
     await page
       .getByRole('button', { name: 'إرسال رابط إعادة التعيين' })
       .waitFor({ state: 'visible', timeout: 5000 })
-    await page.waitForTimeout(300)
+    // Allow 800ms for the Turnstile useEffect to fire in webdriver mode and React
+    // state to flush (captcha.token must be set before handleSubmit checks it).
+    await page.waitForTimeout(800)
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,
@@ -150,11 +161,12 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
     // Unknown email
     await page.goto('/reset-password')
+    await page.waitForLoadState('networkidle')
     await page.locator('#email-input').fill('unknown-reset-target@example.com')
     await page
       .getByRole('button', { name: 'إرسال رابط إعادة التعيين' })
       .waitFor({ state: 'visible', timeout: 5000 })
-    await page.waitForTimeout(300)
+    await page.waitForTimeout(800)
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,

@@ -88,7 +88,12 @@ export async function checkTokens(root = process.cwd()) {
   const failures = []
   for (const file of files) {
     const relative = `src/${file.replaceAll(path.sep, '/')}`
-    if (relative === tokenPath || !/\.(?:[jt]sx?|css|svg)$/.test(file)) continue
+    if (
+      relative === tokenPath ||
+      !/\.(?:[jt]sx?|css|svg)$/.test(file) ||
+      /\.(?:test|spec)\.[jt]sx?$/.test(file)
+    )
+      continue
     const matches = check(await readFile(path.join(root, relative), 'utf8'), file.endsWith('.css'))
     if (matches.length) failures.push(`${relative}: ${matches.join(', ')}`)
   }

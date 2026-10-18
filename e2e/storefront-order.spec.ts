@@ -3,13 +3,14 @@ import { getProductStock, setProductStock, expireOrderViaTestHook, queryDb } fro
 
 async function loginCustomer(page: Page) {
   await page.goto('/login')
+  await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill('customer@example.com')
   await page.locator('#password-input').fill('Password123!')
   // Wait for the Turnstile token to propagate into React state (button becomes enabled)
   await page
     .getByRole('button', { name: 'تسجيل الدخول' })
     .waitFor({ state: 'visible', timeout: 5000 })
-  await page.waitForTimeout(300)
+  await page.waitForTimeout(500)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 10000 })
 }
