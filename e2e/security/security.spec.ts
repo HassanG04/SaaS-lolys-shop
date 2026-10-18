@@ -277,7 +277,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     page,
   }) => {
     // Seed an order belonging to Victim
-    const { data: victimOrder } = await adminClient
+    const { data: victimOrder, error: victimOrderError } = await adminClient
       .from('orders')
       .insert({
         user_id: victimUserId,
@@ -293,11 +293,15 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
         ship_address: 'شارع سري للغاية 15',
         ship_governorate: 'القاهرة',
         ship_city: 'القاهرة',
+        ship_postal_code: '11511',
       })
       .select('id')
       .single()
 
-    const victimOrderId = victimOrder!.id
+    expect(victimOrderError).toBeNull()
+    expect(victimOrder).not.toBeNull()
+    if (!victimOrder) throw new Error('Victim order insertion failed')
+    const victimOrderId = victimOrder.id
 
     // Attacker logs in
     await loginUser(page, 'attacker-sec@example.com')
@@ -336,7 +340,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     page,
   }) => {
     // Seed order for Attacker in awaiting_proof status
-    const { data: attackOrder } = await adminClient
+    const { data: attackOrder, error: attackOrderError } = await adminClient
       .from('orders')
       .insert({
         user_id: attackerUserId,
@@ -352,12 +356,16 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
         ship_address: 'شارع التحرير',
         ship_governorate: 'القاهرة',
         ship_city: 'القاهرة',
+        ship_postal_code: '11511',
         payment_deadline: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
       })
       .select('id')
       .single()
 
-    const attackOrderId = attackOrder!.id
+    expect(attackOrderError).toBeNull()
+    expect(attackOrder).not.toBeNull()
+    if (!attackOrder) throw new Error('Attacker order insertion failed')
+    const attackOrderId = attackOrder.id
 
     await loginUser(page, 'attacker-sec@example.com')
 
@@ -397,7 +405,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     page,
   }) => {
     const maliciousPayload = `<script>window.__XSS_EXEC__=true;</script>'; DROP TABLE orders; --`
-    const { data: prod } = await adminClient
+    const { data: prod, error: prodError } = await adminClient
       .from('products')
       .insert({
         category_id: 1,
@@ -412,7 +420,10 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
       .select('id')
       .single()
 
-    const maliciousProductId = prod!.id
+    expect(prodError).toBeNull()
+    expect(prod).not.toBeNull()
+    if (!prod) throw new Error('Malicious product insertion failed')
+    const maliciousProductId = prod.id
 
     await page.goto(`/product/${maliciousProductId}`)
 

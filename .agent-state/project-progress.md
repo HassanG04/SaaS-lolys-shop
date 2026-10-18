@@ -9,18 +9,20 @@ Completed:
 - `e2e/security/security.spec.ts`:
   - Completely replaced all `queryDb` synchronous CLI executions with async Supabase REST / Auth Admin client calls using `SERVICE_ROLE_KEY`. This eliminates sub-process stdin/docker hangs and CLI pipe failures in CI:
     - Added `clearAllMfaFactors(adminClient)` leveraging GoTrue MFA Admin API to cleanly unenroll all factors before MFA tests (beforeAll, Test 3, Test 7).
-    - Test 4 (IDOR): Seeds victim order dynamically via `adminClient.from('orders').insert(...).select('id').single()`, avoiding hardcoded IDs and identity column conflicts.
-    - Test 5 (SEC-11 file validation): Seeds attacker order dynamically via `adminClient.from('orders').insert(...)`.
+    - Test 4 (IDOR): Seeds victim order dynamically via `adminClient.from('orders').insert(...)` with required `ship_postal_code: '11511'`, avoiding hardcoded IDs, missing column NOT NULL violations, and identity column conflicts.
+    - Test 5 (SEC-11 file validation): Seeds attacker order dynamically via `adminClient.from('orders').insert(...)` with `ship_postal_code: '11511'`.
     - Test 6 (XSS/SQLi plain text rendering): Inserts malicious product via `adminClient.from('products').insert(...)` and verifies orders table count via PostgREST head request.
     - Test 8 (CSV formula injection): Seeds payload via `adminClient.from('products').insert(...)`.
+    - Strict null safety: Eliminated all `@typescript-eslint/no-non-null-assertion` forbidden `!` assertions by narrowing with explicit type guards (`if (!victimOrder) throw ...`), complying with hard rules and ESLint.
 - `e2e/accessibility.spec.ts` (test 10):
   - Added `await page.locator('body').focus()` before `page.keyboard.press('Tab')` on root navigation to guarantee initial focus starts at document root, eliminating skip-link focus flakiness.
-- Formatting, tokens, and typecheck verified cleanly.
+- Formatting, tokens, lint, and typecheck verified cleanly.
 
 Files changed: `e2e/security/security.spec.ts`, `e2e/accessibility.spec.ts`, `.agent-state/project-progress.md`.
 
 Tests executed:
 
+- `npm run lint` (0 errors, 0 warnings).
 - `npm run format:check` (All matched files use Prettier style).
 - `node scripts/check-tokens.mjs` (Documented tokens verified).
 - `npx tsc --noEmit` (0 TypeScript errors).
