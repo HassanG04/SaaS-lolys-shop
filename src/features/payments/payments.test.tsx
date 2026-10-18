@@ -6,7 +6,12 @@ import {
   reencodeImage,
   MAX_PROOF_FILE_SIZE,
 } from './fileValidation'
-import { getOrderPaymentDetailsApi, uploadPaymentProofApi, submitPaymentProofApi } from './api'
+import {
+  getOrderPaymentDetailsApi,
+  uploadPaymentProofApi,
+  submitPaymentProofApi,
+  getPaymentInstructionsApi,
+} from './api'
 import { AppError } from '@/lib/errors'
 import { supabase } from '@/lib/supabase'
 
@@ -327,6 +332,78 @@ describe('payments api', () => {
       } catch (err) {
         expect(err).toBeInstanceOf(AppError)
         expect((err as AppError).code).toBe('PAY-002')
+      }
+    })
+  })
+
+  describe('getPaymentInstructionsApi', () => {
+    it('normalizes instapay_handle to handle property', async () => {
+      vi.mocked(supabase.rpc).mockResolvedValue({
+        data: {
+          qr_path: 'settings/instapay-qr-123.jpg',
+          instapay_handle: 'owner@instapay',
+          amount: 250,
+          deadline: '2026-10-19T10:00:00Z',
+        },
+        error: null,
+      } as unknown as Awaited<ReturnType<typeof supabase.rpc>>)
+
+      const result = await getPaymentInstructionsApi(42)
+      expect(result).toEqual({
+        qr_path: 'settings/instapay-qr-123.jpg',
+        handle: 'owner@instapay',
+        instapay_handle: 'owner@instapay',
+        amount: 250,
+        deadline: '2026-10-19T10:00:00Z',
+      })
+      expect(supabase.rpc).toHaveBeenCalledWith('get_payment_instructions', {
+        p_order_id: 42,
+      })
+    })
+
+    it('defaults handle to alaa.ahm9624@instapay when missing or empty', async () => {
+      vi.mocked(supabase.rpc).mockResolvedValue({
+        data: {
+          qr_path: null,
+          instapay_handle: '',
+          amount: 100,
+          deadline: '2026-10-19T12:00:00Z',
+        },
+        error: null,
+      } as unknown as Awaited<ReturnType<typeof supabase.rpc>>)
+
+      const result = await getPaymentInstructionsApi(43)
+      expect(result.handle).toBe('alaa.ahm9624@instapay')
+      expect(result.instapay_handle).toBe('alaa.ahm9624@instapay')
+    })
+
+    it('throws PAY-007 when called before store approval', async () => {
+      vi.mocked(supabase.rpc).mockResolvedValue({
+        data: null,
+        error: { message: 'Order is awaiting store approval', hint: 'PAY-007', code: '22023' },
+      } as unknown as Awaited<ReturnType<typeof supabase.rpc>>)
+
+      try {
+        await getPaymentInstructionsApi(44)
+        expect.unreachable('Should have thrown')
+      } catch (err) {
+        expect(err).toBeInstanceOf(AppError)
+        expect((err as AppError).code).toBe('PAY-007')
+      }
+    })
+
+    it('throws AUTH-004 when unauthenticated', async () => {
+      vi.mocked(supabase.rpc).mockResolvedValue({
+        data: null,
+        error: { message: 'Authentication required', hint: 'AUTH-004', code: '42501' },
+      } as unknown as Awaited<ReturnType<typeof supabase.rpc>>)
+
+      try {
+        await getPaymentInstructionsApi(45)
+        expect.unreachable('Should have thrown')
+      } catch (err) {
+        expect(err).toBeInstanceOf(AppError)
+        expect((err as AppError).code).toBe('AUTH-004')
       }
     })
   })

@@ -1,5 +1,38 @@
 # Shared project progress
 
+## Anti-Gravity — Verify Owner InstaPay Recipient and QR (T-5.14) — 2026-10-18
+
+Current task: T-5.14 (Verify owner InstaPay recipient and QR) completed and verified on `agent/T-5.14-verify-instapay-qr`. Next task: T-5.15 (Complete bilingual footer and policy editor).
+
+Completed:
+
+- Owner asset and recipient verification:
+  - Inspected root workspace asset `ip/ip.jpeg` (JPEG format, 516x552 px, 56,906 bytes).
+  - Verified SHA-256 hash `B432667B3ACF96B8CBA2C48CAD0710486789DB0459BD223863B0E41D9B66F6AA`, exactly matching `docs/handoff/DATABASE-INTEGRATION.md` line 96.
+  - Approved recipient handle confirmed as `alaa.ahm9624@instapay`.
+- Database schema & private RPC hardening (`supabase/migrations/20261018170000_instapay_recipient_and_qr.sql`):
+  - Updated `shop_settings` ensuring `instapay_handle` defaults to approved owner recipient `'alaa.ahm9624@instapay'`.
+  - Re-asserted `is_public = false` for both `instapay_handle` and `instapay_qr_path` in `shop_settings`, guaranteeing that neither anonymous visitors nor unapproved order customers can inspect or infer payment credentials.
+  - Replaced `get_payment_instructions(p_order_id)`: strictly authenticates caller (`auth.uid() is not null`), enforces order ownership (`v_order_uid = v_uid`), raises `PAY-007` before store approval (`awaiting_approval`), raises `PAY-004` on invalid order status, and returns both `'handle'` and `'instapay_handle'` normalized keys alongside `'qr_path'`, `'amount'`, and `'deadline'`.
+- Client and API integration:
+  - `src/features/payments/api.ts`: Updated `PaymentInstructions` interface with both `handle` and `instapay_handle`, and updated `getPaymentInstructionsApi` to normalize RPC response keys with fallback to `alaa.ahm9624@instapay`.
+  - `src/pages/PayOrderPage.tsx`: Removed redundant `usePublicSettings` hook and eliminated fallbacks to public settings (`settings?.instapay_qr_path` and `settings?.instapay_handle`), strictly isolating payment instructions to approved orders via `getPaymentInstructionsApi`.
+  - `src/pages/ProductPage.test.tsx`: Mocked `@/features/reviews` to eliminate unhandled background Supabase network calls and worker teardown errors during test suites.
+- Comprehensive test suites:
+  - `supabase/tests/database/23_instapay_recipient_verification.test.sql`: 14 pgTAP assertions verifying setting privacy (`is_public = false`), anonymous prevention, non-owner refusal (`ORD-009`), pre-approval refusal (`PAY-007`), post-approval owner delivery, handle matching `alaa.ahm9624@instapay`, and admin updates.
+  - `src/features/payments/payments.test.tsx`: Added 4 unit tests for `getPaymentInstructionsApi` testing key normalization, fallback, pre-approval `PAY-007`, and unauthenticated `AUTH-004`.
+  - `src/pages/PayOrderPage.test.tsx`: Added 2 unit tests for `instapay_handle` key normalization rendering and custom `qr_path` image resolution.
+- Verification & budget:
+  - All 12 quality gates passed via `npm run verify` (1,042 total tests: 839 application tests + 203 tooling tests, 0 failures).
+  - Initial JS bundle budget preserved (199,975 / 200,000 gzip bytes in 3 initial chunks).
+  - Roadmap status updated: `T-5.14: done`.
+
+Files changed: `roadmap.md`, `.agent-state/project-progress.md`, `supabase/migrations/20261018170000_instapay_recipient_and_qr.sql`, `supabase/tests/database/23_instapay_recipient_verification.test.sql`, `src/features/payments/api.ts`, `src/features/payments/payments.test.tsx`, `src/pages/PayOrderPage.tsx`, `src/pages/PayOrderPage.test.tsx`, `src/pages/ProductPage.test.tsx`.
+
+Problems found: None. Initial JS bundle stays within 200k limit (199,975 gzip bytes).
+
+Next action: Commit T-5.14, push branch to origin, and branch to `agent/T-5.15-footer-and-policy-editor` for T-5.15.
+
 ## Anti-Gravity — Customer Profile Photo (T-2.11) — 2026-10-18
 
 Current task: T-2.11 (Customer profile photo) completed and verified on `agent/T-2.11-customer-profile-photo`. Next task: T-2.12a (Authentication abuse controls and staging runbook).

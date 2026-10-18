@@ -978,7 +978,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify`; admin responsive/motion tests and actual-route language-switch acceptance.
 
 #### T-5.14: Verify owner InstaPay recipient and QR
-`status: todo` `owner: agent` `needs: T-4.06, T-5.09` `size: S`
+`status: done` `owner: agent` `needs: T-4.06, T-5.09` `size: S`
 - **Do:** Inspect the actual `ip/ip.jpeg` and historical decode evidence in `docs/handoff/DATABASE-INTEGRATION.md`; verify asset delivery and prepare owner-reviewed settings correction to `alaa.ahm9624@instapay`; follow `docs/spec/payment-flow-change.md` and `docs/spec/owner-experience-change.md`. A public file URL is not private merely because its setting has RLS.
 - **Done when:** Owner confirms correct merchant QR in authenticated post-approval flow; no public QR or invented payment URI; payment review remains authoritative.
 - **Verify:** `npm run verify && npm run test:e2e`

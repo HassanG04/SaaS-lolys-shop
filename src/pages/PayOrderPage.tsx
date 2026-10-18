@@ -10,7 +10,6 @@ import {
   usePaymentCountdown,
   validateProofFile,
 } from '@/features/payments'
-import { usePublicSettings } from '@/features/settings'
 import { publicImageUrl } from '@/lib/images'
 import { formatEGP } from '@/lib/format'
 import { PearlLoader } from '@/components/ui/PearlLoader'
@@ -176,7 +175,6 @@ export default function PayOrderPage() {
     parsedOrderId,
     !isOrderAwaitingApproval && Boolean(order) && order?.status !== 'cancelled',
   )
-  const { data: settings } = usePublicSettings()
 
   const [referenceInput, setReferenceInput] = useState('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -307,13 +305,14 @@ export default function PayOrderPage() {
 
   const effectiveTotal = instructions?.amount ?? order.total
 
-  const qrPath = instructions?.qr_path || settings?.instapay_qr_path
-  const qrImageUrl = qrPath
-    ? publicImageUrl(qrPath) || '/placeholders/instapay-qr.svg'
-    : '/placeholders/instapay-qr.svg'
+  const qrPath = instructions?.qr_path
+  const qrImageUrl =
+    !qrPath || qrPath === 'settings/instapay-qr-default.png'
+      ? '/placeholders/instapay-qr.svg'
+      : publicImageUrl(qrPath) || '/placeholders/instapay-qr.svg'
 
   const instapayHandle =
-    instructions?.handle || settings?.instapay_handle || 'alaa.ahm9624@instapay'
+    instructions?.handle || instructions?.instapay_handle || 'alaa.ahm9624@instapay'
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 pb-12">

@@ -337,4 +337,34 @@ describe('PayOrderPage', () => {
     expect(screen.queryByText('بانتظار موافقة المتجر')).not.toBeInTheDocument()
     expect(screen.queryByText('طلبك قيد المراجعة والموافقة')).not.toBeInTheDocument()
   })
+
+  it('renders handle from instapay_handle when handle key is omitted', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: null,
+      instapay_handle: 'custom.recipient@instapay',
+      qr_path: null,
+    })
+    renderComponent('101')
+
+    expect(await screen.findByText('custom.recipient@instapay')).toBeInTheDocument()
+  })
+
+  it('renders custom QR image when qr_path is returned by instructions', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: 'alaa.ahm9624@instapay',
+      qr_path: 'https://cdn.example.com/custom-qr.png',
+    })
+    renderComponent('101')
+
+    const qrImg = await screen.findByAltText(/رمز QR لإنستاباي/)
+    await waitFor(() => {
+      expect(qrImg).toHaveAttribute('src', 'https://cdn.example.com/custom-qr.png')
+    })
+  })
 })

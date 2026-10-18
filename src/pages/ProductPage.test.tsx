@@ -9,6 +9,15 @@ import ProductPage from './ProductPage'
 import * as catalogHooks from '@/features/catalog/hooks'
 import type { ProductWithCategory } from '@/features/catalog/types'
 
+vi.mock('@/features/reviews', () => ({
+  ProductReviewsSection: () => <div data-testid="mock-reviews-section" />,
+  useProductReviewSummary: () => ({
+    data: { average_rating: 4.5, total_reviews: 12 },
+    isLoading: false,
+  }),
+  StarRating: () => <div data-testid="mock-star-rating" />,
+}))
+
 const mockProductInStock: ProductWithCategory = {
   id: 42,
   category_id: 1,
