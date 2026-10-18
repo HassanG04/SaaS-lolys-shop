@@ -275,14 +275,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "address": string | null,"alt_phone": string | null,"apartment": string | null,"banned_at": string | null,"banned_reason": string | null,"city": string | null,"created_at": string,"district": string | null,"email": string | null,"floor": string | null,"full_name": string,"governorate_id": number | null,"id": string,"is_banned": boolean,"landmark": string | null,"phone": string | null,"postal_code": string | null,"role": Database["public"]['Enums']["user_role"]
+                    "address": string | null,"alt_phone": string | null,"apartment": string | null,"avatar_url": string | null,"banned_at": string | null,"banned_reason": string | null,"city": string | null,"created_at": string,"district": string | null,"email": string | null,"floor": string | null,"full_name": string,"governorate_id": number | null,"id": string,"is_banned": boolean,"landmark": string | null,"phone": string | null,"postal_code": string | null,"role": Database["public"]['Enums']["user_role"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"banned_at"?: string | null,"banned_reason"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"email"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id": string,"is_banned"?: boolean,"landmark"?: string | null,"phone"?: string | null,"postal_code"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"avatar_url"?: string | null,"banned_at"?: string | null,"banned_reason"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"email"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id": string,"is_banned"?: boolean,"landmark"?: string | null,"phone"?: string | null,"postal_code"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Update: {
-                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"banned_at"?: string | null,"banned_reason"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"email"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"is_banned"?: boolean,"landmark"?: string | null,"phone"?: string | null,"postal_code"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"avatar_url"?: string | null,"banned_at"?: string | null,"banned_reason"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"email"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"is_banned"?: boolean,"landmark"?: string | null,"phone"?: string | null,"postal_code"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Relationships: [
                     {

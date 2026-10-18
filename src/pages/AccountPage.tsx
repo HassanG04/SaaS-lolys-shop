@@ -2,7 +2,12 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { useAuth } from '@/features/auth/AuthProvider'
-import { useCustomerStats, useUpdateProfile, type ProfileFormState } from '@/features/account'
+import {
+  useCustomerStats,
+  useUpdateProfile,
+  ProfileAvatar,
+  type ProfileFormState,
+} from '@/features/account'
 import { useGovernorates } from '@/features/delivery'
 import {
   normalizeEgyptianPhone,
@@ -164,20 +169,33 @@ export default function AccountPage() {
   return (
     <div className="space-y-6">
       {/* Header and Navigation */}
-      <div className="rounded-card border border-border bg-surface p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-card">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-h1 font-bold font-accent text-brand">{t.account.details}</h1>
-            {user?.email && (
-              <span className="inline-flex items-center rounded-chip bg-surface-2 px-2.5 py-0.5 text-caption font-medium text-text-muted border border-border">
-                <Ltr>{user.email}</Ltr>
-              </span>
-            )}
+      <div className="rounded-card border border-border bg-surface p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 shadow-card">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          {user && (
+            <ProfileAvatar
+              userId={user.id}
+              avatarUrl={profile?.avatar_url}
+              fullName={profile?.full_name}
+              email={user.email}
+              onAvatarChange={refreshProfile}
+            />
+          )}
+          <div className="flex flex-col items-center sm:items-start">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <h1 className="text-h1 font-bold font-accent text-brand">{t.account.details}</h1>
+              {user?.email && (
+                <span className="inline-flex items-center rounded-chip bg-surface-2 px-2.5 py-0.5 text-caption font-medium text-text-muted border border-border">
+                  <Ltr>{user.email}</Ltr>
+                </span>
+              )}
+            </div>
+            <p className="mt-2 text-body text-text-muted text-center sm:text-start">
+              {t.account.manageSubtitle}
+            </p>
           </div>
-          <p className="mt-2 text-body text-text-muted">{t.account.manageSubtitle}</p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 justify-center lg:justify-end">
           <Link
             to="/account/orders"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"

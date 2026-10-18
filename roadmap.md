@@ -684,7 +684,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:reset && npm run db:test && npm run verify && npm run test:e2e`
 
 #### T-2.11: Customer profile photo
-`status: todo` `owner: agent` `needs: T-2.04` `size: M`
+`status: done` `owner: agent` `needs: T-2.04` `size: M`
 - **Do:** User-owned validated/re-encoded photo upload and replacement per `docs/spec/owner-experience-change.md`; additive schema, storage policies and cleanup.
 - **Done when:** Cross-user access denied by database/storage tests; both languages/themes and upload failure paths checked.
 - **Verify:** `npm run db:reset && npm run db:test && npm run verify`

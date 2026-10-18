@@ -17,6 +17,7 @@ export interface UserProfile {
   floor?: string | null
   apartment?: string | null
   landmark?: string | null
+  avatar_url?: string | null
   email?: string | null
   created_at?: string
   updated_at?: string

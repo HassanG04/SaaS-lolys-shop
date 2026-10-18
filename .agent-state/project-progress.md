@@ -1,5 +1,41 @@
 # Shared project progress
 
+## Anti-Gravity — Customer Profile Photo (T-2.11) — 2026-10-18
+
+Current task: T-2.11 (Customer profile photo) completed and verified on `agent/T-2.11-customer-profile-photo`. Next task: T-2.12a (Authentication abuse controls and staging runbook).
+
+Completed:
+
+- Database schema and storage architecture (`supabase/migrations/20261018160000_customer_profile_photo.sql`):
+  - Added `avatar_url` column to `public.profiles` with length and path regex constraints (`^[0-9a-fA-F-]{36}/[A-Za-z0-9/_-]+\.(webp|jpg|jpeg|png)$`).
+  - Added folder integrity trigger (`trg_validate_profile_avatar`) ensuring `avatar_url` path must strictly match the user's own UUID (`split_part(new.avatar_url, '/', 1) = new.id::text`).
+  - Configured `avatars` bucket with 2 MB file size limit and strict image MIME types (`image/jpeg`, `image/png`, `image/webp`).
+  - Implemented storage RLS policies for `avatars` bucket: public select, user-scoped insert/update/delete restricted to `(storage.foldername(name))[1] = auth.uid()::text`.
+  - Added automated database trigger cleanup (`trg_cleanup_old_avatar` and `trg_cleanup_deleted_profile_avatar`) to purge previous storage files on replacement, removal, or account deletion.
+  - Updated `admin_anonymize_customer` to clear `avatar_url` and purge all avatar objects from storage during GDPR right to erasure.
+- Client validation and re-encoding:
+  - `src/features/account/avatarUpload.ts`: Magic bytes inspection (JPEG, PNG, WebP), file size cap (2 MB), canvas re-encoding to 500x500 WebP/JPEG stripping EXIF metadata, and random UUID storage path generation.
+  - `src/features/account/api.ts`: Implemented `uploadAvatarApi` and `removeAvatarApi` with rollback on database failure.
+  - `src/features/account/hooks.ts`: Added `useUploadAvatar` and `useRemoveAvatar` query mutations.
+- Storefront UI & Account view:
+  - `src/features/account/components/ProfileAvatar.tsx`: Accessible avatar preview with initials fallback, floating upload button, remove photo button, loading spinner, and design token compliance (`rounded-pill`, `bg-surface-2`, `text-brand`, etc.).
+  - `src/pages/AccountPage.tsx`: Integrated `ProfileAvatar` into the customer account header.
+  - `src/features/account/copy.ts`: Feature-scoped bilingual copy preventing global dictionary bloat and protecting initial JS budget.
+- Comprehensive test suites:
+  - `supabase/tests/database/22_customer_profile_photo.test.sql`: 19 pgTAP assertions verifying bucket properties, anonymous restrictions, path constraints, cross-user folder spoofing prevention, storage RLS isolation, automated replacement trigger cleanup, and anonymization purges.
+  - `src/features/account/account.test.tsx`: 17 Vitest tests covering magic bytes detection, size errors (`UPL-002`), corrupt files (`UPL-001`), clean path generation, API storage upload/rollback, and mutation hooks.
+  - `src/features/account/components/ProfileAvatar.test.tsx`: 5 tests covering initials rendering, image rendering, upload trigger, remove action, and bilingual copy.
+- Verification & budget:
+  - Full verification passed across all 12 quality gates via `npm run verify` (1,029+ Vitest tests + 203 Node tooling tests = 1,232 total tests, 0 failures).
+  - Initial JS bundle budget preserved (199,979 / 200,000 gzip bytes in 3 initial chunks).
+  - Roadmap status updated: `T-2.11: done`.
+
+Files changed: `roadmap.md`, `.agent-state/project-progress.md`, `src/types/database.types.ts`, `src/features/auth/types.ts`, `src/features/auth/session.api.ts`, `src/features/account/index.ts`, `src/features/account/api.ts`, `src/features/account/hooks.ts`, `src/features/account/avatarUpload.ts`, `src/features/account/copy.ts`, `src/features/account/components/ProfileAvatar.tsx`, `src/pages/AccountPage.tsx`, `src/features/account/account.test.tsx`, `src/features/account/components/ProfileAvatar.test.tsx`, `supabase/migrations/20261018160000_customer_profile_photo.sql`, `supabase/tests/database/22_customer_profile_photo.test.sql`.
+
+Problems found: Initial import of `publicImageUrl` in `Navbar.tsx` exceeded the strict 200k gzip budget by 125 bytes; safely reverted `Navbar.tsx` and confined avatar management to lazy `AccountPage.tsx`, bringing initial bundle back to 199,979 gzip bytes.
+
+Next action: Commit T-2.11, push to origin, and advance to next runnable roadmap task.
+
 ## Anti-Gravity — Customer Notifications, Suggestions & Wishlist Demand (T-2.10) — 2026-10-18
 
 Current task: T-2.10 (Customer notifications, suggestions, and wishlist demand reporting) completed and verified on `agent/T-2.10-customer-notifications`. Next task: T-2.11 (Customer profile photo).
