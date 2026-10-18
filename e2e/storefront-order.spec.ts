@@ -63,10 +63,15 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
   test('2. Register and log in customer account', async ({ page }) => {
     // Step A: Registration flow
     await page.goto('/register')
+    await page.waitForLoadState('networkidle')
     await page.locator('#name-input').fill('عميل تجريبي')
     await page.locator('#email-input').fill(`new_customer_${Date.now()}@example.com`)
     await page.locator('#password-input').fill('Password123!')
-    await page.waitForTimeout(200)
+    await page.locator('#confirm-password-input').fill('Password123!')
+    await page
+      .getByRole('button', { name: 'إنشاء حساب' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.waitForTimeout(500)
     await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
     // Give time for auth request to resolve
