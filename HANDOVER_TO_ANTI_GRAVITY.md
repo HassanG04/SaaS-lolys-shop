@@ -16,7 +16,7 @@ Continue the CI repair and mobile loading investigation for Lolys from the isola
 - Mobile LCP is still above the unchanged 2500 ms target. Local complete run with the retained height fix: 93 passed, 2 failed; home/category LCP 3260/3184 ms and CLS 0.0161/0.0003. GitHub #42 before the height fix: home 3196–3288 ms LCP, CLS 0.5408–0.5569; category 2432–2472 ms LCP, CLS 0.5628.
 - T-7.03b was marked `blocked` after three distinct optimization attempts, per roadmap §1.5. Do not raise thresholds or repeat the failed bundle changes. The next attempt needs fresh evidence about initial dependency payload, font timing and data requests.
 - The eight-case loading-layout regression (`e2e/ui/loading-layout.spec.ts`) passes 8/8. It covers Arabic/English, light/dark, 360/1280 and ensures the footer remains below the initial viewport while the lazy home route is delayed.
-- Final verify on the performance branch and the focused PR are not yet complete. Do not mark T-7.03b done or claim combined CI/launch readiness.
+- Focused loading-layout verification passes 8/8. Final verify on the performance branch is not yet complete. Draft PR #43 (`1e323f8`) contains the safe checkpoint; do not mark T-7.03b done or claim combined CI/launch readiness.
 
 ## Current files on this branch
 
@@ -30,7 +30,7 @@ docs/handoff/CI-REPAIR-2026-10-18.md
 HANDOVER_TO_ANTI_GRAVITY.md
 ```
 
-The branch is currently uncommitted after the performance checkpoint. No schema, production settings, secrets or `.env` files were changed. Generated RTL screenshots and the temporary isolated `supabase/config.toml` were restored.
+The checkpoint is committed as `1e323f8` and pushed in draft PR #43. No schema, production settings, secrets or `.env` files were changed. Generated RTL screenshots and the temporary isolated `supabase/config.toml` were restored.
 
 ## Current error
 
@@ -55,7 +55,7 @@ From this worktree, using pinned Node 24.21.0:
 git status --short
 git diff --check
 npm exec -- prettier --check .
-npm run test:e2e -- --config .tools/playwright.ci.config.ts e2e/ui/loading-layout.spec.ts
+& 'D:\Projects\Programming\الاء\.tools\node-v24.21.0-win-x64\node.exe' .tools/run-isolated-e2e.mjs e2e/ui/loading-layout.spec.ts
 npm run verify
 ```
 
