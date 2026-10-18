@@ -38,6 +38,7 @@ test.describe('Performance & Web Vitals Pass (T-7.03)', () => {
 
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
+    await expect(page.locator('main h1')).toBeVisible()
 
     // Measure LCP and CLS
     const metrics = await page.evaluate(async () => {
@@ -89,6 +90,7 @@ test.describe('Performance & Web Vitals Pass (T-7.03)', () => {
       `[PERF] Home Page - Throttled Mobile LCP: ${metrics.lcp.toFixed(0)} ms, CLS: ${metrics.cls.toFixed(4)}`,
       JSON.stringify(metrics.entries, null, 2),
     )
+    expect(metrics.lcp).toBeGreaterThan(0)
     expect(metrics.lcp).toBeLessThanOrEqual(2500)
     expect(metrics.cls).toBeLessThanOrEqual(0.1)
   })
@@ -106,6 +108,7 @@ test.describe('Performance & Web Vitals Pass (T-7.03)', () => {
 
     await page.goto('/category/all')
     await page.waitForLoadState('domcontentloaded')
+    await expect(page.locator('main h1')).toBeVisible()
 
     const metrics = await page.evaluate(async () => {
       return new Promise<{ lcp: number; cls: number; entries: LcpEntryDetail[] }>((resolve) => {
@@ -156,6 +159,7 @@ test.describe('Performance & Web Vitals Pass (T-7.03)', () => {
       `[PERF] Category Page - Throttled Mobile LCP: ${metrics.lcp.toFixed(0)} ms, CLS: ${metrics.cls.toFixed(4)}`,
       JSON.stringify(metrics.entries, null, 2),
     )
+    expect(metrics.lcp).toBeGreaterThan(0)
     expect(metrics.lcp).toBeLessThanOrEqual(2500)
     expect(metrics.cls).toBeLessThanOrEqual(0.1)
   })

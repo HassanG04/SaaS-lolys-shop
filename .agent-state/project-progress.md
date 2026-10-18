@@ -1,5 +1,23 @@
 # Shared project progress
 
+## Codex — Mobile performance checkpoint (T-7.03b) — 2026-10-18
+
+Current task: Verify the retained loading-layout fix on `agent/T-7.03b-mobile-loading-repair`, stacked on `15b378e` / draft PR #42. LCP tuning is blocked under roadmap section 1.5 after three distinct unsuccessful approaches.
+
+Completed:
+
+- Traced the large layout shift to the footer appearing beside a short route loader, then moving below loaded content. Reserved a viewport of main-content height below the header.
+- Strengthened performance measurement to wait for the real page heading and reject zero LCP measurements. Original 2500 ms / 0.1 limits and throttling remain unchanged.
+- Reverted all unsuccessful module-preload, bundle regrouping and initial-animation experiments. Existing animations and the original bundle boundary remain intact.
+
+Files changed: `src/components/layout/Layout.tsx`, `e2e/performance.spec.ts`, roadmap and this file.
+
+Tests executed: Three measured approaches failed to meet every gate. Native preloading gave LCP 2592/2824 ms, CLS 0.0443/0.0013, but 201107 initial bytes. Automatic chunking gave 2628/2940 ms and 203621 bytes. Combining entry dependencies with immediate first paint gave 2508/2500 ms and home CLS 0.1029, while entry attribution/bundle checks also failed. Those experiments were reverted. Complete local browser suite on the retained layout change: 93 passed, 2 failed (only performance). Home/category LCP 3260/3184 ms remains above 2500; CLS improved to 0.0161/0.0003, both below 0.1. Local E2E bundle passes at 199,926 bytes. The focused eight-case loading-layout regression passes in Arabic/English, light/dark and 360/1280. Parent PR #42 GitHub unit/coverage and seven other non-browser jobs pass; its browser run also has 93 passed and only 2 performance failures.
+
+Problems found: The initial dependency payload and late font/data updates need further profiling before another LCP implementation. Do not call performance, combined CI or launch readiness complete. Earlier approval-service limit has cleared.
+
+Next action: Finish the complete browser/verify/coverage run, publish the layout checkpoint with honest remaining failures, and preserve exact continuation instructions. No merge, deployment or production database changes.
+
 ## Codex — Browser fixtures and CSP repair (T-7.08c) — 2026-10-18
 
 Current task: Follow-up on isolated branch `agent/T-7.08c-browser-fixtures-and-csp`, stacked on authentication repair PR #41 (`75602ec`).
