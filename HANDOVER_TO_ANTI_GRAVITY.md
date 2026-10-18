@@ -10,6 +10,7 @@ Do not resume from the primary checkout's older "all tasks completed" report.
 - Branch: `agent/T-7.08b-consolidated-ci-repairs`.
 - Base: main `c6f680c5c19013d614c5258c5086f683e74ffa94`.
 - Source checkpoint: `397fd09`; subsequent documentation does not change code.
+- Replacement review: [draft PR #44](https://github.com/HassanG04/ecommerce-lolys-shop/pull/44).
 - Repository: `https://github.com/HassanG04/ecommerce-lolys-shop`, redirected from the owner-approved `SaaS-lolys-shop` URL.
 - No main merge, deployment, hosted database operation or dashboard change.
 
@@ -30,9 +31,16 @@ Do not resume from the primary checkout's older "all tasks completed" report.
 
 ## Remaining
 
-Fresh consolidated coverage and browser results are pending. The predecessor
-full browser run at `6ef9811` had 101 passed, 2 failed and no skips: only mobile
-LCP failed. These predecessor results do not verify the replacement branch.
+Consolidated coverage passed: statements 93.29%, branches 88.24%, functions
+88.4%, lines 93.6%, with 889 app + 204 tooling tests. The complete consolidated
+browser rerun finished 101 passed, 2 failed and no skips: only mobile LCP failed
+at 2708/2776 ms; CLS 0.0402/0 passed. The local browser bundle is 199,927 bytes.
+This complete rerun supersedes the interrupted run.
+
+GitHub run `39170822440` at `6f9eb2d` passed all eight non-browser jobs; its browser
+job was still running at the last observation. Check exact remote head/results
+before making any CI claim. Documentation-only follow-up commits do not change
+the tested source.
 
 Keep T-7.03b blocked under roadmap section 1.5 after the unsuccessful approaches.
 Further LCP work requires a revised measured approach; do not repeat experiments
@@ -81,7 +89,7 @@ Files changed against main (temporary database config excluded):
 ```text
 Error: Mobile LCP still exceeds the loading budget.
 Expected: LCP <= 2500 ms; CLS <= 0.1; initial JS <= 200000 gzip bytes.
-Actual: Predecessor home/category 2604/2756 ms, CLS 0.0402/0, local E2E JS 199931 bytes.
+Actual: Consolidated home/category 2708/2776 ms, CLS 0.0402/0, local E2E JS 199927 bytes.
 Possible cause: Remaining vendor transfer, lazy route discovery, font and data-request timing.
 ```
 

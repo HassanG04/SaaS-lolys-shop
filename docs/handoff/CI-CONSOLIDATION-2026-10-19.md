@@ -8,6 +8,7 @@ current main `c6f680c5c19013d614c5258c5086f683e74ffa94`. It combines the existin
 T-7.08b, T-7.08c and T-7.03b repair slices; it adds no product features.
 
 Worktree: `C:\Users\Hassan-PC\.codex\worktrees\ci-consolidation\الاء`.
+Replacement review: [draft PR #44](https://github.com/HassanG04/ecommerce-lolys-shop/pull/44).
 The primary checkout remains on Anti-Gravity's branch. No main merge,
 deployment, hosted database operation or dashboard change was performed.
 
@@ -58,7 +59,22 @@ changing test timeouts or assertions.
 The predecessor results above are not results for the new branch. Fresh
 `npm run verify` on the consolidated source at `397fd09` passed all 12 gates:
 889 application tests, 204 tooling tests and initial JS 199,730 / 200,000 gzip
-bytes. Coverage and complete browser results are pending. Dependency
+bytes. `npm run test:unit:coverage` also passed: statements 93.29%, branches
+88.24%, functions 88.4% and lines 93.6% (889 app + 204 tooling tests).
+
+The complete consolidated browser rerun finished **101 passed, 2 failed, no
+skips** in 6.3 minutes. Only home/category LCP failed: **2708/2776 ms**. CLS was
+**0.0402/0**, within the limit. All 10 accessibility, 9 admin, 9 RTL, 9 security,
+8 storefront, 8 loading-layout, 36 motion and 12 responsive cases passed. The
+local browser build fits at **199,927 / 200,000 gzip bytes**. The first run was
+interrupted after test 25; this full rerun supersedes it.
+
+GitHub run `39170822440` at `6f9eb2d` passed database, SAST, analytics, static,
+roadmap, build, unit/coverage and secrets. Its browser job was still running at
+the last observation; this is not an overall green CI claim. Later documentation
+commits do not change the tested application, fixtures or build configuration.
+
+Dependency
 installation with `npm ci --ignore-scripts` passed with zero reported
 vulnerabilities. No dependency or lockfile version changed.
 

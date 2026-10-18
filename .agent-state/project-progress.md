@@ -13,11 +13,11 @@ Completed:
 
 Files changed: Auth/provider and browser fixtures, build guards/preloading, layout regression, roadmap and handoff documentation. Full file list and continuation commands are in `HANDOVER_TO_ANTI_GRAVITY.md`; evidence is in `docs/handoff/CI-CONSOLIDATION-2026-10-19.md`.
 
-Tests executed: Fresh dependency install passed with scripts disabled. Consolidated `npm run verify` passed all 12 gates: 889 application tests, 204 tooling tests, initial JS 199,730 / 200,000 gzip bytes. Predecessor full browser run at `6ef9811`: 101 passed, 2 failed, no skips; home/category LCP 2604/2756 ms and CLS 0.0402/0. Fresh consolidated browser and coverage checks are in progress; predecessor results are not a claim about the replacement branch.
+Tests executed: Fresh dependency install passed with scripts disabled. Consolidated `npm run verify` passed all 12 gates: 889 application tests, 204 tooling tests, initial JS 199,730 / 200,000 gzip bytes. Coverage passed (93.29% statements, 88.24% branches, 88.4% functions, 93.6% lines). Complete consolidated browser rerun: 101 passed, 2 failed, no skips; only home/category LCP fails at 2708/2776 ms, while CLS passes at 0.0402/0. Local browser JS is 199,927 bytes. The full rerun supersedes an interrupted run. GitHub run 39170822440 at 6f9eb2d passed all eight non-browser jobs; browser job still running at last observation.
 
 Problems found: T-7.03b remains blocked because LCP still exceeds 2500 ms; no threshold was weakened. Local widget simulation does not verify production CAPTCHA enforcement. Older broad completion statements below are historical reports, not launch sign-off.
 
-Next action: Finish consolidated browser/coverage evidence, update the replacement draft PR and leave exact continuation instructions. No main merge, deployment or hosted database changes.
+Next action: Owner review of replacement draft PR #44; inspect its exact CI head before claiming results. T-7.03b requires a revised measured LCP approach under the stop rule; do not weaken gates or repeat failed experiments. No main merge, deployment or hosted database changes.
 
 ## Codex — Mobile performance checkpoint (T-7.03b) — 2026-10-18
 
