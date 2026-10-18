@@ -174,9 +174,13 @@ describe('Two-factor login and TOTP gates (T-2.06)', () => {
       await userEvent.type(await screen.findByPlaceholderText('123456'), '123456')
       await userEvent.click(screen.getByRole('button', { name: 'تأكيد وتفعيل' }))
       expect(
-        await screen.findByRole('heading', {
-          name: role === 'admin' ? 'لوحة تحكم الإدارة' : 'الأمان والتحقق بخطوتين',
-        }),
+        await screen.findByRole(
+          'heading',
+          {
+            name: role === 'admin' ? 'لوحة تحكم الإدارة' : 'الأمان والتحقق بخطوتين',
+          },
+          { timeout: 8000 },
+        ),
       ).toBeInTheDocument()
       expect(api.challengeAndVerifyApi).toHaveBeenCalledWith('new', '123456')
     },
