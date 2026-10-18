@@ -37,12 +37,17 @@ export function Turnstile({ onVerify, onError, onExpire, className = '' }: Turns
   }, [onVerify, onError, onExpire])
 
   useEffect(() => {
+    let disposed = false
+    let checkInterval: ReturnType<typeof setInterval> | null = null
+
     let siteKey: string
     try {
       siteKey = getEnv().VITE_TURNSTILE_SITE_KEY
     } catch {
       callbacks.current.onError?.()
-      return
+      return () => {
+        disposed = true
+      }
     }
 
     // Cloudflare's documented dummy keys must never protect a production form.
@@ -52,22 +57,21 @@ export function Turnstile({ onVerify, onError, onExpire, className = '' }: Turns
       /^[123]x0+[A-Z]{2}$/.test(siteKey)
     ) {
       callbacks.current.onError?.()
-      return
+      return () => {
+        disposed = true
+      }
     }
 
     // In automated browser testing (e.g. Playwright E2E) without an external Turnstile widget:
     if (typeof window !== 'undefined' && window.navigator?.webdriver && !window.turnstile) {
       const timer = setTimeout(() => {
         if (!disposed) callbacks.current.onVerify('test-turnstile-token')
-      }, 50)
+      }, 0)
       return () => {
         disposed = true
         clearTimeout(timer)
       }
     }
-
-    let disposed = false
-    let checkInterval: ReturnType<typeof setInterval> | null = null
 
     const renderWidget = () => {
       if (!disposed && containerRef.current && window.turnstile && !widgetIdRef.current) {
