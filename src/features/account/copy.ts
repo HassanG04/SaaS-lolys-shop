@@ -1,0 +1,28 @@
+export const accountAvatarCopy = {
+  ar: {
+    avatar: 'صورة الملف الشخصي',
+    changePhoto: 'تغيير الصورة',
+    uploadPhoto: 'رفع صورة',
+    removePhoto: 'حذف الصورة',
+    uploading: 'جارٍ الرفع…',
+    removing: 'جارٍ الحذف…',
+    avatarUpdated: 'تم تحديث الصورة الشخصية بنجاح',
+    avatarRemoved: 'تم حذف الصورة الشخصية بنجاح',
+    avatarUploadFailed: 'تعذر رفع الصورة الشخصية',
+    avatarRemoveFailed: 'تعذر حذف الصورة الشخصية',
+    sizeHint: 'الحد الأقصى للحجم 2 ميجابايت (JPEG, PNG, WebP)',
+  },
+  en: {
+    avatar: 'Profile Photo',
+    changePhoto: 'Change Photo',
+    uploadPhoto: 'Upload Photo',
+    removePhoto: 'Remove Photo',
+    uploading: 'Uploading…',
+    removing: 'Removing…',
+    avatarUpdated: 'Profile photo updated successfully',
+    avatarRemoved: 'Profile photo removed successfully',
+    avatarUploadFailed: 'Failed to upload profile photo',
+    avatarRemoveFailed: 'Failed to remove profile photo',
+    sizeHint: 'Max size 2 MB (JPEG, PNG, WebP)',
+  },
+} as const

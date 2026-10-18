@@ -59,7 +59,7 @@ const baseOrder: OrderPaymentDetails = {
   created_at: '2026-10-12T10:00:00Z',
 }
 
-function renderComponent(orderId = '101') {
+function renderComponent(orderId = '101', lang: 'ar' | 'en' = 'ar') {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false, gcTime: 0 },
@@ -68,7 +68,7 @@ function renderComponent(orderId = '101') {
   })
 
   return render(
-    <LanguageProvider>
+    <LanguageProvider initialLanguage={lang}>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
           <MemoryRouter initialEntries={[`/pay/${orderId}`]}>
@@ -86,13 +86,13 @@ describe('PayOrderPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(settingsApi.getPublicSettings).mockResolvedValue({
-      instapay_handle: 'lolys@instapay',
+      instapay_handle: 'alaa.ahm9624@instapay',
       instapay_qr_path: undefined,
     })
     vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
       amount: 550,
       deadline: new Date(Date.now() + 3600_000).toISOString(),
-      handle: 'lolys@instapay',
+      handle: 'alaa.ahm9624@instapay',
       qr_path: null,
     })
 
@@ -144,7 +144,7 @@ describe('PayOrderPage', () => {
     expect(screen.getByText('بانتظار الدفع')).toBeInTheDocument()
 
     // Handle and order reference
-    expect(screen.getByText('lolys@instapay')).toBeInTheDocument()
+    expect(screen.getByText('alaa.ahm9624@instapay')).toBeInTheDocument()
     expect(screen.getByText('101')).toBeInTheDocument()
 
     // Instructions
@@ -291,5 +291,137 @@ describe('PayOrderPage', () => {
     expect(screen.queryByLabelText(/رقم عملية التحويل/)).not.toBeInTheDocument()
     expect(screen.queryByText(/خطوات الدفع عبر إنستاباي/)).not.toBeInTheDocument()
     expect(paymentsApi.getPaymentInstructionsApi).not.toHaveBeenCalled()
+  })
+
+  it('renders payment screen completely in English without Arabic leak', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    renderComponent('101', 'en')
+
+    expect(await screen.findByRole('heading', { name: '#101' })).toBeInTheDocument()
+    expect(screen.getByText('Awaiting payment')).toBeInTheDocument()
+    expect(screen.getByText('InstaPay Payment Steps')).toBeInTheDocument()
+    expect(
+      screen.getByText(/Open the InstaPay app or your mobile banking app\./),
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText(/Transfer Reference Number/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Confirm and Submit Payment Proof/ }),
+    ).toBeInTheDocument()
+
+    // Ensure no Arabic text remains in English mode
+    expect(screen.queryByText('بانتظار الدفع')).not.toBeInTheDocument()
+    expect(screen.queryByText('خطوات الدفع عبر إنستاباي')).not.toBeInTheDocument()
+    expect(screen.queryByText('تأكيد وإرسال إثبات التحويل')).not.toBeInTheDocument()
+  })
+
+  it('renders awaiting approval completely in English', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue({
+      ...baseOrder,
+      payment_status: 'awaiting_approval',
+      payment_deadline: null,
+    })
+    renderComponent('101', 'en')
+
+    expect(await screen.findByText('Awaiting store approval')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /Your order is under review and approval/ }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /Your order has been received\. We will review it and send your payment link shortly\./,
+      ),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Back to My Orders' })).toBeInTheDocument()
+
+    // No Arabic leakage
+    expect(screen.queryByText('بانتظار موافقة المتجر')).not.toBeInTheDocument()
+    expect(screen.queryByText('طلبك قيد المراجعة والموافقة')).not.toBeInTheDocument()
+  })
+
+  it('renders handle from instapay_handle when handle key is omitted', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: null,
+      instapay_handle: 'custom.recipient@instapay',
+      qr_path: null,
+    })
+    renderComponent('101')
+
+    expect(await screen.findByText('custom.recipient@instapay')).toBeInTheDocument()
+  })
+
+  it('renders custom QR image when qr_path is returned by instructions', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: 'alaa.ahm9624@instapay',
+      qr_path: 'https://cdn.example.com/custom-qr.png',
+    })
+    renderComponent('101')
+
+    const qrImg = await screen.findByAltText(/رمز QR لإنستاباي/)
+    await waitFor(() => {
+      expect(qrImg).toHaveAttribute('src', 'https://cdn.example.com/custom-qr.png')
+    })
+  })
+
+  it('renders ThemedQrCode and Open InstaPay link when official link is returned by instructions', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: 'alaa.ahm9624@instapay',
+      qr_path: null,
+      link: 'https://ipn.eg/S/alaa.ahm9624/token123',
+    })
+    renderComponent('101')
+
+    // Open InstaPay action link is rendered once instructions load
+    const openLink = await screen.findByRole('link', { name: /فتح في تطبيق إنستاباي/ })
+    expect(openLink).toBeInTheDocument()
+    expect(openLink).toHaveAttribute('href', 'https://ipn.eg/S/alaa.ahm9624/token123')
+    expect(openLink).toHaveAttribute('target', '_blank')
+
+    // QR container with correct accessible label is rendered (ThemedQrCode or fallback div).
+    // In jsdom SVG generation may silently fall back to a <div role="img"> without SVG;
+    // we only verify the container and its label are present.
+    const qrEl = screen.getByRole('img', { name: /رمز QR لإنستاباي/ })
+    expect(qrEl).toBeInTheDocument()
+  })
+
+  it('renders Open InstaPay link in English when viewing in English locale', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: 'alaa.ahm9624@instapay',
+      qr_path: null,
+      link: 'https://ipn.eg/S/alaa.ahm9624/token123',
+    })
+    renderComponent('101', 'en')
+
+    const openLink = await screen.findByRole('link', { name: /Open InstaPay App/ })
+    expect(openLink).toBeInTheDocument()
+    expect(openLink).toHaveAttribute('href', 'https://ipn.eg/S/alaa.ahm9624/token123')
+  })
+
+  it('renders unavailable fallback when neither link nor custom qr_path is present', async () => {
+    vi.mocked(paymentsApi.getOrderPaymentDetailsApi).mockResolvedValue(baseOrder)
+    vi.mocked(paymentsApi.getPaymentInstructionsApi).mockResolvedValue({
+      amount: 550,
+      deadline: new Date(Date.now() + 3600_000).toISOString(),
+      handle: 'alaa.ahm9624@instapay',
+      qr_path: null,
+      link: null,
+    })
+    renderComponent('101')
+
+    // When neither a link nor a custom qr_path is configured, the placeholder image
+    // is rendered with the standard QR alt text (the text-only div was replaced by img).
+    const qrImg = await screen.findByAltText('رمز QR لإنستاباي')
+    expect(qrImg).toHaveAttribute('src', '/placeholders/instapay-qr.svg')
   })
 })

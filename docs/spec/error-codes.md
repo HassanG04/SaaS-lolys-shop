@@ -36,6 +36,7 @@ Placeholders: `{name}` product name, `{left}` units left, `{ref}` reference id.
 | AUTH-010 | إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة خلال دقائق. | Neutral result of sign-up, reset, resend (not an error) |
 | AUTH-011 | لا تملك صلاحية الوصول إلى هذه الصفحة. | HTTP 403 or SQLSTATE 42501 for a customer |
 | AUTH-012 | تعذّر إرسال الرسالة الآن. حاول بعد قليل. | Email sending rate limit |
+| AUTH-016 | تعذّر إعداد تطبيق المصادقة. أعد المحاولة أو سجّل الدخول من جديد. | Authenticated TOTP setup failure; never reuse the neutral email result. English: Unable to set up your authenticator. Try again or sign in again. |
 
 ### ORD: orders
 

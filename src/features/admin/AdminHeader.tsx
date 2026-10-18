@@ -7,22 +7,30 @@ import { useAuth } from '../auth/AuthProvider'
 interface AdminHeaderProps {
   onToggleSidebar: () => void
   isSidebarOpen: boolean
+  desktopCollapsed?: boolean
+  onToggleDesktopSidebar?: () => void
 }
 
-export function AdminHeader({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps) {
+export function AdminHeader({
+  onToggleSidebar,
+  isSidebarOpen,
+  desktopCollapsed,
+  onToggleDesktopSidebar,
+}: AdminHeaderProps) {
   const { t } = useLanguage()
   const { signOut, user } = useAuth()
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-(--color-border) bg-(--color-surface)/95 backdrop-blur-md px-4 sm:px-6">
-      <div className="flex items-center gap-3">
+    <header className="admin-header relative z-30 flex h-16 w-full shrink-0 items-center justify-between gap-2 border-b border-border bg-surface px-3 sm:px-6">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         {/* Mobile menu toggle */}
         <button
           type="button"
           onClick={onToggleSidebar}
           aria-label={t.admin.sidebarToggle}
           aria-expanded={isSidebarOpen}
-          className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-surface-2) text-(--color-text) hover:border-(--color-brand) hover:text-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+          aria-controls="admin-mobile-sidebar"
+          className="lg:hidden inline-flex size-11 shrink-0 items-center justify-center rounded-pill border border-border-input bg-surface-2 text-text hover:border-brand hover:text-brand focus:outline-none focus:ring-2 focus:ring-focus"
         >
           <svg
             className="size-5"
@@ -39,14 +47,34 @@ export function AdminHeader({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps
             <line x1="4" x2="20" y1="18" y2="18" />
           </svg>
         </button>
+        <button
+          type="button"
+          onClick={onToggleDesktopSidebar}
+          aria-label={desktopCollapsed ? t.admin.expandSidebar : t.admin.collapseSidebar}
+          aria-controls="admin-desktop-sidebar"
+          aria-expanded={!desktopCollapsed}
+          className="hidden lg:inline-flex ui-control shrink-0 items-center justify-center rounded-pill border border-border-input bg-surface-2 text-brand"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="size-5 rtl:scale-x-[-1]"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            aria-hidden="true"
+          >
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M9 4v16m7-8h-4" />
+          </svg>
+        </button>
 
-        <span className="font-accent text-body font-bold text-(--color-brand) sm:text-h3">
+        <span className="truncate font-accent text-small font-bold text-brand sm:text-h3">
           {t.admin.dashboard}
         </span>
       </div>
 
       {/* Header controls: user email, language toggle, theme toggle, sign out */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {user?.email && (
           <span className="hidden md:inline-block text-caption text-(--color-text-muted) max-w-[150px] truncate">
             <Ltr>{user.email}</Ltr>
@@ -59,7 +87,7 @@ export function AdminHeader({ onToggleSidebar, isSidebarOpen }: AdminHeaderProps
         <button
           type="button"
           onClick={() => void signOut()}
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-surface-2) px-3 text-caption font-semibold text-(--color-text) hover:border-(--color-danger) hover:text-(--color-danger) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+          className="ui-control inline-flex items-center justify-center gap-1.5 rounded-pill border border-border-input bg-surface-2 px-3 text-caption font-semibold text-text hover:border-danger hover:text-danger focus:outline-none focus:ring-2 focus:ring-focus"
           aria-label={t.account.logout}
         >
           <svg

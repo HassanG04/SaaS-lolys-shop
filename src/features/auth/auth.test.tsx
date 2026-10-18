@@ -83,11 +83,30 @@ describe('Authentication unit tests (T-2.04)', () => {
     expect(knownRes.code).toBe(unknownRes.code)
   })
 
-  it('proves sign-up with an existing email shows neutral AUTH-010', async () => {
+  it('proves sign-up with an existing email returns neutral AUTH-010 (SEC-05)', async () => {
     // Supabase returns an error or identity collision on existing user
     vi.spyOn(supabase.auth, 'signUp').mockResolvedValue({
       data: { user: null, session: null },
       error: new AuthApiError('user_already_exists', 400, 'user_already_exists'),
+    })
+
+    const result = await signUpApi({
+      email: 'existing@example.com',
+      password: 'ValidPassword10!',
+    })
+
+    expect(result.success).toBe(true)
+    expect(result.code).toBe('AUTH-010')
+    expect(result.message).toBe(getAuthMessage('AUTH-010'))
+  })
+
+  it('proves neutral AUTH-010 outcome when identities array is empty (SEC-05)', async () => {
+    vi.spyOn(supabase.auth, 'signUp').mockResolvedValue({
+      data: {
+        user: { id: 'u-123', identities: [] } as unknown as User,
+        session: null,
+      },
+      error: null,
     })
 
     const result = await signUpApi({
@@ -152,14 +171,19 @@ describe('Authentication unit tests (T-2.04)', () => {
     expect(container.textContent).toContain('AUTH-001')
   })
 
-  it('renders login page with always-visible resend confirmation link and upfront password rule', async () => {
+  it('keeps confirmation resend out of login and places it on the forgot-password page', async () => {
     render(<App initialEntries={['/login']} />)
 
     expect(await screen.findByRole('heading', { name: 'تسجيل الدخول' })).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'لم تصلك رسالة التفعيل؟ أعد الإرسال' }),
-    ).toBeInTheDocument()
+      screen.queryByRole('link', { name: 'لم تصلك رسالة التفعيل؟ أعد الإرسال' }),
+    ).not.toBeInTheDocument()
     expect(screen.getByText(/10 أحرف على الأقل/)).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('link', { name: 'نسيت كلمة المرور؟' }))
+    expect(
+      await screen.findByRole('link', { name: 'لم تصلك رسالة التفعيل؟ أعد الإرسال' }),
+    ).toHaveAttribute('href', '/resend-confirmation')
   })
 
   it('requires authentication for /account/orders and redirects to login with redirect param', async () => {
@@ -214,11 +238,13 @@ describe('Authentication unit tests (T-2.04)', () => {
       const nameInput = await screen.findByLabelText('الاسم الكامل')
       const emailInput = screen.getByLabelText('البريد الإلكتروني')
       const passwordInput = screen.getByLabelText('كلمة المرور')
+      const confirmPasswordInput = screen.getByLabelText('تأكيد كلمة المرور')
       const submitBtn = screen.getByRole('button', { name: 'إنشاء حساب' })
 
       await user.type(nameInput, 'فاطمة أحمد')
       await user.type(emailInput, 'fatima@example.com')
       await user.type(passwordInput, 'SecurePass1234')
+      await user.type(confirmPasswordInput, 'SecurePass1234')
       await user.click(submitBtn)
 
       expect(
@@ -227,9 +253,8 @@ describe('Authentication unit tests (T-2.04)', () => {
       expect(screen.getByText(/إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة/)).toBeInTheDocument()
       expect(screen.getByText(/صندوق الوارد ومجلد الرسائل غير المرغوب فيها/)).toBeInTheDocument()
 
-      const resendLink = screen.getByRole('link', { name: 'لم تصلك الرسالة؟ أعد الإرسال' })
-      expect(resendLink).toBeInTheDocument()
-      expect(resendLink).toHaveAttribute('href', '/resend-confirmation')
+      const resendBtn = screen.getByRole('button', { name: 'لم تصلك الرسالة؟ أعد الإرسال' })
+      expect(resendBtn).toBeInTheDocument()
     })
 
     it('displays clear "check your email" state after password reset request', async () => {
@@ -251,6 +276,11 @@ describe('Authentication unit tests (T-2.04)', () => {
         await screen.findByRole('heading', { name: 'تحقق من بريدك الإلكتروني' }),
       ).toBeInTheDocument()
       expect(screen.getByText(/رابط إعادة التعيين خلال دقائق/)).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: 'لم تصلك الرسالة؟ أعد الإرسال' }))
+      expect(screen.getByLabelText('البريد الإلكتروني')).toHaveValue('user@example.com')
+      expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledTimes(1)
+      await user.click(screen.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }))
+      expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledTimes(2)
     })
 
     it('displays clear "resend" state on /resend-confirmation with active submission', async () => {

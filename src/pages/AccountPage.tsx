@@ -2,9 +2,19 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { useAuth } from '@/features/auth/AuthProvider'
-import { useCustomerStats, useUpdateProfile, type ProfileFormState } from '@/features/account'
+import {
+  useCustomerStats,
+  useUpdateProfile,
+  ProfileAvatar,
+  type ProfileFormState,
+} from '@/features/account'
 import { useGovernorates } from '@/features/delivery'
-import { normalizeEgyptianPhone, isValidEgyptianPhone } from '@/features/checkout/validation'
+import {
+  normalizeEgyptianPhone,
+  isValidEgyptianPhone,
+  normalizePostalCode,
+  isValidPostalCode,
+} from '@/features/checkout/validation'
 import { formatEGP, formatNumber } from '@/lib/format'
 import { useSeo } from '@/features/seo'
 import { Card } from '@/components/ui/Card'
@@ -19,7 +29,7 @@ import { Ltr } from '@/components/ui/Ltr'
 
 export default function AccountPage() {
   const { t, lang } = useLanguage()
-  const { user, profile, refreshProfile } = useAuth()
+  const { user, profile, refreshProfile, signOut } = useAuth()
   const toast = useToast()
 
   const {
@@ -41,6 +51,7 @@ export default function AccountPage() {
     city: profile?.city || '',
     district: profile?.district || '',
     address: profile?.address || '',
+    postal_code: profile?.postal_code || '',
     floor: profile?.floor || '',
     apartment: profile?.apartment || '',
     landmark: profile?.landmark || '',
@@ -57,6 +68,7 @@ export default function AccountPage() {
       city: profile.city || '',
       district: profile.district || '',
       address: profile.address || '',
+      postal_code: profile.postal_code || '',
       floor: profile.floor || '',
       apartment: profile.apartment || '',
       landmark: profile.landmark || '',
@@ -67,33 +79,56 @@ export default function AccountPage() {
     full_name?: string
     phone?: string
     alt_phone?: string
+    postal_code?: string
   }>({})
 
   useSeo({
-    title: t.account.details || 'بيانات الحساب',
-    description: 'تعديل بيانات الحساب وعناوين التوصيل في متجر لوليز',
+    title: t.account.details,
+    description:
+      lang === 'ar'
+        ? 'تعديل بيانات الحساب وعناوين التوصيل في متجر لوليز'
+        : "Manage your account details and delivery addresses at Lolys' Accessories & Home",
   })
 
   const validate = (): boolean => {
-    const errors: { full_name?: string; phone?: string; alt_phone?: string } = {}
+    const errors: {
+      full_name?: string
+      phone?: string
+      alt_phone?: string
+      postal_code?: string
+    } = {}
 
     if (!form.full_name.trim()) {
-      errors.full_name = 'الاسم مطلوب'
+      errors.full_name = t.account.nameRequired
     } else if (form.full_name.trim().length > 100) {
-      errors.full_name = 'الاسم يجب ألا يتجاوز 100 حرف'
+      errors.full_name = t.account.nameTooLong
     }
 
     const normPhone = normalizeEgyptianPhone(form.phone)
     if (!normPhone) {
-      errors.phone = 'رقم الهاتف الأساسي مطلوب'
+      errors.phone = t.account.phoneRequired
     } else if (!isValidEgyptianPhone(normPhone)) {
-      errors.phone = 'رقم هاتف مصري غير صحيح (11 رقم يبدأ بـ 010، 011، 012، أو 015)'
+      errors.phone = t.account.phoneInvalid
     }
 
     if (form.alt_phone.trim()) {
       const normAlt = normalizeEgyptianPhone(form.alt_phone)
       if (!isValidEgyptianPhone(normAlt)) {
-        errors.alt_phone = 'رقم الهاتف الإضافي غير صحيح'
+        errors.alt_phone = t.account.altPhoneInvalid
+      }
+    }
+
+    const hasAddress = Boolean(form.address.trim() || form.governorate_id)
+    if (hasAddress) {
+      const normPostal = normalizePostalCode(form.postal_code)
+      if (!normPostal) {
+        errors.postal_code = t.account.postalCodeRequired
+      } else if (!isValidPostalCode(normPostal)) {
+        errors.postal_code = t.account.postalCodeInvalid
+      }
+    } else if (form.postal_code.trim()) {
+      if (!isValidPostalCode(form.postal_code)) {
+        errors.postal_code = t.account.postalCodeInvalid
       }
     }
 
@@ -117,6 +152,7 @@ export default function AccountPage() {
           city: form.city.trim() || null,
           district: form.district.trim() || null,
           address: form.address.trim() || null,
+          postal_code: form.postal_code.trim() ? normalizePostalCode(form.postal_code) : null,
           floor: form.floor.trim() || null,
           apartment: form.apartment.trim() || null,
           landmark: form.landmark.trim() || null,
@@ -124,7 +160,7 @@ export default function AccountPage() {
       })
 
       await refreshProfile()
-      toast.success('تم حفظ بيانات الحساب بنجاح')
+      toast.success(t.account.savedSuccess)
     } catch {
       // Handled via updateMutation.error in template
     }
@@ -133,42 +169,61 @@ export default function AccountPage() {
   return (
     <div className="space-y-6">
       {/* Header and Navigation */}
-      <div className="rounded-card border border-border bg-surface p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-card">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-h1 font-bold font-accent text-brand">
-              {t.account.details || 'بيانات الحساب'}
-            </h1>
-            {user?.email && (
-              <span className="inline-flex items-center rounded-chip bg-surface-2 px-2.5 py-0.5 text-caption font-medium text-text-muted border border-border">
-                <Ltr>{user.email}</Ltr>
-              </span>
-            )}
+      <div className="rounded-card border border-border bg-surface p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 shadow-card">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          {user && (
+            <ProfileAvatar
+              userId={user.id}
+              avatarUrl={profile?.avatar_url}
+              fullName={profile?.full_name}
+              email={user.email}
+              onAvatarChange={refreshProfile}
+            />
+          )}
+          <div className="flex flex-col items-center sm:items-start">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <h1 className="text-h1 font-bold font-accent text-brand">{t.account.details}</h1>
+              {user?.email && (
+                <span className="inline-flex items-center rounded-chip bg-surface-2 px-2.5 py-0.5 text-caption font-medium text-text-muted border border-border">
+                  <Ltr>{user.email}</Ltr>
+                </span>
+              )}
+            </div>
+            <p className="mt-2 text-body text-text-muted text-center sm:text-start">
+              {t.account.manageSubtitle}
+            </p>
           </div>
-          <p className="mt-2 text-body text-text-muted">
-            إدارة بياناتك الشخصية وعناوين الشحن المحفوظة.
-          </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 justify-center lg:justify-end">
           <Link
             to="/account/orders"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account.orders || 'طلباتي'}
+            {t.account.orders}
           </Link>
           <Link
             to="/account/favorites"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account?.favorites || 'المفضلة'}
+            {t.account.favorites}
           </Link>
           <Link
             to="/account/security"
             className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
           >
-            {t.account.security || 'الأمان'}
+            {t.account.security}
           </Link>
+          <button
+            type="button"
+            onClick={async () => {
+              await signOut()
+              toast.success(lang === 'ar' ? 'تم تسجيل الخروج بنجاح' : 'Logged out successfully')
+            }}
+            className="inline-flex h-11 items-center justify-center rounded-pill border border-border-input bg-surface-2 px-4 text-small font-semibold text-text hover:border-danger hover:text-danger focus:outline-none focus:ring-2 focus:ring-focus transition-colors"
+          >
+            {t.account.logout}
+          </button>
         </div>
       </div>
 
@@ -203,7 +258,7 @@ export default function AccountPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-small font-medium text-text-muted">إجمالي المشتريات</p>
+                <p className="text-small font-medium text-text-muted">{t.account.totalSpent}</p>
                 <p className="text-h3 font-bold text-brand mt-0.5">
                   {formatEGP(stats?.total_spent ?? 0)}
                 </p>
@@ -229,7 +284,7 @@ export default function AccountPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-small font-medium text-text-muted">عدد الطلبات</p>
+                <p className="text-small font-medium text-text-muted">{t.account.ordersCount}</p>
                 <p className="text-h3 font-bold text-text mt-0.5">
                   {formatNumber(stats?.orders_count ?? 0)}
                 </p>
@@ -249,7 +304,9 @@ export default function AccountPage() {
                 </svg>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-small font-medium text-text-muted">المنتج المفضل</p>
+                <p className="text-small font-medium text-text-muted">
+                  {t.account.favoriteProduct}
+                </p>
                 {stats?.favorite_product_name ? (
                   stats.favorite_product_id ? (
                     <Link
@@ -264,7 +321,7 @@ export default function AccountPage() {
                     </p>
                   )
                 ) : (
-                  <p className="text-small text-text-muted mt-0.5">لا توجد طلبات سابقة</p>
+                  <p className="text-small text-text-muted mt-0.5">{t.account.noOrders}</p>
                 )}
               </div>
             </Card>
@@ -276,10 +333,8 @@ export default function AccountPage() {
       <Card className="p-6 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           <div className="border-b border-border pb-4">
-            <h2 className="text-h3 font-bold text-brand">البيانات الشخصية</h2>
-            <p className="text-small text-text-muted mt-1">
-              تُستخدم هذه البيانات للتواصل معك وتأكيد الطلبات.
-            </p>
+            <h2 className="text-h3 font-bold text-brand">{t.account.personalInfo}</h2>
+            <p className="text-small text-text-muted mt-1">{t.account.personalInfoDesc}</p>
           </div>
 
           {updateMutation.isError && (
@@ -292,12 +347,12 @@ export default function AccountPage() {
             {/* Full Name */}
             <div>
               <Input
-                label="الاسم بالكامل *"
+                label={t.account.fullName}
                 value={form.full_name}
                 onChange={(e) => setForm({ ...form, full_name: e.target.value })}
                 required
                 maxLength={100}
-                placeholder="أحمد محمد"
+                placeholder={lang === 'ar' ? 'أحمد محمد' : 'Rana Mohamed'}
               />
               {fieldErrors.full_name && (
                 <p className="text-small text-danger mt-1">{fieldErrors.full_name}</p>
@@ -307,7 +362,7 @@ export default function AccountPage() {
             {/* Primary Phone */}
             <div>
               <Input
-                label="رقم الهاتف الأساسي *"
+                label={t.account.primaryPhone}
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 required
@@ -323,7 +378,7 @@ export default function AccountPage() {
             {/* Alternative Phone */}
             <div className="sm:col-span-2">
               <Input
-                label="رقم هاتف إضافي (اختياري)"
+                label={t.account.altPhone}
                 value={form.alt_phone}
                 onChange={(e) => setForm({ ...form, alt_phone: e.target.value })}
                 placeholder="01112345678"
@@ -337,17 +392,15 @@ export default function AccountPage() {
           </div>
 
           <div className="border-b border-border pb-4 pt-4">
-            <h2 className="text-h3 font-bold text-brand">عنوان الشحن الافتراضي</h2>
-            <p className="text-small text-text-muted mt-1">
-              سيتم استخدام هذا العنوان تلقائياً لتسريع إتمام الطلب مستقبلاً.
-            </p>
+            <h2 className="text-h3 font-bold text-brand">{t.account.shippingAddress}</h2>
+            <p className="text-small text-text-muted mt-1">{t.account.shippingAddressDesc}</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Governorate */}
             <div>
               <Select
-                label="المحافظة"
+                label={t.account.governorate}
                 value={form.governorate_id}
                 onChange={(e) =>
                   setForm({
@@ -357,10 +410,10 @@ export default function AccountPage() {
                 }
                 disabled={govLoading}
               >
-                <option value="">اختر المحافظة...</option>
+                <option value="">{t.account.selectGov}</option>
                 {governorates.map((gov) => (
                   <option key={gov.id} value={gov.id}>
-                    {lang === 'ar' ? gov.name_ar : gov.name_en}
+                    {lang === 'ar' ? gov.name_ar : gov.name_en || gov.name_ar}
                   </option>
                 ))}
               </Select>
@@ -369,66 +422,83 @@ export default function AccountPage() {
             {/* City */}
             <div>
               <Input
-                label="المدينة / المركز"
+                label={t.account.city}
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
                 maxLength={150}
-                placeholder="المنصورة / مدينة نصر"
+                placeholder={lang === 'ar' ? 'المنصورة / مدينة نصر' : 'Alexandria / Cairo'}
               />
             </div>
 
             {/* District */}
             <div>
               <Input
-                label="الحي / المنطقة"
+                label={t.account.district}
                 value={form.district}
                 onChange={(e) => setForm({ ...form, district: e.target.value })}
                 maxLength={150}
-                placeholder="حي الجامعة"
+                placeholder={lang === 'ar' ? 'حي الجامعة' : 'Sidi Gaber'}
               />
             </div>
 
             {/* Street Address */}
             <div>
               <Input
-                label="اسم الشارع ورقم العمارة"
+                label={t.account.street}
                 value={form.address}
                 onChange={(e) => setForm({ ...form, address: e.target.value })}
                 maxLength={150}
-                placeholder="شارع الجمهورية - عمارة 12"
+                placeholder={lang === 'ar' ? 'شارع الجمهورية - عمارة 12' : '12 El Gomhouria St'}
               />
+            </div>
+
+            {/* Postal Code */}
+            <div>
+              <Input
+                label={t.account.postalCode}
+                value={form.postal_code}
+                onChange={(e) => setForm({ ...form, postal_code: e.target.value })}
+                maxLength={5}
+                placeholder={t.account.postalCodeHint}
+                dir="ltr"
+              />
+              {fieldErrors.postal_code && (
+                <p className="text-small text-danger mt-1">{fieldErrors.postal_code}</p>
+              )}
             </div>
 
             {/* Floor */}
             <div>
               <Input
-                label="الدور"
+                label={t.account.floor}
                 value={form.floor}
                 onChange={(e) => setForm({ ...form, floor: e.target.value })}
                 maxLength={50}
-                placeholder="الدور الرابع"
+                placeholder={lang === 'ar' ? 'الدور الرابع' : '4th Floor'}
               />
             </div>
 
             {/* Apartment */}
             <div>
               <Input
-                label="رقم الشقة"
+                label={t.account.apartment}
                 value={form.apartment}
                 onChange={(e) => setForm({ ...form, apartment: e.target.value })}
                 maxLength={50}
-                placeholder="شقة 8"
+                placeholder={lang === 'ar' ? 'شقة 8' : 'Apt 8'}
               />
             </div>
 
             {/* Landmark */}
             <div className="sm:col-span-2">
               <Input
-                label="علامة مميزة (اختياري)"
+                label={t.account.landmark}
                 value={form.landmark}
                 onChange={(e) => setForm({ ...form, landmark: e.target.value })}
                 maxLength={150}
-                placeholder="بجوار مسجد النور / أمام صيدلية العزبي"
+                placeholder={
+                  lang === 'ar' ? 'بجوار مسجد النور / أمام صيدلية العزبي' : 'Near Al-Nour Mosque'
+                }
               />
             </div>
           </div>
@@ -438,7 +508,7 @@ export default function AccountPage() {
               to="/account/security"
               className="text-small text-brand hover:underline font-medium"
             >
-              هل ترغب في تغيير كلمة المرور أو تفعيل التحقق بخطوتين؟ انتقل إلى الأمان ←
+              {t.account.securityLink}
             </Link>
 
             <Button
@@ -447,7 +517,7 @@ export default function AccountPage() {
               disabled={updateMutation.isPending}
               className="w-full sm:w-auto min-w-[160px]"
             >
-              {updateMutation.isPending ? 'جارٍ الحفظ...' : 'حفظ التغييرات'}
+              {updateMutation.isPending ? t.account.saving : t.account.saveChanges}
             </Button>
           </div>
         </form>

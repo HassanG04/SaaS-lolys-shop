@@ -229,12 +229,38 @@ describe('Admin shell and access control (T-5.01)', () => {
       expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
 
       // Close button inside drawer
-      const closeButton = screen.getByRole('button', { name: 'إغلاق القائمة' })
+      const closeButton = screen.getByRole('button', { name: 'إغلاق النافذة' })
       expect(closeButton).toBeInTheDocument()
 
       // Click to close drawer
       await user.click(closeButton)
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
+    })
+
+    it('collapses and restores the desktop sidebar without navigating or signing out (T-5.13e)', async () => {
+      const user = userEvent.setup()
+      render(<App initialEntries={['/admin']} />)
+      const collapse = await screen.findByRole('button', { name: 'طي الشريط الجانبي' })
+      expect(collapse).toHaveAttribute('aria-expanded', 'true')
+      await user.click(collapse)
+      const expand = screen.getByRole('button', { name: 'توسيع الشريط الجانبي' })
+      expect(expand).toHaveAttribute('aria-expanded', 'false')
+      const sidebar = document.getElementById('admin-desktop-sidebar')
+      expect(sidebar).toHaveClass('is-collapsed')
+      expect(sidebar).toHaveAttribute('inert')
+      await user.click(expand)
+      expect(sidebar).toHaveClass('is-expanded')
+      expect(sidebar).not.toHaveAttribute('inert')
+      expect(screen.getByText('AAL2')).toBeInTheDocument()
+    })
+
+    it('renders inner page transition and resets inner scroll on pathname change (T-5.13e)', async () => {
+      render(<App initialEntries={['/admin']} />)
+      expect(await screen.findByRole('heading', { name: 'لوحة تحكم الإدارة' })).toBeInTheDocument()
+
+      const mainContainer = document.getElementById('admin-main')
+      expect(mainContainer).toBeInTheDocument()
+      expect(mainContainer?.querySelector('.admin-page-transition')).toBeInTheDocument()
     })
 
     it('admin header provides store return link, theme toggle, and sign out button', async () => {

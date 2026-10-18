@@ -73,4 +73,20 @@ test('public/_headers Content-Security-Policy hash matches index.html theme scri
     csp.includes(`'${computedHash}'`),
     `CSP script-src must contain exact hash '${computedHash}' matching index.html theme-init script`,
   )
+
+  // Extract inline motion initialization script
+  const motionStartTag = '<script id="motion-init">'
+  const motionStartIndex = indexContent.indexOf(motionStartTag)
+  if (motionStartIndex !== -1) {
+    const motionScriptStart = motionStartIndex + motionStartTag.length
+    const motionEndIndex = indexContent.indexOf(endTag, motionScriptStart)
+    assert.ok(motionEndIndex !== -1, 'index.html must contain closing </script> for motion-init')
+    const motionScriptContent = indexContent.substring(motionScriptStart, motionEndIndex)
+    const computedMotionHash =
+      'sha256-' + crypto.createHash('sha256').update(motionScriptContent, 'utf8').digest('base64')
+    assert.ok(
+      csp.includes(`'${computedMotionHash}'`),
+      `CSP script-src must contain exact hash '${computedMotionHash}' matching index.html motion-init script`,
+    )
+  }
 })

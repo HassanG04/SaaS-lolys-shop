@@ -6,8 +6,10 @@ import { Input } from '../components/ui/Input'
 import { AuthAlert } from '../features/auth/AuthAlert'
 import { useAuth } from '../features/auth/AuthProvider'
 import type { AuthErrorCode } from '../features/auth/types'
+import { useLanguage } from '../i18n/LanguageProvider'
 
 export default function MfaChallengePage() {
+  const { t } = useLanguage()
   const { factors, challengeAndVerify } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -21,12 +23,12 @@ export default function MfaChallengePage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    if (code.trim().length !== 6) {
+    if (!/^\d{6}$/.test(code.trim())) {
       setErrorCode('AUTH-006')
       return
     }
 
-    const targetFactor = factors.find((f) => f.status === 'verified') || factors[0]
+    const targetFactor = factors.find((f) => f.status === 'verified')
     if (!targetFactor) {
       setErrorCode('AUTH-005')
       return
@@ -38,7 +40,10 @@ export default function MfaChallengePage() {
     try {
       const result = await challengeAndVerify(targetFactor.id, code.trim())
       if (result.success) {
-        const redirectTo = searchParams.get('redirect') || '/admin'
+        const requested = searchParams.get('redirect')
+        const fallback = isAdminMfa ? '/admin' : '/account/security'
+        const redirectTo =
+          requested?.startsWith('/') && !/^\/[\\/]/.test(requested) ? requested : fallback
         navigate(redirectTo, { replace: true })
       } else {
         setErrorCode(result.code || 'AUTH-006')
@@ -54,10 +59,8 @@ export default function MfaChallengePage() {
     <div className="flex min-h-[60vh] items-center justify-center p-4">
       <Card className="w-full max-w-md p-6 sm:p-8">
         <div className="mb-6 text-center">
-          <h1 className="text-h2 font-bold text-brand">التحقق بخطوتين</h1>
-          <p className="mt-2 text-small text-text-muted">
-            أدخل الرمز المكوّن من 6 أرقام من تطبيق المصادقة للمتابعة.
-          </p>
+          <h1 className="text-h2 font-bold text-brand">{t('mfa.challengeTitle')}</h1>
+          <p className="mt-2 text-small text-text-muted">{t('mfa.challengeDescription')}</p>
         </div>
 
         {isAdminMfa && <AuthAlert code="ADM-002" className="mb-4" />}
@@ -65,10 +68,12 @@ export default function MfaChallengePage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
-            label="رمز التحقق (6 أرقام)"
+            label={t('mfa.code')}
             name="totpCode"
             type="text"
             inputMode="numeric"
+            autoComplete="one-time-code"
+            dir="ltr"
             pattern="[0-9]*"
             maxLength={6}
             placeholder="123456"
@@ -80,7 +85,7 @@ export default function MfaChallengePage() {
           />
 
           <Button type="submit" variant="primary" disabled={submitting} className="w-full">
-            {submitting ? 'جارٍ التحقق...' : 'تأكيد الرمز والمتابعة'}
+            {submitting ? t('mfa.verifying') : t('mfa.continue')}
           </Button>
         </form>
       </Card>

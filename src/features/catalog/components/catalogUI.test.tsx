@@ -63,6 +63,7 @@ const mockCategory: Category = {
 }
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { CartProvider } from '@/features/cart'
 
 function renderWithProviders(ui: React.ReactElement, initialLanguage: Language = 'ar') {
   const queryClient = new QueryClient({
@@ -71,7 +72,9 @@ function renderWithProviders(ui: React.ReactElement, initialLanguage: Language =
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
-        <LanguageProvider initialLanguage={initialLanguage}>{ui}</LanguageProvider>
+        <LanguageProvider initialLanguage={initialLanguage}>
+          <CartProvider>{ui}</CartProvider>
+        </LanguageProvider>
       </MemoryRouter>
     </QueryClientProvider>,
   )
@@ -126,6 +129,43 @@ describe('Catalog UI Components (T-3.02)', () => {
 
       expect(screen.getByRole('img', { name: 'Broken Item' })).toBeInTheDocument()
     })
+
+    it('resets loaded and error states when src prop changes', () => {
+      const { rerender } = renderWithProviders(
+        <ProductImage src="products/initial.webp" alt="Test Item" />,
+      )
+
+      const img = screen.getByRole('img', { name: 'Test Item' })
+      fireEvent.load(img)
+      expect(img.className).toContain('opacity-100')
+
+      // Rerender with broken image
+      rerender(
+        <MemoryRouter>
+          <LanguageProvider initialLanguage="ar">
+            <ProductImage src="products/broken.webp" alt="Test Item" />
+          </LanguageProvider>
+        </MemoryRouter>,
+      )
+
+      const brokenImg = screen.getByRole('img', { name: 'Test Item' })
+      fireEvent.error(brokenImg)
+      expect(screen.getByRole('img', { name: 'Test Item' }).tagName).toBe('DIV')
+
+      // Replace with recovered image: should reset error and display IMG tag
+      rerender(
+        <MemoryRouter>
+          <LanguageProvider initialLanguage="ar">
+            <ProductImage src="products/recovered.webp" alt="Test Item" />
+          </LanguageProvider>
+        </MemoryRouter>,
+      )
+
+      const recoveredImg = screen.getByRole('img', { name: 'Test Item' })
+      expect(recoveredImg.tagName).toBe('IMG')
+      fireEvent.load(recoveredImg)
+      expect(recoveredImg.className).toContain('opacity-100')
+    })
   })
 
   describe('ProductCard', () => {
@@ -170,6 +210,19 @@ describe('Catalog UI Components (T-3.02)', () => {
       expect(onAdd).toHaveBeenCalledWith(mockAvailableProduct)
     })
 
+    it('adds product directly via CartProvider when onAddToCart is not provided', async () => {
+      const user = userEvent.setup()
+
+      renderWithProviders(<ProductCard product={mockAvailableProduct} />)
+
+      const addBtn = screen.getByRole('button', { name: /أضف إلى السلة/ })
+      expect(addBtn.className).toContain('flower-button')
+      await user.click(addBtn)
+
+      // Button remains accessible and rendered
+      expect(screen.getByRole('button', { name: /أضف إلى السلة/ })).toBeInTheDocument()
+    })
+
     it('proves sold-out items are clearly marked and CANNOT be added', async () => {
       const user = userEvent.setup()
       const onAdd = vi.fn()
@@ -187,6 +240,32 @@ describe('Catalog UI Components (T-3.02)', () => {
       // Attempting to click must NOT trigger onAddToCart
       await user.click(btn)
       expect(onAdd).not.toHaveBeenCalled()
+    })
+
+    it('places offer badge opposite wishlist button using logical start and end classes (T-3.10b)', () => {
+      const { container } = renderWithProviders(
+        <ProductCard product={mockAvailableProduct} />,
+        'ar',
+      )
+
+      const badgeOverlay = container.querySelector('.product-badges-overlay')
+      const favoriteOverlay = container.querySelector('.product-favorite-overlay')
+
+      expect(badgeOverlay).toBeInTheDocument()
+      expect(badgeOverlay?.className).toContain('start-2')
+      expect(favoriteOverlay).toBeInTheDocument()
+      expect(favoriteOverlay?.className).toContain('end-2')
+
+      // In Arabic, favorite button accessible name uses Arabic name
+      const favBtnAr = screen.getByRole('button', { name: /إضافة إلى المفضلة - سوار ذهبي/ })
+      expect(favBtnAr).toBeInTheDocument()
+    })
+
+    it('renders English product name in favorite button accessible name when language is en (T-3.10b)', () => {
+      renderWithProviders(<ProductCard product={mockAvailableProduct} />, 'en')
+
+      const favBtnEn = screen.getByRole('button', { name: /Add to favorites - Golden Bracelet/ })
+      expect(favBtnEn).toBeInTheDocument()
     })
   })
 

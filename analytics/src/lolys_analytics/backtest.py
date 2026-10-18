@@ -248,6 +248,7 @@ def create_rolling_origin_folds(
     n_folds: int = 3,
     horizon: int = 28,
     step_size: int | None = None,
+    min_train: int = 14,
 ) -> list[BacktestFold]:
     """Splits a series into n rolling-origin folds with STRICT temporal isolation.
 
@@ -261,7 +262,7 @@ def create_rolling_origin_folds(
     n = len(series)
     step = step_size if step_size is not None else horizon
 
-    min_required_len = (n_folds * step) + 14
+    min_required_len = (n_folds * step) + min_train
     if n < min_required_len:
         raise ValueError(
             f"Series length {n} is insufficient for {n_folds} folds of horizon {horizon}. "
@@ -304,10 +305,15 @@ def run_backtest(
     n_folds: int = 3,
     horizon: int = 28,
     step_size: int | None = None,
+    min_train: int = 14,
 ) -> BacktestReport:
     """Executes rolling-origin backtests and aggregates performance metrics."""
     folds = create_rolling_origin_folds(
-        data=data, n_folds=n_folds, horizon=horizon, step_size=step_size
+        data=data,
+        n_folds=n_folds,
+        horizon=horizon,
+        step_size=step_size,
+        min_train=min_train,
     )
     evaluations: list[FoldEvaluation] = []
 

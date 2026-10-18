@@ -244,4 +244,207 @@ describe('HomePage (T-3.03)', () => {
       screen.getByText('إمكانية الاسترجاع أو الاستبدال خلال 14 يوماً من الاستلام.'),
     ).toBeInTheDocument()
   })
+
+  it('renders truthful hero copy when sale_percent is absent or zero (T-3.10a)', () => {
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        sale_percent: 0,
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    renderWithProviders('ar')
+
+    // No false 50% discount or sale banner
+    expect(screen.queryByText(/خصم يصل إلى/)).not.toBeInTheDocument()
+
+    // Truthful eyebrow, cozy title, and shop CTA
+    expect(screen.getByText('تفاصيل صغيرة، فرحة كبيرة')).toBeInTheDocument()
+    expect(screen.getByText('لمسة حلوة لكِ… ودفا لبيتك')).toBeInTheDocument()
+    const shopCta = screen.getByRole('link', { name: 'اكتشفي القطع' })
+    expect(shopCta).toHaveAttribute('href', '#browse')
+
+    // Photo caption present
+    expect(screen.getByText('كوب دافئ، وتفاصيل نحبّها')).toBeInTheDocument()
+  })
+
+  it('renders English localization correctly with truthful fallbacks and no Arabic leaks (T-3.10a)', () => {
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        sale_percent: 0,
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    renderWithProviders('en')
+
+    // English hero eyebrow and title
+    expect(screen.getByText('Little details. Lovely moments.')).toBeInTheDocument()
+    expect(
+      screen.getByText('A little lovely for you. A little warmth for home.'),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Find your little lovely' })).toHaveAttribute(
+      'href',
+      '#browse',
+    )
+    expect(screen.getByText('Warm cups & little treasures')).toBeInTheDocument()
+
+    // English About & Returns section
+    expect(screen.getByText('cute things for your style & space')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Return or exchange within 14 days of delivery for items in original condition.',
+      ),
+    ).toBeInTheDocument()
+  })
+
+  it('filters delivery payment badges based on payment_methods_enabled (T-3.10a)', () => {
+    // Only instapay_qr enabled
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        payment_methods_enabled: ['instapay_qr'],
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    const { rerender } = renderWithProviders('ar')
+    expect(screen.getByText('الدفع عبر إنستاباي (QR)')).toBeInTheDocument()
+    expect(screen.queryByText('الدفع عند الاستلام')).not.toBeInTheDocument()
+
+    // Only cod enabled
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        payment_methods_enabled: ['cod'],
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    rerender(
+      <QueryClientProvider
+        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      >
+        <MemoryRouter>
+          <LanguageProvider initialLanguage="ar">
+            <HomePage />
+          </LanguageProvider>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+    expect(screen.getByText('الدفع عند الاستلام')).toBeInTheDocument()
+    expect(screen.queryByText('الدفع عبر إنستاباي (QR)')).not.toBeInTheDocument()
+  })
+
+  it('renders landscape hero photo with rounded-card instead of arch frame (T-3.10a)', () => {
+    const { container } = renderWithProviders('ar')
+
+    // Arch frame is replaced
+    expect(container.querySelector('.rounded-arch')).not.toBeInTheDocument()
+
+    // Landscape photo and caption exist
+    const photo = container.querySelector('.storefront-photo')
+    expect(photo).toBeInTheDocument()
+    expect(photo).toHaveClass('aspect-[4/3]', 'rounded-card')
+
+    const caption = container.querySelector('.storefront-caption')
+    expect(caption).toBeInTheDocument()
+  })
+
+  it('falls back to automatic bestseller when featured_product_id is null or unconfigured', () => {
+    // 1. Explicitly configured product (e.g. 102)
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        storefront_content: { featured_product_id: 102 },
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    vi.spyOn(catalogHooks, 'useProduct').mockReturnValue({
+      data: mockProducts[1],
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof catalogHooks.useProduct>)
+
+    const { rerender } = renderWithProviders('ar')
+    // Product 102 rendered in featured card (and in browse grid)
+    expect(screen.getAllByText('سلسلة فضية').length).toBeGreaterThanOrEqual(2)
+
+    // 2. Switched back to Automatic bestseller (featured_product_id: null)
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        storefront_content: { featured_product_id: null },
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    vi.spyOn(catalogHooks, 'useProduct').mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof catalogHooks.useProduct>)
+
+    rerender(
+      <QueryClientProvider
+        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      >
+        <MemoryRouter>
+          <LanguageProvider initialLanguage="ar">
+            <HomePage />
+          </LanguageProvider>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    // Falls back to bestSellers[0] (mockProducts[0]: 'أقراط ذهبية')
+    expect(screen.getAllByText('أقراط ذهبية').length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('distinguishes explicitly saved empty category_ids array from unconfigured categories', () => {
+    // 1. Explicitly saved empty array: quick navigation shows zero categories
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        storefront_content: { category_ids: [] },
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    const { rerender } = renderWithProviders('ar')
+    const quickNav = screen.getByRole('navigation', { name: 'Categories quick links' })
+    expect(within(quickNav).getByText('جميع الأقسام')).toBeInTheDocument()
+    // Should NOT contain any category buttons
+    expect(within(quickNav).queryByText('أقراط')).not.toBeInTheDocument()
+    expect(within(quickNav).queryByText('سلاسل')).not.toBeInTheDocument()
+
+    // 2. Unconfigured (category_ids is undefined): defaults to all categories
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        storefront_content: {},
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    rerender(
+      <QueryClientProvider
+        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      >
+        <MemoryRouter>
+          <LanguageProvider initialLanguage="ar">
+            <HomePage />
+          </LanguageProvider>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    const updatedQuickNav = screen.getByRole('navigation', { name: 'Categories quick links' })
+    expect(within(updatedQuickNav).getByText('جميع الأقسام')).toBeInTheDocument()
+    expect(within(updatedQuickNav).getByText('أقراط')).toBeInTheDocument()
+    expect(within(updatedQuickNav).getByText('سلاسل')).toBeInTheDocument()
+  })
 })

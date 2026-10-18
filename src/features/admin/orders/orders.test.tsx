@@ -38,6 +38,7 @@ const mockOrders: AdminOrder[] = [
     ship_city: 'مدينة نصر',
     ship_district: 'الحي السابع',
     ship_address: 'شارع عباس العقاد عمارة 10',
+    ship_postal_code: '11511',
     ship_floor: '3',
     ship_apartment: '12',
     ship_landmark: 'بجوار صيدلية العزبي',
@@ -287,7 +288,7 @@ const mockOrders: AdminOrder[] = [
   },
 ]
 
-function renderWithProviders(ui: React.ReactElement) {
+function renderWithProviders(ui: React.ReactElement, entry = '/admin/orders') {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false, gcTime: 0 },
@@ -299,7 +300,7 @@ function renderWithProviders(ui: React.ReactElement) {
     <LanguageProvider>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
-          <MemoryRouter>{ui}</MemoryRouter>
+          <MemoryRouter initialEntries={[entry]}>{ui}</MemoryRouter>
         </ToastProvider>
       </QueryClientProvider>
     </LanguageProvider>,
@@ -633,6 +634,7 @@ describe('T-5.05 Orders Administration', () => {
 
       // Full address details
       expect(screen.getByText('شارع عباس العقاد عمارة 10')).toBeInTheDocument()
+      expect(screen.getByText('11511')).toBeInTheDocument()
       expect(screen.getByText(/الدور: 3/)).toBeInTheDocument()
       expect(screen.getByText(/شقة: 12/)).toBeInTheDocument()
       expect(screen.getByText(/(بجوار صيدلية العزبي)/)).toBeInTheDocument()

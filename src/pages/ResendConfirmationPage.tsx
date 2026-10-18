@@ -3,13 +3,17 @@ import { Link } from 'react-router-dom'
 import { AuthAlert } from '../features/auth/AuthAlert'
 import { useAuth } from '../features/auth/AuthProvider'
 import { Turnstile } from '../features/auth/Turnstile'
+import { useCaptcha } from '../features/auth/useCaptcha'
 import type { AuthErrorCode } from '../features/auth/types'
+import { useLanguage } from '@/i18n/LanguageProvider'
+import { Button } from '@/components/ui/Button'
 
 export default function ResendConfirmationPage() {
   const { resendConfirmation } = useAuth()
+  const { t } = useLanguage()
 
   const [email, setEmail] = useState('')
-  const [captchaToken, setCaptchaToken] = useState<string | undefined>()
+  const captcha = useCaptcha()
   const [statusMessage, setStatusMessage] = useState<AuthErrorCode | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -22,29 +26,36 @@ export default function ResendConfirmationPage() {
       return
     }
 
+    if (!captcha.token) {
+      setStatusMessage('AUTH-003')
+      captcha.renew()
+      return
+    }
+
     setIsSubmitting(true)
     try {
       const result = await resendConfirmation({
         email: email.trim(),
-        captchaToken,
+        captchaToken: captcha.token,
       })
 
       // Always display neutral outcome AUTH-010
       setStatusMessage(result.code || 'AUTH-010')
     } finally {
+      captcha.renew()
       setIsSubmitting(false)
     }
   }
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-6 sm:p-8 space-y-6">
+      <div className="auth-panel rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-h2 font-bold font-accent text-(--color-brand)">
-            إعادة إرسال رسالة التفعيل
+            {t.auth.resendConfirmation}
           </h1>
           <p className="text-small text-(--color-text-muted)">
-            أدخل بريدك الإلكتروني لإعادة إرسال رابط تأكيد الحساب.
+            {t.auth.resendConfirmationSubtitle}
           </p>
         </div>
 
@@ -71,14 +82,10 @@ export default function ResendConfirmationPage() {
             </div>
             <div className="space-y-1.5">
               <h2 className="text-h3 font-bold font-accent text-(--color-brand)">
-                تحقق من بريدك الإلكتروني
+                {t.auth.checkYourEmail}
               </h2>
-              <p className="text-small text-(--color-text)">
-                إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة تحتوي على رابط التفعيل خلال دقائق.
-              </p>
-              <p className="text-caption text-(--color-text-muted)">
-                يرجى مراجعة صندوق الوارد ومجلد الرسائل غير المرغوب فيها (Spam).
-              </p>
+              <p className="text-small text-(--color-text)">{t.auth.checkEmailDesc}</p>
+              <p className="text-caption text-(--color-text-muted)">{t.auth.checkSpamFolder}</p>
             </div>
           </div>
         ) : (
@@ -91,7 +98,7 @@ export default function ResendConfirmationPage() {
                   htmlFor="email-input"
                   className="text-small font-semibold text-(--color-text)"
                 >
-                  البريد الإلكتروني
+                  {t.auth.email}
                 </label>
                 <input
                   id="email-input"
@@ -104,23 +111,22 @@ export default function ResendConfirmationPage() {
                 />
               </div>
 
-              <Turnstile onVerify={(token) => setCaptchaToken(token)} />
+              <Turnstile key={captcha.revision} {...captcha.widgetProps} />
 
-              <button
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 rounded-(--radius-pill) bg-(--color-brand) text-small font-semibold text-(--color-brand-contrast) transition-opacity hover:opacity-90 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+                className="h-11 w-full text-small disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
               >
-                {isSubmitting ? 'جارٍ الإرسال...' : 'إرسال رابط التفعيل'}
-              </button>
+                {isSubmitting ? t.auth.sendingConfirmationLink : t.auth.sendConfirmationLink}
+              </Button>
             </form>
           </>
         )}
 
         <div className="text-center text-small text-(--color-text-muted)">
-          العودة إلى{' '}
           <Link to="/login" className="font-semibold text-(--color-brand) hover:underline">
-            تسجيل الدخول
+            {t.auth.backToLogin}
           </Link>
         </div>
       </div>

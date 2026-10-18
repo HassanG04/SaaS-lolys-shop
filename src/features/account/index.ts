@@ -1,3 +1,6 @@
 export * from './types'
 export * from './api'
 export * from './hooks'
+export * from './avatarUpload'
+export * from './copy'
+export * from './components/ProfileAvatar'

@@ -1,28 +1,64 @@
 import { test, expect, type Page, type Response } from '@playwright/test'
 import fs from 'node:fs'
 import path from 'node:path'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { generateTotp } from '../helpers/totp'
-import { queryDb, createTestUser, getSupabaseStatus } from '../helpers/db'
+import { createTestUser, getSupabaseStatus } from '../helpers/db'
 
 let adminTotpSecret = ''
 let victimUserId = ''
 let attackerUserId = ''
 
+const status = getSupabaseStatus()
+const adminClient = createClient(status.API_URL, status.SERVICE_ROLE_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false },
+})
+
+async function clearAllMfaFactors(client: SupabaseClient) {
+  try {
+    const { data: usersData } = await client.auth.admin.listUsers()
+    if (usersData?.users) {
+      for (const user of usersData.users) {
+        const { data: factorData } = await client.auth.admin.mfa.listFactors({
+          userId: user.id,
+        })
+        if (factorData?.factors) {
+          for (const factor of factorData.factors) {
+            await client.auth.admin.mfa.deleteFactor({
+              id: factor.id,
+              userId: user.id,
+            })
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to clear MFA factors via admin client:', err)
+  }
+}
+
 async function loginUser(page: Page, email: string, password = 'Password123!') {
   await page.goto('/login')
+  await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill(email)
   await page.locator('#password-input').fill(password)
-  await page.waitForTimeout(200)
+  await page
+    .getByRole('button', { name: 'تسجيل الدخول' })
+    .waitFor({ state: 'visible', timeout: 5000 })
+  await page.waitForTimeout(500)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 }
 
 async function loginAdmin(page: Page) {
   await page.goto('/login')
+  await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill('admin@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  await page
+    .getByRole('button', { name: 'تسجيل الدخول' })
+    .waitFor({ state: 'visible', timeout: 5000 })
+  await page.waitForTimeout(500)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
@@ -39,7 +75,7 @@ async function loginAdmin(page: Page) {
 test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
   test.beforeAll(async () => {
     // Reset any existing MFA factors for clean testing
-    queryDb('DELETE FROM auth.mfa_factors;')
+    await clearAllMfaFactors(adminClient)
 
     // Create victim and attacker test accounts
     victimUserId = await createTestUser({
@@ -133,34 +169,48 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
   test('2. Same neutral message for password reset and sign-up (SEC-05)', async ({ page }) => {
     // Part A: Reset Password Neutrality
     await page.goto('/reset-password')
+    await page.waitForLoadState('networkidle')
 
     // Known email
     await page.locator('#email-input').fill('customer@example.com')
+    await page
+      .getByRole('button', { name: 'إرسال رابط إعادة التعيين' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    // Allow 800ms for the Turnstile useEffect to fire in webdriver mode and React
+    // state to flush (captcha.token must be set before handleSubmit checks it).
+    await page.waitForTimeout(800)
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,
     })
-    await expect(
-      page.getByText(/إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة/),
-    ).toBeVisible()
+    await expect(page.getByText(/ستصلك رسالة تحتوي على رابط إعادة التعيين/)).toBeVisible()
 
     // Unknown email
     await page.goto('/reset-password')
+    await page.waitForLoadState('networkidle')
     await page.locator('#email-input').fill('unknown-reset-target@example.com')
+    await page
+      .getByRole('button', { name: 'إرسال رابط إعادة التعيين' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.waitForTimeout(800)
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,
     })
-    await expect(
-      page.getByText(/إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة/),
-    ).toBeVisible()
+    await expect(page.getByText(/ستصلك رسالة تحتوي على رابط إعادة التعيين/)).toBeVisible()
 
     // Part B: Registration Neutrality
     // Attempt registration with already existing email
     await page.goto('/register')
+    await page.waitForLoadState('networkidle')
     await page.locator('#name-input').fill('مستخدم مكرر')
     await page.locator('#email-input').fill('customer@example.com')
     await page.locator('#password-input').fill('Password123!')
+    await page.locator('#confirm-password-input').fill('Password123!')
+    await page
+      .getByRole('button', { name: 'إنشاء حساب' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.waitForTimeout(500)
     await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
@@ -170,10 +220,16 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
     // New unique registration
     await page.goto('/register')
+    await page.waitForLoadState('networkidle')
     const uniqueEmail = `sec-reg-${Date.now()}@example.com`
     await page.locator('#name-input').fill('مستخدم جديد')
     await page.locator('#email-input').fill(uniqueEmail)
     await page.locator('#password-input').fill('Password123!')
+    await page.locator('#confirm-password-input').fill('Password123!')
+    await page
+      .getByRole('button', { name: 'إنشاء حساب' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.waitForTimeout(500)
     await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
@@ -184,7 +240,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
   test('3. Admin without MFA cannot load admin data (SEC-01, SEC-02)', async ({ page }) => {
     // Guarantee no verified MFA factor exists for admin
-    queryDb('DELETE FROM auth.mfa_factors;')
+    await clearAllMfaFactors(adminClient)
 
     await page.goto('/login')
     await page.locator('#email-input').fill('admin@example.com')
@@ -205,7 +261,6 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await expect(page.locator('h1:has-text("لوحة تحكم المتجر")')).not.toBeVisible()
 
     // Direct database RPC calls with AAL1 session fail closed with ADM-002
-    const status = getSupabaseStatus()
     const client = createClient(status.API_URL, status.ANON_KEY, {
       auth: { autoRefreshToken: false, persistSession: false },
     })
@@ -222,18 +277,31 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     page,
   }) => {
     // Seed an order belonging to Victim
-    const victimOrderId = 99881
-    queryDb(`
-      INSERT INTO public.orders (
-        id, user_id, status, payment_status, payment_method, delivery_method,
-        total, subtotal, shipping_fee,
-        ship_name, ship_phone, ship_address, ship_governorate, ship_city
-      ) OVERRIDING SYSTEM VALUE VALUES (
-        ${victimOrderId}, '${victimUserId}', 'pending', 'awaiting_proof', 'instapay_qr', 'representative',
-        450.00, 400.00, 50.00,
-        'سعيد الحظ الضحية', '01011112222', 'شارع سري للغاية 15', 'القاهرة', 'القاهرة'
-      ) ON CONFLICT (id) DO UPDATE SET user_id = '${victimUserId}';
-    `)
+    const { data: victimOrder, error: victimOrderError } = await adminClient
+      .from('orders')
+      .insert({
+        user_id: victimUserId,
+        status: 'pending',
+        payment_status: 'awaiting_proof',
+        payment_method: 'instapay_qr',
+        delivery_method: 'representative',
+        total: 450.0,
+        subtotal: 400.0,
+        shipping_fee: 50.0,
+        ship_name: 'سعيد الحظ الضحية',
+        ship_phone: '01011112222',
+        ship_address: 'شارع سري للغاية 15',
+        ship_governorate: 'القاهرة',
+        ship_city: 'القاهرة',
+        ship_postal_code: '11511',
+      })
+      .select('id')
+      .single()
+
+    expect(victimOrderError).toBeNull()
+    expect(victimOrder).not.toBeNull()
+    if (!victimOrder) throw new Error('Victim order insertion failed')
+    const victimOrderId = victimOrder.id
 
     // Attacker logs in
     await loginUser(page, 'attacker-sec@example.com')
@@ -243,7 +311,6 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await expect(page.locator(`text=#${victimOrderId}`)).not.toBeVisible()
 
     // Attacker attempts direct database select via Supabase PostgREST client
-    const status = getSupabaseStatus()
     const attackerClient = createClient(status.API_URL, status.ANON_KEY, {
       auth: { autoRefreshToken: false, persistSession: false },
     })
@@ -273,20 +340,32 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     page,
   }) => {
     // Seed order for Attacker in awaiting_proof status
-    const attackOrderId = 99882
-    queryDb(`
-      INSERT INTO public.orders (
-        id, user_id, status, payment_status, payment_method, delivery_method,
-        total, subtotal, shipping_fee,
-        ship_name, ship_phone, ship_address, ship_governorate, ship_city,
-        payment_deadline
-      ) OVERRIDING SYSTEM VALUE VALUES (
-        ${attackOrderId}, '${attackerUserId}', 'confirmed', 'awaiting_proof', 'instapay_qr', 'representative',
-        200.00, 150.00, 50.00,
-        'المهاجم الفضولي', '01033334444', 'شارع التحرير', 'القاهرة', 'القاهرة',
-        now() + interval '24 hours'
-      ) ON CONFLICT (id) DO UPDATE SET payment_status = 'awaiting_proof', status = 'confirmed', payment_deadline = now() + interval '24 hours';
-    `)
+    const { data: attackOrder, error: attackOrderError } = await adminClient
+      .from('orders')
+      .insert({
+        user_id: attackerUserId,
+        status: 'confirmed',
+        payment_status: 'awaiting_proof',
+        payment_method: 'instapay_qr',
+        delivery_method: 'representative',
+        total: 200.0,
+        subtotal: 150.0,
+        shipping_fee: 50.0,
+        ship_name: 'المهاجم الفضولي',
+        ship_phone: '01033334444',
+        ship_address: 'شارع التحرير',
+        ship_governorate: 'القاهرة',
+        ship_city: 'القاهرة',
+        ship_postal_code: '11511',
+        payment_deadline: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+      })
+      .select('id')
+      .single()
+
+    expect(attackOrderError).toBeNull()
+    expect(attackOrder).not.toBeNull()
+    if (!attackOrder) throw new Error('Attacker order insertion failed')
+    const attackOrderId = attackOrder.id
 
     await loginUser(page, 'attacker-sec@example.com')
 
@@ -326,20 +405,27 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     page,
   }) => {
     const maliciousPayload = `<script>window.__XSS_EXEC__=true;</script>'; DROP TABLE orders; --`
-    queryDb(`
-      INSERT INTO public.products (
-        id, category_id, name, name_ar, description, description_ar, price, stock_quantity, is_active
-      ) OVERRIDING SYSTEM VALUE VALUES (
-        99883, 1,
-        '${maliciousPayload.replace(/'/g, "''")}',
-        '${maliciousPayload.replace(/'/g, "''")}',
-        'Sec description', 'وصف الحماية', 110.00, 10, true
-      ) ON CONFLICT (id) DO UPDATE SET
-        name = EXCLUDED.name,
-        name_ar = EXCLUDED.name_ar;
-    `)
+    const { data: prod, error: prodError } = await adminClient
+      .from('products')
+      .insert({
+        category_id: 1,
+        name: maliciousPayload,
+        name_ar: maliciousPayload,
+        description: 'Sec description',
+        description_ar: 'وصف الحماية',
+        price: 110.0,
+        stock_quantity: 10,
+        is_active: true,
+      })
+      .select('id')
+      .single()
 
-    await page.goto('/product/99883')
+    expect(prodError).toBeNull()
+    expect(prod).not.toBeNull()
+    if (!prod) throw new Error('Malicious product insertion failed')
+    const maliciousProductId = prod.id
+
+    await page.goto(`/product/${maliciousProductId}`)
 
     // Verify h1 displays the text safely
     const title = page.locator('h1')
@@ -353,15 +439,15 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     expect(wasXssExecuted).toBe(false)
 
     // Verify database orders table was not dropped
-    const countRows = queryDb<{ count: string }>('SELECT count(*) as count FROM public.orders;')
-    expect(Number(countRows[0]?.count)).toBeGreaterThan(0)
+    const { count } = await adminClient.from('orders').select('*', { count: 'exact', head: true })
+    expect(count ?? 0).toBeGreaterThan(0)
   })
 
   test('7. Admin enrolls MFA, accesses admin panel at AAL2, and sensitive actions ask for step-up (SEC-01)', async ({
     page,
   }) => {
     // Reset any existing unverified factors so clean enrollment can proceed
-    queryDb('DELETE FROM auth.mfa_factors;')
+    await clearAllMfaFactors(adminClient)
 
     // Step A: Admin logs in and enrolls TOTP MFA
     await page.goto('/login')
@@ -374,6 +460,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await page.waitForURL('**/admin/mfa/enroll', { timeout: 15000 })
 
     const secretContainer = page.locator('div.select-all')
+    await page.getByRole('button', { name: 'إعداد تطبيق المصادقة' }).click()
     await expect(secretContainer).toBeVisible({ timeout: 10000 })
     adminTotpSecret = (await secretContainer.innerText()).trim()
 
@@ -411,11 +498,14 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
   test('8. CSV export neutralises formulas with single quote prefix (SEC-14)', async ({ page }) => {
     // Insert products starting with formula injection characters: =, +, -, @, \t, \r
-    queryDb(`
-      INSERT INTO public.products (category_id, name, name_ar, price, stock_quantity, is_active)
-      VALUES (1, '=cmd|'' /C calc''!A0', '=cmd|'' /C calc''!A0', 99.00, 5, true)
-      ON CONFLICT DO NOTHING;
-    `)
+    await adminClient.from('products').insert({
+      category_id: 1,
+      name: "=cmd|' /C calc'!A0",
+      name_ar: "=cmd|' /C calc'!A0",
+      price: 99.0,
+      stock_quantity: 5,
+      is_active: true,
+    })
 
     await loginAdmin(page)
     await page.goto('/admin/products')

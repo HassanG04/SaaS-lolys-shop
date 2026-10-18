@@ -3,9 +3,14 @@ import { getProductStock, setProductStock, expireOrderViaTestHook, queryDb } fro
 
 async function loginCustomer(page: Page) {
   await page.goto('/login')
+  await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill('customer@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  // Wait for the Turnstile token to propagate into React state (button becomes enabled)
+  await page
+    .getByRole('button', { name: 'تسجيل الدخول' })
+    .waitFor({ state: 'visible', timeout: 5000 })
+  await page.waitForTimeout(500)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 10000 })
 }
@@ -58,10 +63,15 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
   test('2. Register and log in customer account', async ({ page }) => {
     // Step A: Registration flow
     await page.goto('/register')
+    await page.waitForLoadState('networkidle')
     await page.locator('#name-input').fill('عميل تجريبي')
     await page.locator('#email-input').fill(`new_customer_${Date.now()}@example.com`)
     await page.locator('#password-input').fill('Password123!')
-    await page.waitForTimeout(200)
+    await page.locator('#confirm-password-input').fill('Password123!')
+    await page
+      .getByRole('button', { name: 'إنشاء حساب' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.waitForTimeout(500)
     await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
     // Give time for auth request to resolve
@@ -91,7 +101,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
     await expect(page.locator('h1')).toContainText('بيانات التوصيل')
 
     // Select Cairo governorate
-    await page.locator('select').first().selectOption('1')
+    await page.locator('select:not(#footer-motion-select)').first().selectOption('1')
 
     // Fill address if empty
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
@@ -133,7 +143,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     // Go to checkout
     await page.goto('/checkout')
-    await page.locator('select').first().selectOption('1')
+    await page.locator('select:not(#footer-motion-select)').first().selectOption('1')
 
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
     if (await addressInput.isVisible()) {
@@ -171,7 +181,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
     await page.goto('/checkout')
 
     // Select Governorate 2 (Giza - has NO delivery fee configured)
-    await page.locator('select').first().selectOption('2')
+    await page.locator('select:not(#footer-motion-select)').first().selectOption('2')
 
     // Delivery message indicates unavailable
     await expect(page.getByText('لا تتوفر طرق توصيل لهذه المحافظة')).toBeVisible()
@@ -195,7 +205,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     // Checkout with COD
     await page.goto('/checkout')
-    await page.locator('select').first().selectOption('1')
+    await page.locator('select:not(#footer-motion-select)').first().selectOption('1')
 
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
     if (await addressInput.isVisible()) {
@@ -243,7 +253,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     // Checkout choosing InstaPay QR
     await page.goto('/checkout')
-    await page.locator('select').first().selectOption('1')
+    await page.locator('select:not(#footer-motion-select)').first().selectOption('1')
 
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
     if (await addressInput.isVisible()) {
@@ -329,7 +339,7 @@ test.describe.serial('Storefront to Order E2E Journey', () => {
 
     // Checkout with InstaPay
     await page.goto('/checkout')
-    await page.locator('select').first().selectOption('1')
+    await page.locator('select:not(#footer-motion-select)').first().selectOption('1')
 
     const addressInput = page.locator('input[placeholder*="اسم الشارع"]').first()
     if (await addressInput.isVisible()) {

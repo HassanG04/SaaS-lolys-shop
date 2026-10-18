@@ -13,9 +13,12 @@ export interface UserProfile {
   city?: string | null
   district?: string | null
   address?: string | null
+  postal_code?: string | null
   floor?: string | null
   apartment?: string | null
   landmark?: string | null
+  avatar_url?: string | null
+  email?: string | null
   created_at?: string
   updated_at?: string
 }
@@ -33,6 +36,9 @@ export type AuthErrorCode =
   | 'AUTH-010'
   | 'AUTH-011'
   | 'AUTH-012'
+  | 'AUTH-013'
+  | 'AUTH-014'
+  | 'AUTH-016'
   | 'ADM-001'
   | 'ADM-002'
   | 'ADM-003'

@@ -1,32 +1,35 @@
-import { Link, NavLink } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 
 interface NavbarMobileMenuProps {
   navLinks: { to: string; label: string }[]
-  searchQuery: string
-  onSearchQueryChange: (query: string) => void
-  onSearchSubmit: (e: React.FormEvent) => void
   onClose: () => void
 }
 
-export default function NavbarMobileMenu({
-  navLinks,
-  searchQuery,
-  onSearchQueryChange,
-  onSearchSubmit,
-  onClose,
-}: NavbarMobileMenuProps) {
+export default function NavbarMobileMenu({ navLinks, onClose }: NavbarMobileMenuProps) {
   const { t } = useLanguage()
+  const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchQuery('')
+      onClose()
+    }
+  }
 
   return (
     <div className="border-t border-(--color-border) bg-(--color-surface) px-4 py-4 lg:hidden">
       {/* Mobile Search */}
-      <form role="search" onSubmit={onSearchSubmit} className="mb-4">
+      <form role="search" onSubmit={handleSearchSubmit} className="mb-4">
         <div className="relative">
           <input
             type="search"
             value={searchQuery}
-            onChange={(e) => onSearchQueryChange(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t.search.placeholder}
             className="w-full h-11 rounded-(--radius-pill) border border-(--color-border-input) bg-(--color-bg) ps-4 pe-11 text-small text-(--color-text) placeholder:text-(--color-text-muted) focus:border-(--color-brand) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
           />

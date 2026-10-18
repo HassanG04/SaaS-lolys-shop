@@ -41,6 +41,7 @@ export interface AdminPaymentOrder {
 }
 
 export interface PaymentReviewFilter {
+  orderId?: number
   status?: 'all' | PaymentStatus
   search?: string
 }

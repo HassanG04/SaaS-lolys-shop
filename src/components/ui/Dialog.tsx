@@ -36,7 +36,7 @@ export function Dialog({ open, title, description, children, onClose }: DialogPr
       ref={dialogRef}
       aria-labelledby={`${id}-title`}
       aria-describedby={description ? `${id}-description` : undefined}
-      className="ui-dialog m-auto rounded-card border border-border bg-surface p-5 text-text"
+      className="ui-dialog dialog-arrive m-auto rounded-card border border-border bg-surface p-5 text-text"
       onCancel={(event) => {
         event.preventDefault()
         onClose()

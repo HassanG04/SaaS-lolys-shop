@@ -104,12 +104,14 @@ export async function submitPaymentProofApi(payload: SubmitProofPayload): Promis
 export interface PaymentInstructions {
   qr_path: string | null
   handle: string | null
+  instapay_handle?: string | null
+  link?: string | null
   amount: number
   deadline: string
 }
 
 /**
- * Retrieves payment instructions (QR path, handle, amount, deadline) for approved orders.
+ * Retrieves payment instructions (QR path, handle, link, amount, deadline) for approved orders.
  * Raises PAY-007 before approval.
  */
 export async function getPaymentInstructionsApi(orderId: number): Promise<PaymentInstructions> {
@@ -122,7 +124,19 @@ export async function getPaymentInstructionsApi(orderId: number): Promise<Paymen
       throw toAppError(error)
     }
 
-    return data as unknown as PaymentInstructions
+    const raw = data as Record<string, unknown>
+    const resolvedHandle =
+      (raw?.handle as string) || (raw?.instapay_handle as string) || 'alaa.ahm9624@instapay'
+    const resolvedLink = (raw?.link as string) || null
+
+    return {
+      qr_path: (raw?.qr_path as string) || null,
+      handle: resolvedHandle,
+      instapay_handle: resolvedHandle,
+      link: resolvedLink,
+      amount: Number(raw?.amount ?? 0),
+      deadline: String(raw?.deadline ?? ''),
+    }
   } catch (err) {
     throw toAppError(err)
   }

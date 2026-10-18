@@ -2,7 +2,9 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import type { Session, User } from '@supabase/supabase-js'
 import { queryClient } from '../../lib/queryClient'
 import { supabase } from '../../lib/supabase'
-import * as authApi from './api'
+import { fetchProfileApi, fetchAalApi, fetchFactorsApi, signOutApi } from './session.api'
+
+const loadAuthApi = () => import('./api')
 import type {
   AalLevel,
   AuthActionResult,
@@ -44,9 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setLoadingFactors(true)
     const [userProfile, currentAal, currentFactors] = await Promise.all([
-      authApi.fetchProfileApi(activeUser.id),
-      authApi.fetchAalApi(),
-      authApi.fetchFactorsApi(),
+      fetchProfileApi(activeUser.id),
+      fetchAalApi(),
+      fetchFactorsApi(),
     ])
 
     setProfile(userProfile)
@@ -63,19 +65,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user, loadUserData])
 
   const refreshAal = useCallback(async (): Promise<AalLevel> => {
-    const currentAal = await authApi.fetchAalApi()
+    const currentAal = await fetchAalApi()
     setAal(currentAal)
     return currentAal
   }, [])
 
   const refreshFactors = useCallback(async (): Promise<MfaFactor[]> => {
-    const list = await authApi.fetchFactorsApi()
+    const list = await fetchFactorsApi()
     setFactors(list)
     return list
   }, [])
 
   useEffect(() => {
     let isMounted = true
+    let authRefreshTimer: ReturnType<typeof setTimeout> | undefined
 
     // Initial session retrieval
     void supabase.auth
@@ -100,31 +103,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Subscribe to ongoing auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
       if (!isMounted) return
       setSession(newSession)
       setUser(newSession?.user ?? null)
-      if (newSession?.user) {
-        await loadUserData(newSession.user)
-      } else {
-        setProfile(null)
-        setRole('customer')
-        setAal('aal1')
-        setFactors([])
-        setLoadingFactors(false)
-      }
-      setLoading(false)
+      // Auth notifications run inside the SDK lock. Fetching Auth data here and
+      // awaiting it deadlocks MFA verification; refresh after the callback returns.
+      clearTimeout(authRefreshTimer)
+      authRefreshTimer = setTimeout(() => {
+        if (!isMounted) return
+        void loadUserData(newSession?.user ?? null).finally(() => {
+          if (isMounted) setLoading(false)
+        })
+      }, 0)
     })
 
     return () => {
       isMounted = false
+      clearTimeout(authRefreshTimer)
       subscription.unsubscribe()
     }
   }, [loadUserData])
 
   const signIn = useCallback(
     async (credentials: SignInCredentials): Promise<AuthActionResult> => {
-      const result = await authApi.signInApi(credentials)
+      const { signInApi } = await loadAuthApi()
+      const result = await signInApi(credentials)
       if (result.success) {
         const {
           data: { session: newSession },
@@ -140,27 +144,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [loadUserData],
   )
 
-  const signUp = useCallback(async (credentials: SignUpCredentials): Promise<AuthActionResult> => {
-    return authApi.signUpApi(credentials)
-  }, [])
+  const signUp = useCallback(
+    async (c: SignUpCredentials): Promise<AuthActionResult> => (await loadAuthApi()).signUpApi(c),
+    [],
+  )
 
   const resetPassword = useCallback(
-    async (credentials: ResetPasswordCredentials): Promise<AuthActionResult> => {
-      return authApi.resetPasswordApi(credentials)
-    },
+    async (c: ResetPasswordCredentials): Promise<AuthActionResult> =>
+      (await loadAuthApi()).resetPasswordApi(c),
     [],
   )
 
   const resendConfirmation = useCallback(
-    async (credentials: ResendConfirmationCredentials): Promise<AuthActionResult> => {
-      return authApi.resendConfirmationApi(credentials)
-    },
+    async (c: ResendConfirmationCredentials): Promise<AuthActionResult> =>
+      (await loadAuthApi()).resendConfirmationApi(c),
     [],
   )
 
   const signOut = useCallback(
     async (options?: { scope?: 'global' | 'local' | 'others' }): Promise<void> => {
-      await authApi.signOutApi(options)
+      await signOutApi(options)
       setSession(null)
       setUser(null)
       setProfile(null)
@@ -171,13 +174,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   )
 
-  const updatePassword = useCallback(async (password: string): Promise<AuthActionResult> => {
-    return authApi.updatePasswordApi(password)
-  }, [])
+  const updatePassword = useCallback(
+    async (p: string): Promise<AuthActionResult> => (await loadAuthApi()).updatePasswordApi(p),
+    [],
+  )
 
-  const updateEmail = useCallback(async (email: string): Promise<AuthActionResult> => {
-    return authApi.updateEmailApi(email)
-  }, [])
+  const updateEmail = useCallback(
+    async (e: string): Promise<AuthActionResult> => (await loadAuthApi()).updateEmailApi(e),
+    [],
+  )
 
   // Admin sessions time out after 20 idle minutes: sign out and clear caches
   useEffect(() => {
@@ -194,48 +199,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart']
-    const handleActivity = () => resetTimer()
-
-    events.forEach((event) => window.addEventListener(event, handleActivity, { passive: true }))
+    events.forEach((event) => window.addEventListener(event, resetTimer, { passive: true }))
     resetTimer()
 
     return () => {
       clearTimeout(timeoutId)
-      events.forEach((event) => window.removeEventListener(event, handleActivity))
+      events.forEach((event) => window.removeEventListener(event, resetTimer))
     }
   }, [role, signOut])
 
   const enrollTotp = useCallback(
     async (friendlyName?: string): Promise<{ data?: MfaEnrollResult; error?: AuthErrorCode }> => {
-      const result = await authApi.enrollTotpApi(friendlyName)
-      if (result.data) {
-        await refreshFactors()
-      }
-      return result
+      const res = await (await loadAuthApi()).enrollTotpApi(friendlyName)
+      if (res.data) await refreshFactors()
+      return res
     },
     [refreshFactors],
   )
 
   const challengeAndVerify = useCallback(
     async (factorId: string, code: string): Promise<AuthActionResult> => {
-      const result = await authApi.challengeAndVerifyApi(factorId, code)
-      if (result.success) {
+      const res = await (await loadAuthApi()).challengeAndVerifyApi(factorId, code)
+      if (res.success) {
         await refreshAal()
         await refreshFactors()
       }
-      return result
+      return res
     },
     [refreshAal, refreshFactors],
   )
 
   const unenrollFactor = useCallback(
     async (factorId: string): Promise<AuthActionResult> => {
-      const result = await authApi.unenrollFactorApi(factorId)
-      if (result.success) {
+      const res = await (await loadAuthApi()).unenrollFactorApi(factorId)
+      if (res.success) {
         await refreshFactors()
         await refreshAal()
       }
-      return result
+      return res
     },
     [refreshFactors, refreshAal],
   )

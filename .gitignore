@@ -12,5 +12,7 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 analytics/.venv/
-.tools/
+.tools/*
+!.tools/layout-fixtures/
+.tools/layout-fixtures/*.png
 ip/

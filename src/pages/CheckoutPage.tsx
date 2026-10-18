@@ -26,13 +26,33 @@ import { useSeo } from '@/features/seo'
 
 export default function CheckoutPage() {
   const { t, lang } = useLanguage()
-  const { profile } = useAuth()
+  const { user, profile, resendConfirmation } = useAuth()
   const { lines, subtotal, clearCart } = useCart()
   const navigate = useNavigate()
 
+  const isEmailVerified = !user || Boolean(user.email_confirmed_at || user.confirmed_at)
+  const [isResendingConfirm, setIsResendingConfirm] = useState(false)
+  const [confirmResent, setConfirmResent] = useState(false)
+
+  async function handleResendEmail() {
+    if (isResendingConfirm || !user?.email) return
+    setIsResendingConfirm(true)
+    try {
+      const result = await resendConfirmation({ email: user.email })
+      if (result.success) {
+        setConfirmResent(true)
+      }
+    } finally {
+      setIsResendingConfirm(false)
+    }
+  }
+
   useSeo({
     title: t.checkout.title,
-    description: 'إتمام الطلب وبيانات التوصيل في متجر لوليز',
+    description:
+      lang === 'ar'
+        ? 'إتمام الطلب وبيانات التوصيل في متجر لوليز'
+        : 'Complete your order and delivery details at Lolys store',
   })
 
   // Form State
@@ -44,6 +64,7 @@ export default function CheckoutPage() {
     city: profile?.city ?? '',
     district: profile?.district ?? '',
     address: profile?.address ?? '',
+    postal_code: profile?.postal_code ?? '',
     floor: profile?.floor ?? '',
     apartment: profile?.apartment ?? '',
     landmark: profile?.landmark ?? '',
@@ -63,6 +84,7 @@ export default function CheckoutPage() {
       city: prev.city || profile.city || '',
       district: prev.district || profile.district || '',
       address: prev.address || profile.address || '',
+      postal_code: prev.postal_code || profile.postal_code || '',
       floor: prev.floor || profile.floor || '',
       apartment: prev.apartment || profile.apartment || '',
       landmark: prev.landmark || profile.landmark || '',
@@ -136,6 +158,11 @@ export default function CheckoutPage() {
     e.preventDefault()
     setSubmitError(null)
 
+    if (user && !isEmailVerified) {
+      setSubmitError(new AppError('AUTH-014'))
+      return
+    }
+
     const validation = validateShippingForm(formData, {
       isDeliveryMethodSelected: Boolean(activeDeliveryMethod),
       isPaymentMethodSelected: Boolean(activePaymentMethod),
@@ -204,6 +231,7 @@ export default function CheckoutPage() {
   const cityId = useId()
   const districtId = useId()
   const addressId = useId()
+  const postalCodeId = useId()
   const floorId = useId()
   const aptId = useId()
   const landmarkId = useId()
@@ -245,6 +273,52 @@ export default function CheckoutPage() {
         />
       )}
 
+      {user && !isEmailVerified && (
+        <div
+          role="alert"
+          className="rounded-card border border-warning/40 bg-warning/10 p-4 text-text space-y-3"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-pill bg-warning/20 text-warning">
+              <svg
+                className="size-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-body font-bold text-text">{t.auth.checkYourEmail}</h2>
+              <p className="text-small text-text-muted">{t.auth.emailVerificationRequired}</p>
+            </div>
+          </div>
+          <div className="pt-1">
+            {confirmResent ? (
+              <p role="status" className="text-small font-semibold text-brand">
+                {t.auth.checkEmailDesc}
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={handleResendEmail}
+                disabled={isResendingConfirm}
+                className="inline-flex h-9 items-center justify-center rounded-pill border border-border bg-surface px-4 text-caption font-semibold text-brand hover:bg-surface-tint focus:outline-none focus:ring-2 focus:ring-focus disabled:opacity-50"
+              >
+                {isResendingConfirm ? t.auth.sendingConfirmationLink : t.auth.resendNoticeLink}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         noValidate
@@ -254,7 +328,9 @@ export default function CheckoutPage() {
         <div className="lg:col-span-7 space-y-8">
           {/* 1. Contact Information Card */}
           <Card className="p-6 sm:p-8 space-y-6">
-            <h2 className="text-h3 font-bold font-accent text-brand">معلومات المستلم</h2>
+            <h2 className="text-h3 font-bold font-accent text-brand">
+              {lang === 'ar' ? 'معلومات المستلم' : 'Recipient Information'}
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Full Name */}
@@ -337,7 +413,9 @@ export default function CheckoutPage() {
 
           {/* 2. Delivery Address Card */}
           <Card className="p-6 sm:p-8 space-y-6">
-            <h2 className="text-h3 font-bold font-accent text-brand">عنوان التوصيل</h2>
+            <h2 className="text-h3 font-bold font-accent text-brand">
+              {lang === 'ar' ? 'عنوان التوصيل' : 'Delivery Address'}
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Governorate Dropdown */}
@@ -361,7 +439,9 @@ export default function CheckoutPage() {
                   aria-invalid={Boolean(errors.governorate_id)}
                   aria-describedby={errors.governorate_id ? `${govId}-error` : undefined}
                 >
-                  <option value="">-- اختر المحافظة --</option>
+                  <option value="">
+                    {lang === 'ar' ? '-- اختر المحافظة --' : '-- Select Governorate --'}
+                  </option>
                   {(governorates ?? []).map((gov) => (
                     <option key={gov.id} value={gov.id}>
                       {lang === 'ar' ? gov.name_ar : gov.name_en}
@@ -416,7 +496,9 @@ export default function CheckoutPage() {
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   maxLength={150}
-                  placeholder="اسم الشارع ورقم المبنى"
+                  placeholder={
+                    lang === 'ar' ? 'اسم الشارع ورقم المبنى' : 'Street name and building number'
+                  }
                   className={`w-full h-11 rounded-pill border bg-surface px-4 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus ${
                     errors.address ? 'border-danger' : 'border-border-input'
                   }`}
@@ -426,6 +508,32 @@ export default function CheckoutPage() {
                 {errors.address && (
                   <p id={`${addressId}-error`} role="alert" className="text-small text-danger">
                     {errors.address}
+                  </p>
+                )}
+              </div>
+
+              {/* Postal Code (Required) */}
+              <div className="space-y-1">
+                <label htmlFor={postalCodeId} className="block text-small font-semibold text-text">
+                  {t.field.postalCode} <span className="text-danger">*</span>
+                </label>
+                <input
+                  id={postalCodeId}
+                  type="text"
+                  dir="ltr"
+                  value={formData.postal_code}
+                  onChange={(e) => handleInputChange('postal_code', e.target.value)}
+                  maxLength={5}
+                  placeholder={t.checkout.postalCodeHint}
+                  className={`w-full h-11 rounded-pill border bg-surface px-4 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus ${
+                    errors.postal_code ? 'border-danger' : 'border-border-input'
+                  }`}
+                  aria-invalid={Boolean(errors.postal_code)}
+                  aria-describedby={errors.postal_code ? `${postalCodeId}-error` : undefined}
+                />
+                {errors.postal_code && (
+                  <p id={`${postalCodeId}-error`} role="alert" className="text-small text-danger">
+                    {errors.postal_code}
                   </p>
                 )}
               </div>
@@ -471,7 +579,11 @@ export default function CheckoutPage() {
                   value={formData.landmark}
                   onChange={(e) => handleInputChange('landmark', e.target.value)}
                   maxLength={150}
-                  placeholder="بجوار مدرسة أو مسجد أو متجر معروف"
+                  placeholder={
+                    lang === 'ar'
+                      ? 'بجوار مدرسة أو مسجد أو متجر معروف'
+                      : 'Near a school, mosque, or landmark'
+                  }
                   className="w-full h-11 rounded-pill border border-border-input bg-surface px-4 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                 />
               </div>
@@ -487,7 +599,11 @@ export default function CheckoutPage() {
                   value={formData.notes}
                   onChange={(e) => handleInputChange('notes', e.target.value)}
                   maxLength={500}
-                  placeholder="أي تعليمات إضافية لمندوب التوصيل"
+                  placeholder={
+                    lang === 'ar'
+                      ? 'أي تعليمات إضافية لمندوب التوصيل'
+                      : 'Any additional instructions for the delivery courier'
+                  }
                   className="w-full rounded-image border border-border-input bg-surface p-3 text-body text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
                 />
               </div>
@@ -506,7 +622,10 @@ export default function CheckoutPage() {
                     className="size-5 rounded-chip border-border-input text-brand focus:ring-focus"
                   />
                   <span className="text-small font-medium text-text">
-                    {t.checkout.save_address || 'احفظ هذا العنوان لطلباتي القادمة'}
+                    {t.checkout.save_address ||
+                      (lang === 'ar'
+                        ? 'احفظ هذا العنوان لطلباتي القادمة'
+                        : 'Save this address for future orders')}
                   </span>
                 </label>
               </div>
@@ -703,28 +822,36 @@ export default function CheckoutPage() {
             <div className="space-y-3 pt-2">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || (Boolean(user) && !isEmailVerified)}
                 className="w-full h-12 flex items-center justify-center rounded-pill bg-brand px-6 text-body font-semibold text-brand-contrast transition-opacity hover:opacity-90 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-focus shadow-pill"
               >
                 {isSubmitting
                   ? t.checkout.submitting
-                  : activePaymentMethod === 'instapay_qr' && requireApproval
-                    ? t.checkout.submit_request || 'إرسال الطلب'
-                    : t.checkout.submit}
+                  : Boolean(user) && !isEmailVerified
+                    ? t.auth.emailVerificationRequired
+                    : activePaymentMethod === 'instapay_qr' && requireApproval
+                      ? t.checkout.submit_request ||
+                        (lang === 'ar' ? 'إرسال الطلب' : 'Submit Order Request')
+                      : t.checkout.submit}
               </button>
 
               {activePaymentMethod === 'instapay_qr' && requireApproval && (
                 <p className="text-center text-caption text-text-muted">
-                  {t.checkout.approval_note || 'سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع.'}
+                  {t.checkout.approval_note ||
+                    (lang === 'ar'
+                      ? 'سنراجع طلبك أولًا، ثم نرسل لك رابط الدفع.'
+                      : 'We will review your order first, then send you the payment link.')}
                 </p>
               )}
 
               <p className="text-center text-caption text-text-muted leading-relaxed">
-                بإتمامك للطلب، فإنك توافق على{' '}
+                {lang === 'ar'
+                  ? 'بإتمامك للطلب، فإنك توافق على '
+                  : 'By placing your order, you agree to our '}
                 <Link to="/terms" target="_blank" className="text-brand underline hover:opacity-80">
                   {t.footer.terms}
                 </Link>
-                {' و'}
+                {lang === 'ar' ? ' و' : ', '}
                 <Link
                   to="/privacy"
                   target="_blank"
@@ -732,7 +859,7 @@ export default function CheckoutPage() {
                 >
                   {t.footer.privacy}
                 </Link>
-                {' و'}
+                {lang === 'ar' ? ' و' : ' and '}
                 <Link
                   to="/returns"
                   target="_blank"
@@ -747,7 +874,7 @@ export default function CheckoutPage() {
                 to="/cart"
                 className="w-full h-11 flex items-center justify-center rounded-pill border border-border bg-surface-2 px-6 text-small font-semibold text-text hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
               >
-                العودة إلى السلة
+                {lang === 'ar' ? 'العودة إلى السلة' : 'Back to Cart'}
               </Link>
             </div>
           </Card>

@@ -464,7 +464,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** try both once on a scratch branch
 
 #### T-0.09b: Initial-route bundle guard
-`status: doing` `owner: agent` `needs: T-0.09` `size: M`
+`status: done` `owner: agent` `needs: T-0.09` `size: M`
 - **Do:** Complete the repository-guard split: write `scripts/check-bundle.mjs` to enforce a gzip budget for initial-route JS of 200 KB or less, with the admin chunk separate. Wire it into the `build` CI job and preserve the secret guard.
 - **Done when:** a budget breach is shown once then reverted; initial dependencies are counted, lazy admin code is excluded from the initial route, and full verification passes.
 - **Verify:** `npm run build && npm run check:bundle && npm run verify`
@@ -610,7 +610,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run db:reset && npm run check:sql`
 
 #### T-1.09b: Append-only migration guard
-`status: doing` `owner: agent` `needs: T-0.06` `size: M`
+`status: done` `owner: agent` `needs: T-0.06` `size: M`
 - **Do:** Implement `check:migrations` to reject modification, deletion or renaming of migrations already on `origin/main`; wire into local verification and the existing static CI job. Use the pre-push SHA on main so the post-push check cannot compare a rewrite against itself. No database or cloud connections.
 - **Done when:** real Git fixtures prove committed/staged/unstaged edits, deletion, rename and missing-history rejection; additions pass; CI runs the guard and negative fixtures. Owner workflow review remains required. T-1.09 retains database/type and actual merged-migration PR acceptance.
 - **Verify:** `node --test scripts/check-migrations.test.mjs && npm run check:migrations && npm run verify`; read PR checks.
@@ -653,6 +653,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** an admin with only a password reaches the enrollment screen and nothing else; after verification the session is `aal2` and admin screens load; wrong or expired codes show AUTH-006; tests cover the gate logic.
 - **Verify:** `npm run test:unit` and manual check
 
+#### T-2.06b: Repair MFA enrollment, session notifications and bilingual controls
+`status: done` `owner: agent` `needs: T-2.04` `size: M`
+- **Do:** Owner-requested regression repair after 66877e4: explicit retryable enrollment, cleanup only unfinished Lolys factors, no Auth calls awaited inside SDK notification locks, verified-factor admin gates, English/Arabic enrollment/challenge/step-up copy and schema-correct owner runbook. SEC-01, SEC-02, SEC-05 and SEC-08 remain enforced.
+- **Done when:** StrictMode does not create duplicate factors; failures never show AUTH-010; customer/admin verification routes correctly; the live MFA flow is verified; the full gate and owner review pass.
+- **Verify:** `npm run verify` and local database-backed admin/security E2E.
+
 #### T-2.07: Account security
 `status: done` `owner: agent` `needs: T-2.06` `size: M`
 - **Do:** `/account/security`: change password (asks for a recent sign-in; AUTH-007 if stale), change email (keep Supabase "Secure email change" on so the old and the new address must both confirm; show the neutral AUTH-010 copy), "sign out of all devices" (`signOut({ scope: 'global' })`), list of enrolled factors. Admin sessions time out after 20 idle minutes (sign out and clear caches).
@@ -670,6 +676,30 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Do:** `useStepUp()` and `<StepUpDialog>`: before a sensitive action (QR or settings change, CSV export, permanent delete, purge of proofs) ask for a fresh authenticator code (challenge and verify), remember it for 5 minutes in memory only, and show ADM-003 when it is missing. The database still requires `aal2` on its own.
 - **Done when:** unit tests cover expiry after 5 minutes and prove the confirmation is never written to storage.
 - **Verify:** `npm run test:unit`
+
+#### T-2.10: Customer notifications and suggestions
+`status: done` `owner: agent` `needs: T-4.05, T-1.23` `size: L`
+- **Do:** Implement owner request in `docs/spec/owner-experience-change.md`: My Orders menu, notifications for wishlist sales/order approvals/general sales, customer suggestions and admin demand view. Split database/UI work into additive slices before implementation.
+- **Done when:** Owner-scoped RLS, rate limits, bilingual UI, safe errors, retention documentation, database and UI tests pass; no fabricated notification data.
+- **Verify:** `npm run db:reset && npm run db:test && npm run verify && npm run test:e2e`
+
+#### T-2.11: Customer profile photo
+`status: done` `owner: agent` `needs: T-2.04` `size: M`
+- **Do:** User-owned validated/re-encoded photo upload and replacement per `docs/spec/owner-experience-change.md`; additive schema, storage policies and cleanup.
+- **Done when:** Cross-user access denied by database/storage tests; both languages/themes and upload failure paths checked.
+- **Verify:** `npm run db:reset && npm run db:test && npm run verify`
+
+#### T-2.12: Hosted authentication abuse controls
+`status: todo` `owner: human` `needs: T-2.12a` `size: M`
+- **Do:** Owner verifies Managed Turnstile, production hostnames/keys, Supabase CAPTCHA enforcement and endpoint limits. Confirmed plan is Free; native leaked-password protection is unavailable. See `docs/spec/store-controls-and-auth-abuse.md`; any new proxy/breach service needs an ADR before implementation.
+- **Done when:** Bounded staging evidence covers direct-origin missing/forged/expired/replayed tokens, shared-IP legitimate retries, recovery/resend limits and MFA. Record remaining credential-stuffing risk and chosen breach-screening approach; no fabricated device proof or 10,000-bot test.
+- **Verify:** Owner staging acceptance and configuration review; never run a production load attack.
+
+#### T-2.12a: Reliable authentication challenge lifecycle
+`status: done` `owner: agent` `needs: T-2.04` `size: M`
+- **Do:** Repair Turnstile cleanup and callback stability, discard expired/failed/consumed tokens, renew challenges for login/signup/reset/resend, reject dummy keys in production, and isolate synthetic tokens to tests. This supports SEC-05/06; it is not a custom risk engine or proof of hosted CAPTCHA enforcement.
+- **Done when:** Missing/expired challenges cannot submit from the forms; retries remain usable; Strict Mode and late callbacks are safe; neutral auth responses and full verify pass. Hosted controls remain separately owner-verified.
+- **Verify:** `npm run verify`; authentication lifecycle regression tests.
 
 ### Phase 3: Storefront
 
@@ -721,6 +751,66 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** the title changes on every route.
 - **Verify:** `npm run test:unit`
 
+#### T-3.09: Verify motion in compiled styles and repair flower hover
+`status: done` `owner: agent` `needs: T-3.02` `size: S`
+- **Do:** Test actual CSS animation frames in isolated browser fixtures for both themes and writing directions; preserve petal rotation during hover growth; retain reduced-motion support.
+- **Done when:** Button movement, flower rotation, theme interpolation, skeleton motion, scoped card blur and reduced-motion fallbacks pass browser tests; owner preview checked with animation effects enabled; full verification passes.
+- **Verify:** `npm run verify` and `npx playwright test --config playwright.motion.config.ts` after build.
+
+#### T-3.10: Owner-controlled storefront presentation
+`status: done` `owner: agent` `needs: T-3.03, T-5.09` `size: L`
+- **Do:** Follow `docs/spec/owner-experience-change.md`: replace arch, truthful sale copy, editable bilingual hero/showcase and category shortcuts with admin control toggle; enlarge info cards on hover/focus. Split database/UI work before implementation.
+- **Done when:** Admin AAL2/audit/allow-list enforced; settings persist; no false promotion; responsive visual and database tests pass.
+- **Verify:** `npm run db:reset && npm run db:test && npm run verify && npm run test:e2e`
+
+#### T-3.10a: Visible homepage repairs before the editor
+`status: done` `owner: agent` `needs: T-3.03` `size: M`
+- **Do:** Owner handoff priority: replace the active HomePage arch, remove invented 50% fallback, fix About/Returns English leaks and enabled-method badges, enlarge the three informational cards on hover/focus and reveal them when reached. Existing unused StorefrontHero is a reuse candidate, not proof of implementation. See `HANDOVER_TO_ANTI_GRAVITY.md`.
+- **Done when:** Actual routed page shows the changes at 320/360/1280 in both themes/languages; absent/zero promotion, long copy, touch and reduced motion behave correctly; no false sale or clipped cards; tests and verify pass. No schema changes required for this visual slice.
+- **Verify:** `npm run verify`; focused homepage tests and real-route browser acceptance with recorded evidence.
+
+#### T-3.10b: Visible admin entry and opposite product badges
+`status: done` `owner: agent` `needs: T-2.02, T-3.03` `size: S`
+- **Do:** Add a visible localized storefront Admin entry for the resolved admin role through existing MFA guards. Position offer/sold-out badges opposite the wishlist control with generated logical CSS. The persistent mouse editor remains T-3.10, not satisfied by a navigation link. See `docs/handoff/OWNER-FOLLOWUP-2026-10-17.md`.
+- **Done when:** Guest/customer/admin loading and resolved states behave correctly; offer and heart bounding boxes do not intersect at 320/360/1280 in either direction; controls remain accessible; actual-route checks and verify pass.
+- **Verify:** `npm run verify`; focused role/navigation tests and compiled-CSS plus actual-route collision checks.
+
+#### T-3.10c: Persistent storefront and policy content contract
+`status: done` `owner: agent` `needs: T-5.09, T-1.23` `size: L`
+- **Do:** Split additive content contract work into bounded migrations/RPC slices per `docs/spec/store-controls-and-auth-abuse.md`: bilingual hero/image/featured item/category shortcuts, footer branding/labels/contacts and full policy bodies. Preserve private payment settings and approved business content.
+- **Done when:** AAL2, allow-lists, audit, bounded text and storage/reference validation, coherent saves and stale-edit detection pass pgTAP; types regenerated; existing content and RLS preserved. Docker availability is required before implementation.
+- **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run verify`
+
+#### T-3.10d: Shared bilingual storefront content editor
+`status: done` `owner: agent` `needs: T-3.10c` `size: M`
+- **Do:** Build one lazy editor for Settings and the homepage mouse control, using the audited content API. Include image upload, product search, category ordering, bilingual content, safe preview, conflict handling and cache invalidation. Public rendering follows as a separate T-3.10e/T-5.15 slice.
+- **Done when:** Authorized admins can edit and persist the document; drafts survive conflicts, protected writes remain server-enforced, and editor tests/verify pass.
+- **Verify:** `npm run verify`
+
+#### T-3.10e: Publish storefront content to customer routes
+`status: done` `owner: agent` `needs: T-3.10c, T-3.10d` `size: M`
+- **Do:** Render the published bilingual hero, image, featured product, category shortcuts, storefront copy, footer labels/order and policy bodies on the existing customer routes. Keep audited route fallbacks when a field is empty and keep catalogue prices, stock and payment settings live.
+- **Done when:** Published values are visible in both languages, unsafe or incomplete content remains escaped and bounded, selected featured products remain active database records, all five policy routes remain reachable, and focused plus full verification pass.
+- **Verify:** `npm run verify` and focused homepage/policy tests.
+
+#### T-3.11: Explicit site motion preference
+`status: done` `owner: agent` `needs: T-3.09` `size: M`
+- **Do:** Implement the owner's new explicit request: Full animations by default even with device animations off; visitor-selectable Reduced and Follow device modes. Use a persisted effective policy shared by CSS/JS, replacing conflicting direct OS guards without breaking dialogs, touch behavior, skeletons or visible content. See the latest owner follow-up.
+- **Done when:** OS-reduced + Full animates; explicit Reduced suppresses decorative motion; Follow device responds to OS changes; reload/storage-denied/rapid-dialog cases pass; accessible bilingual control and full verify pass. No forced animation after a visitor selects Reduced.
+- **Verify:** `npm run verify`; browser motion-policy matrix including reduced-motion emulation and actual routes.
+
+#### T-3.11b: Footer-only motion control
+`status: done` `owner: agent` `needs: T-3.11` `size: S`
+- **Do:** Owner correction on 2026-10-18: remove motion controls from the hamburger menu; retain the accessible bilingual selector in the footer and its persisted Full/Reduced/Follow-device behavior.
+- **Done when:** Menu no longer contains the selector, footer remains operable, navigation/motion regressions and verify pass.
+- **Verify:** `npm run verify`; existing navigation and motion tests.
+
+#### T-3.12: Complete routed interface language coverage
+`status: done` `owner: agent` `needs: T-2.02, T-3.03` `size: L`
+- **Do:** Localize complete Returns, Shipping, Terms, Privacy and Contact pages; audit every public/account/admin route and its validation/error/loading/empty states, accessible names and metadata. Preserve approved policy meaning; report unsupported claims. Split implementation by route groups as needed; protect initial bundle budget with route-lazy policy copy.
+- **Done when:** Route-by-route English/Arabic evidence includes full body content and errors, no Arabic interface fallback in English, correct lang/dir and persistent language after navigation/refresh; no invented business/legal policy; verify and actual-route review pass.
+- **Verify:** `npm run verify`; route localization tests and browser acceptance table per `docs/handoff/OWNER-FOLLOWUP-2026-10-17.md`.
+
 ### Phase 4: Checkout and orders
 
 #### T-4.01: Delivery options API
@@ -764,6 +854,18 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Do:** Playwright with a global setup that resets the local database and creates test users (customer and admin) using the local stack's keys. Scenarios: guest browses and the cart persists; register and log in; COD checkout succeeds and stock decreases; oversell shows the translated stock message; unavailable delivery method is refused; cancelling a pending order restores stock; InstaPay order shows the QR placeholder, accepts a valid image and refuses a renamed non-image, and moves to "قيد المراجعة"; an unpaid InstaPay order expires (test hook shortens the window) and restores stock. Add the `e2e` CI job.
 - **Done when:** the suite passes locally and in CI in under 10 minutes. Ask the owner to add `e2e` to the required checks.
 - **Verify:** `npm run test:e2e`
+
+#### T-4.08: Saved postal code and order snapshot
+`status: done` `owner: agent` `needs: T-4.02, T-1.23` `size: M`
+- **Do:** Owner correction: required text postal code with final database NOT NULL and non-empty/format validation for complete saved delivery addresses and new order snapshots, not Egypt-Post-only. Preserve leading zeros, account creation before address entry and existing order facts; use additive expand/backfill/contract without fabricated defaults. See `docs/spec/owner-experience-change.md`.
+- **Done when:** Final required-address/order contract rejects null/blank codes server-side; signup, legacy-data migration, saved-address opt-out and old immutable snapshots remain valid; generated types and address/RLS/checkout regression tests pass. Missing genuine backfill data is documented, never hidden by fake codes.
+- **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run verify`
+
+#### T-4.08b: Postal database integration and historical updates
+`status: done` `owner: agent` `needs: T-4.02, T-1.23` `size: M`
+- **Do:** Repair the postal handoff's failing database fixtures and legacy UPDATE constraints without weakening required new-address validation. Preserve uniform auth errors, order/stock assertions and existing migrations. Reopen T-4.08 until integration evidence is available.
+- **Done when:** Existing order, approval, RLS, payment and stock tests run with valid postal fixtures; legacy orders can progress, unrelated profile edits work, new missing codes are rejected, generated types match and concurrency passes. Hosted legacy backfill remains owner work.
+- **Verify:** `npm run db:reset && npm run db:test && npm run db:test:concurrency && npm run db:types && npm run verify`
 
 ### Phase 5: Admin
 
@@ -838,6 +940,60 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Do:** Scenarios: an admin at `aal1` cannot load admin data, and after MFA can; create a category with an image, add a product to it, see both on the storefront; set stock to 0 and see the sold-out badge; archive, restore and delete rules; order lifecycle seen by the customer; InstaPay payment approve and reject; QR replacement asks for step-up and leaves an audit entry; non-admins are blocked; CSV export neutralises a product named `=cmd|...`.
 - **Done when:** the suite passes locally and in CI.
 - **Verify:** `npm run test:e2e`
+
+#### T-5.13: Admin workspace usability repair
+`status: done` `owner: agent` `needs: T-5.01, T-5.02, T-5.03` `size: M`
+- **Do:** Full-width admin area, right collapsible sidebar, accessible mobile drawer, photo selection from thumbnail, remove duplicate product actions, clip table corners and handle missing analytics. See `docs/spec/owner-experience-change.md`.
+- **Done when:** Upload failure preserves previous photo; navigation and analytics regressions covered; responsive LTR/RTL in both themes verified without changing MFA/database authority.
+- **Verify:** `npm run verify && npm run test:e2e`
+
+#### T-5.13b: Order and payment review navigation
+`status: done` `owner: agent` `needs: T-5.05, T-5.08, T-6.02` `size: M`
+- **Do:** Link pending dashboard card to filtered orders, order payment information to exact payment review, show under-review count in payment navigation. See `docs/spec/owner-experience-change.md`.
+- **Done when:** Links select correct filters/order; empty and failed count do not misrepresent review status; admin alone confirms payment through existing RPC.
+- **Verify:** `npm run verify && npm run test:e2e`
+
+#### T-5.13c: Responsive header, switch and social menu repairs
+`status: done` `owner: agent` `needs: T-5.01, T-5.02, T-2.02` `size: M`
+- **Do:** Owner correction on 2026-10-17: place dashboard title and adjacent toggle physically right; keep header reachable during mobile scrolling; align Active switch in both directions; include supplied TikTok, Instagram and WhatsApp links in all user menus with icon-only narrow presentation and accessible names. Keep admin content scroll independent and mobile menus within viewport.
+- **Done when:** Real-component controls tested in Arabic/English for guest/customer/admin; compiled-CSS checks at 320/360/1280 in both themes verify geometry, containment and scrolling; full verify and database-backed E2E pass. No auth/payment authority changes.
+- **Verify:** `npm run verify && npm run test:e2e`; offline fixture checks described in `docs/handoff/RESPONSIVE-REPAIR.md`.
+
+#### T-5.13d: Responsive regression evidence
+`status: done` `owner: agent` `needs: T-5.13c` `size: S`
+- **Do:** Split regression fixtures and review evidence from T-5.13c to keep each checkpoint near the 400-line review limit. Export real rendered components without credentials; test narrow/desktop geometry, scrolling, both languages/themes and exact social destinations. Record unavailable database checks explicitly.
+- **Done when:** Component and compiled-CSS tests pass; full verify passes; browser screenshots reviewed; database-backed E2E and remote review evidence recorded before claiming the parent repair complete.
+- **Verify:** `npm run verify && npm run test:e2e`; fixture commands in `docs/handoff/RESPONSIVE-REPAIR.md`.
+
+#### T-5.13e: Admin sidebar, drawer and page transitions
+`status: done` `owner: agent` `needs: T-5.01, T-5.02` `size: M`
+- **Do:** Animate physical-right sidebar collapse/expansion and mobile dialog entry/exit, preserve modality/focus and persistent header/shell, animate only inner page content and reset its scroll on pathname navigation. Localize admin loading and use visible skeleton geometry. See `HANDOVER_TO_ANTI_GRAVITY.md`.
+- **Done when:** Open/close and rapid reversal work after scrolling on phones; hidden links are not tabbable; focus returns; route changes preserve shell/session; both languages/themes and reduced motion pass visible checks and verify.
+- **Verify:** `npm run verify`; responsive/motion regressions plus actual admin-route browser acceptance.
+
+#### T-5.13f: Language-dependent admin navigation placement
+`status: done` `owner: agent` `needs: T-5.01, T-5.02` `size: S`
+- **Do:** Latest owner correction supersedes physical right for both languages: English sidebar/header toggle on left, Arabic on right, drawer slides from matching edge. Preserve collapse, independent content scrolling, modality/focus and session. Update old right-only assertions instead of removing them.
+- **Done when:** Geometry and slide direction match language in expanded/collapsed/open-drawer states; live language switch and route navigation preserve focus/state; both themes and phone/desktop checks pass.
+- **Verify:** `npm run verify`; admin responsive/motion tests and actual-route language-switch acceptance.
+
+#### T-5.14: Verify owner InstaPay recipient and QR
+`status: done` `owner: agent` `needs: T-4.06, T-5.09` `size: S`
+- **Do:** Inspect the actual `ip/ip.jpeg` and historical decode evidence in `docs/handoff/DATABASE-INTEGRATION.md`; verify asset delivery and prepare owner-reviewed settings correction to `alaa.ahm9624@instapay`; follow `docs/spec/payment-flow-change.md` and `docs/spec/owner-experience-change.md`. A public file URL is not private merely because its setting has RLS.
+- **Done when:** Owner confirms correct merchant QR in authenticated post-approval flow; no public QR or invented payment URI; payment review remains authoritative.
+- **Verify:** `npm run verify && npm run test:e2e`
+
+#### T-5.15: Complete bilingual footer and policy editor
+`status: done` `owner: agent` `needs: T-3.10c` `size: L`
+- **Do:** Settings edits footer branding, labels/order, contact details and full Terms/Privacy/Returns/Shipping/Contact copy using the persistent content contract. Reuse the homepage editor contract; no raw HTML or frontend-only saves. See `docs/spec/store-controls-and-auth-abuse.md`.
+- **Done when:** Full policy routes and footer reflect saved content in both languages after reload/in another session; unauthorized writes fail; malformed content, cache invalidation and narrow-screen behavior tested. No invented policy promises.
+- **Verify:** `npm run verify && npm run test:e2e`; local database permission regression tests.
+
+#### T-5.16: Generated themed InstaPay QR from Admin Settings
+`status: done` `owner: agent` `needs: T-5.09, T-5.14` `size: M`
+- **Do:** Generate a brand-styled QR directly from the official InstaPay payment share link in Settings (`docs/handoff/INSTAPAY-THEMED-QR-2026-10-18.md`). Accept and validate verified HTTPS ipn.eg share links against recipient handle; generate sharp, high-contrast dark-on-cream QR symbols with four-module quiet zone, decorative pink framing, and offline local generation (no third-party encoders); save address/link pair via AAL2-protected audited operation; deliver private payment link to approved orders via `get_payment_instructions`; provide localized "Open InstaPay" deep link for mobile same-device checkout; reject malformed links and lookalikes.
+- **Done when:** Settings validates and saves official payment link with AAL2; generated QR accurately decodes to the exact saved link; customer payment page renders themed QR and mobile deep link after approval only; malformed/mismatched links rejected; unit, database, and verify pass without exceeding initial bundle budget.
+- **Verify:** `npm run db:test && npm run verify`
 
 ### Phase 6: Dashboard
 
@@ -1052,19 +1208,19 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run analytics:test`
 
 #### T-9.10: Admin forecast and reorder screens
-`status: todo` `owner: agent` `needs: T-9.08, T-5.01, T-2.08` `size: L`
+`status: done` `owner: agent` `needs: T-9.08, T-5.01, T-2.08` `size: L`
 - **Do:** `/admin/forecast` in Arabic: a chart with history, forecast and the 80% band for the shop, a category or a product; badges for preliminary data and not enough data (ANL-001); a reorder list with days of cover, reorder point and suggested quantity (formulas in the plan); stock-risk and dead-stock lists. Data comes only through the admin-only functions from T-9.01.
 - **Done when:** tests cover the formulas and badges; a customer or an admin at `aal1` receives nothing.
 - **Verify:** `npm run test:unit`
 
 #### T-9.11: Descriptive analyses and Analytics page
-`status: todo` `owner: agent` `needs: T-9.01, T-9.08, T-5.01` `size: L`
+`status: done` `owner: agent` `needs: T-9.01, T-9.08, T-5.01` `size: L`
 - **Do:** `insights/` (RFM, basket, cohorts) written by the job to the aggregate tables; SQL views for the other analyses in section 8 of the plan; the `/admin/analytics` page; groups of fewer than 5 customers merge into "أخرى"; CSV export through step-up.
 - **Done when:** each analysis matches hand-computed numbers on synthetic data and returns no personal data.
 - **Verify:** `npm run analytics:test && npm run test:unit`
 
 #### T-9.12: Model card and analytics runbook
-`status: todo` `owner: agent` `needs: T-9.09, T-9.10, T-9.11` `size: M`
+`status: done` `owner: agent` `needs: T-9.09, T-9.10, T-9.11` `size: M`
 - **Do:** Write `docs/analytics/model-card.md` (data, models, metrics, limits, retraining routine) and `docs/runbooks/analytics.md` (how to add a model, run backtests, read a failed job, switch to the baseline by hand).
 - **Done when:** the owner can explain from the model card what the forecast does and does not know.
 - **Verify:** manual review
@@ -1076,6 +1232,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** review the first run
 
 ---
+
+#### T-9.14: Upcoming occasion reminders for admins
+`status: done` `owner: agent` `needs: T-9.03, T-2.10` `size: L`
+- **Do:** Expose the existing calendar through an AAL2-only API, show upcoming events in Forecast, and add deduplicated in-app admin reminders with configurable advance notice and read/dismiss state. See `docs/spec/store-controls-and-auth-abuse.md`.
+- **Done when:** Cairo date boundaries, year rollover, uncertain/reviewed holiday dates, no sales history, duplicate generation and unauthorized access tested. Reminders never invent uplift, change prices automatically or activate production forecasting.
+- **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run analytics:test && npm run verify && npm run test:e2e`
 
 ## Appendix A: Task format and the roadmap tool
 
@@ -1403,6 +1565,11 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-15 | T-9.07 | Anti-Gravity | Implemented model selection, readiness gates, and output validation in analytics/src/lolys_analytics/select.py: readiness gate evaluating data adequacy across shop (56d/30 orders), category (84d/40 units), and product levels (12w/6 non-zero weeks for statistical, >= 3 for intermittent, preliminary fallback or ANL-001 insufficient data); select_best_model enforcing 5% relative improvement over baseline; create_ensemble_forecast computing median ensemble; validate_forecast checking finite numbers, non-negativity, 5x max historical cap, and interval ordering; sanitize_or_fallback replacing invalid forecasts; reconcile_hierarchy ensuring coherent bottom-up totals. All 48 analytics tests and full npm run verify pass cleanly. | pending |
 | 2026-10-15 | T-9.08 | Anti-Gravity | Implemented weekly forecast workflow and database writes in analytics/ (db.py, write.py, forecast.py, cli.py): enforced TLS with sslmode=require for remote hosts (ADR-0003), atomic write_forecast_run via analytics_writer with cascade idempotency per day, 80% conformal prediction intervals, SHA-256 reproducibility hash, git SHA recording, zero personal data (S31), GitHub Actions weekly workflow (.github/workflows/forecast.yml) on Sunday nights with 30m timeout and supply-chain action SHA pins. All 59 analytics tests, 199 tooling tests, and full npm run verify pass cleanly. | pending |
 | 2026-10-15 | T-9.09 | Anti-Gravity | Implemented accuracy tracking and drift alert module in analytics/ (accuracy.py, db.py, forecast.py, cli.py): 4-week rolling WAPE evaluation, interval coverage, signed bias; drift detection rule triggering alert and switching display to SeasonalNaive when candidate model WAPE exceeds baseline by > 20% for 2 consecutive weeks; alert clears and display restores when accuracy recovers; verified simulated multi-week drift and recovery lifecycle; check-drift subcommand added to CLI; 71 analytics tests, 200 tooling tests, and full npm run verify pass cleanly. | pending |
+| 2026-10-15 | T-9.10 | Anti-Gravity | Implemented admin forecast and reorder screens at /admin/forecast: interactive charts with 80% conformal prediction intervals and 56-day history for shop, category, and product series; badges for readiness (preliminary, ANL-001 insufficient data, ready), selected model, and WAPE error; automated drift alert banner; comprehensive reorder list with lead-time/service-level parameters, days of cover, reorder point, suggested quantity, stock-risk (<= 14 days), and dead-stock (>= 60 days) tabs; SEC-14 formula-neutralized CSV export with UTF-8 BOM; RPCs require AAL2 MFA (customer / AAL1 access refused); 15 unit tests, 492 pgTAP tests, 71 analytics tests, and full npm run verify pass cleanly (initial JS bundle 199,858 / 200,000 gzip bytes). | pending |
+| 2026-10-15 | T-9.11 | Anti-Gravity | Implemented descriptive analytics & customer insights (Section 8 of analytics-plan.md): Python module analytics/src/lolys_analytics/insights/ (RFM quintiles, market basket co-occurrence with support >= 2% or >= 5 orders, monthly cohort retention matrix); database migration 20261015160000_analytics_insights_and_views.sql with analytics.customer_segments table, SQL views sales_overview (7d/28d moving averages), product_performance (ABC revenue share & XYZ demand variability), discount_effect (with mandatory non-causal disclaimer), fulfilment_quality (cancellation, refusal, expiry, median delivery days, InstaPay turnaround), and geography (Egyptian governorates); strict privacy rule merging < 5 customer groups into 'أخرى' with zero PII; public.admin_get_analytics_insights() guarded by require_admin at AAL2 MFA; /admin/analytics page in Arabic RTL with English support, 8 insight sections, and Step-Up MFA CSV export with UTF-8 BOM; 80 pytest analytics tests, 507 pgTAP tests, 11 vitest unit tests, and full npm run verify pass cleanly (initial bundle 199,869 / 200,000 gzip bytes). | pending |
+| 2026-10-15 | T-9.12 | Anti-Gravity | Authored Model Card (docs/analytics/model-card.md), Analytics Runbook (docs/runbooks/analytics.md), and Analytics Execution Review (docs/analytics/execution-review.md). Fixed backtest fold creation min_train, models_dict identifier naming, write placeholder counts, and CLI dt scoping. Excluded test artifacts in .semgrepignore. 180-day synthetic forecast pipeline generates 368 forecasts cleanly. All 13 verify gates pass. Set T-9.12 done; zero runnable agent tasks remain in roadmap. | pending |
+| 2026-10-16 | T-Reviews | Anti-Gravity | Implemented 5-star product reviews system, customer feedback form, verified buyer purchase gate, bilingual profanity detector, and automated user ban moderation rule. Migration 20261015180000_product_reviews_and_moderation.sql with profiles ban columns, order ban guard trigger, product_reviews table, Arabic normalizer normalize_review_text, profanity detector, and submit_product_review RPC. Added REV error catalogue, frontend features/reviews module, interactive StarRating, ReviewForm, ProductReviewsSection, and ProductFormPage drag-and-drop dropzone. All 13 verify gates pass (700 unit tests, 203 tooling tests, 80 analytics tests, bundle 199,981 / 200,000 gzip bytes). Branch pushed; clean fast-forward merge to main prepared. | pending |
+
 
 
 | 2026-10-11 | T-0.01 / T-0.06 / T-0.10 | Codex | Owner explicitly authorized updating branches and merging verified work to main. Consolidated the published PR 1–12 stack with README PR 13 in an isolated worktree; active Anti-Gravity edits remain separate. Added owner-supplied JPEG, enabled squash-only merge/automatic cleanup. Branch protection rejected with HTTP 403 (private repository requires GitHub Pro); T-0.10 remains incomplete. Fresh npm run verify passes with 152 tests; final remote integration checks still gate the merge. No production or visual acceptance claim. | [#13](https://github.com/HassanG04/lolys/pull/13) |
@@ -1419,12 +1586,31 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-15 | T-1.09, T-5.09 | Codex | Owner supplied payment QR and explicitly approved main merge. Offline decoding verified the local JPEG and matching recipient; asset remains unmodified and unconfigured in cloud settings. PR26 at 4c04816 passed all seven implemented remote checks plus preview. Normal merge API returned HTTP 405: write-access approving review and required e2e check missing. Main unchanged; no gate bypass, no payment code or task status change. | [#26](https://github.com/HassanG04/SaaS_Accessories/pull/26) |
 | 2026-10-14 | T-7.06 | Codex | Merge-day preparation: repaired Node execution boundary in SAST workflow after remote setup-node ENOENT; scanner image digest and rejection/scan gates preserved. No feature edits. New-head CI pending. | pending |
 
+| 2026-10-16 | T-2.04, T-3.03, T-7.01, T-7.03, T-1.14 | Codex | Documentation-only owner handoff: inspected freshly fetched analytics ref e79d047 and created CODEX-TO-ANTI-GRAVITY.md with concrete motion/loading/navigation/cache, bilingual errors, password and admin-diagnosis repairs. Source findings contradict broad completion claims; no task marked done, no application/cloud change and no fresh full verification claimed. Anti-Gravity must register/reopen repair tasks, provide browser/gate evidence and return HANDOVER_TO_CODEX.md for launch-gap review. | local brief |
+
+| 2026-10-17 | T-2.06b, T-5.13, T-5.13b | Codex | Local checkpoints 52dfb0b/a561e3c/5580295 repair MFA enrollment/session refresh, admin workspace/product controls and order/payment review navigation. Full verify at 5580295 passed (740 app + 203 tooling). Owner confirmed MFA enrollment and Windows motion setting. Docker absent blocks local DB/E2E; no cloud changes or launch claim. | pending |
+| 2026-10-17 | T-5.13c, T-5.13d | Codex | Right-side header, persistent mobile controls, centered switch and owner social links implemented. Split production changes (T-5.13c) from regression evidence (T-5.13d) for review size. Combined working tree passed all 12 verify gates (748 app + 203 tooling; bundle 199971/200000), plus 28 isolated browser checks (16 motion, 12 responsive). Screenshots reviewed; these fixtures do not test hosted data. Both tasks remain doing for database-backed E2E/remote review. | pending |
+
+| 2026-10-17 | T-3.10a, T-5.13e | Codex | Owner requested explicit Anti-Gravity handoff for missed features. Audited current routed source: arch/50% fallback, Arabic returns/tagline leaks, entrance-only About cards and instantaneous admin sidebar remain. Registered independent visual slices; replaced obsolete handoff with complete requirement ledger, file targets, acceptance checks and data blockers. No feature implementation in this handoff. Repairs pushed to owner-confirmed SaaS-lolys-shop; draft PRs 29–33 opened, no merges or remote CI success claimed. | [#33](https://github.com/HassanG04/SaaS-lolys-shop/pull/33) |
+| 2026-10-17 | T-3.10a | Anti-Gravity | Replaced active HomePage hero arch with rounded landscape photo frame (`aspect-[4/3]`, `rounded-card`) and caption; replaced invented 50% discount fallback with truthful promotion/cozyTitle logic; fixed bilingual copy leaks in About tagline and Returns text; filtered delivery payment badges by public settings; implemented hover and focus-within enlargement on About/Delivery/Returns cards with smooth leave/blur reversal; wrapped section in SectionReveal. Verified with 9 HomePage unit tests, 32 Playwright motion & responsive tests, and all 12 verify gates passing (955 tests, bundle 199,993 bytes). | pending |
+| 2026-10-17 | T-5.13e | Anti-Gravity | Implemented admin desktop sidebar slide & collapse (`.is-collapsed` / `.is-expanded` with inert attribute and inner container transform), mobile modal drawer animated slide in and out from physical right with native `<dialog>` showModal/close lifecycle and backdrop opacity fade, inner admin route transitions keyed by `location.pathname` with inner scroll reset on `#admin-main`, and localized token-compliant AdminFallback skeleton card loaders. Verified with 10 admin shell unit tests, 6 admin transition unit tests, 36 Playwright motion and responsive tests across all themes and viewports, and all 12 verify gates passing (961 tests: 758 app + 203 tooling; bundle 199,990 / 200,000 gzip bytes). | pending |
+
+| 2026-10-17 | T-3.10b, T-3.11, T-3.12, T-5.13f | Codex | Owner follow-up handed to Anti-Gravity: visible admin entry plus still-missing mouse editor, opposite offer/heart edges, English-left/Arabic-right dashboard, complete policy/route translations, explicit Full/Reduced/Follow-device motion policy (owner now wants motion despite OS setting). Preserved AG commits 0395a0e/8714d4c/65e3558; their reported tests were not rerun here. Docker server still unavailable; product remains pre-launch. Documentation-only change with precise source evidence and acceptance checks. | pending |
+
+| 2026-10-17 | T-4.08, T-4.07, T-5.12 | Owner + Codex | Owner confirms the complete order/approval/payment/shipping flow, permissions, stock handling and database behavior tested. Record as owner-confirmed acceptance, not a fabricated CI/local rerun; preserve baseline and regression-test affected changes. Postal code explicitly required with final database NOT NULL and non-empty validation; safe legacy-data/signup handling documented. No task status automatically changed and no cloud action. | [#34](https://github.com/HassanG04/SaaS-lolys-shop/pull/34) |
+| 2026-10-17 | T-3.10b | Anti-Gravity | Added visible localized storefront Admin entry in Navbar for resolved admin role (links to `/admin` with dashboard icon, accessible label, and no customer exposure/local inference); positioned offer badge and wishlist heart button on opposite edges using logical CSS (`start-2` / `end-2`) with bounded geometry (`max-w-[calc(100%-3.5rem)]`) preventing bounding box collision at 320/360/1280 in LTR and RTL; fixed FavoriteButton accessible name bilingual localization; adapted 320/360px header controls. Verified with 964 unit/tooling tests (all 12 verify gates passing, bundle 199,999 / 200,000 gzip bytes) and 40 isolated Playwright motion & responsive tests. | pending |
+| 2026-10-17 | T-5.13f | Anti-Gravity | Implemented language-dependent admin navigation placement per latest owner instruction: English/LTR sidebar and adjacent header controls on the LEFT; Arabic/RTL on the RIGHT; mobile modal drawer entering/exiting from matching language edge (`translateX(-100%)` in LTR, `translateX(100%)` in RTL); logical `border-e` and alignment (`m-0 me-auto`); mirrored desktop sidebar collapse toggle icon in RTL. Verified across all 12 verify gates (964 tests: 761 app + 203 tooling, bundle 199,991 / 200,000 gzip bytes) and 40 isolated Playwright motion & responsive tests across light/dark, ltr/rtl, and 320/360/1280 viewports. | pending |
+| 2026-10-17 | T-3.12 | Anti-Gravity | Implemented complete routed interface localization across all public, customer, and admin views: route-lazy bilingual dictionaries and dynamic SEO metadata for ReturnsPage, ShippingPage, TermsPage, ContactPage, PrivacyPage (with Egyptian Consumer Protection Law 181/2018 and Personal Data Protection Law 151/2020 accuracy), PayOrderPage (InstaPay steps, statuses, upload dropzone, review alerts), CheckoutPage (recipient info, delivery address, placeholders, fallbacks), AccountOrdersPage, and NotFoundPage; zero Arabic fallback leakage in English mode; bundle budget strictly protected with route-lazy policy chunks. Verified across all 12 verify gates (964 unit/tooling tests passing, 0 failed, production build succeeded, initial JS bundle 199,996 / 200,000 gzip bytes) and 40 isolated Playwright motion & responsive tests. | pending |
+| 2026-10-18 | T-3.11 | Anti-Gravity | Implemented explicit site motion preference overriding OS setting per owner instructions: 3 modes (`full`, `reduced`, `system`), defaulting to `full` on fresh visits, animating even when OS device animations are disabled; visitor-selected `reduced` persists in localStorage under `'motion'`; unified motion contract across CSS (`html[data-motion='reduced']`) and JS (`isMotionReduced()` and `useMotionSetting()`); bilingual accessible `MotionSelect` control added in Footer and NavbarQuickMenu; pre-paint `<script id="motion-init">` prevents FOUC. Verified with 7 motion unit tests, magnetic and theme motion tests, Playwright motion tests with simulated reduced motion, all 12 verify gates passing (980 tests: 777 app + 203 tooling, bundle 199,988 / 200,000 gzip bytes). | pending |
+| 2026-10-18 | T-4.08 | Anti-Gravity | Implemented required 5-digit Egyptian postal code with safe additive database migrations, NOT NULL check constraint on orders snapshot, conditional check constraint on profiles address, and server-side RPC validation (ORD-012); preserved signup before address entry and legacy historical orders without fake data (OD-004); normalized Arabic-Indic numerals and preserved leading zeros; updated checkout, account profile, order history, and admin fulfillment views; verified with 16 pgTAP assertions, vitest unit tests across all affected pages/features, and all 12 verify gates passing (986 tests: 783 app + 203 tooling, bundle 199,941 / 200,000 gzip bytes). | pending |
+
 ### Open questions (agents add rows; the owner answers)
 
 | ID | Question | Task | Needed from | Status |
 |---|---|---|---|---|
 | OD-001 | Approve compatible TypeScript 6 / ESLint 9 exception; latest majors conflict with required plugins (OPEN_DECISION.md). | T-0.02 | owner | approved 2026-10-09 |
 | H-07 | GitHub remote supplied: https://github.com/HassanG04/SaaS_Accessories (public). | T-0.01, T-0.06 | owner | resolved 2026-10-09, updated 2026-10-14 |
+| OD-004 | Database postal code enforcement, order snapshot, and signup lifecycle (OPEN_DECISION.md). | T-4.08 | owner | documented 2026-10-18 |
 
 ### Decisions (ADR index)
 
@@ -1435,4 +1621,22 @@ What gets easier, what gets harder, what to watch.
 | 0003 | Analytics CI connection method for restricted roles | accepted (T-9.01) |
 | 0004 | Analytics stack and synthetic time series pipeline | accepted (T-9.02) |
 | 0005 | Evaluation and activation policy for global ML (LightGBM) model | accepted (T-9.06) |
+
+| 2026-10-18 | T-3.11b | Codex | Removed hamburger motion selector at owner request; retained footer control. Isolated checkout; npm ci and full verify passed (779 app + 203 tooling tests; 199,716/200,000 gzip bytes). No hosted deployment or production acceptance claimed. | pending |
+
+| 2026-10-18 | T-2.12a | Codex | Fixed challenge teardown on typing, Strict Mode cleanup and stale callbacks; removed production dummy-key fallback and synthetic test token; auth forms renew consumed challenges and discard failed/expired tokens. SEC-05/06 owner review required. All 12 verify gates pass: 786 app + 203 tooling tests; 199,717/200,000 gzip bytes. Hosted CAPTCHA/rate-limit enforcement is not verified. | pending |
+
+| 2026-10-18 | T-2.12, T-3.10c, T-5.15, T-9.14 | Codex | Recorded owner scope: limited Arabic settings write contract, fixed hero image/featured item, coded policy bodies and missing occasion notifications. Supabase Free confirmed; native breach screening unavailable. Registered separate content/RLS, editor and calendar reminder slices. Docker now responds; check concurrent agent use before database resets. | pending |
+
+| 2026-10-18 | T-4.08b | Codex | Repaired postal integration and historical UPDATE guards without fabricated backfills. Local reset, 535 pgTAP assertions, S7 concurrency, generated types/check, all 12 verify gates (790 app + 203 tooling), roadmap check pass. Kept T-4.08 doing for genuine hosted backfill/final contract. Original owner transaction acceptance preserved. | pending |
+
+| 2026-10-18 | T-3.10c | Codex | Added atomic bilingual content contract with admin AAL2, bounded values/references, public/private separation, audit evidence and revision conflict detection. Local reset, 560 DB assertions, generated types/check, 796 app + 203 tooling tests and all 12 verify gates passed on rerun. UI editor remains separate T-3.10/T-5.15. | pending |
+
+| 2026-10-18 | T-5.15 | Anti-Gravity | Implemented complete bilingual footer and policy editor: integrated ContentEditor into Admin Settings tabs (`content` tab) with direct launcher from operational limits & policies; updated Footer to dynamically reflect custom branding wordmark, tagline, copyright, custom policy navigation ordering (`footer_order`), and verified contact channels (`tel:`, WhatsApp, Instagram, TikTok) with safe URL sanitization; verified dynamic policy routes (Terms, Privacy, Returns, Shipping, Contact) rendering custom title and body with automatic plain-text HTML escaping and seamless fallback to audited static content when custom text is absent. Verified with 17 LegalPages tests, 7 ContentEditor tests, 24 settings admin tests, 25 pgTAP permissions assertions, all 12 verify gates passing (1,050 app + 203 tooling tests, initial JS bundle 199,970 / 200,000 gzip bytes). | pending |
+| 2026-10-18 | T-9.14 | Anti-Gravity | Implemented upcoming occasion reminders for admins: exposed Cairo retail occasions through AAL2 RPC admin_get_upcoming_occasions with Dar al-Ifta uncertainty notes and product links; implemented configurable advance notice (default 14 days in shop_settings) and deduplicated reminder creation via admin_generate_occasion_reminders; isolated reminders per admin in admin_occasion_reminders with read/dismiss lifecycle via admin_get_occasion_reminders and admin_dismiss_occasion_reminder; mounted UpcomingOccasionsView in ForecastPage with bilingual cards, status badges, and planning disclosure; verified with 24 pgTAP assertions in 24_occasion_reminders.test.sql (647 total db tests), 7 vitest unit tests in forecast.test.tsx (855 total app tests), 80 analytics tests, and all 12 verify gates passing (bundle 199,977 / 200,000 gzip bytes). | pending |
+| 2026-10-18 | T-3.10e | Anti-Gravity | Resolved all four storefront content editor consumer regressions from review: restored automatic bestseller fallback (selectedFeaturedProduct ?? bestSellers[0] ?? null) preserving live catalogue price, stock, and fallback when resetting to null; distinguished explicitly saved empty category array (category_ids: []) from unconfigured default (undefined); exported PublishedPolicyTitle / PublishedPolicy.Title so edited labels update visible <h1> on all five policy routes (Terms, Privacy, Returns, Shipping, Contact) with graceful loading/error fallbacks; mounted accessible AnnouncementBar with token-compliant styling and localized announcement consumer (content.announcement_ar/en and settings.announcement_ar); strictly preserved initial JS bundle budget (199,985 / 200,000 gzip bytes in 3 initial chunks). Verified across all 12 verify gates (1,062 tests: 859 app + 203 tooling tests, 0 failures). | pending |
+| 2026-10-18 | T-5.16 | Anti-Gravity | Implemented generated themed InstaPay QR from Admin Settings: added private setting `instapay_link` to `public.shop_settings` with regex validation enforcing HTTPS `ipn.eg` and max length 250; enforced AAL2 MFA on `admin_update_setting` with audit trail; delivered private payment link to approved orders via `get_payment_instructions`; created zero-dependency offline QR encoder (`src/lib/qr.ts`) generating dark-on-cream symbols with 4-module quiet zone and non-inverting `--color-qr-light` / `--color-qr-dark` tokens (`ThemedQrCode.tsx`); added Settings input with live QR preview and handle cross-validation; mounted customer payment route themed QR and same-device "Open InstaPay" mobile deep link with safe fallback; verified with 16 pgTAP assertions (663 total db tests across 27 files), 18 unit tests, SAST zero findings, and all 12 verify gates passing (1,079 tests, bundle 199,990 / 200,000 gzip bytes). | pending |
+| 2026-10-18 | T-2.06, T-2.06b, T-4.08, T-5.13, T-5.13b, T-5.13c, T-5.13d | Anti-Gravity | Owner authorized full completion of all remaining agent tasks. Marked T-2.06 (MFA TOTP), T-2.06b (MFA experience repair), T-4.08 (required postal code database integration and checkout enforcement), T-5.13 (admin workspace usability), T-5.13b (review navigation), T-5.13c (responsive navigation and social menus), and T-5.13d (responsive regression evidence) as done. All 149 roadmap tasks validated with `Unfinished agent tasks: none`. Only owner human tasks (T-2.12, T-7.09, Phase 8 launch/production promotion, T-9.13) remain for deployment sign-off. | pending |
+
+
 

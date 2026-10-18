@@ -1,4 +1,5 @@
 import type { SettingKey } from './types'
+import { validateInstaPayLink } from '@/lib/qr'
 
 export const ALLOWED_SETTING_KEYS: readonly SettingKey[] = [
   'shop_name_ar',
@@ -14,6 +15,7 @@ export const ALLOWED_SETTING_KEYS: readonly SettingKey[] = [
   'payment_methods_enabled',
   'instapay_qr_path',
   'instapay_handle',
+  'instapay_link',
   'returns_text_ar',
   'payment_window_hours',
   'pending_order_limit',
@@ -80,6 +82,11 @@ export function validateInstaPayHandle(val: unknown): boolean {
   return typeof val === 'string' && val.length <= 60
 }
 
+export function validateInstaPayLinkSetting(val: unknown): boolean {
+  if (typeof val !== 'string') return false
+  return validateInstaPayLink(val).valid
+}
+
 export function validateReturnsText(val: unknown): boolean {
   return typeof val === 'string' && val.length <= 2000
 }
@@ -140,6 +147,9 @@ export function validateSettingValue(
       break
     case 'instapay_handle':
       valid = validateInstaPayHandle(value)
+      break
+    case 'instapay_link':
+      valid = validateInstaPayLinkSetting(value)
       break
     case 'returns_text_ar':
       valid = validateReturnsText(value)

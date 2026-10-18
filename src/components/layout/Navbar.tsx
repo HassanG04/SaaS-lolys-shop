@@ -1,205 +1,167 @@
-import { lazy, Suspense, useState } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { lazy, Suspense, useContext, useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
-import { ThemeToggle } from '../ui/ThemeToggle'
-import { LanguageToggle } from '../ui/LanguageToggle'
 import { useCart } from '../../features/cart'
+import { AuthContext } from '../../features/auth/AuthProvider'
+import ThemeToggle from '../ui/ThemeToggle'
+import LanguageToggle from '../ui/LanguageToggle'
+const NavbarSearch = lazy(() => import('./NavbarSearch'))
+const NavbarQuickMenu = lazy(() => import('./NavbarQuickMenu'))
+const NotificationBell = lazy(
+  () => import('../../features/notifications/components/NotificationBell'),
+)
 
-const NavbarMobileMenu = lazy(() => import('./NavbarMobileMenu'))
+const initials = (n?: string | null, e?: string | null) => (n || e || 'U').slice(0, 2).toUpperCase()
 
-function NavIcon({
-  children,
-  className = 'size-5',
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {children}
-    </svg>
-  )
-}
+const pill =
+  'h-11 items-center rounded-pill border border-border bg-surface-2 px-3 text-small hover:border-brand focus:ring-2'
+const iconBtn =
+  'flex size-11 items-center justify-center rounded-pill hover:border-brand focus:ring-2'
 
-const pillBtnClass =
-  'h-11 items-center rounded-pill border border-border bg-surface-2 px-3 py-1 text-small font-medium text-text transition-colors hover:border-brand focus:outline-none focus:ring-2 focus:ring-focus'
+const Svg = ({ d, className }: { d: string; className: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    aria-hidden="true"
+  >
+    <path d={d} />
+  </svg>
+)
 
-interface NavbarProps {
-  cartCount?: number
-}
-
-export function Navbar({ cartCount }: NavbarProps) {
+export function Navbar({ cartCount }: { cartCount?: number } = {}) {
   const { t } = useLanguage()
   const cart = useCart()
+  const auth = useContext(AuthContext)
+  const user = auth?.user
+  const profile = auth?.profile
   const displayCartCount = cartCount ?? cart.totalCount
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const navigate = useNavigate()
-
-  const navLinks = [
-    { to: '/', label: t.nav.store },
-    { to: '/category/all', label: t.nav.browse },
-    { to: '/about', label: t.nav.about },
-  ]
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-      setSearchQuery('')
-      setMobileMenuOpen(false)
-    }
-  }
+  const [quickMenuOpen, setQuickMenuOpen] = useState(false)
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-surface/95 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-(--container-layout) items-center justify-between gap-4 px-4 sm:px-6">
-        {/* Brand Logo & Wordmark */}
+      <div className="mx-auto flex h-20 max-w-(--container-layout) items-center justify-between gap-2 px-3 sm:gap-4 sm:px-6">
         <Link
           to="/"
-          className="group flex items-center gap-3 text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-pill p-1"
-          aria-label="Lolys' Accessories & Home"
+          className="group flex items-center gap-3 text-brand rounded-pill p-1 shrink-0 focus:ring-2"
+          aria-label="Lolys"
         >
-          <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-pill border border-border bg-bg">
+          <div className="relative flex size-9 sm:size-12 items-center justify-center overflow-hidden rounded-pill border border-border bg-bg">
             <img
               src="/brand/logo.png"
               alt=""
               aria-hidden="true"
-              className="h-full w-full object-cover"
-              onError={(e) => {
-                // Graceful fallback if image is not loaded
-                e.currentTarget.style.display = 'none'
-              }}
+              className="size-full object-cover"
+              onError={(e) => (e.currentTarget.hidden = true)}
             />
-            <NavIcon className="size-6 text-brand">
-              <path d="M11 10C4 2 1 5 3 10s6 4 8 2m2-2c7-8 10-5 8 0s-6 4-8 2M10 13l-4 8 4-2 2 2 2-8m-1 0 5 8-1-5 4 1-6-5" />
-              <rect x="10" y="9" width="4" height="5" />
-            </NavIcon>
           </div>
-          <div className="flex flex-col">
-            <span className="font-accent text-h3 font-bold leading-tight tracking-normal text-brand">
-              Lolys&apos;
-            </span>
+          <div className="hidden sm:flex flex-col">
+            <span className="font-accent text-h3 font-bold">Lolys&apos;</span>
             <span className="text-caption text-text-muted">{t.footer.tagline}</span>
           </div>
         </Link>
 
-        {/* Desktop Search Pill */}
-        <form
-          role="search"
-          onSubmit={handleSearchSubmit}
-          className="hidden md:flex flex-1 max-w-sm items-center"
-        >
-          <div className="relative w-full">
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t.search.placeholder}
-              className="w-full h-11 rounded-pill border border-border-input bg-bg ps-4 pe-11 text-small text-text placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
-            />
-            <button
-              type="submit"
-              aria-label={t.ui.search}
-              className="absolute end-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-pill bg-brand text-brand-contrast transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-focus"
-            >
-              <NavIcon className="size-4">
-                <path d="M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16m10 18-4.3-4.3" />
-              </NavIcon>
-            </button>
-          </div>
-        </form>
+        <Suspense fallback={null}>
+          <NavbarSearch />
+        </Suspense>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden lg:flex items-center gap-6" aria-label="Desktop Navigation">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                `text-small font-medium transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-chip px-2 py-1 ${
-                  isActive ? 'text-brand font-bold' : 'text-text'
-                }`
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
+        <nav className="hidden lg:flex items-center gap-6" aria-label="Desktop">
+          <NavLink to="/" className="nav-link focus:ring-2">
+            {t.nav.store}
+          </NavLink>
+          <NavLink to="/category/all" className="nav-link focus:ring-2">
+            {t.nav.browse}
+          </NavLink>
         </nav>
 
-        {/* Actions: Cart, Account, Theme, Language */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Cart Pill */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <Link
             to="/cart"
-            onClick={(e) => {
-              e.preventDefault()
-              cart.openDrawer()
-            }}
-            className={`flex gap-2 ${pillBtnClass}`}
+            onClick={(e) => (e.preventDefault(), cart.openDrawer())}
+            className={`ui-control flex justify-center gap-2 ${pill}`}
             aria-label={`${t.nav.cart} (${displayCartCount})`}
           >
-            <NavIcon className="size-5 text-brand">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0" />
-            </NavIcon>
-            <span className="font-semibold text-brand">{displayCartCount}</span>
+            <Svg
+              className="hidden sm:block size-5 text-brand"
+              d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0"
+            />
+            <span key={displayCartCount} className="font-bold text-brand cart-badge-pop">
+              {displayCartCount}
+            </span>
           </Link>
 
-          {/* Account Link */}
-          <Link
-            to="/account"
-            className={`hidden sm:flex justify-center ${pillBtnClass}`}
-            aria-label={t.nav.account}
-          >
-            <NavIcon className="size-5 text-brand">
-              <path d="M12 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10m8 18a8 8 0 1 0-16 0" />
-            </NavIcon>
-          </Link>
+          {!user ? (
+            <Link to="/login" className={`hidden sm:flex ${pill}`}>
+              {t.nav.loginRegister}
+            </Link>
+          ) : (
+            <Link
+              to="/account"
+              className={`${iconBtn} bg-brand/10 border border-brand/30 text-brand font-bold text-caption hover:bg-brand/20 shrink-0`}
+              aria-label={t.nav.account}
+              title={profile?.full_name || user.email || ''}
+            >
+              {initials(profile?.full_name, user.email)}
+            </Link>
+          )}
 
-          {/* Theme & Language Toggles */}
-          <ThemeToggle />
+          {user && (
+            <Suspense fallback={null}>
+              <NotificationBell />
+            </Suspense>
+          )}
+
+          {!auth?.loading && user && auth?.role === 'admin' && (
+            <Link
+              to="/admin"
+              className={`ui-control flex gap-1.5 ${pill} border-brand/40 bg-brand/10 text-brand font-semibold shrink-0`}
+              aria-label={t.admin.dashboard}
+            >
+              <Svg
+                className="size-5 shrink-0"
+                d="M3 3h7v9H3zm11 0h7v5h-7zm0 9h7v9h-7zM3 16h7v5H3z"
+              />
+              <span className="hidden md:inline">{t.admin.dashboard}</span>
+            </Link>
+          )}
+
           <LanguageToggle />
+          <ThemeToggle />
 
-          {/* Mobile Hamburger Toggle Button */}
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex lg:hidden h-11 w-11 items-center justify-center rounded-pill border border-border bg-surface-2 text-text focus:outline-none focus:ring-2 focus:ring-focus"
-            aria-expanded={mobileMenuOpen}
-            aria-label={mobileMenuOpen ? t.nav.closeMenu : t.nav.openMenu}
-          >
-            <NavIcon className="size-5">
-              {mobileMenuOpen ? (
-                <path d="M18 6 6 18M6 6l12 12" />
-              ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </NavIcon>
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setQuickMenuOpen(!quickMenuOpen)}
+              className={`${iconBtn} border border-border bg-surface-2 text-text`}
+              aria-expanded={quickMenuOpen}
+              aria-label={quickMenuOpen ? t.nav.closeMenu : t.nav.openMenu}
+            >
+              <svg
+                className={`size-5 overflow-visible ${quickMenuOpen ? 'hamburger-open' : ''}`}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <line x1="4" y1="6" x2="20" y2="6" className="hamburger-line hamburger-line-1" />
+                <line x1="4" y1="12" x2="20" y2="12" className="hamburger-line hamburger-line-2" />
+                <line x1="4" y1="18" x2="20" y2="18" className="hamburger-line hamburger-line-3" />
+              </svg>
+            </button>
+
+            {/* Quick Buttons Dropdown */}
+            {quickMenuOpen && (
+              <Suspense fallback={null}>
+                <NavbarQuickMenu onClose={() => setQuickMenuOpen(false)} />
+              </Suspense>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Mobile Drawer / Dropdown */}
-      {mobileMenuOpen && (
-        <Suspense fallback={null}>
-          <NavbarMobileMenu
-            navLinks={navLinks}
-            searchQuery={searchQuery}
-            onSearchQueryChange={setSearchQuery}
-            onSearchSubmit={handleSearchSubmit}
-            onClose={() => setMobileMenuOpen(false)}
-          />
-        </Suspense>
-      )}
     </header>
   )
 }

@@ -82,6 +82,7 @@ const mockProfile: UserProfile = {
   city: 'مدينة نصر',
   district: 'المنطقة الأولى',
   address: '12 شارع الطيران',
+  postal_code: '11511',
   floor: '4',
   apartment: '8',
   landmark: 'أمام حديقة الطفل',
@@ -96,6 +97,8 @@ function renderCheckoutPage(options?: {
   cartItems?: CartLine[]
   clearCart?: () => void
   profile?: UserProfile | null
+  user?: AuthContextValue['user']
+  lang?: 'ar' | 'en'
 }) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -123,7 +126,14 @@ function renderCheckoutPage(options?: {
 
   const authValue: AuthContextValue = {
     session: null,
-    user: { id: 'usr-123', email: 'test@example.com' } as unknown as AuthContextValue['user'],
+    user:
+      options?.user !== undefined
+        ? options.user
+        : ({
+            id: 'usr-123',
+            email: 'test@example.com',
+            email_confirmed_at: '2026-10-10T00:00:00Z',
+          } as unknown as AuthContextValue['user']),
     profile: options?.profile !== undefined ? options.profile : mockProfile,
     role: 'customer',
     aal: 'aal1',
@@ -146,7 +156,7 @@ function renderCheckoutPage(options?: {
   }
 
   return render(
-    <LanguageProvider>
+    <LanguageProvider initialLanguage={options?.lang ?? 'ar'}>
       <QueryClientProvider client={queryClient}>
         <AuthContext.Provider value={authValue}>
           <CartContext.Provider value={cartValue}>
@@ -193,6 +203,7 @@ describe('CheckoutPage (T-4.02)', () => {
       expect(screen.getByDisplayValue('01123456789')).toBeInTheDocument()
       expect(screen.getByDisplayValue('12 شارع الطيران')).toBeInTheDocument()
       expect(screen.getByDisplayValue('مدينة نصر')).toBeInTheDocument()
+      expect(screen.getByDisplayValue('11511')).toBeInTheDocument()
     })
   })
 
@@ -234,6 +245,7 @@ describe('CheckoutPage (T-4.02)', () => {
             phone: '01012345678',
             governorate_id: 1,
             address: '12 شارع الطيران',
+            postal_code: '11511',
           }),
         }),
       )
@@ -322,5 +334,45 @@ describe('CheckoutPage (T-4.02)', () => {
         }),
       )
     })
+  })
+
+  it('blocks order placement and shows verification banner when email is not confirmed', async () => {
+    const unconfirmedUser = {
+      id: 'usr-unconfirmed',
+      email: 'unconfirmed@example.com',
+      email_confirmed_at: null,
+    } as unknown as AuthContextValue['user']
+
+    renderCheckoutPage({ user: unconfirmedUser })
+
+    await waitFor(() => {
+      expect(screen.getByText('تحقق من بريدك الإلكتروني')).toBeInTheDocument()
+    })
+
+    const submitBtn = screen.getByRole('button', {
+      name: /يرجى تأكيد بريدك الإلكتروني لتتمكن من إتمام الطلب/i,
+    })
+    expect(submitBtn).toBeDisabled()
+  })
+
+  it('renders checkout page completely in English without Arabic leak', async () => {
+    renderCheckoutPage({ lang: 'en' })
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: 'Delivery Information' })).toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('heading', { name: 'Recipient Information' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Delivery Address' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Delivery Method' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Payment Method' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Order summary (estimated)' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Confirm Order' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Back to Cart' })).toBeInTheDocument()
+
+    // Assert absence of Arabic text
+    expect(screen.queryByText('معلومات المستلم')).not.toBeInTheDocument()
+    expect(screen.queryByText('عنوان التوصيل')).not.toBeInTheDocument()
+    expect(screen.queryByText('العودة إلى السلة')).not.toBeInTheDocument()
   })
 })

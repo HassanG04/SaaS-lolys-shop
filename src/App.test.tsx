@@ -26,7 +26,7 @@ test('renders Layout with skip link, main landmark, navbar and footer', async ()
   expect(
     await screen.findByRole(
       'heading',
-      { name: /إكسسوارات|خصم يصل إلى|متجر لوليز/ },
+      { name: /إكسسوارات|خصم يصل إلى|متجر لوليز|لمسة حلوة|A little lovely/ },
       { timeout: 3000 },
     ),
   ).toBeInTheDocument()

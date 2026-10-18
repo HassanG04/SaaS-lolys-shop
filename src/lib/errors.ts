@@ -14,6 +14,9 @@ export const ERROR_CATALOGUE = {
   'AUTH-010': 'إذا كان البريد الإلكتروني صحيحًا فستصلك رسالة خلال دقائق.',
   'AUTH-011': 'لا تملك صلاحية الوصول إلى هذه الصفحة.',
   'AUTH-012': 'تعذّر إرسال الرسالة الآن. حاول بعد قليل.',
+  'AUTH-013': 'كلمتا المرور غير متطابقتين. تأكد من تطابقهما.',
+  'AUTH-014': 'يرجى تأكيد بريدك الإلكتروني لتتمكن من إتمام الطلب.',
+  'AUTH-016': 'تعذّر إعداد تطبيق المصادقة. أعد المحاولة أو سجّل الدخول من جديد.',
 
   // ORD: orders
   'ORD-001': 'سلتك فارغة.',
@@ -57,6 +60,10 @@ export const ERROR_CATALOGUE = {
   'ADM-007': 'البيانات غير صالحة. راجع الحقول المظلّلة.',
   'ADM-008': 'لا يمكن تعديل هذا الإعداد.',
 
+  // PRD: product management
+  'PRD-001': 'معرّف المنتج غير صالح. يجب أن يكون رقمًا موجبًا.',
+  'PRD-002': 'معرّف المنتج مستخدم بالفعل لمنتج آخر. اختر رقمًا مختلفًا.',
+
   // SYS: system
   'SYS-001': 'حدث خطأ غير متوقع. رقم المرجع: {ref}. حاول مرة أخرى أو تواصل معنا.',
   'SYS-002': 'تعذّر الاتصال بالإنترنت. تحقّق من الاتصال وحاول مرة أخرى.',
@@ -65,6 +72,16 @@ export const ERROR_CATALOGUE = {
 
   // ANL: analytics
   'ANL-001': 'لا توجد بيانات كافية للتوقع بعد. نجمع البيانات وسيظهر التوقع قريبًا.',
+
+  // REV: product reviews & moderation
+  'REV-001': 'تم إيقاف حسابك بسبب مخالفة معايير الاستخدام.',
+  'REV-002': 'يجب شراء هذا المنتج أولًا لتتمكن من تقييمه.',
+  'REV-003': 'تم رفض التقييم لاحتوائه على كلمات غير لائقة، وتم إيقاف الحساب.',
+  'REV-004': 'التقييم يجب أن يكون بين 1 و 5 نجوم.',
+  'REV-005': 'نص التقييم يجب أن يكون بين حرف واحد و 1000 حرف.',
+
+  // USR: user moderation
+  'USR-004': 'تم إيقاف حسابك بسبب مخالفة شروط الاستخدام.',
 } as const
 
 export type ErrorCode = keyof typeof ERROR_CATALOGUE
@@ -78,18 +95,106 @@ export function generateErrorRef(): string {
   return Math.random().toString(36).slice(2, 10).padEnd(8, '0')
 }
 
+export const ERROR_CATALOGUE_EN: Record<ErrorCode, string> = {
+  // AUTH: sign-in and account
+  'AUTH-001': 'Unable to sign in. Please verify your credentials and try again.',
+  'AUTH-002': 'Too many attempts. Please wait a moment and try again.',
+  'AUTH-003': 'Security verification failed. Please try again.',
+  'AUTH-004': 'Session expired. Please sign in again.',
+  'AUTH-005': 'This page requires two-factor authentication.',
+  'AUTH-006': 'Invalid or expired verification code. Please try a new code.',
+  'AUTH-007': 'For your security, please sign in again to complete this action.',
+  'AUTH-008': 'Password is too weak. Please use at least 10 characters.',
+  'AUTH-009': 'Link is invalid or has expired. Please request a new link.',
+  'AUTH-010': 'If the email address is valid, you will receive a message shortly.',
+  'AUTH-011': 'You do not have permission to access this page.',
+  'AUTH-012': 'Unable to send message right now. Please try again shortly.',
+  'AUTH-013': 'Passwords do not match. Please verify both fields.',
+  'AUTH-014': 'Please verify your email address to complete your order.',
+  'AUTH-016': 'Unable to set up your authenticator. Try again or sign in again.',
+
+  // ORD: orders
+  'ORD-001': 'Your cart is empty.',
+  'ORD-002': 'Your cart contains invalid product data. Please update your cart and try again.',
+  'ORD-003': 'Please complete delivery details (name, phone, and address).',
+  'ORD-004': 'This delivery method is not available in your governorate.',
+  'ORD-005': 'Product "{name}" is no longer available.',
+  'ORD-006': 'Invalid quantity.',
+  'ORD-007': 'Only {left} left of "{name}".',
+  'ORD-008': 'An item in your cart is no longer available.',
+  'ORD-009': 'This order cannot be cancelled right now.',
+  'ORD-010':
+    'You have too many pending orders. Please complete or cancel one before placing a new order.',
+  'ORD-011': 'Payment method is currently unavailable.',
+  'ORD-012': 'Invalid address details. Please review fields and try again.',
+  'ORD-013': 'Total order items exceed allowable limit.',
+  'ORD-014': 'Cannot reopen a cancelled order.',
+  'ORD-015': 'Cannot ship order before payment is verified.',
+
+  // PAY: payments
+  'PAY-001': 'Payment window expired and order was cancelled.',
+  'PAY-002': 'Payment for this order has already been verified.',
+  'PAY-003': 'Transaction reference number is required.',
+  'PAY-004': 'This order is not awaiting payment right now.',
+  'PAY-005': 'Transaction reference number already used for another order.',
+  'PAY-006': 'Could not verify payment. You can upload a new proof or contact us.',
+  'PAY-007': 'This order is awaiting store confirmation.',
+  'PAY-008': 'Store confirmation expired and order was cancelled.',
+
+  // UPL: uploads
+  'UPL-001': 'Unsupported file type. Please upload a JPG, PNG, or WebP image.',
+  'UPL-002': 'File size is too large. Maximum allowed is 5 MB.',
+  'UPL-003': 'Could not upload file. Please try again.',
+
+  // ADM: admin
+  'ADM-001': 'This operation requires administrator privileges.',
+  'ADM-002': 'Enable two-factor authentication to access the admin panel.',
+  'ADM-003': 'Confirm your identity with a verification code to complete this action.',
+  'ADM-004': 'Cannot delete a product that has existing orders. Archive it instead.',
+  'ADM-005': 'Category contains products. Select another category to transfer them first.',
+  'ADM-006': 'Invalid category slug. Use lowercase English letters, numbers, and hyphens only.',
+  'ADM-007': 'Invalid data. Please review highlighted fields.',
+  'ADM-008': 'This setting cannot be modified.',
+
+  // PRD: product management
+  'PRD-001': 'Invalid product identifier. Must be a positive number.',
+  'PRD-002': 'Product identifier already in use. Please select a different number.',
+
+  // SYS: system
+  'SYS-001': 'An unexpected error occurred. Reference: {ref}. Please try again or contact us.',
+  'SYS-002': 'Unable to connect to the internet. Please check your connection and try again.',
+  'SYS-003': 'Too many requests. Please wait a moment and try again.',
+  'SYS-004': 'The store is currently undergoing maintenance. We will be back soon.',
+
+  // ANL: analytics
+  'ANL-001': 'Not enough data for forecasting yet. Forecasts will appear as data accumulates.',
+
+  // REV: product reviews & moderation
+  'REV-001': 'Your account has been suspended due to terms violation.',
+  'REV-002': 'You must purchase this product before reviewing it.',
+  'REV-003': 'Review rejected due to prohibited language, and account suspended.',
+  'REV-004': 'Rating must be between 1 and 5 stars.',
+  'REV-005': 'Review text must be between 1 and 1000 characters.',
+
+  // USR: user moderation
+  'USR-004': 'Your account has been suspended due to terms violation.',
+}
+
 export function formatErrorMessage(
   code: ErrorCode,
   params?: Record<string, string | number>,
   ref?: string,
+  lang: 'ar' | 'en' = 'ar',
 ): string {
-  const template = ERROR_CATALOGUE[code] || ERROR_CATALOGUE['SYS-001']
+  const catalogue = lang === 'en' ? ERROR_CATALOGUE_EN : ERROR_CATALOGUE
+  const fallback = lang === 'en' ? ERROR_CATALOGUE_EN['SYS-001'] : ERROR_CATALOGUE['SYS-001']
+  const template = catalogue[code] || fallback
   return template.replace(/\{([a-zA-Z0-9_]+)\}/g, (match, key) => {
     if (key === 'ref') return ref || '00000000'
     if (params && key in params && params[key] !== undefined && params[key] !== '') {
       return String(params[key])
     }
-    if (key === 'name') return 'هذا المنتج'
+    if (key === 'name') return lang === 'en' ? 'this item' : 'هذا المنتج'
     if (key === 'left') return ''
     return match
   })
@@ -296,6 +401,14 @@ export function ErrorMessage({
     appError = new AppError('SYS-001', { ref: refId })
   }
 
+  const isEn = typeof document !== 'undefined' && document.documentElement.lang === 'en'
+  const message = formatErrorMessage(
+    appError.code,
+    appError.params,
+    appError.ref,
+    isEn ? 'en' : 'ar',
+  )
+
   return createElement(
     'div',
     {
@@ -303,19 +416,23 @@ export function ErrorMessage({
       'aria-live': 'assertive',
       className: `space-y-1 text-center sm:text-start ${className}`,
     },
-    createElement('p', { className: 'text-body font-medium text-text' }, appError.message),
+    createElement('p', { className: 'text-body font-medium text-text' }, message),
     createElement(
       'div',
       {
         className:
           'flex flex-wrap items-center justify-center gap-2 text-caption text-text-muted sm:justify-start',
       },
-      createElement('span', { dir: 'ltr', className: 'font-mono' }, `رمز الخطأ: ${appError.code}`),
+      createElement(
+        'span',
+        { dir: 'ltr', className: 'font-mono' },
+        `${isEn ? 'Error code: ' : 'رمز الخطأ: '}${appError.code}`,
+      ),
       appError.code === 'SYS-001'
         ? createElement(
             'span',
             { dir: 'ltr', className: 'font-mono' },
-            `رقم المرجع: ${appError.ref}`,
+            `${isEn ? 'Reference: ' : 'رقم المرجع: '}${appError.ref}`,
           )
         : null,
     ),

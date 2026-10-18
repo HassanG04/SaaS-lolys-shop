@@ -71,8 +71,7 @@ export function useStepUp() {
           currentFactors = await authContext.refreshFactors()
         }
 
-        const targetFactor =
-          currentFactors.find((f) => f.status === 'verified') || currentFactors[0]
+        const targetFactor = currentFactors.find((f) => f.status === 'verified')
         if (!targetFactor) {
           setErrorCode('AUTH-005')
           return { success: false, code: 'AUTH-005' }

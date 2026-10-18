@@ -15,6 +15,8 @@ import {
   useUpdateProduct,
   useArchiveProduct,
   useRestoreProduct,
+  useUpdateProductId,
+  useUpdateProductStock,
 } from './hooks'
 import { uploadProductImage } from './api'
 import { validateProductImageFile } from './imageUpload'
@@ -39,6 +41,8 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
   const updateMutation = useUpdateProduct()
   const archiveMutation = useArchiveProduct()
   const restoreMutation = useRestoreProduct()
+  const updateIdMutation = useUpdateProductId()
+  const updateStockMutation = useUpdateProductStock()
 
   // Form Fields State initialized directly from props (no setState in useEffect)
   const [name, setName] = useState(existingProduct?.name || '')
@@ -53,6 +57,11 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
   const [initialStock, setInitialStock] = useState<string>(
     existingProduct ? String(existingProduct.stock_quantity || 0) : '0',
   )
+  const [customIdInput, setCustomIdInput] = useState<string>('')
+  const [editIdInput, setEditIdInput] = useState<string>(
+    existingProduct ? String(existingProduct.id) : '',
+  )
+  const [isEditingId, setIsEditingId] = useState(false)
   const [isFeatured, setIsFeatured] = useState(Boolean(existingProduct?.is_featured))
   const [isActive, setIsActive] = useState(
     existingProduct !== undefined ? Boolean(existingProduct.is_active) : true,
@@ -64,6 +73,8 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
 
   // UI state
   const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [isDraggingMain, setIsDraggingMain] = useState(false)
+  const [isDraggingGallery, setIsDraggingGallery] = useState(false)
   const [uploadError, setUploadError] = useState<unknown | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -73,12 +84,8 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
   const numericDiscount = Math.min(100, Math.max(0, Number(discountPercent) || 0))
   const previewFinalPrice = Math.round(numericPrice * (100 - numericDiscount)) / 100
 
-  // Handle image upload for main image
-  const handleMainImageSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    e.target.value = ''
-
+  // Core image processor for main image
+  const processMainImageFile = async (file: File) => {
     setIsUploadingImage(true)
     setUploadError(null)
 
@@ -95,12 +102,16 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
     }
   }
 
-  // Handle gallery image addition
-  const handleGalleryImageSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle image upload for main image
+  const handleMainImageSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     e.target.value = ''
+    void processMainImageFile(file)
+  }
 
+  // Core image processor for gallery
+  const processGalleryImageFile = async (file: File) => {
     setIsUploadingImage(true)
     setUploadError(null)
 
@@ -115,6 +126,14 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
     } finally {
       setIsUploadingImage(false)
     }
+  }
+
+  // Handle gallery image addition
+  const handleGalleryImageSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    void processGalleryImageFile(file)
   }
 
   // Gallery reordering
@@ -173,13 +192,43 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
 
     try {
       if (isEditing && productId) {
+        let targetId = productId
+
+        // 1. If ID was edited
+        const parsedNewId = Number(editIdInput)
+        if (
+          isEditingId &&
+          !Number.isNaN(parsedNewId) &&
+          parsedNewId > 0 &&
+          parsedNewId !== productId
+        ) {
+          await updateIdMutation.mutateAsync({ oldId: productId, newId: parsedNewId })
+          targetId = parsedNewId
+        }
+
+        // 2. If stock quantity was modified
+        const currentStockVal = existingProduct?.stock_quantity ?? 0
+        const newStockVal = Number(initialStock) || 0
+        if (newStockVal !== currentStockVal) {
+          await updateStockMutation.mutateAsync({
+            productId: targetId,
+            newQuantity: newStockVal,
+            reason: 'admin_adjust',
+          })
+        }
+
+        // 3. Update main product details
         await updateMutation.mutateAsync({
-          productId,
+          productId: targetId,
           formData: payload,
         })
         toast.success(isAr ? 'تم تحديث المنتج بنجاح' : 'Product updated successfully')
       } else {
-        await createMutation.mutateAsync(payload)
+        const parsedCustomId = customIdInput.trim() ? Number(customIdInput) : undefined
+        await createMutation.mutateAsync({
+          ...payload,
+          custom_id: parsedCustomId && parsedCustomId > 0 ? parsedCustomId : undefined,
+        })
         toast.success(isAr ? 'تمت إضافة المنتج بنجاح' : 'Product created successfully')
       }
       navigate('/admin/products')
@@ -282,6 +331,74 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
           <h2 className="text-h3 font-bold text-text border-b border-border pb-2">
             {isAr ? 'المعلومات الأساسية' : 'Basic Information'}
           </h2>
+
+          {/* Product ID Control (Edit ID or Custom ID) */}
+          <div className="rounded-chip bg-surface-2/60 border border-border p-3.5 space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <span className="block text-small font-semibold text-text">
+                  {isEditing
+                    ? isAr
+                      ? 'معرّف المنتج في قاعدة البيانات (Product ID)'
+                      : 'Database Product ID'
+                    : isAr
+                      ? 'معرّف المنتج المخصص (اختياري)'
+                      : 'Custom Product ID (Optional)'}
+                </span>
+                <p className="text-caption text-text-muted">
+                  {isEditing
+                    ? isAr
+                      ? `المعرّف الحالي: #${productId}. تغيير المعرّف ينعكس تلقائيًا على كافة السجلات والطلبات المرتبطة.`
+                      : `Current ID: #${productId}. Changing ID automatically cascades to all linked orders and records.`
+                    : isAr
+                      ? 'اتركه فارغًا للتوليد التلقائي للرقم التالي، أو أدخل رقمًا مخصصًا غير مستخدم.'
+                      : 'Leave blank for auto-increment, or enter an unused custom number.'}
+                </p>
+              </div>
+
+              {isEditing && !isEditingId && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setIsEditingId(true)}
+                  className="text-small shrink-0"
+                >
+                  {isAr ? 'تغيير المعرّف' : 'Change ID'}
+                </Button>
+              )}
+            </div>
+
+            {(!isEditing || isEditingId) && (
+              <div className="pt-1 flex items-center gap-2">
+                <span className="font-mono text-small text-text-muted">#</span>
+                <input
+                  id="prod-custom-id"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={isEditing ? editIdInput : customIdInput}
+                  onChange={(e) =>
+                    isEditing ? setEditIdInput(e.target.value) : setCustomIdInput(e.target.value)
+                  }
+                  placeholder={isEditing ? String(productId) : isAr ? 'تلقائي' : 'Auto'}
+                  className="h-10 w-36 rounded-chip border border-border-input bg-bg px-3 text-body font-mono text-text focus:border-brand focus:outline-none focus:ring-2 focus:ring-focus"
+                />
+                {isEditing && isEditingId && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setEditIdInput(String(productId))
+                      setIsEditingId(false)
+                    }}
+                    className="text-caption text-text-muted"
+                  >
+                    {isAr ? 'إلغاء التغيير' : 'Cancel'}
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Arabic Name */}
@@ -516,10 +633,28 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
           {/* Main Image */}
           <div className="space-y-2">
             <span className="block text-small font-semibold text-text">
-              {isAr ? 'الصورة الرئيسية' : 'Main Image'}
+              {isAr ? 'الصورة الرئيسية للمنتج' : 'Main Product Image'}
             </span>
-            <div className="flex items-center gap-4">
-              <div className="size-24 shrink-0 rounded-card border border-border bg-surface-2 overflow-hidden flex items-center justify-center">
+
+            <div
+              onDragOver={(e) => {
+                e.preventDefault()
+                setIsDraggingMain(true)
+              }}
+              onDragLeave={() => setIsDraggingMain(false)}
+              onDrop={(e) => {
+                e.preventDefault()
+                setIsDraggingMain(false)
+                const file = e.dataTransfer.files?.[0]
+                if (file) void processMainImageFile(file)
+              }}
+              className={`relative rounded-card border-2 border-dashed p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-5 transition-all ${
+                isDraggingMain
+                  ? 'border-brand bg-brand/10 scale-[1.01]'
+                  : 'border-border-input hover:border-brand/60 bg-surface'
+              }`}
+            >
+              <div className="size-28 shrink-0 rounded-card border border-border bg-surface-2 overflow-hidden flex items-center justify-center">
                 {imageUrl ? (
                   <ProductImage
                     src={imageUrl}
@@ -527,46 +662,77 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
                     className="size-full object-cover"
                   />
                 ) : (
-                  <span className="text-caption text-text-muted">
-                    {isAr ? 'لا توجد صورة' : 'No image'}
-                  </span>
+                  <div className="flex flex-col items-center gap-1 text-text-muted p-2 text-center">
+                    <svg
+                      className="size-8 text-brand/60"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+                      <path d="M12 12v9" />
+                      <path d="m16 16-4-4-4 4" />
+                    </svg>
+                    <span className="text-caption leading-tight">
+                      {isAr ? 'لا توجد صورة' : 'No image'}
+                    </span>
+                  </div>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <label className="inline-flex cursor-pointer items-center justify-center rounded-pill border border-border bg-surface px-4 py-2 text-small font-semibold text-text transition-colors hover:border-brand hover:text-brand focus-within:ring-2 focus-within:ring-focus">
-                  <span>
-                    {imageUrl
-                      ? isAr
-                        ? 'استبدال الصورة'
-                        : 'Replace Image'
-                      : isAr
-                        ? 'اختيار صورة رئيسية'
-                        : 'Choose Main Image'}
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="sr-only"
-                    disabled={isUploadingImage}
-                    onChange={(e) => void handleMainImageSelected(e)}
-                  />
-                </label>
+              <div className="space-y-2.5 flex-1 text-center sm:text-start">
+                <div>
+                  <p className="text-small font-semibold text-text">
+                    {isAr
+                      ? 'اسحب الصورة وأفلتها هنا، أو اضغط للاختيار'
+                      : 'Drag and drop your image here, or browse'}
+                  </p>
+                  <p className="text-caption text-text-muted mt-0.5">
+                    {isAr
+                      ? 'يدعم JPG و PNG و WebP حتى 5 ميجابايت (يتم الضغط والتحسين تلقائيًا)'
+                      : 'Supports JPG, PNG, and WebP up to 5MB (compressed automatically)'}
+                  </p>
+                </div>
 
-                {imageUrl && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setImageUrl(null)}
-                    className="text-small text-danger hover:underline ms-2 p-1"
-                  >
-                    {isAr ? 'إزالة' : 'Remove'}
-                  </Button>
-                )}
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                  <label className="inline-flex cursor-pointer items-center justify-center rounded-pill border border-brand bg-brand/5 px-4 py-2 text-small font-semibold text-brand transition-colors hover:bg-brand hover:text-brand-contrast focus-within:ring-2 focus-within:ring-focus shadow-pill">
+                    <span>
+                      {imageUrl
+                        ? isAr
+                          ? 'استبدال الصورة'
+                          : 'Replace Image'
+                        : isAr
+                          ? 'اختر صورة من جهازك'
+                          : 'Choose Image File'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="sr-only"
+                      disabled={isUploadingImage}
+                      onChange={handleMainImageSelected}
+                    />
+                  </label>
+
+                  {imageUrl && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setImageUrl(null)}
+                      className="text-small text-danger hover:bg-danger/10 p-2"
+                    >
+                      {isAr ? 'إزالة الصورة' : 'Remove Image'}
+                    </Button>
+                  )}
+                </div>
 
                 {isUploadingImage && (
-                  <span className="text-caption text-brand block">
-                    {isAr ? 'جارٍ معالجة ورفع الصورة...' : 'Processing and uploading...'}
+                  <span className="text-caption font-semibold text-brand flex items-center gap-1.5 justify-center sm:justify-start">
+                    <span className="size-2 rounded-pill bg-brand animate-ping" />
+                    {isAr
+                      ? 'جارٍ معالجة وضغط الصورة ورفعها...'
+                      : 'Processing, compressing, and uploading...'}
                   </span>
                 )}
               </div>
@@ -574,20 +740,40 @@ function ProductFormContent({ productId, existingProduct, categories }: ProductF
           </div>
 
           {/* Gallery Extra Images */}
-          <div className="space-y-3 pt-2 border-t border-border">
+          <div
+            onDragOver={(e) => {
+              e.preventDefault()
+              setIsDraggingGallery(true)
+            }}
+            onDragLeave={() => setIsDraggingGallery(false)}
+            onDrop={(e) => {
+              e.preventDefault()
+              setIsDraggingGallery(false)
+              const file = e.dataTransfer.files?.[0]
+              if (file) void processGalleryImageFile(file)
+            }}
+            className={`space-y-3 pt-3 border-t border-border rounded-card p-3 transition-colors ${
+              isDraggingGallery ? 'bg-brand/5 border-2 border-dashed border-brand' : ''
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <span className="block text-small font-semibold text-text">
-                {isAr ? 'معرض الصور الإضافية' : 'Gallery Images'}
-              </span>
+              <div>
+                <span className="block text-small font-semibold text-text">
+                  {isAr ? 'معرض الصور الإضافية' : 'Gallery Images'}
+                </span>
+                <span className="text-caption text-text-muted">
+                  {isAr ? 'يمكنك سحب وإفلات صور إضافية هنا' : 'Drag and drop extra images here'}
+                </span>
+              </div>
 
-              <label className="inline-flex cursor-pointer items-center justify-center rounded-pill border border-border bg-surface px-3 py-1.5 text-small font-semibold text-text transition-colors hover:border-brand hover:text-brand focus-within:ring-2 focus-within:ring-focus">
+              <label className="inline-flex cursor-pointer items-center justify-center rounded-pill border border-border bg-surface px-3 py-1.5 text-small font-semibold text-text transition-colors hover:border-brand hover:text-brand focus-within:ring-2 focus-within:ring-focus shadow-pill">
                 <span>{isAr ? '+ إضافة صورة للمعرض' : '+ Add Image'}</span>
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
                   className="sr-only"
                   disabled={isUploadingImage}
-                  onChange={(e) => void handleGalleryImageSelected(e)}
+                  onChange={handleGalleryImageSelected}
                 />
               </label>
             </div>

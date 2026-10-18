@@ -36,6 +36,7 @@ export interface UpdateProductActiveParams {
 }
 
 export interface ProductFormData {
+  custom_id?: number | ''
   name: string
   name_ar: string
   description: string
@@ -57,4 +58,21 @@ export interface CreateProductParams {
 export interface UpdateProductParams {
   productId: number
   formData: Partial<ProductFormData>
+}
+
+export interface UpdateProductIdParams {
+  oldId: number
+  newId: number
+}
+
+export interface QuickProductUpdateParams {
+  productId: number
+  newId?: number
+  name: string
+  name_ar?: string | null
+  categoryId: number
+  price: number
+  stockQuantity: number
+  currentStockQuantity: number
+  imageUrl?: string | null
 }

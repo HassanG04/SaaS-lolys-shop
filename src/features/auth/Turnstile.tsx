@@ -30,42 +30,89 @@ export interface TurnstileProps {
 export function Turnstile({ onVerify, onError, onExpire, className = '' }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const widgetIdRef = useRef<string | null>(null)
+  const callbacks = useRef({ onVerify, onError, onExpire })
 
   useEffect(() => {
-    let siteKey = '1x00000000000000000000AA'
+    callbacks.current = { onVerify, onError, onExpire }
+  }, [onVerify, onError, onExpire])
+
+  useEffect(() => {
+    let disposed = false
+    let checkInterval: ReturnType<typeof setInterval> | null = null
+
+    let siteKey: string
     try {
-      const env = getEnv()
-      if (env.VITE_TURNSTILE_SITE_KEY) {
-        siteKey = env.VITE_TURNSTILE_SITE_KEY
-      }
+      siteKey = getEnv().VITE_TURNSTILE_SITE_KEY
     } catch {
-      // fallback if env is not configured in test
-    }
-
-    // Mock bypass for test or headless environments
-    if (typeof window === 'undefined' || !window.turnstile) {
-      const timer = setTimeout(() => {
-        onVerify('test-turnstile-token')
-      }, 0)
-      return () => clearTimeout(timer)
-    }
-
-    if (containerRef.current && window.turnstile) {
-      try {
-        const id = window.turnstile.render(containerRef.current, {
-          sitekey: siteKey,
-          callback: onVerify,
-          'error-callback': onError,
-          'expired-callback': onExpire,
-          theme: 'auto',
-        })
-        widgetIdRef.current = id
-      } catch {
-        onVerify('fallback-turnstile-token')
+      callbacks.current.onError?.()
+      return () => {
+        disposed = true
       }
+    }
+
+    // Cloudflare's documented dummy keys must never protect a production form.
+    if (
+      import.meta.env.PROD &&
+      !(typeof window !== 'undefined' && window.navigator?.webdriver) &&
+      /^[123]x0+[A-Z]{2}$/.test(siteKey)
+    ) {
+      callbacks.current.onError?.()
+      return () => {
+        disposed = true
+      }
+    }
+
+    // In automated browser testing (e.g. Playwright E2E) without an external Turnstile widget:
+    if (typeof window !== 'undefined' && window.navigator?.webdriver && !window.turnstile) {
+      callbacks.current.onVerify('test-turnstile-token')
+      return () => {
+        disposed = true
+      }
+    }
+
+    const renderWidget = () => {
+      if (!disposed && containerRef.current && window.turnstile && !widgetIdRef.current) {
+        try {
+          const id = window.turnstile.render(containerRef.current, {
+            sitekey: siteKey,
+            callback: (token) => {
+              if (!disposed) callbacks.current.onVerify(token)
+            },
+            'error-callback': () => {
+              if (!disposed) callbacks.current.onError?.()
+            },
+            'expired-callback': () => {
+              if (!disposed) callbacks.current.onExpire?.()
+            },
+            theme: 'auto',
+          })
+          widgetIdRef.current = id
+        } catch {
+          callbacks.current.onError?.()
+        }
+      }
+    }
+
+    if (window.turnstile) {
+      renderWidget()
+    } else {
+      let attempts = 0
+      checkInterval = setInterval(() => {
+        attempts++
+        if (window.turnstile) {
+          if (checkInterval) clearInterval(checkInterval)
+          renderWidget()
+        } else if (attempts > 50) {
+          // Timeout after 5s
+          if (checkInterval) clearInterval(checkInterval)
+          callbacks.current.onError?.()
+        }
+      }, 100)
     }
 
     return () => {
+      disposed = true
+      if (checkInterval) clearInterval(checkInterval)
       if (widgetIdRef.current && window.turnstile?.remove) {
         try {
           window.turnstile.remove(widgetIdRef.current)
@@ -73,8 +120,9 @@ export function Turnstile({ onVerify, onError, onExpire, className = '' }: Turns
           // ignore cleanup errors
         }
       }
+      widgetIdRef.current = null
     }
-  }, [onVerify, onError, onExpire])
+  }, [])
 
   return (
     <div

@@ -23,7 +23,21 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "audit_log": {
+            "admin_occasion_reminders": {
+                  Row: {
+                    "admin_id": string,"advance_days": number,"created_at": string,"event_date": string,"event_year": number,"id": string,"is_dismissed": boolean,"is_read": boolean,"message_ar": string,"message_en": string,"occasion_key": string,"title_ar": string,"title_en": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "admin_id": string,"advance_days": number,"created_at"?: string,"event_date": string,"event_year": number,"id"?: string,"is_dismissed"?: boolean,"is_read"?: boolean,"message_ar": string,"message_en": string,"occasion_key": string,"title_ar": string,"title_en": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "admin_id"?: string,"advance_days"?: number,"created_at"?: string,"event_date"?: string,"event_year"?: number,"id"?: string,"is_dismissed"?: boolean,"is_read"?: boolean,"message_ar"?: string,"message_en"?: string,"occasion_key"?: string,"title_ar"?: string,"title_en"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+
+                  ]
+                },"audit_log": {
                   Row: {
                     "action": string,"actor": string | null,"actor_role": string,"at": string,"entity": string,"entity_id": string,"id": number,"new": Json | null,"old": Json | null
                   }
@@ -50,6 +64,58 @@ export type Database = {
                   }
                   Relationships: [
 
+                  ]
+                },"customer_notifications": {
+                  Row: {
+                    "created_at": string,"customer_id": string,"id": string,"is_read": boolean,"link": string | null,"message_ar": string,"message_en": string,"title_ar": string,"title_en": string,"type": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"customer_id": string,"id"?: string,"is_read"?: boolean,"link"?: string | null,"message_ar": string,"message_en": string,"title_ar": string,"title_en": string,"type": string
+                  }
+                  Update: {
+                    "created_at"?: string,"customer_id"?: string,"id"?: string,"is_read"?: boolean,"link"?: string | null,"message_ar"?: string,"message_en"?: string,"title_ar"?: string,"title_en"?: string,"type"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "customer_notifications_customer_id_fkey"
+      columns: ["customer_id"]
+isOneToOne: false
+      referencedRelation: "customer_stats"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "customer_notifications_customer_id_fkey"
+      columns: ["customer_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"customer_suggestions": {
+                  Row: {
+                    "admin_notes": string | null,"created_at": string,"customer_id": string | null,"id": string,"message": string,"reviewed_at": string | null,"status": string,"topic": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "admin_notes"?: string | null,"created_at"?: string,"customer_id"?: string | null,"id"?: string,"message": string,"reviewed_at"?: string | null,"status"?: string,"topic": string
+                  }
+                  Update: {
+                    "admin_notes"?: string | null,"created_at"?: string,"customer_id"?: string | null,"id"?: string,"message"?: string,"reviewed_at"?: string | null,"status"?: string,"topic"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "customer_suggestions_customer_id_fkey"
+      columns: ["customer_id"]
+isOneToOne: false
+      referencedRelation: "customer_stats"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "customer_suggestions_customer_id_fkey"
+      columns: ["customer_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"delivery_fees": {
                   Row: {
@@ -145,14 +211,14 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "created_at": string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id": number,"notes": string | null,"paid_at": string | null,"payment_deadline": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"payment_proof_path": string | null,"payment_reference": string | null,"payment_review_note": string | null,"payment_reviewed_by": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"payment_submitted_at": string | null,"rep_name": string | null,"rep_phone": string | null,"ship_address": string,"ship_alt_phone": string | null,"ship_apartment": string | null,"ship_city": string | null,"ship_district": string | null,"ship_floor": string | null,"ship_governorate": string,"ship_landmark": string | null,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number": string | null,"updated_at": string,"user_id": string
+                    "created_at": string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id": number,"notes": string | null,"paid_at": string | null,"payment_deadline": string | null,"payment_method": Database["public"]['Enums']["payment_method"],"payment_proof_path": string | null,"payment_reference": string | null,"payment_review_note": string | null,"payment_reviewed_by": string | null,"payment_status": Database["public"]['Enums']["payment_status"],"payment_submitted_at": string | null,"rep_name": string | null,"rep_phone": string | null,"ship_address": string,"ship_alt_phone": string | null,"ship_apartment": string | null,"ship_city": string | null,"ship_district": string | null,"ship_floor": string | null,"ship_governorate": string,"ship_landmark": string | null,"ship_name": string,"ship_phone": string,"ship_postal_code": string,"shipping_fee": number,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number": string | null,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"paid_at"?: string | null,"payment_deadline"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"payment_proof_path"?: string | null,"payment_reference"?: string | null,"payment_review_note"?: string | null,"payment_reviewed_by"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"payment_submitted_at"?: string | null,"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address": string,"ship_alt_phone"?: string | null,"ship_apartment"?: string | null,"ship_city"?: string | null,"ship_district"?: string | null,"ship_floor"?: string | null,"ship_governorate": string,"ship_landmark"?: string | null,"ship_name": string,"ship_phone": string,"shipping_fee": number,"status"?: Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id": string
+                    "created_at"?: string,"delivery_method": Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"paid_at"?: string | null,"payment_deadline"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"payment_proof_path"?: string | null,"payment_reference"?: string | null,"payment_review_note"?: string | null,"payment_reviewed_by"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"payment_submitted_at"?: string | null,"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address": string,"ship_alt_phone"?: string | null,"ship_apartment"?: string | null,"ship_city"?: string | null,"ship_district"?: string | null,"ship_floor"?: string | null,"ship_governorate": string,"ship_landmark"?: string | null,"ship_name": string,"ship_phone": string,"ship_postal_code": string,"shipping_fee": number,"status"?: Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"tracking_number"?: string | null,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "created_at"?: string,"delivery_method"?: Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"paid_at"?: string | null,"payment_deadline"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"payment_proof_path"?: string | null,"payment_reference"?: string | null,"payment_review_note"?: string | null,"payment_reviewed_by"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"payment_submitted_at"?: string | null,"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address"?: string,"ship_alt_phone"?: string | null,"ship_apartment"?: string | null,"ship_city"?: string | null,"ship_district"?: string | null,"ship_floor"?: string | null,"ship_governorate"?: string,"ship_landmark"?: string | null,"ship_name"?: string,"ship_phone"?: string,"shipping_fee"?: number,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string
+                    "created_at"?: string,"delivery_method"?: Database["public"]['Enums']["delivery_method"],"id"?: never,"notes"?: string | null,"paid_at"?: string | null,"payment_deadline"?: string | null,"payment_method"?: Database["public"]['Enums']["payment_method"],"payment_proof_path"?: string | null,"payment_reference"?: string | null,"payment_review_note"?: string | null,"payment_reviewed_by"?: string | null,"payment_status"?: Database["public"]['Enums']["payment_status"],"payment_submitted_at"?: string | null,"rep_name"?: string | null,"rep_phone"?: string | null,"ship_address"?: string,"ship_alt_phone"?: string | null,"ship_apartment"?: string | null,"ship_city"?: string | null,"ship_district"?: string | null,"ship_floor"?: string | null,"ship_governorate"?: string,"ship_landmark"?: string | null,"ship_name"?: string,"ship_phone"?: string,"ship_postal_code"?: string,"shipping_fee"?: number,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"tracking_number"?: string | null,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -169,16 +235,48 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"product_reviews": {
+                  Row: {
+                    "comment": string,"created_at": string,"id": number,"is_verified_purchase": boolean,"product_id": number,"rating": number,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "comment": string,"created_at"?: string,"id"?: never,"is_verified_purchase"?: boolean,"product_id": number,"rating": number,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "comment"?: string,"created_at"?: string,"id"?: never,"is_verified_purchase"?: boolean,"product_id"?: number,"rating"?: number,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "product_reviews_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "product_reviews_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "customer_stats"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "product_reviews_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"products": {
                   Row: {
                     "category_id": number,"created_at": string,"description": string | null,"description_ar": string | null,"discount_percent": number,"extra_images": (string)[],"final_price": number | null,"id": number,"image_url": string | null,"in_stock": boolean | null,"is_active": boolean,"is_featured": boolean,"name": string,"name_ar": string | null,"price": number,"sold_count": number,"stock_quantity": number,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "category_id": number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"is_featured"?: boolean,"name": string,"name_ar"?: string | null,"price": number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
+                    "category_id": number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: number,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"is_featured"?: boolean,"name": string,"name_ar"?: string | null,"price": number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
                   }
                   Update: {
-                    "category_id"?: number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: never,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"is_featured"?: boolean,"name"?: string,"name_ar"?: string | null,"price"?: number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
+                    "category_id"?: number,"created_at"?: string,"description"?: string | null,"description_ar"?: string | null,"discount_percent"?: number,"extra_images"?: (string)[],"final_price"?: never,"id"?: number,"image_url"?: string | null,"in_stock"?: never,"is_active"?: boolean,"is_featured"?: boolean,"name"?: string,"name_ar"?: string | null,"price"?: number,"sold_count"?: number,"stock_quantity"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -191,14 +289,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "address": string | null,"alt_phone": string | null,"apartment": string | null,"city": string | null,"created_at": string,"district": string | null,"floor": string | null,"full_name": string,"governorate_id": number | null,"id": string,"landmark": string | null,"phone": string | null,"role": Database["public"]['Enums']["user_role"]
+                    "address": string | null,"alt_phone": string | null,"apartment": string | null,"avatar_url": string | null,"banned_at": string | null,"banned_reason": string | null,"city": string | null,"created_at": string,"district": string | null,"email": string | null,"floor": string | null,"full_name": string,"governorate_id": number | null,"id": string,"is_banned": boolean,"landmark": string | null,"phone": string | null,"postal_code": string | null,"role": Database["public"]['Enums']["user_role"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id": string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"avatar_url"?: string | null,"banned_at"?: string | null,"banned_reason"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"email"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id": string,"is_banned"?: boolean,"landmark"?: string | null,"phone"?: string | null,"postal_code"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Update: {
-                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"landmark"?: string | null,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
+                    "address"?: string | null,"alt_phone"?: string | null,"apartment"?: string | null,"avatar_url"?: string | null,"banned_at"?: string | null,"banned_reason"?: string | null,"city"?: string | null,"created_at"?: string,"district"?: string | null,"email"?: string | null,"floor"?: string | null,"full_name"?: string,"governorate_id"?: number | null,"id"?: string,"is_banned"?: boolean,"landmark"?: string | null,"phone"?: string | null,"postal_code"?: string | null,"role"?: Database["public"]['Enums']["user_role"]
                   }
                   Relationships: [
                     {
@@ -289,6 +387,9 @@ isOneToOne: false
 "admin_approve_order":
 { Args: { "p_note"?: string,"p_order_id": number }; Returns: undefined
                            },
+"admin_broadcast_sale_notification":
+{ Args: { "p_link"?: string,"p_message_ar": string,"p_message_en": string,"p_title_ar": string,"p_title_en": string }; Returns: number
+                           },
 "admin_dashboard":
 { Args: { "p_from"?: string,"p_to"?: string }; Returns: Json
                            },
@@ -298,14 +399,31 @@ isOneToOne: false
 "admin_delete_product":
 { Args: { "p_id": number }; Returns: undefined
                            },
+"admin_dismiss_occasion_reminder":
+{ Args: { "p_reminder_id": string }; Returns: boolean
+                           },
+"admin_generate_occasion_reminders":
+{ Args: { "p_advance_days"?: number }; Returns: number
+                           },
 "admin_get_analytics_insights":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
 "admin_get_forecasts":
 { Args: { "p_run_id"?: number,"p_series_id"?: number,"p_series_type"?: string }; Returns: Json
                            },
+"admin_get_occasion_reminders":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "admin_get_reorder_list":
 { Args: { "p_lead_time_days"?: number,"p_service_z"?: number }; Returns: Json
+                           },
+"admin_get_upcoming_occasions":
+{ Args: { "p_days_ahead"?: number }; Returns: Json
+                           },
+"admin_get_wishlist_demand":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "discount_percent": number,"final_price": number,"image_url": string,"is_active": boolean,"price": number,"product_id": number,"product_name": string,"product_name_ar": string,"stock_quantity": number,"wishlist_count": number
+            }[]
                            },
 "admin_reject_order":
 { Args: { "p_order_id": number,"p_reason": string }; Returns: undefined
@@ -313,8 +431,17 @@ isOneToOne: false
 "admin_review_payment":
 { Args: { "p_approve": boolean,"p_note"?: string,"p_order_id": number }; Returns: undefined
                            },
+"admin_review_suggestion":
+{ Args: { "p_id": string,"p_notes"?: string,"p_status": string }; Returns: undefined
+                           },
+"admin_update_product_id":
+{ Args: { "p_new_id": number,"p_old_id": number }; Returns: undefined
+                           },
 "admin_update_setting":
 { Args: { "p_key": string,"p_value": Json }; Returns: undefined
+                           },
+"admin_update_storefront_content":
+{ Args: { "p_content": Json,"p_expected_updated_at": string }; Returns: string
                            },
 "audit_event":
 { Args: { "p_action": string,"p_entity": string,"p_entity_id": string,"p_new"?: Json,"p_old"?: Json }; Returns: undefined
@@ -325,17 +452,40 @@ isOneToOne: false
 "check_rate_limit":
 { Args: { "p_action": string,"p_limit": number,"p_window": string }; Returns: undefined
                            },
+"check_user_review_eligibility":
+{ Args: { "p_product_id": number }; Returns: Json
+                           },
+"contains_review_profanity":
+{ Args: { "p_text": string }; Returns: boolean
+                           },
 "expire_unpaid_orders":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "get_payment_instructions":
 { Args: { "p_order_id": number }; Returns: Json
                            },
+"get_product_review_summary":
+{ Args: { "p_product_id": number }; Returns: Json
+                           },
+"get_product_reviews":
+{ Args: { "p_product_id": number }; Returns: {
+              "comment": string,"created_at": string,"id": number,"is_own": boolean,"is_verified_purchase": boolean,"product_id": number,"rating": number,"reviewer_name": string
+            }[]
+                           },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "is_valid_extra_images":
 { Args: { "p_paths": (string)[] }; Returns: boolean
+                           },
+"mark_all_notifications_read":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"mask_review_profanity":
+{ Args: { "p_text": string }; Returns: string
+                           },
+"normalize_review_text":
+{ Args: { "p_text": string }; Returns: string
                            },
 "place_order":
 { Args: { "p_delivery_method": Database["public"]['Enums']["delivery_method"],"p_items": Json,"p_payment_method": Database["public"]['Enums']["payment_method"],"p_ship": Json }; Returns: number
@@ -345,8 +495,14 @@ isOneToOne: false
 "require_admin":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"submit_customer_suggestion":
+{ Args: { "p_message": string,"p_topic": string }; Returns: string
+                           },
 "submit_payment_proof":
 { Args: { "p_order_id": number,"p_proof_path": string,"p_reference": string }; Returns: undefined
+                           },
+"submit_product_review":
+{ Args: { "p_comment": string,"p_product_id": number,"p_rating": number }; Returns: Json
                            }
           }
           Enums: {

@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ChangeEvent } from 'react'
+import { lazy, Suspense, useState, type FormEvent, type ChangeEvent } from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -12,6 +12,8 @@ import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatDate } from '@/lib/format'
 import { StepUpDialog } from '@/features/auth/StepUpDialog'
 import { useStepUp } from '@/features/auth/useStepUp'
+import { ThemedQrCode } from '@/components/ui/ThemedQrCode'
+import { validateInstaPayLink } from '@/lib/qr'
 import {
   useAdminSettings,
   useUpdateAdminSetting,
@@ -20,6 +22,9 @@ import {
 } from './hooks'
 import { getPublicQrUrl } from './api'
 import type { ShopSettingsMap, SettingKey, SettingsAuditEntry } from './types'
+
+const ContentEditorLauncher = lazy(() => import('@/features/admin/settings/ContentEditorLauncher'))
+const ContentEditor = lazy(() => import('@/features/admin/settings/ContentEditor'))
 
 export const SETTING_LABELS: Record<SettingKey, { ar: string; en: string }> = {
   shop_name_ar: { ar: 'اسم المتجر (بالعربية)', en: 'Shop Name (Arabic)' },
@@ -35,6 +40,10 @@ export const SETTING_LABELS: Record<SettingKey, { ar: string; en: string }> = {
   payment_methods_enabled: { ar: 'طرق الدفع المفعلة', en: 'Enabled Payment Methods' },
   instapay_qr_path: { ar: 'رمز استجابة إنستاباي (QR)', en: 'InstaPay QR Code' },
   instapay_handle: { ar: 'عنوان حساب إنستاباي (IPA)', en: 'InstaPay Handle' },
+  instapay_link: {
+    ar: 'رابط مشاركة إنستاباي الرسمي (ipn.eg)',
+    en: 'Official InstaPay Share Link (ipn.eg)',
+  },
   returns_text_ar: { ar: 'نص سياسة الاسترجاع', en: 'Returns Policy' },
   payment_window_hours: { ar: 'مهلة سداد إنستاباي (ساعات)', en: 'Payment Window (hours)' },
   pending_order_limit: { ar: 'حد الطلبات المعلقة للعميل', en: 'Pending Order Limit' },
@@ -54,9 +63,9 @@ export default function SettingsPage() {
 
   // Local overrides state to avoid cascading renders in useEffect
   const [overrides, setOverrides] = useState<Partial<ShopSettingsMap>>({})
-  const [activeTab, setActiveTab] = useState<'general' | 'hero' | 'payment' | 'limits' | 'audit'>(
-    'general',
-  )
+  const [activeTab, setActiveTab] = useState<
+    'general' | 'hero' | 'payment' | 'limits' | 'content' | 'audit'
+  >('general')
   const [savingKey, setSavingKey] = useState<string | null>(null)
   const [sectionError, setSectionError] = useState<unknown | null>(null)
 
@@ -159,11 +168,23 @@ export default function SettingsPage() {
     setSectionError(null)
     setSavingKey('payment')
     try {
+      const linkValidation = validateInstaPayLink(form.instapay_link, form.instapay_handle)
+      if (!linkValidation.valid) {
+        toast.error(
+          isAr
+            ? 'رابط إنستاباي غير صالح أو لا يتطابق مع معرّف الحساب. يجب أن يبدأ بـ https://ipn.eg'
+            : 'Invalid InstaPay link or mismatch with handle. Must start with https://ipn.eg',
+        )
+        setSavingKey(null)
+        return
+      }
+
       await updateMutation.mutateAsync({
         key: 'payment_methods_enabled',
         value: form.payment_methods_enabled,
       })
       await updateMutation.mutateAsync({ key: 'instapay_handle', value: form.instapay_handle })
+      await updateMutation.mutateAsync({ key: 'instapay_link', value: form.instapay_link })
       toast.success(
         isAr ? 'تم حفظ إعدادات الدفع وإنستاباي بنجاح' : 'Payment settings saved successfully',
       )
@@ -286,6 +307,10 @@ export default function SettingsPage() {
         </div>
       )}
 
+      <Suspense fallback={null}>
+        <ContentEditorLauncher />
+      </Suspense>
+
       {/* Navigation Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-border pb-2">
         <Button
@@ -311,6 +336,12 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('limits')}
         >
           {isAr ? 'الحدود التشغيلية والسياسات' : 'Limits & Policies'}
+        </Button>
+        <Button
+          variant={activeTab === 'content' ? 'primary' : 'ghost'}
+          onClick={() => setActiveTab('content')}
+        >
+          {isAr ? 'محرر السياسات والواجهة' : 'Policy & Content Editor'}
         </Button>
         <Button
           variant={activeTab === 'audit' ? 'primary' : 'ghost'}
@@ -545,6 +576,80 @@ export default function SettingsPage() {
                 }
               />
 
+              <Input
+                label={
+                  isAr ? 'رابط مشاركة إنستاباي الرسمي (ipn.eg)' : 'Official InstaPay Share Link'
+                }
+                value={form.instapay_link}
+                onChange={(e) => handleTextChange('instapay_link', e.target.value)}
+                maxLength={250}
+                dir="ltr"
+                placeholder="https://ipn.eg/S/username/..."
+                hint={
+                  isAr
+                    ? 'الرابط الرسمي المستخرج من تطبيق إنستاباي لتوليد رمز QR الرسمي بهوية المتجر وفتحه مباشرة في التطبيق'
+                    : 'Official share link from InstaPay app used for themed QR generation and direct mobile app opening'
+                }
+              />
+
+              {/* Generated Themed QR Preview */}
+              <div className="rounded-chip border border-border bg-surface-2 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-small font-semibold text-text">
+                    {isAr ? 'معاينة رمز QR المولد بهوية المتجر:' : 'Generated Themed QR Preview:'}
+                  </span>
+                  {form.instapay_link ? (
+                    <span className="text-caption text-success font-medium">
+                      {isAr ? '✓ رابط معتمد' : '✓ Verified link'}
+                    </span>
+                  ) : (
+                    <span className="text-caption text-text-muted">
+                      {isAr ? 'أدخل رابط إنستاباي لتوليد الرمز' : 'Enter link to generate QR'}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <ThemedQrCode
+                    value={form.instapay_link}
+                    handle={form.instapay_handle}
+                    alt={isAr ? 'معاينة رمز QR إنستاباي' : 'InstaPay QR Preview'}
+                    size={160}
+                    fallback={
+                      <div className="flex size-44 flex-col items-center justify-center rounded-card border border-dashed border-border p-4 text-center text-text-muted">
+                        <span className="text-small">
+                          {isAr ? 'لا يوجد رمز QR مولّد حالياً' : 'No generated QR'}
+                        </span>
+                        <span className="text-caption text-text-muted mt-1">
+                          {isAr ? 'أدخل الرابط أعلاه لتوليد الرمز' : 'Enter link above to generate'}
+                        </span>
+                      </div>
+                    }
+                  />
+                  <div className="text-small text-text-muted space-y-1">
+                    <p className="font-medium text-text">
+                      {isAr ? 'مواصفات الرمز المولد:' : 'Generated QR Specifications:'}
+                    </p>
+                    <ul className="list-disc list-inside space-y-0.5 text-caption">
+                      <li>
+                        {isAr
+                          ? 'ألوان هوية المتجر (خلفية سكرية ومربعات كاكاو داكنة)'
+                          : 'Brand tokens (cream background, cocoa modules)'}
+                      </li>
+                      <li>
+                        {isAr
+                          ? 'منطقة أمان معيارية (4-module quiet zone)'
+                          : 'Standard 4-module quiet zone (ISO 18004)'}
+                      </li>
+                      <li>
+                        {isAr
+                          ? 'يعمل في كلا المظهرين (النهاري والليلي)'
+                          : 'Scannable in both light and dark themes'}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex justify-end pt-4">
                 <Button type="submit" disabled={savingKey === 'payment'}>
                   {savingKey === 'payment'
@@ -687,6 +792,22 @@ export default function SettingsPage() {
               />
             </Field>
 
+            <div className="rounded-card border border-border bg-surface-2 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="text-small font-semibold text-text">
+                  {isAr ? 'محرر السياسات الكامل المترجم' : 'Complete Bilingual Policy Editor'}
+                </p>
+                <p className="text-caption text-text-muted">
+                  {isAr
+                    ? 'تعديل نصوص الشروط، الخصوصية، الاسترجاع، الشحن، والتواصل باللغتين مع المعاينة الحية'
+                    : 'Edit full Terms, Privacy, Returns, Shipping, and Contact policy copy in both languages'}
+                </p>
+              </div>
+              <Button type="button" variant="secondary" onClick={() => setActiveTab('content')}>
+                {isAr ? 'فتح محرر السياسات' : 'Open Policy Editor'}
+              </Button>
+            </div>
+
             <div className="flex justify-end pt-4">
               <Button type="submit" disabled={savingKey === 'limits'}>
                 {savingKey === 'limits'
@@ -699,6 +820,21 @@ export default function SettingsPage() {
               </Button>
             </div>
           </form>
+        </Card>
+      )}
+
+      {/* SECTION: Complete Bilingual Policy & Content Editor */}
+      {activeTab === 'content' && (
+        <Card className="p-6">
+          <Suspense
+            fallback={
+              <div className="flex h-32 items-center justify-center text-brand">
+                <PearlLoader loading />
+              </div>
+            }
+          >
+            <ContentEditor />
+          </Suspense>
         </Card>
       )}
 

@@ -1,7 +1,10 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import type { AdminNavItem } from './types'
+import { PaymentReviewCount } from './payments/PaymentReviewCount'
+import { SocialMenuLinks } from '@/components/layout/SocialMenuLinks'
+import { isMotionReduced } from '@/lib/motion'
 
 function NavIcon({ type }: { type: AdminNavItem['icon'] }): ReactNode {
   switch (type) {
@@ -175,16 +178,117 @@ function NavIcon({ type }: { type: AdminNavItem['icon'] }): ReactNode {
           <line x1="6" x2="6" y1="20" y2="14" />
         </svg>
       )
+    case 'forecast':
+      return (
+        <svg
+          className="size-5 shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m22 7-8.5 8.5-5-5L2 17" />
+          <polyline points="16 7 22 7 22 13" />
+        </svg>
+      )
   }
 }
 
 interface AdminSidebarProps {
   isOpen: boolean
   onClose: () => void
+  desktopCollapsed?: boolean
 }
 
-export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
+export function AdminSidebar({ isOpen, onClose, desktopCollapsed = false }: AdminSidebarProps) {
   const { t } = useLanguage()
+  const drawer = useRef<HTMLDialogElement>(null)
+  const openerRef = useRef<HTMLElement | null>(null)
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen)
+  const [isClosing, setIsClosing] = useState(false)
+
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen)
+    if (!isOpen && prevIsOpen) {
+      setIsClosing(true)
+    } else if (isOpen) {
+      setIsClosing(false)
+    }
+  }
+
+  // Synchronize modal state with isOpen prop and slide transitions
+  useEffect(() => {
+    const dialog = drawer.current
+    if (!dialog) return
+
+    if (isOpen && !dialog.open) {
+      openerRef.current = document.activeElement as HTMLElement | null
+      dialog.showModal()
+    }
+  }, [isOpen])
+
+  // Handle backdrop clicks on native dialog without jsx-a11y warnings
+  useEffect(() => {
+    const dialog = drawer.current
+    if (!dialog) return
+
+    const onDialogClick = (event: MouseEvent) => {
+      if (event.target === dialog) {
+        onClose()
+      }
+    }
+
+    dialog.addEventListener('click', onDialogClick)
+    return () => dialog.removeEventListener('click', onDialogClick)
+  }, [onClose])
+
+  // Handle transition completion when closing
+  useEffect(() => {
+    if (!isClosing) return
+    const dialog = drawer.current
+    if (!dialog) return
+
+    const prefersReduced = isMotionReduced()
+
+    const finishClosing = () => {
+      if (dialog.open) {
+        dialog.close()
+      }
+      setIsClosing(false)
+      if (openerRef.current && openerRef.current.isConnected) {
+        openerRef.current.focus()
+      }
+    }
+
+    if (prefersReduced) {
+      const timer = setTimeout(finishClosing, 0)
+      return () => clearTimeout(timer)
+    }
+
+    // Safety timeout in case transitionend does not fire
+    const timer = setTimeout(finishClosing, 350)
+
+    const onTransitionEnd = (e: TransitionEvent) => {
+      if (e.target === dialog) {
+        clearTimeout(timer)
+        finishClosing()
+      }
+    }
+
+    dialog.addEventListener('transitionend', onTransitionEnd)
+    return () => {
+      clearTimeout(timer)
+      dialog.removeEventListener('transitionend', onTransitionEnd)
+    }
+  }, [isClosing])
+
+  const handleCancel = (event: React.SyntheticEvent) => {
+    event.preventDefault()
+    onClose()
+  }
 
   const navItems: AdminNavItem[] = [
     { to: '/admin', label: t.admin.dashboard, icon: 'dashboard', end: true },
@@ -196,6 +300,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     { to: '/admin/delivery', label: t.admin.delivery, icon: 'delivery' },
     { to: '/admin/settings', label: t.admin.settings, icon: 'settings' },
     { to: '/admin/audit', label: t.admin.audit, icon: 'audit' },
+    { to: '/admin/forecast', label: t.admin.forecast, icon: 'forecast' },
     { to: '/admin/analytics', label: t.admin.analytics, icon: 'analytics' },
   ]
 
@@ -226,8 +331,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-(--radius-pill) text-(--color-text-muted) hover:bg-(--color-surface-2) hover:text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
-              aria-label="إغلاق القائمة"
+              className="inline-flex size-11 items-center justify-center rounded-(--radius-pill) text-(--color-text-muted) hover:bg-(--color-surface-2) hover:text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+              aria-label={t.ui.closeDialog}
             >
               <svg
                 className="size-5"
@@ -247,7 +352,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </div>
 
         {/* Navigation list */}
-        <nav aria-label="لوحة التحكم" className="space-y-1">
+        <nav aria-label={t.admin.dashboard} className="space-y-1">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -264,6 +369,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             >
               <NavIcon type={item.icon} />
               <span>{item.label}</span>
+              {item.to === '/admin/payments' && <PaymentReviewCount />}
             </NavLink>
           ))}
         </nav>
@@ -271,6 +377,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       {/* Footer Actions & Security Badge */}
       <div className="space-y-4 border-t border-(--color-border) pt-4">
+        <SocialMenuLinks onClose={onClose} menuItems={false} />
         {/* Security assurance badge */}
         <div className="flex items-center gap-2 rounded-(--radius-chip) bg-(--color-surface-2) px-3 py-2 text-caption text-(--color-text-muted)">
           <svg
@@ -317,31 +424,34 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     <>
       {/* Desktop permanent sidebar rail */}
       <aside
-        aria-label="شريط لوحة التحكم"
-        className="hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col lg:border-e lg:border-(--color-border) lg:bg-(--color-surface) lg:p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto"
+        id="admin-desktop-sidebar"
+        aria-label={t.admin.dashboard}
+        inert={desktopCollapsed ? true : undefined}
+        className={`hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col lg:border-e lg:border-border lg:bg-surface lg:sticky lg:top-0 lg:h-screen lg:overflow-hidden admin-desktop-sidebar ${
+          desktopCollapsed ? 'is-collapsed' : 'is-expanded'
+        }`}
       >
-        {renderSidebarContent(false)}
+        <div className="admin-desktop-sidebar-inner w-64 h-full flex flex-col justify-between p-4 overflow-y-auto">
+          {renderSidebarContent(false)}
+        </div>
       </aside>
 
-      {/* Mobile drawer overlay and sidebar */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-(--color-text)/40 backdrop-blur-xs transition-opacity"
-            onClick={onClose}
-            aria-hidden="true"
-          />
-
-          {/* Drawer panel */}
-          <aside
-            aria-label="شريط لوحة التحكم"
-            className="fixed inset-y-0 start-0 z-50 w-72 bg-(--color-surface) border-e border-(--color-border) p-4 shadow-(--shadow-popover) transition-transform flex flex-col overflow-y-auto"
-          >
-            {renderSidebarContent(true)}
-          </aside>
-        </div>
-      )}
+      {/* Native modality contains keyboard focus and makes background controls inert. */}
+      <dialog
+        ref={drawer}
+        id="admin-mobile-sidebar"
+        aria-label={t.admin.sidebarToggle}
+        onCancel={handleCancel}
+        onClose={(event) => {
+          if (isOpen && !event.currentTarget.open) onClose()
+        }}
+        data-state={isClosing ? 'closing' : isOpen ? 'open' : 'closed'}
+        className={`m-0 me-auto h-dvh max-h-none w-72 max-w-full border-e border-border bg-surface p-4 text-text shadow-popover backdrop:bg-text/40 admin-mobile-drawer ${
+          isClosing ? 'is-closing' : isOpen ? 'is-open' : 'is-closed'
+        }`}
+      >
+        {(isOpen || isClosing) && renderSidebarContent(true)}
+      </dialog>
     </>
   )
 }

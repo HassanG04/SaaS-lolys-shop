@@ -11,6 +11,7 @@
  */
 
 export interface ProductInputForm {
+  custom_id?: number
   name: string
   name_ar?: string | null
   description?: string | null
@@ -37,9 +38,10 @@ export function sanitizePlainText(input?: string | null): string {
 
 /**
  * Builds the database insert payload for inserting a new product into public.products.
- * Strictly guarantees that NO generated or system columns are included.
+ * Strictly guarantees that NO generated or system columns are included unless explicit custom_id is provided.
  */
 export function buildProductInsertPayload(input: ProductInputForm): {
+  id?: number
   category_id: number
   name: string
   name_ar: string | null
@@ -62,7 +64,21 @@ export function buildProductInsertPayload(input: ProductInputForm): {
   const discountNum = Math.min(100, Math.max(0, Math.round(Number(input.discount_percent) || 0)))
   const stockNum = Math.max(0, Math.round(Number(input.stock_quantity) || 0))
 
-  return {
+  const payload: {
+    id?: number
+    category_id: number
+    name: string
+    name_ar: string | null
+    description: string | null
+    description_ar: string | null
+    price: number
+    discount_percent: number
+    stock_quantity: number
+    is_featured: boolean
+    is_active: boolean
+    image_url: string | null
+    extra_images: string[]
+  } = {
     category_id: Number(input.category_id),
     name: cleanName,
     name_ar: cleanNameAr,
@@ -76,6 +92,16 @@ export function buildProductInsertPayload(input: ProductInputForm): {
     image_url: input.image_url ? input.image_url.trim() : null,
     extra_images: Array.isArray(input.extra_images) ? input.extra_images : [],
   }
+
+  if (
+    typeof input.custom_id === 'number' &&
+    Number.isInteger(input.custom_id) &&
+    input.custom_id > 0
+  ) {
+    payload.id = input.custom_id
+  }
+
+  return payload
 }
 
 /**

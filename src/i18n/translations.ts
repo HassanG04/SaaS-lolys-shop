@@ -1,5 +1,6 @@
 // Named imports keep development-only kit copy out of production dictionaries.
 import {
+  mfa as arMfa,
   theme as arTheme,
   ui as arUi,
   brand as arBrand,
@@ -24,9 +25,11 @@ import {
   seo as arSeo,
   catalog as arCatalog,
   whatsapp as arWhatsapp,
+  about as arAbout,
 } from './ar.json'
 
 import {
+  mfa as enMfa,
   theme as enTheme,
   ui as enUi,
   brand as enBrand,
@@ -51,10 +54,12 @@ import {
   seo as enSeo,
   catalog as enCatalog,
   whatsapp as enWhatsapp,
+  about as enAbout,
 } from './en.json'
 
 export const translations = {
   ar: {
+    mfa: arMfa,
     theme: arTheme,
     ui: arUi,
     brand: arBrand,
@@ -79,8 +84,10 @@ export const translations = {
     seo: arSeo,
     catalog: arCatalog,
     whatsapp: arWhatsapp,
+    about: arAbout,
   },
   en: {
+    mfa: enMfa,
     theme: enTheme,
     ui: enUi,
     brand: enBrand,
@@ -105,5 +112,6 @@ export const translations = {
     seo: enSeo,
     catalog: enCatalog,
     whatsapp: enWhatsapp,
+    about: enAbout,
   },
 }

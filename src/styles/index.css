@@ -1,5 +1,16 @@
 @import './tokens.css';
 @import './ui.css';
+@import './storefront.css';
+
+/* Briefly include surface/text colors even on controls with their own transitions. */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow !important;
+  transition-duration: 360ms !important;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
 
 @layer base {
   html {
@@ -24,17 +35,19 @@
     outline: 2px solid var(--color-focus-val);
     outline-offset: 2px;
   }
+
   .theme-toggle {
     min-block-size: var(--spacing-touch);
     min-inline-size: var(--spacing-touch);
   }
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation: none !important;
-      transition: none !important;
-      scroll-behavior: auto !important;
-    }
+  html[data-motion='reduced'] {
+    scroll-behavior: auto !important;
+  }
+  html[data-motion='reduced'] *,
+  html[data-motion='reduced'] *::before,
+  html[data-motion='reduced'] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }

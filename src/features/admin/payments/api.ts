@@ -18,6 +18,11 @@ export async function getAdminPaymentOrders(
   try {
     let query = supabase.from('orders').select('*').eq('payment_method', 'instapay_qr')
 
+    if (filters?.orderId !== undefined) {
+      if (!Number.isSafeInteger(filters.orderId) || filters.orderId < 1)
+        throw new Error('Invalid order ID')
+      query = query.eq('id', filters.orderId)
+    }
     const status = filters?.status ?? 'under_review'
     if (status !== 'all') {
       query = query.eq('payment_status', status)
@@ -74,6 +79,17 @@ export async function getSignedProofUrl(proofPath: string, expiresInSeconds = 60
   } catch (err) {
     throw toAppError(err)
   }
+}
+
+export async function getPaymentReviewCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from('orders')
+    .select('id', { count: 'exact', head: true })
+    .eq('payment_method', 'instapay_qr')
+    .eq('payment_status', 'under_review')
+  if (error) throw toAppError(error)
+  if (typeof count !== 'number') throw toAppError(new Error('Payment count unavailable'))
+  return count
 }
 
 /**

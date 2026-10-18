@@ -12,5 +12,6 @@ export interface AdminNavItem {
     | 'settings'
     | 'audit'
     | 'analytics'
+    | 'forecast'
   end?: boolean
 }

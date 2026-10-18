@@ -198,7 +198,7 @@ The deployment security headers are specified in `public/_headers` (applicable t
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), browsing-topics=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-u2NM4YiS5X3Lh/l6pBfTx7V/psyLYsIrMTa2Z8/K01k=' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://*.supabase.co http://127.0.0.1:54321; font-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://127.0.0.1:54321 ws://127.0.0.1:54321; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-u2NM4YiS5X3Lh/l6pBfTx7V/psyLYsIrMTa2Z8/K01k=' 'sha256-3v1Ny89yYS/wl3pEhvsNIZEoEF/qE2D17nlhkbuJF0Q=' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://*.supabase.co http://127.0.0.1:54321; font-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://127.0.0.1:54321 ws://127.0.0.1:54321; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

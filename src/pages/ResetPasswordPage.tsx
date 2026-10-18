@@ -4,14 +4,18 @@ import { AuthAlert } from '../features/auth/AuthAlert'
 import { mapAuthError } from '../features/auth/authErrors'
 import { useAuth } from '../features/auth/AuthProvider'
 import { Turnstile } from '../features/auth/Turnstile'
+import { useCaptcha } from '../features/auth/useCaptcha'
 import type { AuthErrorCode } from '../features/auth/types'
+import { useLanguage } from '@/i18n/LanguageProvider'
+import { Button } from '@/components/ui/Button'
 
 export default function ResetPasswordPage() {
   const { resetPassword } = useAuth()
+  const { t } = useLanguage()
   const location = useLocation()
 
   const [email, setEmail] = useState('')
-  const [captchaToken, setCaptchaToken] = useState<string | undefined>()
+  const captcha = useCaptcha()
   const [formStatusMessage, setFormStatusMessage] = useState<AuthErrorCode | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -44,30 +48,35 @@ export default function ResetPasswordPage() {
       return
     }
 
+    if (!captcha.token) {
+      setFormStatusMessage('AUTH-003')
+      captcha.renew()
+      return
+    }
+
     setIsSubmitting(true)
     try {
       const result = await resetPassword({
         email: email.trim(),
-        captchaToken,
+        captchaToken: captcha.token,
       })
 
       // Always display neutral outcome AUTH-010
       setFormStatusMessage(result.code || 'AUTH-010')
     } finally {
+      captcha.renew()
       setIsSubmitting(false)
     }
   }
 
   return (
     <div className="mx-auto max-w-md space-y-6">
-      <div className="rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-6 sm:p-8 space-y-6">
+      <div className="auth-panel rounded-(--radius-card) border border-(--color-border) bg-(--color-surface) p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-h2 font-bold font-accent text-(--color-brand)">
-            استعادة كلمة المرور
+            {t.auth.resetPassword}
           </h1>
-          <p className="text-small text-(--color-text-muted)">
-            أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.
-          </p>
+          <p className="text-small text-(--color-text-muted)">{t.auth.resetPasswordSubtitle}</p>
         </div>
 
         {statusMessage === 'AUTH-010' ? (
@@ -93,16 +102,20 @@ export default function ResetPasswordPage() {
             </div>
             <div className="space-y-1.5">
               <h2 className="text-h3 font-bold font-accent text-(--color-brand)">
-                تحقق من بريدك الإلكتروني
+                {t.auth.checkYourEmail}
               </h2>
-              <p className="text-small text-(--color-text)">
-                إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة تحتوي على رابط إعادة التعيين
-                خلال دقائق.
-              </p>
-              <p className="text-caption text-(--color-text-muted)">
-                يرجى مراجعة صندوق الوارد ومجلد الرسائل غير المرغوب فيها (Spam).
-              </p>
+              <p className="text-small text-(--color-text)">{t.auth.checkResetEmailDesc}</p>
+              <p className="text-caption text-(--color-text-muted)">{t.auth.checkSpamFolder}</p>
             </div>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                captcha.renew()
+                setFormStatusMessage(null)
+              }}
+            >
+              {t.auth.resendNoticeLink}
+            </Button>
           </div>
         ) : (
           <>
@@ -114,7 +127,7 @@ export default function ResetPasswordPage() {
                   htmlFor="email-input"
                   className="text-small font-semibold text-(--color-text)"
                 >
-                  البريد الإلكتروني
+                  {t.auth.email}
                 </label>
                 <input
                   id="email-input"
@@ -127,23 +140,31 @@ export default function ResetPasswordPage() {
                 />
               </div>
 
-              <Turnstile onVerify={(token) => setCaptchaToken(token)} />
+              <Turnstile key={captcha.revision} {...captcha.widgetProps} />
 
-              <button
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 rounded-(--radius-pill) bg-(--color-brand) text-small font-semibold text-(--color-brand-contrast) transition-opacity hover:opacity-90 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
+                className="h-11 w-full text-small disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-(--color-focus)"
               >
-                {isSubmitting ? 'جارٍ الإرسال...' : 'إرسال رابط إعادة التعيين'}
-              </button>
+                {isSubmitting ? t.auth.sendingResetLink : t.auth.sendResetLink}
+              </Button>
             </form>
+            <p className="text-center text-caption text-(--color-text-muted)">
+              <Link
+                to="/resend-confirmation"
+                className="font-semibold text-(--color-brand) hover:underline"
+              >
+                {t.auth.resend}
+              </Link>
+            </p>
           </>
         )}
 
         <div className="text-center text-small text-(--color-text-muted)">
-          تذكرت كلمة المرور؟{' '}
+          {t.auth.rememberPassword}{' '}
           <Link to="/login" className="font-semibold text-(--color-brand) hover:underline">
-            تسجيل الدخول
+            {t.auth.login}
           </Link>
         </div>
       </div>
