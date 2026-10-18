@@ -552,20 +552,15 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
       })
     })
 
-    // Extract CSP policy from public/_headers and apply to responses
+    // Preview serves the real policy over HTTP; intercepted documents lose their
+    // loopback address space in Chromium and cannot reach the local Auth service.
     const headersFile = path.resolve('public/_headers')
     const headersContent = fs.readFileSync(headersFile, 'utf8')
     const cspMatch = headersContent.match(/Content-Security-Policy:\s*(.+)$/m)
     const cspPolicy = cspMatch ? cspMatch[1].trim() : ''
 
-    await page.route('**/*', async (route) => {
-      const response = await route.fetch()
-      const headers = response.headers()
-      if (headers['content-type']?.includes('text/html')) {
-        headers['content-security-policy'] = cspPolicy
-      }
-      await route.fulfill({ response, headers })
-    })
+    // Keep the real admin session so admin routes cannot pass by redirecting to login.
+    await loginAdmin(page)
 
     // Walk across core storefront and admin routes
     const routesToVisit = [
@@ -579,8 +574,13 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     ]
 
     for (const route of routesToVisit) {
-      await page.goto(route)
+      const response = await page.goto(route)
+      expect(response?.headers()['content-security-policy']).toBe(cspPolicy)
       await page.waitForLoadState('domcontentloaded')
+      if (route.startsWith('/admin/')) {
+        await expect(page).toHaveURL(new RegExp(`${route}$`))
+        await expect(page.locator('#admin-main h1')).toBeVisible()
+      }
       await page.waitForTimeout(300)
     }
 

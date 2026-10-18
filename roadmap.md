@@ -1071,6 +1071,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Unit coverage, verify and the affected E2E suites pass with no skipped assertions or relaxed gates; PR CI evidence is recorded.
 - **Verify:** `npm run verify`; `npm run test:unit:coverage`; `npm run test:e2e`.
 
+#### T-7.08c: Repair current browser fixtures and startup CSP
+`status: doing` `owner: agent` `needs: T-7.08b` `size: M`
+- **Do:** Align browser fixtures with required postal codes, generated QR accessibility and named form controls. Authorize the exact motion startup script hash without broadening script execution; check every inline startup script.
+- **Done when:** Admin, storefront, RTL and security journeys pass with real local Auth/database requests; CSP audit visits authenticated admin screens; verify passes.
+- **Verify:** `npm run verify`, `npm run test:e2e -- e2e/admin.spec.ts e2e/storefront-order.spec.ts e2e/rtl-qa.spec.ts e2e/security/security.spec.ts`.
+
 #### T-7.03b: Restore mobile loading performance
 `status: todo` `owner: agent` `needs: T-7.03` `size: M`
 - **Do:** Repair the mobile loading waterfall and layout shifts exposed after restoring the original performance checks during T-7.08b. Keep navigation animations, brand typography, the 200 kB initial JS budget and existing LCP/CLS thresholds.
@@ -1652,3 +1658,5 @@ What gets easier, what gets harder, what to watch.
 
 
 
+| 2026-10-18 | T-7.08b, T-7.08c | Codex | Restored real Turnstile loading and original performance limits, corrected stale postal/QR/form fixtures, and authorized exact motion startup hash. Full base verify and coverage passed (889 app + 203 tooling); accessibility 10/10, admin 9/9, RTL 9/9, storefront 8/8 and security 9/9 passed in isolated local runs. Follow-up verify and remote CI pending; mobile performance remains open T-7.03b. | #41; follow-up pending |
+| 2026-10-18 | T-7.08c | Codex | Follow-up verify passed all 12 gates: 889 app + 203 tooling tests, no skips; 199,717/200,000 gzip bytes. Security 9/9 passes with real HTTP CSP and authenticated admin pages. Combined browser/remote CI pending; task remains doing. | draft follow-up |

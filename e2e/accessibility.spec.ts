@@ -174,7 +174,7 @@ test.describe.serial('Axe Accessibility Audit Suite (T-7.02)', () => {
     await page.goto('/checkout')
     await expect(page.locator('h1')).toContainText('بيانات التوصيل')
 
-    await page.locator('select:not(#footer-motion-select)').first().selectOption('1')
+    await page.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
     const addressInput = page
       .locator('input[placeholder*="اسم الشارع"], input[placeholder*="الشارع"]')
       .first()

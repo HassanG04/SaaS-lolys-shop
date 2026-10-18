@@ -227,7 +227,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     // Open inline stock dialog
     const productRow = page.locator('tr', { hasText: 'سوار اللؤلؤ الفضي التجريبي' })
     await expect(productRow).toBeVisible()
-    await productRow.getByRole('button', { name: /مخزون/ }).first().click()
+    await productRow.getByRole('button', { name: /^تعديل مخزون / }).click()
 
     await expect(page.locator('#stock-new-quantity-input')).toBeVisible()
     await page.locator('#stock-new-quantity-input').fill('0')
@@ -275,37 +275,39 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     const adminClient = createClient(status.API_URL, status.SERVICE_ROLE_KEY, {
       auth: { autoRefreshToken: false, persistSession: false },
     })
-    const { data: usersData } = await adminClient.auth.admin.listUsers()
+    const { data: usersData, error: usersError } = await adminClient.auth.admin.listUsers()
+    expect(usersError).toBeNull()
     const custUser = usersData?.users?.find((u) => u.email === 'customer@example.com')
-    if (custUser) {
-      const { data: ord } = await adminClient
-        .from('orders')
-        .insert({
-          user_id: custUser.id,
-          status: 'delivered',
-          subtotal: 250,
-          shipping_fee: 0,
-          total: 250,
-          delivery_method: 'representative',
-          payment_method: 'cod',
-          ship_name: 'Test Cust',
-          ship_phone: '01000000000',
-          ship_governorate: 'Cairo',
-          ship_city: 'Nasr City',
-          ship_address: 'Street 1',
-        })
-        .select('id')
-        .single()
-      if (ord) {
-        await adminClient.from('order_items').insert({
-          order_id: ord.id,
-          product_id: 1,
-          product_name: 'Pearl drop earrings',
-          quantity: 1,
-          unit_price: 250,
-        })
-      }
-    }
+    if (!custUser) throw new Error('Customer fixture missing')
+    const { data: ord, error: orderError } = await adminClient
+      .from('orders')
+      .insert({
+        user_id: custUser.id,
+        status: 'delivered',
+        subtotal: 250,
+        shipping_fee: 0,
+        total: 250,
+        delivery_method: 'representative',
+        payment_method: 'cod',
+        ship_name: 'Test Cust',
+        ship_phone: '01000000000',
+        ship_governorate: 'Cairo',
+        ship_city: 'Nasr City',
+        ship_address: 'Street 1',
+        ship_postal_code: '11511',
+      })
+      .select('id')
+      .single()
+    expect(orderError).toBeNull()
+    if (!ord) throw new Error('Order fixture insertion failed')
+    const { error: itemError } = await adminClient.from('order_items').insert({
+      order_id: ord.id,
+      product_id: 1,
+      product_name: 'Pearl drop earrings',
+      quantity: 1,
+      unit_price: 250,
+    })
+    expect(itemError).toBeNull()
 
     await page.goto('/admin/products/1')
     await page.getByRole('button', { name: 'حذف نهائي' }).click()
@@ -354,7 +356,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
     await custPage.goto('/checkout')
     await expect(custPage.locator('h1')).toContainText('بيانات التوصيل')
-    await custPage.locator('select').first().selectOption('1')
+    await custPage.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
     const addressInput = custPage.locator('input[placeholder*="اسم الشارع"]').first()
     await expect(addressInput).toBeVisible()
     await addressInput.fill('شارع رمسيس عمارة 10')
@@ -426,7 +428,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await custPage.getByRole('button', { name: 'أضف إلى السلة', exact: true }).click()
     await custPage.goto('/checkout')
     await expect(custPage.locator('h1')).toContainText('بيانات التوصيل')
-    await custPage.locator('select').first().selectOption('1')
+    await custPage.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
     const addressInput = custPage.locator('input[placeholder*="اسم الشارع"]').first()
     await expect(addressInput).toBeVisible()
     await addressInput.fill('شارع النصر')
