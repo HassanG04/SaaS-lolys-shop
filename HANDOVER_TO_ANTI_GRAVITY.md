@@ -1,62 +1,113 @@
-# Handover to Anti-Gravity — CI and mobile performance repairs
+# Handover to Anti-Gravity — consolidated CI repairs
 
 ## Current objective
 
-Continue the CI repair and mobile loading investigation for Lolys from the isolated review stack. Keep the existing security controls, original performance budgets and review-only merge policy.
+Finish review of the owner-approved single replacement draft PR for T-7.08b,
+T-7.08c and the partial T-7.03b repair. PRs #41–43 were closed without merging.
+Do not resume from the primary checkout's older "all tasks completed" report.
+
+- Worktree: `C:\Users\Hassan-PC\.codex\worktrees\ci-consolidation\الاء`.
+- Branch: `agent/T-7.08b-consolidated-ci-repairs`.
+- Base: main `c6f680c5c19013d614c5258c5086f683e74ffa94`.
+- Source checkpoint: `397fd09`; subsequent documentation does not change code.
+- Repository: `https://github.com/HassanG04/ecommerce-lolys-shop`, redirected from the owner-approved `SaaS-lolys-shop` URL.
+- No main merge, deployment, hosted database operation or dashboard change.
 
 ## Completed
 
-- **PR #41 / `75602ec` / `agent/T-7.08b-ci-auth-repairs`**: removed the production webdriver CAPTCHA shortcut and synthetic token; loads the actual Cloudflare Turnstile script and fails closed; moved widget simulation into a localhost-only Playwright fixture; repaired SEO/dashboard unit fixtures; restored LCP 2500 ms and CLS 0.1; added production build guards. Local verify before follow-up: 889 application tests + 203 tooling tests; coverage passed; initial JS 199,709 / 200,000 gzip bytes.
-- **PR #42 / `15b378e` / `agent/T-7.08c-browser-fixtures-and-csp`**, stacked on #41: updated postal-code/order fixtures, named checkout selectors, generated QR accessibility selector and local payment-link fixture; authorized the exact motion startup CSP hash; header tests now hash every inline startup script; preview serves the real CSP so authenticated admin pages are tested without HTML interception. Follow-up `npm run verify` passed all 12 gates: 889 app tests + 203 tooling tests, no skips, initial JS 199,717 / 200,000 gzip bytes.
-- Targeted local browser runs passed: accessibility 10/10, admin 9/9, RTL 9/9, storefront order 8/8, security 9/9. GitHub run `39139829598` for #42 passed static, unit/coverage, database, build, SAST, secrets, roadmap and analytics; the full browser job finished **93 passed, 2 failed**, with only the home/category performance cases failing.
-- **Current branch `agent/T-7.03b-mobile-loading-repair`**, based on #42: retained only `Layout.tsx` main-content viewport reservation and stronger performance measurement that waits for the real heading. The original animations, vendor split, limits and bundle gate were restored after experiments.
+- Real Turnstile loading; removed production webdriver/synthetic-token shortcut.
+  Local widget simulation retains real local Auth and database requests.
+- Postal/QR/named-control fixtures; real HTTP CSP and authenticated admin-route
+  checks; exact hashes for every inline startup script.
+- Preserved main's async fixtures, MFA selectors, payment page, database-output
+  parser and security documentation. Fixed the admin fixture's postal code and
+  asserted successful setup before checking the product-delete restriction.
+- Loading-height reservation with eight language/theme/width regression cases.
+- Profiled waterfall: native static import preloads, lazy catalog grouping and
+  earlier Arabic display font. No eager admin, removed animations or relaxed gates.
+- Fresh consolidated verify passed all 12 gates: 889 application tests, 204
+  tooling tests; initial JS 199,730 / 200,000 gzip bytes.
 
 ## Remaining
 
-- Mobile LCP is still above the unchanged 2500 ms target. Local complete run with the retained height fix: 93 passed, 2 failed; home/category LCP 3260/3184 ms and CLS 0.0161/0.0003. GitHub #42 before the height fix: home 3196–3288 ms LCP, CLS 0.5408–0.5569; category 2432–2472 ms LCP, CLS 0.5628.
-- T-7.03b was marked `blocked` after three distinct optimization attempts, per roadmap §1.5. Do not raise thresholds or repeat the failed bundle changes. The next attempt needs fresh evidence about initial dependency payload, font timing and data requests.
-- The eight-case loading-layout regression (`e2e/ui/loading-layout.spec.ts`) passes 8/8. It covers Arabic/English, light/dark, 360/1280 and ensures the footer remains below the initial viewport while the lazy home route is delayed.
-- Final verify on the performance branch and the focused PR are not yet complete. Do not mark T-7.03b done or claim combined CI/launch readiness.
+Fresh consolidated coverage and browser results are pending. The predecessor
+full browser run at `6ef9811` had 101 passed, 2 failed and no skips: only mobile
+LCP failed. These predecessor results do not verify the replacement branch.
 
-## Current files on this branch
+Keep T-7.03b blocked under roadmap section 1.5 after the unsuccessful approaches.
+Further LCP work requires a revised measured approach; do not repeat experiments
+or raise budgets. Keep T-7.08b/T-7.08c doing until their criteria and remote checks
+pass. Owner security review and human-owned launch tasks remain. Local widget
+simulation does not verify hosted CAPTCHA enforcement or email delivery.
 
-```text
-.agent-state/project-progress.md
-e2e/performance.spec.ts
-e2e/ui/loading-layout.spec.ts
-roadmap.md
-src/components/layout/Layout.tsx
-docs/handoff/CI-REPAIR-2026-10-18.md
-HANDOVER_TO_ANTI_GRAVITY.md
-```
+## Current files
 
-The branch is currently uncommitted after the performance checkpoint. No schema, production settings, secrets or `.env` files were changed. Generated RTL screenshots and the temporary isolated `supabase/config.toml` were restored.
+Files changed against main (temporary database config excluded):
+
+- `.agent-state/project-progress.md`
+- `.github/workflows/ci.yml`
+- `docs/handoff/CI-CONSOLIDATION-2026-10-19.md`
+- `docs/handoff/CI-REPAIR-2026-10-18.md`
+- `e2e/accessibility.spec.ts`
+- `e2e/admin.spec.ts`
+- `e2e/fixtures/turnstile.js`
+- `e2e/global-setup.ts`
+- `e2e/helpers/turnstile.ts`
+- `e2e/performance.spec.ts`
+- `e2e/rtl-qa.spec.ts`
+- `e2e/security/security.spec.ts`
+- `e2e/storefront-order.spec.ts`
+- `e2e/ui/loading-layout.spec.ts`
+- `eslint.config.js`
+- `HANDOVER_TO_ANTI_GRAVITY.md`
+- `index.html`
+- `roadmap.md`
+- `scripts/check-ui-build.mjs`
+- `scripts/check-ui-build.test.mjs`
+- `scripts/headers.test.mjs`
+- `scripts/initial-preload.test.mjs`
+- `scripts/initial-preload.ts`
+- `src/components/layout/Layout.tsx`
+- `src/features/admin/dashboard/dashboardUI.test.tsx`
+- `src/features/auth/auth.test.tsx`
+- `src/features/auth/Turnstile.test.tsx`
+- `src/features/auth/Turnstile.tsx`
+- `src/features/seo/seo.test.tsx`
+- `src/i18n/ar.json`
+- `vite.config.ts`
 
 ## Current error
 
 ```text
-Expected: Home and category LCP <= 2500 ms and CLS <= 0.1.
-Actual:   Local retained-fix run: LCP 3260/3184 ms; CLS 0.0161/0.0003.
-          GitHub #42: 93 passed, 2 failed, only performance.
-Possible cause: initial dependency/vendor payload and late font/data work dominate the first mobile paint.
+Error: Mobile LCP still exceeds the loading budget.
+Expected: LCP <= 2500 ms; CLS <= 0.1; initial JS <= 200000 gzip bytes.
+Actual: Predecessor home/category 2604/2756 ms, CLS 0.0402/0, local E2E JS 199931 bytes.
+Possible cause: Remaining vendor transfer, lazy route discovery, font and data-request timing.
 ```
 
-Three measured approaches were tried and reverted:
-
-1. Native module preload with current vendor split: 2592/2824 ms, CLS 0.0443/0.0013, but 201,107 initial gzip bytes.
-2. Native preload with automatic splitting: 2628/2940 ms and 203,621 initial gzip bytes.
-3. Combined entry dependencies/immediate first paint: 2508/2500 ms, home CLS 0.1029, invalid bundle attribution and about 203 kB.
+See `docs/handoff/CI-CONSOLIDATION-2026-10-19.md` for evidence and earlier failed
+approaches. An earlier primary-checkout run used an unrepaired cloud-configured
+build; its login failures are not evidence against this replacement branch.
 
 ## Next exact commands
 
-From this worktree, using pinned Node 24.21.0:
+Read this handover, shared progress, status and diff first. Use Node 24.21.0.
+Never read `.env` values or print database keys.
 
 ```powershell
-git status --short
+Set-Location 'C:\Users\Hassan-PC\.codex\worktrees\ci-consolidation\الاء'
+git status --short --branch
 git diff --check
-npm exec -- prettier --check .
-npm run test:e2e -- --config .tools/playwright.ci.config.ts e2e/ui/loading-layout.spec.ts
-npm run verify
+& 'D:\Projects\Programming\الاء\.tools\node-v24.21.0-win-x64\node.exe' scripts/roadmap.mjs next
 ```
 
-If the layout test passes, commit and push the checkpoint as a draft PR targeting `agent/T-7.08c-browser-fixtures-and-csp`. If it fails, fix only the layout regression and rerun it. For another LCP attempt, first add measurement evidence and split the task if it exceeds the roadmap change-size rule. Do not merge, push `main`, change Supabase/Cloudflare dashboards, deploy, or weaken any test/security gate.
+For a justified browser rerun:
+
+```powershell
+& 'D:\Projects\Programming\الاء\.tools\node-v24.21.0-win-x64\node.exe' .tools/run-isolated-e2e.mjs
+```
+
+The helper resets only local `lolys-ci-auth-repair` (API 58321, DB 58322), previews
+on 4187 and restores config in `finally`. Do not reset concurrently, commit its
+temporary config or use the hosted project. Restore only explicitly identified
+screenshots generated by your own run.

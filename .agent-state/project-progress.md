@@ -1,5 +1,24 @@
 # Shared project progress
 
+## Codex — Consolidated repair review — 2026-10-19
+
+Current task: Prepare the owner-approved single replacement draft PR for T-7.08b, T-7.08c and the partial T-7.03b repair. Branch `agent/T-7.08b-consolidated-ci-repairs` starts at main `c6f680c`; PRs #41–43 were closed without merging. Active worktree: `C:\Users\Hassan-PC\.codex\worktrees\ci-consolidation\الاء`.
+
+Completed:
+
+- Carried the authentication/CSP/browser fixes onto current main while retaining Anti-Gravity's async database fixtures, current MFA selectors, payment-page behavior and security documentation.
+- Corrected the admin order fixture's missing postal code and added assertions so a failed fixture cannot silently pass a product-delete restriction test.
+- Profiled the initial request waterfall; added native static-module preloads, grouped lazy catalog dependencies and prioritized the Arabic display font. Admin remains lazy; existing animations, typography and performance limits remain.
+- Retained the eight-case loading-layout regression. Original budget remains 200,000 gzip bytes; original mobile targets remain 2500 ms LCP and 0.1 CLS.
+
+Files changed: Auth/provider and browser fixtures, build guards/preloading, layout regression, roadmap and handoff documentation. Full file list and continuation commands are in `HANDOVER_TO_ANTI_GRAVITY.md`; evidence is in `docs/handoff/CI-CONSOLIDATION-2026-10-19.md`.
+
+Tests executed: Fresh dependency install passed with scripts disabled. Consolidated `npm run verify` passed all 12 gates: 889 application tests, 204 tooling tests, initial JS 199,730 / 200,000 gzip bytes. Predecessor full browser run at `6ef9811`: 101 passed, 2 failed, no skips; home/category LCP 2604/2756 ms and CLS 0.0402/0. Fresh consolidated browser and coverage checks are in progress; predecessor results are not a claim about the replacement branch.
+
+Problems found: T-7.03b remains blocked because LCP still exceeds 2500 ms; no threshold was weakened. Local widget simulation does not verify production CAPTCHA enforcement. Older broad completion statements below are historical reports, not launch sign-off.
+
+Next action: Finish consolidated browser/coverage evidence, update the replacement draft PR and leave exact continuation instructions. No main merge, deployment or hosted database changes.
+
 ## Codex — Mobile performance checkpoint (T-7.03b) — 2026-10-18
 
 Current task: Verify the retained loading-layout fix on `agent/T-7.03b-mobile-loading-repair`, stacked on `15b378e` / draft PR #42. LCP tuning is blocked under roadmap section 1.5 after three distinct unsuccessful approaches.
