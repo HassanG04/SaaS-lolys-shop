@@ -220,7 +220,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     // Open inline stock dialog
     const productRow = page.locator('tr', { hasText: 'سوار اللؤلؤ الفضي التجريبي' })
     await expect(productRow).toBeVisible()
-    await productRow.getByRole('button', { name: /تعديل/ }).first().click()
+    await productRow.getByRole('button', { name: /مخزون/ }).first().click()
 
     await expect(page.locator('#stock-new-quantity-input')).toBeVisible()
     await page.locator('#stock-new-quantity-input').fill('0')

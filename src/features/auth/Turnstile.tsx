@@ -64,12 +64,9 @@ export function Turnstile({ onVerify, onError, onExpire, className = '' }: Turns
 
     // In automated browser testing (e.g. Playwright E2E) without an external Turnstile widget:
     if (typeof window !== 'undefined' && window.navigator?.webdriver && !window.turnstile) {
-      const timer = setTimeout(() => {
-        if (!disposed) callbacks.current.onVerify('test-turnstile-token')
-      }, 0)
+      callbacks.current.onVerify('test-turnstile-token')
       return () => {
         disposed = true
-        clearTimeout(timer)
       }
     }
 

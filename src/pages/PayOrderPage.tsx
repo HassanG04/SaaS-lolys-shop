@@ -459,20 +459,16 @@ export default function PayOrderPage() {
                     alt={tPage.qrAlt}
                     size={180}
                   />
-                ) : qrImageUrl && qrImageUrl !== '/placeholders/instapay-qr.svg' ? (
+                ) : (
                   <div className="relative size-48 shrink-0 overflow-hidden rounded-chip border border-border bg-bg p-2">
                     <img
-                      src={qrImageUrl}
+                      src={qrImageUrl || '/placeholders/instapay-qr.svg'}
                       alt={tPage.qrAlt}
                       className="size-full object-contain"
                       onError={(e) => {
                         e.currentTarget.src = '/placeholders/instapay-qr.svg'
                       }}
                     />
-                  </div>
-                ) : (
-                  <div className="flex size-48 flex-col items-center justify-center rounded-card border border-dashed border-border p-4 text-center text-text-muted">
-                    <span className="text-small font-medium">{tPage.qrUnavailable}</span>
                   </div>
                 )}
               </div>
