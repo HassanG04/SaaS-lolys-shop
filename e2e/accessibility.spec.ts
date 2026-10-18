@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, waitForCaptcha, type Page } from './helpers/turnstile'
 import { generateTotp } from './helpers/totp'
 import { queryDb, getAdminTotpSecret } from './helpers/db'
 import { runAxe, filterSeriousAndCritical } from './helpers/axe'
@@ -76,7 +76,7 @@ async function loginCustomer(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('customer@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 }
@@ -86,7 +86,7 @@ async function loginAdmin(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('admin@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 

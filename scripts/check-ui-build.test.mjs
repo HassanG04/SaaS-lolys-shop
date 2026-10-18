@@ -13,7 +13,14 @@ test('rejects missing builds and catches nested preview routes, assets and both 
   const js = path.join(root, 'assets/app.js')
   await writeFile(js, 'production')
   assert.deepEqual(await checkUiBuild(root), [])
-  for (const marker of ['__kit', 'معاينة عناصر الواجهة', 'UI Kit Preview', 'OrnamentExamples']) {
+  for (const marker of [
+    '__kit',
+    'معاينة عناصر الواجهة',
+    'UI Kit Preview',
+    'OrnamentExamples',
+    'test-turnstile-token',
+    'e2e-turnstile-',
+  ]) {
     await writeFile(js, marker)
     assert.equal((await checkUiBuild(root)).length, 1)
   }

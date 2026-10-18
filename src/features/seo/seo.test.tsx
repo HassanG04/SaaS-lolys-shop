@@ -1,10 +1,23 @@
 import { render, screen, act } from '@testing-library/react'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider, useLanguage } from '../../i18n/LanguageProvider'
 import { ThemeProvider } from '../../components/ui/ThemeProvider'
 import { useSeo, formatDocumentTitle, BRAND_NAME } from './index'
 import { Layout } from '../../components/layout/Layout'
+
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: () => ({ select: () => ({ eq: async () => ({ data: [], error: null }) }) }),
+  },
+}))
+
+function renderLayout(ui: ReactNode) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } })
+  return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>)
+}
 
 function TestSeoConsumer({
   title,
@@ -138,7 +151,7 @@ describe('SEO Hook and Route Metadata (T-3.08)', () => {
 
   routesToTest.forEach(({ path: testPath, expectedTitle }) => {
     it(`changes title for route: ${testPath}`, () => {
-      render(
+      renderLayout(
         <ThemeProvider>
           <LanguageProvider>
             <MemoryRouter initialEntries={[testPath]}>
@@ -153,7 +166,7 @@ describe('SEO Hook and Route Metadata (T-3.08)', () => {
   })
 
   it('updates title and meta locale when language changes', async () => {
-    render(
+    renderLayout(
       <ThemeProvider>
         <LanguageProvider>
           <MemoryRouter initialEntries={['/about']}>
@@ -172,5 +185,10 @@ describe('SEO Hook and Route Metadata (T-3.08)', () => {
     })
 
     expect(document.title).toBe(`About Us | ${BRAND_NAME}`)
+    expect(await screen.findByRole('contentinfo')).toBeVisible()
+    expect(document.head.querySelector('meta[property="og:locale"]')).toHaveAttribute(
+      'content',
+      'en_US',
+    )
   })
 })

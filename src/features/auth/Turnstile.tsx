@@ -46,31 +46,32 @@ export function Turnstile({ onVerify, onError, onExpire, className = '' }: Turns
     }
 
     // Cloudflare's documented dummy keys must never protect a production form.
-    if (
-      import.meta.env.PROD &&
-      !(typeof window !== 'undefined' && window.navigator?.webdriver) &&
-      /^[123]x0+[A-Z]{2}$/.test(siteKey)
-    ) {
+    if (import.meta.env.PROD && /^[123]x0+[A-Z]{2}$/.test(siteKey)) {
       callbacks.current.onError?.()
       return
     }
 
-    // In automated browser testing (e.g. Playwright E2E) without an external Turnstile widget:
-    if (typeof window !== 'undefined' && window.navigator?.webdriver && !window.turnstile) {
-      const timer = setTimeout(() => {
-        if (!disposed) callbacks.current.onVerify('test-turnstile-token')
-      }, 50)
-      return () => {
-        disposed = true
-        clearTimeout(timer)
-      }
+    let disposed = false
+    let script: HTMLScriptElement | null = null
+    let timeout: ReturnType<typeof setTimeout> | undefined
+    let failed = false
+    const fail = () => {
+      if (disposed || failed) return
+      failed = true
+      clearTimeout(timeout)
+      script?.remove()
+      callbacks.current.onError?.()
     }
 
-    let disposed = false
-    let checkInterval: ReturnType<typeof setInterval> | null = null
-
     const renderWidget = () => {
-      if (!disposed && containerRef.current && window.turnstile && !widgetIdRef.current) {
+      clearTimeout(timeout)
+      if (
+        !disposed &&
+        !failed &&
+        containerRef.current &&
+        window.turnstile &&
+        !widgetIdRef.current
+      ) {
         try {
           const id = window.turnstile.render(containerRef.current, {
             sitekey: siteKey,
@@ -87,31 +88,35 @@ export function Turnstile({ onVerify, onError, onExpire, className = '' }: Turns
           })
           widgetIdRef.current = id
         } catch {
-          callbacks.current.onError?.()
+          fail()
         }
       }
+    }
+    const loaded = () => {
+      if (window.turnstile) renderWidget()
+      else fail()
     }
 
     if (window.turnstile) {
       renderWidget()
     } else {
-      let attempts = 0
-      checkInterval = setInterval(() => {
-        attempts++
-        if (window.turnstile) {
-          if (checkInterval) clearInterval(checkInterval)
-          renderWidget()
-        } else if (attempts > 50) {
-          // Timeout after 5s
-          if (checkInterval) clearInterval(checkInterval)
-          callbacks.current.onError?.()
-        }
-      }, 100)
+      const src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+      script = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`)
+      const isNew = !script
+      script ??= document.createElement('script')
+      script.src = src
+      script.async = true
+      script.addEventListener('load', loaded)
+      script.addEventListener('error', fail)
+      timeout = setTimeout(fail, 10000)
+      if (isNew) document.head.append(script)
     }
 
     return () => {
       disposed = true
-      if (checkInterval) clearInterval(checkInterval)
+      clearTimeout(timeout)
+      script?.removeEventListener('load', loaded)
+      script?.removeEventListener('error', fail)
       if (widgetIdRef.current && window.turnstile?.remove) {
         try {
           window.turnstile.remove(widgetIdRef.current)

@@ -34,6 +34,10 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  document
+    .querySelectorAll('script[src*="challenges.cloudflare.com"]')
+    .forEach((script) => script.remove())
+  vi.unstubAllGlobals()
   vi.unstubAllEnvs()
   vi.useRealTimers()
 })
@@ -74,20 +78,46 @@ test('Strict Mode recreates the widget and ignores callbacks from disposed chall
   expect(remove).toHaveBeenCalledTimes(2)
 })
 
-test('waits for the script; timeout reports failure without inventing a token', () => {
+test('loads the provider script; timeout fails closed even in an automated browser', () => {
   vi.useFakeTimers()
+  vi.stubGlobal('navigator', { webdriver: true })
   delete window.turnstile
   const onError = vi.fn()
   const onVerify = vi.fn()
   const { unmount } = render(<Turnstile onVerify={onVerify} onError={onError} />)
-  act(() => vi.advanceTimersByTime(5200))
+  expect(document.querySelectorAll('script[src*="challenges.cloudflare.com"]')).toHaveLength(1)
+  act(() => vi.advanceTimersByTime(10100))
   expect(onError).toHaveBeenCalledOnce()
   expect(onVerify).not.toHaveBeenCalled()
   unmount()
   render(<Turnstile onVerify={onVerify} onError={onError} />)
   window.turnstile = { render: renderWidget, remove, reset: vi.fn() }
-  act(() => vi.advanceTimersByTime(200))
+  const script = document.querySelector('script[src*="challenges.cloudflare.com"]')
+  expect(script).not.toBeNull()
+  if (script) fireEvent.load(script)
   expect(renderWidget).toHaveBeenCalledOnce()
+  challenges[0]?.callback('provider-token')
+  expect(onVerify).toHaveBeenCalledWith('provider-token')
+})
+
+test('script failure reports once, permits retry, and ignores events after unmount', () => {
+  delete window.turnstile
+  const onError = vi.fn()
+  const onVerify = vi.fn()
+  const { unmount } = render(<Turnstile onVerify={onVerify} onError={onError} />)
+  const script = document.querySelector('script[src*="challenges.cloudflare.com"]')
+  if (!script) throw new Error('Provider script was not requested')
+  fireEvent.error(script)
+  fireEvent.load(script)
+  expect(onError).toHaveBeenCalledOnce()
+  expect(script.isConnected).toBe(false)
+  unmount()
+  render(<Turnstile onVerify={onVerify} onError={onError} />).unmount()
+  const retry = document.querySelector('script[src*="challenges.cloudflare.com"]')
+  if (!retry) throw new Error('Provider script was not retried')
+  fireEvent.error(retry)
+  expect(onError).toHaveBeenCalledOnce()
+  expect(onVerify).not.toHaveBeenCalled()
 })
 
 test('missing configuration fails closed instead of using a dummy key', () => {
@@ -102,6 +132,7 @@ test('missing configuration fails closed instead of using a dummy key', () => {
 
 test('production rejects Cloudflare dummy site keys', () => {
   vi.stubEnv('PROD', true)
+  vi.stubGlobal('navigator', { webdriver: true })
   vi.mocked(getEnv).mockReturnValue({
     VITE_SUPABASE_URL: 'https://example.invalid',
     VITE_SUPABASE_ANON_KEY: 'test-public-key',

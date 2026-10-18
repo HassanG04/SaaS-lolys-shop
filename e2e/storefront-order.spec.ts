@@ -1,11 +1,11 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, waitForCaptcha, type Page } from './helpers/turnstile'
 import { getProductStock, setProductStock, expireOrderViaTestHook, queryDb } from './helpers/db'
 
 async function loginCustomer(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('customer@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 10000 })
 }
