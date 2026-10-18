@@ -111,4 +111,80 @@ describe('content editor', () => {
     expect(screen.getByText('<script>test</script>', { selector: 'p' })).toBeInTheDocument()
     expect(document.querySelector('script')).toBeNull()
   })
+
+  it('allows editing footer branding, contact details, and reordering policy links (T-5.15)', async () => {
+    const user = userEvent.setup()
+    mount()
+    await screen.findByLabelText('Hero title (English)')
+
+    // Switch to Footer tab
+    await user.click(screen.getByRole('button', { name: 'Footer & contact' }))
+
+    // Fill in brand name in English and Arabic
+    const brandEn = screen.getByLabelText('Store name (English)')
+    const brandAr = screen.getByLabelText('Store name (العربية)')
+    await user.type(brandEn, "Loly's Boutique")
+    await user.type(brandAr, 'متجر لوليز بوتيك')
+
+    // Fill in contact channels
+    const phoneInput = screen.getByLabelText('Phone')
+    await user.type(phoneInput, '+201000000000')
+
+    const whatsappInput = screen.getByLabelText('WhatsApp link')
+    await user.type(whatsappInput, 'https://wa.me/201000000000')
+
+    // Reorder footer links
+    const downButton = screen.getByRole('button', { name: 'Move down terms' })
+    await user.click(downButton)
+
+    // Publish changes
+    await user.click(screen.getByRole('button', { name: 'Publish changes' }))
+    await screen.findByText('Content published')
+
+    expect(supabase.rpc).toHaveBeenCalledWith(
+      'admin_update_storefront_content',
+      expect.objectContaining({
+        p_expected_updated_at: revision,
+        p_content: expect.objectContaining({
+          brand_name_en: "Loly's Boutique",
+          brand_name_ar: 'متجر لوليز بوتيك',
+          phone: '+201000000000',
+          whatsapp_url: 'https://wa.me/201000000000',
+          footer_order: ['privacy', 'terms', 'returns', 'shipping', 'contact'],
+        }),
+      }),
+    )
+  })
+
+  it('allows editing all 5 policy routes in both languages and publishing (T-5.15)', async () => {
+    const user = userEvent.setup()
+    mount()
+    await screen.findByLabelText('Hero title (English)')
+
+    // Switch to Policies tab
+    await user.click(screen.getByRole('button', { name: 'Policies' }))
+
+    // Fill in returns policy
+    await user.type(screen.getByLabelText('Returns link label (العربية)'), 'ضوابط الاسترجاع')
+    await user.type(screen.getByLabelText('Returns link label (English)'), 'Return Rules')
+    await user.type(screen.getByLabelText('Full returns policy (العربية)'), 'نص الاسترجاع بالعربية')
+    await user.type(screen.getByLabelText('Full returns policy (English)'), 'English returns text')
+
+    // Publish
+    await user.click(screen.getByRole('button', { name: 'Publish changes' }))
+    await screen.findByText('Content published')
+
+    expect(supabase.rpc).toHaveBeenCalledWith(
+      'admin_update_storefront_content',
+      expect.objectContaining({
+        p_expected_updated_at: revision,
+        p_content: expect.objectContaining({
+          returns_label_ar: 'ضوابط الاسترجاع',
+          returns_label_en: 'Return Rules',
+          returns_body_ar: 'نص الاسترجاع بالعربية',
+          returns_body_en: 'English returns text',
+        }),
+      }),
+    )
+  })
 })

@@ -22,6 +22,7 @@ import { getPublicQrUrl } from './api'
 import type { ShopSettingsMap, SettingKey, SettingsAuditEntry } from './types'
 
 const ContentEditorLauncher = lazy(() => import('@/features/admin/settings/ContentEditorLauncher'))
+const ContentEditor = lazy(() => import('@/features/admin/settings/ContentEditor'))
 
 export const SETTING_LABELS: Record<SettingKey, { ar: string; en: string }> = {
   shop_name_ar: { ar: 'اسم المتجر (بالعربية)', en: 'Shop Name (Arabic)' },
@@ -56,9 +57,9 @@ export default function SettingsPage() {
 
   // Local overrides state to avoid cascading renders in useEffect
   const [overrides, setOverrides] = useState<Partial<ShopSettingsMap>>({})
-  const [activeTab, setActiveTab] = useState<'general' | 'hero' | 'payment' | 'limits' | 'audit'>(
-    'general',
-  )
+  const [activeTab, setActiveTab] = useState<
+    'general' | 'hero' | 'payment' | 'limits' | 'content' | 'audit'
+  >('general')
   const [savingKey, setSavingKey] = useState<string | null>(null)
   const [sectionError, setSectionError] = useState<unknown | null>(null)
 
@@ -317,6 +318,12 @@ export default function SettingsPage() {
           onClick={() => setActiveTab('limits')}
         >
           {isAr ? 'الحدود التشغيلية والسياسات' : 'Limits & Policies'}
+        </Button>
+        <Button
+          variant={activeTab === 'content' ? 'primary' : 'ghost'}
+          onClick={() => setActiveTab('content')}
+        >
+          {isAr ? 'محرر السياسات والواجهة' : 'Policy & Content Editor'}
         </Button>
         <Button
           variant={activeTab === 'audit' ? 'primary' : 'ghost'}
@@ -693,6 +700,22 @@ export default function SettingsPage() {
               />
             </Field>
 
+            <div className="rounded-card border border-border bg-surface-2 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="text-small font-semibold text-text">
+                  {isAr ? 'محرر السياسات الكامل المترجم' : 'Complete Bilingual Policy Editor'}
+                </p>
+                <p className="text-caption text-text-muted">
+                  {isAr
+                    ? 'تعديل نصوص الشروط، الخصوصية، الاسترجاع، الشحن، والتواصل باللغتين مع المعاينة الحية'
+                    : 'Edit full Terms, Privacy, Returns, Shipping, and Contact policy copy in both languages'}
+                </p>
+              </div>
+              <Button type="button" variant="secondary" onClick={() => setActiveTab('content')}>
+                {isAr ? 'فتح محرر السياسات' : 'Open Policy Editor'}
+              </Button>
+            </div>
+
             <div className="flex justify-end pt-4">
               <Button type="submit" disabled={savingKey === 'limits'}>
                 {savingKey === 'limits'
@@ -705,6 +728,21 @@ export default function SettingsPage() {
               </Button>
             </div>
           </form>
+        </Card>
+      )}
+
+      {/* SECTION: Complete Bilingual Policy & Content Editor */}
+      {activeTab === 'content' && (
+        <Card className="p-6">
+          <Suspense
+            fallback={
+              <div className="flex h-32 items-center justify-center text-brand">
+                <PearlLoader loading />
+              </div>
+            }
+          >
+            <ContentEditor />
+          </Suspense>
         </Card>
       )}
 

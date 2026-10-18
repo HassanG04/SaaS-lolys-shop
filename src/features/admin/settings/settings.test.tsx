@@ -27,22 +27,21 @@ import {
   DEFAULT_SETTINGS,
 } from './api'
 
+const { mockSupabase } = vi.hoisted(() => {
+  const mockSupabase = {
+    from: vi.fn(),
+    storage: {
+      from: vi.fn(),
+    },
+    rpc: vi.fn(),
+  }
+  return { mockSupabase }
+})
+
 // Mock Supabase client
 vi.mock('@/lib/supabase', () => ({
-  supabase: {
-    from: vi.fn(),
-    storage: {
-      from: vi.fn(),
-    },
-    rpc: vi.fn(),
-  },
-  getSupabase: vi.fn(() => ({
-    from: vi.fn(),
-    storage: {
-      from: vi.fn(),
-    },
-    rpc: vi.fn(),
-  })),
+  supabase: mockSupabase,
+  getSupabase: () => mockSupabase,
 }))
 
 // Mock useStepUp & StepUpDialog
@@ -351,21 +350,52 @@ describe('T-5.09: Admin Settings UI and step-up authorization', () => {
     mockOpenStepUp.mockClear()
     mockCloseStepUp.mockClear()
 
+    vi.mocked(supabase.storage.from).mockReturnValue({
+      getPublicUrl: vi.fn().mockReturnValue({
+        data: { publicUrl: '/placeholders/instapay-qr.svg' },
+      }),
+      upload: vi.fn().mockResolvedValue({ error: null }),
+      remove: vi.fn().mockResolvedValue({ error: null }),
+    } as unknown as ReturnType<typeof supabase.storage.from>)
+
     // Default mock for shop_settings query
     vi.mocked(supabase.from).mockImplementation((table: string) => {
       if (table === 'shop_settings') {
-        return {
-          select: vi.fn().mockResolvedValue({
-            data: Object.entries(DEFAULT_SETTINGS).map(([k, v]) => ({
-              key: k,
-              value: v,
-              is_public: true,
-              updated_at: '2026-10-14T00:00:00Z',
-              updated_by: null,
-            })),
-            error: null,
+        const defaultRows = Object.entries(DEFAULT_SETTINGS).map(([k, v]) => ({
+          key: k,
+          value: v,
+          is_public: true,
+          updated_at: '2026-10-14T00:00:00Z',
+          updated_by: null,
+        }))
+        const storefrontValue = {
+          hero_title_ar: 'عنوان',
+          hero_title_en: 'Title',
+          brand_name_ar: 'لوليز للإكسسوارات',
+          brand_name_en: "Loly's Accessories",
+        }
+        const chain: Record<string, unknown> = {
+          select: vi.fn().mockImplementation(() => chain),
+          eq: vi.fn().mockImplementation((_col: string, val: string) => {
+            if (val === 'storefront_content') {
+              return {
+                single: vi.fn().mockResolvedValue({
+                  data: {
+                    value: storefrontValue,
+                    updated_at: '2026-10-18T00:00:00Z',
+                  },
+                  error: null,
+                }),
+              }
+            }
+            return {
+              single: vi.fn().mockResolvedValue({ data: null, error: null }),
+            }
           }),
-        } as unknown as ReturnType<typeof supabase.from>
+          then: (resolve: (v: unknown) => unknown) =>
+            Promise.resolve({ data: defaultRows, error: null }).then(resolve),
+        }
+        return chain as unknown as ReturnType<typeof supabase.from>
       }
       if (table === 'audit_log') {
         return {
@@ -393,9 +423,18 @@ describe('T-5.09: Admin Settings UI and step-up authorization', () => {
           }),
         } as unknown as ReturnType<typeof supabase.from>
       }
-      return {
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
-      } as unknown as ReturnType<typeof supabase.from>
+      const genericChain: Record<string, unknown> = {
+        select: vi.fn().mockImplementation(() => genericChain),
+        eq: vi.fn().mockImplementation(() => genericChain),
+        order: vi.fn().mockImplementation(() => genericChain),
+        ilike: vi.fn().mockImplementation(() => genericChain),
+        limit: vi.fn().mockImplementation(() => genericChain),
+        single: vi.fn().mockResolvedValue({ data: null, error: null }),
+        maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+        then: (resolve: (v: unknown) => unknown) =>
+          Promise.resolve({ data: [], error: null }).then(resolve),
+      }
+      return genericChain as unknown as ReturnType<typeof supabase.from>
     })
   })
 
@@ -515,5 +554,38 @@ describe('T-5.09: Admin Settings UI and step-up authorization', () => {
     expect(screen.getByText('50')).toBeInTheDocument()
     expect(screen.getByText('65')).toBeInTheDocument()
     expect(screen.getByText('مسؤول المتجر')).toBeInTheDocument()
+  })
+
+  it('allows switching to the policy and storefront content editor tab (T-5.15)', async () => {
+    const user = userEvent.setup()
+    renderSettingsPage()
+
+    await screen.findByRole('heading', { name: 'إعدادات المتجر' })
+
+    const contentTabBtn = screen.getByRole('button', { name: 'محرر السياسات والواجهة' })
+    expect(contentTabBtn).toBeInTheDocument()
+
+    await user.click(contentTabBtn)
+
+    // The content editor is loaded and accessible
+    expect(await screen.findByRole('button', { name: 'نشر التغييرات' })).toBeInTheDocument()
+  })
+
+  it('provides a direct link in limits tab to open the full bilingual policy editor (T-5.15)', async () => {
+    const user = userEvent.setup()
+    renderSettingsPage()
+
+    await screen.findByRole('heading', { name: 'إعدادات المتجر' })
+
+    // Go to limits tab
+    await user.click(screen.getByRole('button', { name: 'الحدود التشغيلية والسياسات' }))
+
+    // Banner and button exist
+    expect(screen.getByText('محرر السياسات الكامل المترجم')).toBeInTheDocument()
+    const openEditorBtn = screen.getByRole('button', { name: 'فتح محرر السياسات' })
+    await user.click(openEditorBtn)
+
+    // Switches to content editor
+    expect(await screen.findByRole('button', { name: 'نشر التغييرات' })).toBeInTheDocument()
   })
 })

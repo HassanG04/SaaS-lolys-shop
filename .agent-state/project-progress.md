@@ -1,5 +1,38 @@
 # Shared project progress
 
+## Anti-Gravity — Complete Bilingual Footer and Policy Editor (T-5.15) — 2026-10-18
+
+Current task: T-5.15 (Complete bilingual footer and policy editor) completed and verified on `agent/T-5.15-footer-and-policy-editor`. Next task: determined by `npm run roadmap:next`.
+
+Completed:
+
+- Admin Settings Integration:
+  - Added `content` tab to `src/features/admin/settings/SettingsPage.tsx` with lazy-loaded `ContentEditor` wrapped in Suspense with PearlLoader fallback.
+  - Added direct navigation banner and button from the operational limits & policies tab (`limits`) to the full bilingual policy editor tab (`content`).
+  - Added unit tests in `src/features/admin/settings/settings.test.tsx` verifying tab navigation and limits shortcut link.
+- Footer Bilingual & Dynamic Customization:
+  - Updated `src/components/layout/Footer.tsx` to read `storefront_content` and render custom brand wordmark, tagline, copyright notice, and custom policy link order (`footer_order`).
+  - Added contact details & channels section in Footer supporting verified telephone (`tel:` link with digit sanitization), WhatsApp, Instagram, and TikTok links with strict protocol validation preventing malformed or malicious script schemes.
+- Policy Routes Dynamic Content:
+  - Verified that all 5 policy routes (`TermsPage`, `PrivacyPage`, `ReturnsPage`, `ShippingPage`, `ContactPage`) wrapped by `PublishedPolicy` dynamically render custom titles and bodies in both Arabic and English when published.
+  - Verified automatic plain-text HTML escaping and whitespace preservation (`whitespace-pre-wrap break-words`) ensuring zero script injection vulnerability.
+  - Verified seamless fallback to audited bilingual static content when custom text is absent or empty.
+- Test Coverage:
+  - `src/pages/LegalPages.test.tsx`: Added 8 tests covering custom Arabic and English policy copy rendering, HTML/script escaping, custom footer branding, custom footer ordering, and contact channels.
+  - `src/features/admin/settings/ContentEditor.test.tsx`: Added 2 unit tests covering footer branding/contact channels editing, footer link reordering, and full policy route bilingual publication.
+  - `src/features/admin/settings/settings.test.tsx`: Updated tests verifying the content editor tab and direct limits link.
+  - Database permission regression tests (`supabase/tests/database/20_storefront_content.test.sql`): 25 assertions covering AAL2 authorization, anonymous/customer denial, length bounds, lookalike URL rejection, and audit log tracking.
+- Verification & Budget:
+  - All 12 quality gates passed via `npm run verify` (1,050 app tests + 203 tooling tests, 0 failures).
+  - Initial JS bundle budget strictly preserved: **199,970 / 200,000 gzip bytes** in 3 initial chunks (30 bytes headroom).
+  - Roadmap status updated: `T-5.15: done`.
+
+Files changed: `roadmap.md`, `.agent-state/project-progress.md`, `src/features/admin/settings/SettingsPage.tsx`, `src/features/admin/settings/settings.test.tsx`, `src/components/layout/Footer.tsx`, `src/pages/LegalPages.test.tsx`, `src/features/admin/settings/ContentEditor.test.tsx`.
+
+Problems found: None.
+
+Next action: Commit changes on branch `agent/T-5.15-footer-and-policy-editor`, push to origin, and check `npm run roadmap:next`.
+
 ## Anti-Gravity — Verify Owner InstaPay Recipient and QR (T-5.14) — 2026-10-18
 
 Current task: T-5.14 (Verify owner InstaPay recipient and QR) completed and verified on `agent/T-5.14-verify-instapay-qr`. Next task: T-5.15 (Complete bilingual footer and policy editor).

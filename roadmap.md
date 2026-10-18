@@ -984,7 +984,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run verify && npm run test:e2e`
 
 #### T-5.15: Complete bilingual footer and policy editor
-`status: todo` `owner: agent` `needs: T-3.10c` `size: L`
+`status: done` `owner: agent` `needs: T-3.10c` `size: L`
 - **Do:** Settings edits footer branding, labels/order, contact details and full Terms/Privacy/Returns/Shipping/Contact copy using the persistent content contract. Reuse the homepage editor contract; no raw HTML or frontend-only saves. See `docs/spec/store-controls-and-auth-abuse.md`.
 - **Done when:** Full policy routes and footer reflect saved content in both languages after reload/in another session; unauthorized writes fail; malformed content, cache invalidation and narrow-screen behavior tested. No invented policy promises.
 - **Verify:** `npm run verify && npm run test:e2e`; local database permission regression tests.
@@ -1625,3 +1625,6 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-18 | T-4.08b | Codex | Repaired postal integration and historical UPDATE guards without fabricated backfills. Local reset, 535 pgTAP assertions, S7 concurrency, generated types/check, all 12 verify gates (790 app + 203 tooling), roadmap check pass. Kept T-4.08 doing for genuine hosted backfill/final contract. Original owner transaction acceptance preserved. | pending |
 
 | 2026-10-18 | T-3.10c | Codex | Added atomic bilingual content contract with admin AAL2, bounded values/references, public/private separation, audit evidence and revision conflict detection. Local reset, 560 DB assertions, generated types/check, 796 app + 203 tooling tests and all 12 verify gates passed on rerun. UI editor remains separate T-3.10/T-5.15. | pending |
+
+| 2026-10-18 | T-5.15 | Anti-Gravity | Implemented complete bilingual footer and policy editor: integrated ContentEditor into Admin Settings tabs (`content` tab) with direct launcher from operational limits & policies; updated Footer to dynamically reflect custom branding wordmark, tagline, copyright, custom policy navigation ordering (`footer_order`), and verified contact channels (`tel:`, WhatsApp, Instagram, TikTok) with safe URL sanitization; verified dynamic policy routes (Terms, Privacy, Returns, Shipping, Contact) rendering custom title and body with automatic plain-text HTML escaping and seamless fallback to audited static content when custom text is absent. Verified with 17 LegalPages tests, 7 ContentEditor tests, 24 settings admin tests, 25 pgTAP permissions assertions, all 12 verify gates passing (1,050 app + 203 tooling tests, initial JS bundle 199,970 / 200,000 gzip bytes). | pending |
+

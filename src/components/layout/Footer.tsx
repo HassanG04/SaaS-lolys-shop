@@ -9,6 +9,26 @@ import {
   type PolicyRoute,
 } from '../../features/settings/content'
 
+function safeExternalUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url)
+    if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+      return parsed.toString()
+    }
+  } catch {
+    // ignore malformed URLs
+  }
+  return null
+}
+
+function safeTelUrl(phone: string): string | null {
+  const sanitized = phone.replace(/[^\d+]/g, '')
+  if (sanitized.length >= 6) {
+    return `tel:${sanitized}`
+  }
+  return null
+}
+
 export function Footer() {
   const { t, lang } = useLanguage()
   const { data: settings } = usePublicSettings()
@@ -36,6 +56,30 @@ export function Footer() {
     contact: localized('contact_label', t.footer.contact),
   }
 
+  const rawPhone = (content.phone || settings?.phone || '').trim()
+  const rawWhatsapp = (content.whatsapp_url || settings?.whatsapp || '').trim()
+  const rawInstagram = (content.instagram_url || settings?.instagram || '').trim()
+  const rawTiktok = (content.tiktok_url || '').trim()
+
+  const telLink = rawPhone ? safeTelUrl(rawPhone) : null
+  const whatsappUrl = rawWhatsapp.startsWith('http')
+    ? safeExternalUrl(rawWhatsapp)
+    : rawWhatsapp
+      ? safeExternalUrl(`https://wa.me/${rawWhatsapp.replace(/\D/g, '')}`)
+      : null
+  const instagramUrl = rawInstagram.startsWith('http')
+    ? safeExternalUrl(rawInstagram)
+    : rawInstagram
+      ? safeExternalUrl(`https://instagram.com/${rawInstagram.replace(/^@/, '')}`)
+      : null
+  const tiktokUrl = rawTiktok.startsWith('http')
+    ? safeExternalUrl(rawTiktok)
+    : rawTiktok
+      ? safeExternalUrl(`https://tiktok.com/@${rawTiktok.replace(/^@/, '')}`)
+      : null
+
+  const hasContacts = Boolean(telLink || whatsappUrl || instagramUrl || tiktokUrl)
+
   return (
     <footer className="w-full border-t border-border bg-brand text-brand-contrast mt-auto">
       <div className="mx-auto max-w-(--container-layout) px-4 py-10 sm:px-6">
@@ -54,6 +98,58 @@ export function Footer() {
           <div className="w-full max-w-xs text-gold" aria-hidden="true">
             <RibbonDivider className="h-6 w-full text-gold" />
           </div>
+
+          {/* Contact Details & Channels */}
+          {hasContacts && (
+            <div
+              aria-label={lang === 'ar' ? 'بيانات وقنوات التواصل' : 'Contact channels'}
+              className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-small text-brand-contrast/90"
+            >
+              {telLink && (
+                <a
+                  href={telLink}
+                  dir="ltr"
+                  className="transition-opacity hover:opacity-80 inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-chip px-2 py-1"
+                >
+                  <span aria-hidden="true">📞</span>
+                  <span>{rawPhone}</span>
+                </a>
+              )}
+              {whatsappUrl && (
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-opacity hover:opacity-80 inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-chip px-2 py-1"
+                >
+                  <span aria-hidden="true">💬</span>
+                  <span>{lang === 'ar' ? 'واتساب' : 'WhatsApp'}</span>
+                </a>
+              )}
+              {instagramUrl && (
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-opacity hover:opacity-80 inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-chip px-2 py-1"
+                >
+                  <span aria-hidden="true">📸</span>
+                  <span>{lang === 'ar' ? 'إنستغرام' : 'Instagram'}</span>
+                </a>
+              )}
+              {tiktokUrl && (
+                <a
+                  href={tiktokUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-opacity hover:opacity-80 inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-chip px-2 py-1"
+                >
+                  <span aria-hidden="true">🎵</span>
+                  <span>{lang === 'ar' ? 'تيك توك' : 'TikTok'}</span>
+                </a>
+              )}
+            </div>
+          )}
 
           {/* Policy Navigation Links */}
           <nav
