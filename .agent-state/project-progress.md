@@ -11,11 +11,14 @@ Completed:
   backed by `useQuery`. Without `QueryClientProvider`, the language change test threw
   `No QueryClient set, use QueryClientProvider to set one`. All 27 tests in `seo.test.tsx` now pass.
 
-- `e2e/security/security.spec.ts` (test 2): Fixed assertion string mismatch for the password
-  reset success notice. The test expected `/إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة/`,
-  whereas the actual copy configured in `ar.json` under `checkResetEmailDesc` is
-  `ستصلك رسالة تحتوي على رابط إعادة التعيين خلال دقائق.`. Updated regex to
-  `/ستصلك رسالة تحتوي على رابط إعادة التعيين/` on both known and unknown email assertions.
+- `e2e/security/security.spec.ts` (test 2):
+  - Fixed assertion string mismatch for the password reset success notice. The test expected
+    `/إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة/`, whereas the actual copy configured
+    in `ar.json` under `checkResetEmailDesc` is `ستصلك رسالة تحتوي على رابط إعادة التعيين خلال دقائق.`.
+    Updated regex to `/ستصلك رسالة تحتوي على رابط إعادة التعيين/` on both known and unknown email assertions.
+  - In Part B (registration neutrality), added `#confirm-password-input` fill and `waitForLoadState('networkidle')`
+    plus 500ms wait for Turnstile on both registration attempts. The form requires `confirmPassword`; without it,
+    client validation stopped submission with `AUTH-001` before reaching the success screen.
 
 - `npm run format:check` and `node scripts/check-tokens.mjs` pass cleanly.
 

@@ -174,10 +174,15 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     // Part B: Registration Neutrality
     // Attempt registration with already existing email
     await page.goto('/register')
+    await page.waitForLoadState('networkidle')
     await page.locator('#name-input').fill('مستخدم مكرر')
     await page.locator('#email-input').fill('customer@example.com')
     await page.locator('#password-input').fill('Password123!')
-    await page.waitForTimeout(200)
+    await page.locator('#confirm-password-input').fill('Password123!')
+    await page
+      .getByRole('button', { name: 'إنشاء حساب' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.waitForTimeout(500)
     await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
@@ -187,10 +192,16 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
     // New unique registration
     await page.goto('/register')
+    await page.waitForLoadState('networkidle')
     const uniqueEmail = `sec-reg-${Date.now()}@example.com`
     await page.locator('#name-input').fill('مستخدم جديد')
     await page.locator('#email-input').fill(uniqueEmail)
     await page.locator('#password-input').fill('Password123!')
+    await page.locator('#confirm-password-input').fill('Password123!')
+    await page
+      .getByRole('button', { name: 'إنشاء حساب' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.waitForTimeout(500)
     await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
