@@ -16,9 +16,12 @@ Completed:
     - Strict null safety: Eliminated all `@typescript-eslint/no-non-null-assertion` forbidden `!` assertions by narrowing with explicit type guards (`if (!victimOrder) throw ...`), complying with hard rules and ESLint.
 - `e2e/accessibility.spec.ts` (test 10):
   - Added `await page.locator('body').focus()` before `page.keyboard.press('Tab')` on root navigation to guarantee initial focus starts at document root, eliminating skip-link focus flakiness.
+- `public/_headers`, `scripts/headers.test.mjs`, `docs/security-review.md`:
+  - Added the exact SHA256 cryptographic hash (`sha256-3v1Ny89yYS/wl3pEhvsNIZEoEF/qE2D17nlhkbuJF0Q=`) for `<script id="motion-init">` in `index.html` to the Content-Security-Policy `script-src` directive. Previously, the absence of this hash caused the browser to block `motion-init` on all pages, producing 7 CSP violations in `e2e/security/security.spec.ts` (Test 9).
+  - Updated `scripts/headers.test.mjs` to automatically verify both inline script hashes against `index.html`.
 - Formatting, tokens, lint, and typecheck verified cleanly.
 
-Files changed: `e2e/security/security.spec.ts`, `e2e/accessibility.spec.ts`, `.agent-state/project-progress.md`.
+Files changed: `e2e/security/security.spec.ts`, `e2e/accessibility.spec.ts`, `public/_headers`, `scripts/headers.test.mjs`, `docs/security-review.md`, `.agent-state/project-progress.md`.
 
 Tests executed:
 
