@@ -272,6 +272,7 @@ test.describe.serial('Axe Accessibility Audit Suite (T-7.02)', () => {
   test('10. Keyboard-Only Navigation and Modal Walkthrough', async ({ page }) => {
     // 1. Skip link navigation
     await page.goto('/')
+    await page.locator('body').focus()
     await page.keyboard.press('Tab')
     const skipLink = page.getByRole('link', { name: 'تخطي إلى المحتوى الرئيسي' })
     await expect(skipLink).toBeFocused()
