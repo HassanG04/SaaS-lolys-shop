@@ -155,9 +155,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,
     })
-    await expect(
-      page.getByText(/إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة/),
-    ).toBeVisible()
+    await expect(page.getByText(/ستصلك رسالة تحتوي على رابط إعادة التعيين/)).toBeVisible()
 
     // Unknown email
     await page.goto('/reset-password')
@@ -171,9 +169,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,
     })
-    await expect(
-      page.getByText(/إذا كان البريد الإلكتروني مسجلًا لدينا، فستصلك رسالة/),
-    ).toBeVisible()
+    await expect(page.getByText(/ستصلك رسالة تحتوي على رابط إعادة التعيين/)).toBeVisible()
 
     // Part B: Registration Neutrality
     // Attempt registration with already existing email

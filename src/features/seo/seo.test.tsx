@@ -1,10 +1,26 @@
 import { render, screen, act } from '@testing-library/react'
 import { describe, it, expect, beforeEach } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { LanguageProvider, useLanguage } from '../../i18n/LanguageProvider'
 import { ThemeProvider } from '../../components/ui/ThemeProvider'
 import { useSeo, formatDocumentTitle, BRAND_NAME } from './index'
 import { Layout } from '../../components/layout/Layout'
+
+function renderWithProviders(ui: React.ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
+  })
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <LanguageProvider>{ui}</LanguageProvider>
+      </ThemeProvider>
+    </QueryClientProvider>,
+  )
+}
 
 function TestSeoConsumer({
   title,
@@ -138,14 +154,10 @@ describe('SEO Hook and Route Metadata (T-3.08)', () => {
 
   routesToTest.forEach(({ path: testPath, expectedTitle }) => {
     it(`changes title for route: ${testPath}`, () => {
-      render(
-        <ThemeProvider>
-          <LanguageProvider>
-            <MemoryRouter initialEntries={[testPath]}>
-              <Layout />
-            </MemoryRouter>
-          </LanguageProvider>
-        </ThemeProvider>,
+      renderWithProviders(
+        <MemoryRouter initialEntries={[testPath]}>
+          <Layout />
+        </MemoryRouter>,
       )
 
       expect(document.title).toBe(expectedTitle)
@@ -153,15 +165,11 @@ describe('SEO Hook and Route Metadata (T-3.08)', () => {
   })
 
   it('updates title and meta locale when language changes', async () => {
-    render(
-      <ThemeProvider>
-        <LanguageProvider>
-          <MemoryRouter initialEntries={['/about']}>
-            <Layout />
-            <TestLanguageSwitch />
-          </MemoryRouter>
-        </LanguageProvider>
-      </ThemeProvider>,
+    renderWithProviders(
+      <MemoryRouter initialEntries={['/about']}>
+        <Layout />
+        <TestLanguageSwitch />
+      </MemoryRouter>,
     )
 
     expect(document.title).toBe(`عن المتجر | ${BRAND_NAME}`)
