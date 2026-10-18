@@ -14,6 +14,16 @@ import { DashboardPage } from './DashboardPage'
 import * as hooks from './hooks'
 import type { DashboardData } from './types'
 
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        or: () => ({ order: () => ({ limit: async () => ({ data: [], error: null }) }) }),
+      }),
+    }),
+  },
+}))
+
 const fixtureData: DashboardData = {
   range: {
     from: '2026-09-12',
@@ -287,7 +297,7 @@ describe('Dashboard UI components (T-6.02)', () => {
       expect(refetchMock).toHaveBeenCalled()
     })
 
-    it('renders full dashboard content when data is loaded', () => {
+    it('renders full dashboard content when data is loaded', async () => {
       vi.spyOn(hooks, 'useAdminDashboard').mockReturnValue({
         data: fixtureData,
         isLoading: false,
@@ -308,6 +318,8 @@ describe('Dashboard UI components (T-6.02)', () => {
       expect(screen.getByText('حالات الطلبات')).toBeInTheDocument()
       expect(screen.getByText('المنتجات الأكثر مبيعاً')).toBeInTheDocument()
       expect(screen.getByText('تنبيهات المخزون المنخفض')).toBeInTheDocument()
+      expect(await screen.findByRole('region', { name: 'المبيعات اليومية' })).toBeInTheDocument()
+      expect(await screen.findByText('لا توجد عمليات حساسة مسجلة مؤخرًا')).toBeInTheDocument()
     })
   })
 })

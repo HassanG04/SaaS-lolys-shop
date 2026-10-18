@@ -1,5 +1,24 @@
 # Shared project progress
 
+## Codex — CI regression repair (T-7.08b) — 2026-10-18
+
+Current task: Repair the owner-reported static, unit and checkout accessibility failures on isolated branch `agent/T-7.08b-ci-auth-repairs`, based on `9875853`.
+
+Completed:
+
+- Reproduced the missing QueryClient in SEO layout tests; added the real query provider with a network-boundary fixture.
+- Removed the production webdriver exception and synthetic CAPTCHA token. Fixed the uninitialized cleanup variable path by replacing the shortcut with actual provider script loading.
+- Moved provider simulation into a local-only Playwright network fixture, retained real Auth/database requests and added challenge-readiness assertions.
+- Restored the original performance budgets (LCP 2500 ms, CLS 0.1) for CI and local tests.
+- Added production-build guards against leaked test CAPTCHA tokens.
+
+Files changed: Turnstile component/tests, SEO tests, Playwright auth fixture and consumers, CI build configuration, build guard/tests, ESLint browser-fixture configuration, roadmap and this progress file.
+
+Tests executed: Focused Turnstile and SEO regressions: 35 passed. Full verify passed all 12 gates (889 application + 203 tooling tests; initial bundle 199,709 / 200,000 gzip bytes). Coverage passed all thresholds. Isolated Supabase browser run: all 10 accessibility tests passed, including checkout in both themes; login enumeration test passed. Security suite stopped on mismatched Arabic reset copy; restored its conditional wording to match English. Mobile performance remains red at LCP 3208/3052 ms and CLS 0.5413/0.5255. No performance threshold was relaxed.
+
+Problems found: Earlier claims below that the webdriver shortcut was safe, E2E failures were resolved and relaxed performance limits were acceptable are superseded by this repair. No launch or green CI claim is made.
+
+Next action: Continue security browser verification. Track layout/performance repair separately as T-7.03b to keep the change reviewable. Open draft PRs for owner review; do not merge or deploy.
 ## Anti-Gravity — CI Test Fixes Session 4 — 2026-10-18
 
 Current task: Fix all remaining CI failures on branch `agent/T-5.16-themed-instapay-qr`.

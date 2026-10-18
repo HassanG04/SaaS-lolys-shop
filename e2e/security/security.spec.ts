@@ -1,4 +1,4 @@
-import { test, expect, type Page, type Response } from '@playwright/test'
+import { test, expect, waitForCaptcha, type Page, type Response } from '../helpers/turnstile'
 import fs from 'node:fs'
 import path from 'node:path'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
@@ -42,10 +42,7 @@ async function loginUser(page: Page, email: string, password = 'Password123!') {
   await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill(email)
   await page.locator('#password-input').fill(password)
-  await page
-    .getByRole('button', { name: 'تسجيل الدخول' })
-    .waitFor({ state: 'visible', timeout: 5000 })
-  await page.waitForTimeout(500)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 }
@@ -55,10 +52,7 @@ async function loginAdmin(page: Page) {
   await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill('admin@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page
-    .getByRole('button', { name: 'تسجيل الدخول' })
-    .waitFor({ state: 'visible', timeout: 5000 })
-  await page.waitForTimeout(500)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
@@ -125,6 +119,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
       await page.locator('#email-input').fill('unknown-nonexistent-user@example.com')
       await page.locator('#password-input').fill('Password123!')
+      await waitForCaptcha(page)
       await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
 
       await expect(page.getByText('AUTH-001')).toBeVisible({ timeout: 10000 })
@@ -146,6 +141,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
       await page.locator('#email-input').fill('customer@example.com')
       await page.locator('#password-input').fill('WrongPassword999!')
+      await waitForCaptcha(page)
       await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
 
       await expect(page.getByText('AUTH-001')).toBeVisible({ timeout: 10000 })
@@ -173,12 +169,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
     // Known email
     await page.locator('#email-input').fill('customer@example.com')
-    await page
-      .getByRole('button', { name: 'إرسال رابط إعادة التعيين' })
-      .waitFor({ state: 'visible', timeout: 5000 })
-    // Allow 800ms for the Turnstile useEffect to fire in webdriver mode and React
-    // state to flush (captcha.token must be set before handleSubmit checks it).
-    await page.waitForTimeout(800)
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,
@@ -189,10 +180,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await page.goto('/reset-password')
     await page.waitForLoadState('networkidle')
     await page.locator('#email-input').fill('unknown-reset-target@example.com')
-    await page
-      .getByRole('button', { name: 'إرسال رابط إعادة التعيين' })
-      .waitFor({ state: 'visible', timeout: 5000 })
-    await page.waitForTimeout(800)
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,
@@ -207,10 +195,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await page.locator('#email-input').fill('customer@example.com')
     await page.locator('#password-input').fill('Password123!')
     await page.locator('#confirm-password-input').fill('Password123!')
-    await page
-      .getByRole('button', { name: 'إنشاء حساب' })
-      .waitFor({ state: 'visible', timeout: 5000 })
-    await page.waitForTimeout(500)
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
@@ -226,10 +211,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await page.locator('#email-input').fill(uniqueEmail)
     await page.locator('#password-input').fill('Password123!')
     await page.locator('#confirm-password-input').fill('Password123!')
-    await page
-      .getByRole('button', { name: 'إنشاء حساب' })
-      .waitFor({ state: 'visible', timeout: 5000 })
-    await page.waitForTimeout(500)
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'إنشاء حساب' }).click()
 
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
@@ -245,6 +227,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await page.goto('/login')
     await page.locator('#email-input').fill('admin@example.com')
     await page.locator('#password-input').fill('Password123!')
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
     await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
@@ -453,6 +436,7 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     await page.goto('/login')
     await page.locator('#email-input').fill('admin@example.com')
     await page.locator('#password-input').fill('Password123!')
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
     await page.waitForTimeout(500)
 

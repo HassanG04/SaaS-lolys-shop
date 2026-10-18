@@ -1065,6 +1065,18 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** the suite passes in CI.
 - **Verify:** `npm run test:e2e -- e2e/security`
 
+#### T-7.08b: CI authentication and verification regression repair
+`status: doing` `owner: agent` `needs: T-7.08` `size: M`
+- **Do:** Repair owner-reported formatting, SEO provider and checkout accessibility failures. Remove production webdriver CAPTCHA shortcuts, load the actual provider script, isolate widget simulation in Playwright, and restore the original performance limits. Preserve SEC-05/06/07/18 and real local Auth/DB requests.
+- **Done when:** Unit coverage, verify and the affected E2E suites pass with no skipped assertions or relaxed gates; PR CI evidence is recorded.
+- **Verify:** `npm run verify`; `npm run test:unit:coverage`; `npm run test:e2e`.
+
+#### T-7.03b: Restore mobile loading performance
+`status: todo` `owner: agent` `needs: T-7.03` `size: M`
+- **Do:** Repair the mobile loading waterfall and layout shifts exposed after restoring the original performance checks during T-7.08b. Keep navigation animations, brand typography, the 200 kB initial JS budget and existing LCP/CLS thresholds.
+- **Done when:** Home and category pass LCP <= 2500 ms and CLS <= 0.1 under the existing mobile throttle; accessibility and verify pass.
+- **Verify:** `npm run test:e2e -- e2e/performance.spec.ts`; `npm run verify`.
+
 #### T-7.09: Claude Security scans
 `status: todo` `owner: human` `needs: T-7.04, T-7.08` `size: M`
 - **Do:** In Claude Code, open the repository and run the Claude Security skill: **Scan codebase** at medium effort. Triage every finding into a GitHub issue (fix, accept with a reason, or false positive) and re-scan after fixes. From then on run **Scan changes** on every PR that touches a security-sensitive path. Keep the `CLAUDE-SECURITY-*/` report folders out of git and out of public repositories. The scan complements SAST, dependency scanning and review; it does not replace them.

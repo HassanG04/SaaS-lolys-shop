@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, waitForCaptcha, type Page } from './helpers/turnstile'
 import path from 'node:path'
 import { generateTotp } from './helpers/totp'
 import { queryDb, getProductStock, getAdminTotpSecret, getSupabaseStatus } from './helpers/db'
@@ -13,11 +13,7 @@ async function loginAdmin(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('admin@example.com')
   await page.locator('#password-input').fill('Password123!')
-  // Wait for the Turnstile token to propagate into React state (button becomes enabled)
-  await page
-    .getByRole('button', { name: 'تسجيل الدخول' })
-    .waitFor({ state: 'visible', timeout: 5000 })
-  await page.waitForTimeout(300)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
@@ -37,11 +33,7 @@ async function loginCustomer(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('customer@example.com')
   await page.locator('#password-input').fill('Password123!')
-  // Wait for the Turnstile token to propagate into React state (button becomes enabled)
-  await page
-    .getByRole('button', { name: 'تسجيل الدخول' })
-    .waitFor({ state: 'visible', timeout: 5000 })
-  await page.waitForTimeout(300)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 }
@@ -68,7 +60,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await page.goto('/login')
     await page.locator('#email-input').fill('admin@example.com')
     await page.locator('#password-input').fill('Password123!')
-    await page.waitForTimeout(200)
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
     await page.waitForTimeout(1000)
 
@@ -99,7 +91,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await page.goto('/login')
     await page.locator('#email-input').fill('admin@example.com')
     await page.locator('#password-input').fill('Password123!')
-    await page.waitForTimeout(200)
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
     await page.waitForTimeout(1000)
 
@@ -121,8 +113,10 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await expect(page.locator('h1')).toContainText('لوحة تحكم')
   })
 
-  test('2. Non-admin users are blocked from admin panel with AUTH-011', async ({ browser }) => {
-    const customerContext = await browser.newContext()
+  test('2. Non-admin users are blocked from admin panel with AUTH-011', async ({
+    newAuthContext,
+  }) => {
+    const customerContext = await newAuthContext()
     const customerPage = await customerContext.newPage()
 
     // Login normal customer
@@ -251,7 +245,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
   test('5. Product archiving, restoration, and category deletion constraints', async ({
     page,
-    browser,
+    newAuthContext,
   }) => {
     await loginAdmin(page)
 
@@ -263,7 +257,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await expect(page.getByRole('button', { name: 'استعادة المنتج' })).toBeVisible()
 
     // Verify customer cannot see archived product on category storefront
-    const custContext = await browser.newContext()
+    const custContext = await newAuthContext()
     const custPage = await custContext.newPage()
     await custPage.goto(`/category/${createdCategorySlug}`)
     await expect(custPage.getByText('سوار اللؤلؤ الفضي التجريبي')).not.toBeVisible()
@@ -340,10 +334,10 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
   test('6. Order fulfillment lifecycle and tracking visible to customer', async ({
     page,
-    browser,
+    newAuthContext,
   }) => {
     // Step A: Customer places COD order for product 2
-    const customerContext = await browser.newContext()
+    const customerContext = await newAuthContext()
     const custPage = await customerContext.newPage()
     custPage.on('pageerror', (err) => console.log(`[CUST BROWSER ERROR] ${err.message}`))
     custPage.on('response', async (res) => {
@@ -413,10 +407,10 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
   test('7. InstaPay order approval, payment review, proof re-upload and shipping guard', async ({
     page,
-    browser,
+    newAuthContext,
   }) => {
     // Step A: Customer creates InstaPay order (awaiting approval)
-    const custContext = await browser.newContext()
+    const custContext = await newAuthContext()
     const custPage = await custContext.newPage()
     custPage.on('pageerror', (err) => console.log(`[CUST BROWSER ERROR] ${err.message}`))
     custPage.on('response', async (res) => {

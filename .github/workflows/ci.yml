@@ -182,7 +182,8 @@ jobs:
         env:
           VITE_SUPABASE_URL: http://127.0.0.1:56321
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
-          VITE_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+          # E2E intercepts only the widget script; this is not a usable production key.
+          VITE_TURNSTILE_SITE_KEY: e2e-provider-site-key
       - name: Run E2E test suite
         run: npm run test:e2e
       - name: Teardown local Supabase stack

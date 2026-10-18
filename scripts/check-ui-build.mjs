@@ -3,6 +3,8 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 const markers = [
+  'test-turnstile-token',
+  'e2e-turnstile-',
   '__kit',
   'KitPage',
   'card-placeholder',
