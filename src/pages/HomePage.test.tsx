@@ -352,4 +352,99 @@ describe('HomePage (T-3.03)', () => {
     const caption = container.querySelector('.storefront-caption')
     expect(caption).toBeInTheDocument()
   })
+
+  it('falls back to automatic bestseller when featured_product_id is null or unconfigured', () => {
+    // 1. Explicitly configured product (e.g. 102)
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        storefront_content: { featured_product_id: 102 },
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    vi.spyOn(catalogHooks, 'useProduct').mockReturnValue({
+      data: mockProducts[1],
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof catalogHooks.useProduct>)
+
+    const { rerender } = renderWithProviders('ar')
+    // Product 102 rendered in featured card (and in browse grid)
+    expect(screen.getAllByText('سلسلة فضية').length).toBeGreaterThanOrEqual(2)
+
+    // 2. Switched back to Automatic bestseller (featured_product_id: null)
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        storefront_content: { featured_product_id: null },
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    vi.spyOn(catalogHooks, 'useProduct').mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof catalogHooks.useProduct>)
+
+    rerender(
+      <QueryClientProvider
+        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      >
+        <MemoryRouter>
+          <LanguageProvider initialLanguage="ar">
+            <HomePage />
+          </LanguageProvider>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    // Falls back to bestSellers[0] (mockProducts[0]: 'أقراط ذهبية')
+    expect(screen.getAllByText('أقراط ذهبية').length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('distinguishes explicitly saved empty category_ids array from unconfigured categories', () => {
+    // 1. Explicitly saved empty array: quick navigation shows zero categories
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        storefront_content: { category_ids: [] },
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    const { rerender } = renderWithProviders('ar')
+    const quickNav = screen.getByRole('navigation', { name: 'Categories quick links' })
+    expect(within(quickNav).getByText('جميع الأقسام')).toBeInTheDocument()
+    // Should NOT contain any category buttons
+    expect(within(quickNav).queryByText('أقراط')).not.toBeInTheDocument()
+    expect(within(quickNav).queryByText('سلاسل')).not.toBeInTheDocument()
+
+    // 2. Unconfigured (category_ids is undefined): defaults to all categories
+    vi.spyOn(settingsHooks, 'usePublicSettings').mockReturnValue({
+      data: {
+        storefront_content: {},
+      },
+      isLoading: false,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    rerender(
+      <QueryClientProvider
+        client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      >
+        <MemoryRouter>
+          <LanguageProvider initialLanguage="ar">
+            <HomePage />
+          </LanguageProvider>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    const updatedQuickNav = screen.getByRole('navigation', { name: 'Categories quick links' })
+    expect(within(updatedQuickNav).getByText('جميع الأقسام')).toBeInTheDocument()
+    expect(within(updatedQuickNav).getByText('أقراط')).toBeInTheDocument()
+    expect(within(updatedQuickNav).getByText('سلاسل')).toBeInTheDocument()
+  })
 })

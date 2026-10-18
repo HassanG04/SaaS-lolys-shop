@@ -24,6 +24,7 @@ import { SectionReveal } from '@/components/ui/SectionReveal'
 import { isMotionReduced } from '@/lib/motion'
 
 const ContentEditorLauncher = lazy(() => import('@/features/admin/settings/ContentEditorLauncher'))
+const AnnouncementBar = lazy(() => import('@/components/layout/AnnouncementBar'))
 
 export default function HomePage() {
   const auth = useContext(AuthContext)
@@ -100,20 +101,17 @@ export default function HomePage() {
 
   const quickCategories = useMemo(() => {
     const configuredIds = storefrontContent.category_ids
-    if (!configuredIds?.length) return categories
+    if (!Array.isArray(configuredIds)) return categories
     const byId = new Map(categories.map((category) => [category.id, category]))
     return configuredIds
       .map((id) => byId.get(id))
       .filter((category): category is (typeof categories)[number] => Boolean(category))
   }, [categories, storefrontContent.category_ids])
 
-  const featuredProduct =
-    storefrontContent.featured_product_id === null
-      ? null
-      : (selectedFeaturedProduct ?? bestSellers[0])
+  const featuredProduct = selectedFeaturedProduct ?? bestSellers[0] ?? null
   const featuredLoading =
-    isBestSellersLoading ||
-    (storefrontContent.featured_product_id !== undefined && isFeaturedProductLoading)
+    Boolean(storefrontContent.featured_product_id && isFeaturedProductLoading) ||
+    (!storefrontContent.featured_product_id && isBestSellersLoading)
 
   const handleCategorySelect = (slug: string, isKeyboard = false) => {
     setSelectedCategory(slug)
@@ -147,6 +145,9 @@ export default function HomePage() {
 
   return (
     <div className="space-y-16 pb-16">
+      <Suspense fallback={null}>
+        <AnnouncementBar />
+      </Suspense>
       {auth?.profile?.role === 'admin' && (
         <Suspense fallback={null}>
           <ContentEditorLauncher />

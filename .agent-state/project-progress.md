@@ -1,5 +1,30 @@
 # Shared project progress
 
+## Anti-Gravity — Storefront Content Consumer Repairs (T-3.10e) — 2026-10-18
+
+Current task: T-3.10e (Publish storefront content to customer routes) completed and verified on `agent/T-3.10e-published-content-repairs`. Next task: determined by `npm run roadmap:next`.
+
+Completed:
+
+- Storefront Content Consumer Defects Resolved:
+  - Automatic Bestseller Fallback: Restored `selectedFeaturedProduct ?? bestSellers[0] ?? null` and `isFeaturedProductLoading || (!storefrontContent.featured_product_id && isBestSellersLoading)` in `HomePage.tsx` so resetting the editor's featured product selection to automatic bestseller restores the bestseller card with live stock and prices rather than hiding it.
+  - Empty Category Shortcuts Selection: Updated `HomePage.tsx` to distinguish explicitly saved empty category shortcuts (`category_ids: []`) from unconfigured defaults (`undefined`) via `Array.isArray(configuredIds)`, respecting an explicit decision to hide quick category buttons without affecting the main category tiles or browse catalogue.
+  - Policy Titles & Headings: Exported `usePublishedPolicyTitle` and `PublishedPolicyTitle` (`PublishedPolicy.Title`) in `src/features/settings/PublishedPolicy.tsx` with context-backed title resolution. Updated all 5 customer policy routes (`TermsPage`, `PrivacyPage`, `ReturnsPage`, `ShippingPage`, `ContactPage`) to mount `<PublishedPolicyTitle fallback={c.title} />` in their `<h1>`, ensuring custom title edits immediately reflect on visible static headings even when policy body has no custom override, while retaining audited static fallbacks during loading and query error states.
+  - Storefront Announcement Bar: Created `src/components/layout/AnnouncementBar.tsx` consuming bilingual `storefront_content.announcement_ar`/`en` and fallback `settings.announcement_ar`. Mounted in `HomePage.tsx` with token-compliant styling (`bg-brand text-brand-contrast`, `shadow-card`, RibbonBow ornament), accessible ARIA region landmarks (`role="region"`), and `QueryClientContext` guard for headless/isolated test runners.
+  - Bundle Size Optimization: Preserved strict initial JavaScript budget constraint (199,985 / 200,000 gzip bytes across 3 initial chunks, 15 bytes headroom) by lazy-loading `AnnouncementBar` inside the async `HomePage.tsx` route chunk and streamlining SVG markup in `Navbar.tsx`.
+- Test Coverage & Verification:
+  - `src/components/layout/AnnouncementBar.test.tsx`: 4 unit tests verifying settings fallback, bilingual storefront content priority, language switching, and missing QueryClient safety.
+  - `src/features/settings/PublishedPolicy.test.tsx`: 4 unit tests verifying custom body, custom title without custom body, and loading/error states.
+  - `src/pages/HomePage.test.tsx`: 11 unit tests verifying automatic bestseller card fallback and empty `category_ids` array handling.
+  - All 12 quality gates passed via `npm run verify` (1,062 unit & tooling tests, 0 failures, 199,985 / 200,000 gzip bytes).
+  - Roadmap status updated: `T-3.10e: done` with verification logged in Appendix G.
+
+Files changed: `roadmap.md`, `.agent-state/project-progress.md`, `src/pages/HomePage.tsx`, `src/pages/HomePage.test.tsx`, `src/components/layout/Navbar.tsx`, `src/components/layout/AnnouncementBar.tsx`, `src/components/layout/AnnouncementBar.test.tsx`, `src/features/settings/PublishedPolicy.tsx`, `src/features/settings/PublishedPolicy.test.tsx`, `src/pages/TermsPage.tsx`, `src/pages/PrivacyPage.tsx`, `src/pages/ReturnsPage.tsx`, `src/pages/ShippingPage.tsx`, `src/pages/ContactPage.tsx`.
+
+Problems found: None.
+
+Next action: Commit changes on branch `agent/T-3.10e-published-content-repairs`, push to origin, and check `npm run roadmap:next`.
+
 ## Anti-Gravity — Upcoming Occasion Reminders for Admins (T-9.14) — 2026-10-18
 
 Current task: T-9.14 (Upcoming occasion reminders for admins) completed and verified on `agent/T-9.14-occasion-reminders`. Next task: determined by `npm run roadmap:next`.

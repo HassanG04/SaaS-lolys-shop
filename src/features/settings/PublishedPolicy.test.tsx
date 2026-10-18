@@ -65,4 +65,63 @@ describe('PublishedPolicy', () => {
     expect(screen.getByText('نص عربي منشور')).toBeInTheDocument()
     expect(screen.queryByText('Owner copy')).not.toBeInTheDocument()
   })
+
+  it('renders published label dynamically in static heading when custom body is empty', () => {
+    vi.mocked(settingsHooks.usePublicSettings).mockReturnValue({
+      data: {
+        storefront_content: {
+          terms_label_ar: 'شروط الاستخدام الرسمية المحدثة',
+          terms_body_ar: '',
+        },
+      },
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    render(
+      <MemoryRouter>
+        <LanguageProvider initialLanguage="ar">
+          <PublishedPolicy route="terms" title="الشروط والأحكام" description="افتراضي">
+            <article>
+              <h1 aria-label="policy-heading">
+                <PublishedPolicy.Title fallback="الشروط والأحكام" />
+              </h1>
+              <p>محتوى الشروط الافتراضي الثابت</p>
+            </article>
+          </PublishedPolicy>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('شروط الاستخدام الرسمية المحدثة')).toBeInTheDocument()
+    expect(screen.getByText('محتوى الشروط الافتراضي الثابت')).toBeInTheDocument()
+  })
+
+  it('gracefully renders static fallback when settings are loading or failed', () => {
+    // Loading state
+    vi.mocked(settingsHooks.usePublicSettings).mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: null,
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    const { rerender } = renderPolicy('ar')
+    expect(screen.getByText('Audited fallback')).toBeInTheDocument()
+
+    // Error state
+    vi.mocked(settingsHooks.usePublicSettings).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: new Error('Network error'),
+    } as unknown as ReturnType<typeof settingsHooks.usePublicSettings>)
+
+    rerender(
+      <MemoryRouter>
+        <LanguageProvider initialLanguage="ar">
+          <PublishedPolicy route="terms" title="الشروط" description="افتراضي">
+            <article>Audited fallback after error</article>
+          </PublishedPolicy>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+    expect(screen.getByText('Audited fallback after error')).toBeInTheDocument()
+  })
 })

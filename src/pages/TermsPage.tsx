@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { RibbonBow } from '../components/ui/ornaments'
 import { useLanguage } from '../i18n/LanguageProvider'
-import { PublishedPolicy } from '../features/settings/PublishedPolicy'
+import { PublishedPolicy, PublishedPolicyTitle } from '../features/settings/PublishedPolicy'
 
 const content = {
   ar: {
@@ -103,7 +103,9 @@ export default function TermsPage() {
           <header className="space-y-3 border-b border-border pb-6">
             <div className="flex items-center gap-3">
               <RibbonBow className="size-8 text-brand" />
-              <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
+              <h1 className="text-h1 font-bold font-accent text-brand">
+                <PublishedPolicyTitle fallback={c.title} />
+              </h1>
             </div>
             <p className="text-caption text-text-muted">{c.intro}</p>
           </header>

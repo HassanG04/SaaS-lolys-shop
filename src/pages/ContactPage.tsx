@@ -1,7 +1,7 @@
 import { RibbonBow } from '../components/ui/ornaments'
 import { Ltr } from '../components/ui/Ltr'
 import { useLanguage } from '../i18n/LanguageProvider'
-import { PublishedPolicy } from '../features/settings/PublishedPolicy'
+import { PublishedPolicy, PublishedPolicyTitle } from '../features/settings/PublishedPolicy'
 
 const content = {
   ar: {
@@ -84,7 +84,9 @@ export default function ContactPage() {
           <header className="space-y-3 border-b border-border pb-6 text-center sm:text-start">
             <div className="flex items-center justify-center sm:justify-start gap-3">
               <RibbonBow className="size-8 text-brand" />
-              <h1 className="text-h1 font-bold font-accent text-brand">{c.title}</h1>
+              <h1 className="text-h1 font-bold font-accent text-brand">
+                <PublishedPolicyTitle fallback={c.title} />
+              </h1>
             </div>
             <p className="text-body text-text-muted leading-relaxed">{c.intro}</p>
           </header>

@@ -18,6 +18,19 @@ const pill =
 const iconBtn =
   'flex size-11 items-center justify-center rounded-pill hover:border-brand focus:ring-2'
 
+const Svg = ({ d, className }: { d: string; className: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    aria-hidden="true"
+  >
+    <path d={d} />
+  </svg>
+)
+
 export function Navbar({ cartCount }: { cartCount?: number } = {}) {
   const { t } = useLanguage()
   const cart = useCart()
@@ -41,7 +54,7 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
               alt=""
               aria-hidden="true"
               className="size-full object-cover"
-              onError={(e) => (e.currentTarget.style.display = 'none')}
+              onError={(e) => (e.currentTarget.hidden = true)}
             />
           </div>
           <div className="hidden sm:flex flex-col">
@@ -70,16 +83,10 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
             className={`ui-control flex justify-center gap-2 ${pill}`}
             aria-label={`${t.nav.cart} (${displayCartCount})`}
           >
-            <svg
+            <Svg
               className="hidden sm:block size-5 text-brand"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden="true"
-            >
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0" />
-            </svg>
+              d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0"
+            />
             <span key={displayCartCount} className="font-bold text-brand cart-badge-pop">
               {displayCartCount}
             </span>
@@ -112,16 +119,10 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
               className={`ui-control flex gap-1.5 ${pill} border-brand/40 bg-brand/10 text-brand font-semibold shrink-0`}
               aria-label={t.admin.dashboard}
             >
-              <svg
+              <Svg
                 className="size-5 shrink-0"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                aria-hidden="true"
-              >
-                <path d="M3 3h7v9H3zm11 0h7v5h-7zm0 9h7v9h-7zM3 16h7v5H3z" />
-              </svg>
+                d="M3 3h7v9H3zm11 0h7v5h-7zm0 9h7v9h-7zM3 16h7v5H3z"
+              />
               <span className="hidden md:inline">{t.admin.dashboard}</span>
             </Link>
           )}
