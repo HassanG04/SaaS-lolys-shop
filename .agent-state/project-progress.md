@@ -5,6 +5,7 @@
 Current task: Fix GitHub Actions CI E2E test failures and push to PR branch `agent/T-5.16-themed-instapay-qr`.
 
 Completed:
+
 - Git Tracking of Layout Fixtures (`.gitignore`):
   - Updated `.gitignore` rules to allow tracking the 10 offline layout fixtures in `.tools/layout-fixtures/*.html` while ignoring binary artifact screenshots. Resolves 12 CI failures in `responsive.spec.ts`.
 - Automated Headless Turnstile Support (`src/features/auth/Turnstile.tsx`):
