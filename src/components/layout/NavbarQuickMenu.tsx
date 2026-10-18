@@ -1,9 +1,11 @@
-import { useContext, useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef, useState, lazy, Suspense } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../i18n/LanguageProvider'
 import { AuthContext } from '../../features/auth/AuthProvider'
 import { ToastContext } from '../ui/ToastProvider'
 import { SocialMenuLinks } from './SocialMenuLinks'
+
+const SuggestionModal = lazy(() => import('../../features/suggestions/components/SuggestionModal'))
 
 interface NavbarQuickMenuProps {
   onClose: () => void
@@ -19,14 +21,17 @@ export default function NavbarQuickMenu({ onClose }: NavbarQuickMenuProps) {
   const toast = useContext(ToastContext)
   const navigate = useNavigate()
   const menuRef = useRef<HTMLDivElement>(null)
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false)
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
+      if (showSuggestionModal) return
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         onClose()
       }
     }
     const handleKey = (e: KeyboardEvent) => {
+      if (showSuggestionModal) return
       if (e.key === 'Escape') onClose()
     }
     document.addEventListener('mousedown', handleClick)
@@ -35,7 +40,7 @@ export default function NavbarQuickMenu({ onClose }: NavbarQuickMenuProps) {
       document.removeEventListener('mousedown', handleClick)
       document.removeEventListener('keydown', handleKey)
     }
-  }, [onClose])
+  }, [onClose, showSuggestionModal])
 
   const itemClass =
     'flex min-h-11 shrink-0 items-center gap-2.5 px-3 rounded-chip text-small font-medium text-text hover:bg-surface-2 hover:text-brand transition-all active:scale-[0.98]'
@@ -122,6 +127,24 @@ export default function NavbarQuickMenu({ onClose }: NavbarQuickMenuProps) {
             </svg>
             <span>{t.nav.about}</span>
           </Link>
+          <button
+            type="button"
+            onClick={() => setShowSuggestionModal(true)}
+            className={`${itemClass} w-full text-start`}
+            role="menuitem"
+          >
+            <svg
+              className="size-4 shrink-0 text-brand"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>{isAr ? 'الاقتراحات والآراء' : 'Suggestions & Feedback'}</span>
+          </button>
         </>
       ) : (
         <>
@@ -228,6 +251,41 @@ export default function NavbarQuickMenu({ onClose }: NavbarQuickMenuProps) {
             </svg>
             <span>{t.nav.about}</span>
           </Link>
+          <Link to="/account/orders" onClick={onClose} className={itemClass} role="menuitem">
+            <svg
+              className="size-4 shrink-0 text-brand"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+              <path d="M3 6h18" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            <span>{t.account.orders}</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => setShowSuggestionModal(true)}
+            className={`${itemClass} w-full text-start`}
+            role="menuitem"
+          >
+            <svg
+              className="size-4 shrink-0 text-brand"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>{isAr ? 'الاقتراحات والآراء' : 'Suggestions & Feedback'}</span>
+          </button>
+
           <button
             type="button"
             onClick={async () => {
@@ -254,11 +312,20 @@ export default function NavbarQuickMenu({ onClose }: NavbarQuickMenuProps) {
           </button>
         </>
       )}
-      {user && (
-        <Link to="/account/orders" onClick={onClose} className={itemClass} role="menuitem">
-          {t.account.orders}
-        </Link>
+
+      {/* Suggestion Modal for visitors / users */}
+      {showSuggestionModal && (
+        <Suspense fallback={null}>
+          <SuggestionModal
+            isOpen={showSuggestionModal}
+            onClose={() => {
+              setShowSuggestionModal(false)
+              onClose()
+            }}
+          />
+        </Suspense>
       )}
+
       <SocialMenuLinks onClose={onClose} />
     </div>
   )

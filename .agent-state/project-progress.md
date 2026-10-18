@@ -1,10 +1,40 @@
 # Shared project progress
 
+## Anti-Gravity — Customer Notifications, Suggestions & Wishlist Demand (T-2.10) — 2026-10-18
+
+Current task: T-2.10 (Customer notifications, suggestions, and wishlist demand reporting) completed and verified on `agent/T-2.10-customer-notifications`. Next task: T-2.11 (Customer profile photo).
+
+Completed:
+
+- Added customer notifications schema and RLS policies (`supabase/migrations/20261018140000_customer_notifications_and_suggestions.sql`):
+  - In-app notification bell with real-time subscription and unread badge count for sale alerts, order approvals, and broadcast notifications.
+  - Rate-limited customer suggestion submissions (5/hour), owner RLS, and admin review RPC (`admin_review_suggestion`).
+  - Wishlist demand reporting RPC (`admin_get_wishlist_demand`) prioritizing stock reorders and popular items.
+  - Documented retention schedule in `PrivacyPage.tsx` (90 days for notifications, 12 months for suggestions followed by anonymization).
+- Hamburger menu navigation:
+  - Accessible "My Orders" link before logout.
+  - "Suggestions & Feedback" trigger dialog available for visitors and authenticated users.
+- Admin views:
+  - Added "Wishlist Demand" tab to `ProductsPage.tsx` with dedicated `WishlistDemandTable`.
+  - Added "Customer Suggestions" tab to `CustomersPage.tsx` with `AdminSuggestionsTable` and review dialog.
+- Strict bundle size and token compliance:
+  - Feature-scoped copy modules `src/features/notifications/copy.ts` and `src/features/suggestions/copy.ts` to keep initial bundle budget intact.
+  - Zero token violations (`npm run check:tokens` clean).
+  - All 12 quality gates passed via `npm run verify` (1,020+ tests, bundle 199,963 / 200,000 gzip bytes).
+- Roadmap updated: `T-2.10: done`.
+
+Files changed: `roadmap.md`, `.agent-state/project-progress.md`, `src/components/layout/Navbar.tsx`, `src/components/layout/NavbarQuickMenu.tsx`, `src/components/layout/responsive-navigation.test.tsx`, `src/features/admin/customers/CustomersPage.tsx`, `src/features/admin/products/ProductsPage.tsx`, `src/pages/PrivacyPage.tsx`, `src/types/database.types.ts`, `src/features/admin/demand/`, `src/features/admin/suggestions/`, `src/features/notifications/`, `src/features/suggestions/`, `supabase/migrations/20261018140000_customer_notifications_and_suggestions.sql`, `supabase/tests/database/21_notifications_and_suggestions.test.sql`.
+
+Problems found: None. Initial JS bundle stays within 200k limit (199,963 gzip bytes in 3 initial chunks).
+
+Next action: Commit T-2.10, advance to T-2.11 (Customer profile photo).
+
 ## Anti-Gravity — Published Storefront Consumers and Full Verification (T-3.10e & T-3.10) — 2026-10-18
 
 Current task: T-3.10e and parent T-3.10 (Owner-controlled storefront presentation) completed and verified on `agent/T-3.10e-published-content`. Next task: T-2.10 (Customer notifications and suggestions).
 
 Completed:
+
 - Repaired `src/pages/LegalPages.test.tsx` by wrapping rendered routes with `QueryClientProvider` and mocking `usePublicSettings` in `beforeEach`, preventing unhandled async network rejects during worker teardown.
 - Formatted `src/pages/HomePage.tsx` with Prettier.
 - Full verification passed across all 12 quality gates:

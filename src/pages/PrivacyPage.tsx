@@ -54,6 +54,12 @@ const content = {
     sec4Row3Type: 'السجلات المالية والمحاسبية',
     sec4Row3Period: '5 سنوات',
     sec4Row3Purpose: 'وفقًا لأحكام القانون التجاري والضريبي المصري مع تجهيل هوية العميل عند الطلب',
+    sec4Row4Type: 'إشعارات العميل داخل التطبيق',
+    sec4Row4Period: '90 يومًا',
+    sec4Row4Purpose: 'حذف آلي دوري وتطهير فوري عند إغلاق أو حذف الحساب',
+    sec4Row5Type: 'اقتراحات وآراء العملاء',
+    sec4Row5Period: '12 شهرًا',
+    sec4Row5Purpose: 'فك الارتباط وتجهيل الهوية تلقائيًا بعد 12 شهرًا أو عند حذف الحساب',
     sec5Title: '5. حقوقك القانونية بموجب قانون حماية البيانات (قانون 151 لسنة 2020)',
     sec5Intro: 'يضمن لك القانون المصري ممارسة الحقوق التالية في أي وقت وبشكل مجاني:',
     sec5Right1Label: 'حق الاطلاع والحصول على البيانات (Access & Export):',
@@ -124,6 +130,13 @@ const content = {
     sec4Row3Period: '5 years',
     sec4Row3Purpose:
       'Required by Egyptian commercial and tax legislation, with personal identifiers anonymized upon request',
+    sec4Row4Type: 'In-App Customer Notifications',
+    sec4Row4Period: '90 days',
+    sec4Row4Purpose: 'Automatic periodic purge and immediate removal upon account closure',
+    sec4Row5Type: 'Customer Suggestions & Feedback',
+    sec4Row5Period: '12 months',
+    sec4Row5Purpose:
+      'Anonymized and disassociated from user identity after 12 months or upon account closure',
     sec5Title: '5. Your Statutory Rights (Law No. 151 of 2020)',
     sec5Intro:
       'Egyptian law guarantees your right to exercise the following at any time free of charge:',
@@ -251,6 +264,16 @@ export default function PrivacyPage() {
                     <td className="p-3 font-medium text-text">{c.sec4Row3Type}</td>
                     <td className="p-3">{c.sec4Row3Period}</td>
                     <td className="p-3">{c.sec4Row3Purpose}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-text">{c.sec4Row4Type}</td>
+                    <td className="p-3 text-brand font-semibold">{c.sec4Row4Period}</td>
+                    <td className="p-3">{c.sec4Row4Purpose}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-text">{c.sec4Row5Type}</td>
+                    <td className="p-3">{c.sec4Row5Period}</td>
+                    <td className="p-3">{c.sec4Row5Purpose}</td>
                   </tr>
                 </tbody>
               </table>

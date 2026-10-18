@@ -26,6 +26,12 @@ vi.mock('@/features/admin/AdminRoutes', () => ({
   ),
 }))
 vi.mock('@/features/admin/payments/api', () => ({ getPaymentReviewCount: async () => 0 }))
+vi.mock('@/features/notifications/api', () => ({
+  fetchCustomerNotificationsApi: async () => [],
+  markNotificationReadApi: async () => {},
+  markAllNotificationsReadApi: async () => {},
+  deleteNotificationApi: async () => {},
+}))
 
 beforeEach(() => localStorage.clear())
 

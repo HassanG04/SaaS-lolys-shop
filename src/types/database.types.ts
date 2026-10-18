@@ -51,6 +51,58 @@ export type Database = {
                   Relationships: [
 
                   ]
+                },"customer_notifications": {
+                  Row: {
+                    "created_at": string,"customer_id": string,"id": string,"is_read": boolean,"link": string | null,"message_ar": string,"message_en": string,"title_ar": string,"title_en": string,"type": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"customer_id": string,"id"?: string,"is_read"?: boolean,"link"?: string | null,"message_ar": string,"message_en": string,"title_ar": string,"title_en": string,"type": string
+                  }
+                  Update: {
+                    "created_at"?: string,"customer_id"?: string,"id"?: string,"is_read"?: boolean,"link"?: string | null,"message_ar"?: string,"message_en"?: string,"title_ar"?: string,"title_en"?: string,"type"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "customer_notifications_customer_id_fkey"
+      columns: ["customer_id"]
+isOneToOne: false
+      referencedRelation: "customer_stats"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "customer_notifications_customer_id_fkey"
+      columns: ["customer_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"customer_suggestions": {
+                  Row: {
+                    "admin_notes": string | null,"created_at": string,"customer_id": string | null,"id": string,"message": string,"reviewed_at": string | null,"status": string,"topic": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "admin_notes"?: string | null,"created_at"?: string,"customer_id"?: string | null,"id"?: string,"message": string,"reviewed_at"?: string | null,"status"?: string,"topic": string
+                  }
+                  Update: {
+                    "admin_notes"?: string | null,"created_at"?: string,"customer_id"?: string | null,"id"?: string,"message"?: string,"reviewed_at"?: string | null,"status"?: string,"topic"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "customer_suggestions_customer_id_fkey"
+      columns: ["customer_id"]
+isOneToOne: false
+      referencedRelation: "customer_stats"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "customer_suggestions_customer_id_fkey"
+      columns: ["customer_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"delivery_fees": {
                   Row: {
                     "fee": number,"governorate_id": number,"method": Database["public"]['Enums']["delivery_method"]
@@ -321,6 +373,9 @@ isOneToOne: false
 "admin_approve_order":
 { Args: { "p_note"?: string,"p_order_id": number }; Returns: undefined
                            },
+"admin_broadcast_sale_notification":
+{ Args: { "p_link"?: string,"p_message_ar": string,"p_message_en": string,"p_title_ar": string,"p_title_en": string }; Returns: number
+                           },
 "admin_dashboard":
 { Args: { "p_from"?: string,"p_to"?: string }; Returns: Json
                            },
@@ -339,11 +394,19 @@ isOneToOne: false
 "admin_get_reorder_list":
 { Args: { "p_lead_time_days"?: number,"p_service_z"?: number }; Returns: Json
                            },
+"admin_get_wishlist_demand":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "discount_percent": number,"final_price": number,"image_url": string,"is_active": boolean,"price": number,"product_id": number,"product_name": string,"product_name_ar": string,"stock_quantity": number,"wishlist_count": number
+            }[]
+                           },
 "admin_reject_order":
 { Args: { "p_order_id": number,"p_reason": string }; Returns: undefined
                            },
 "admin_review_payment":
 { Args: { "p_approve": boolean,"p_note"?: string,"p_order_id": number }; Returns: undefined
+                           },
+"admin_review_suggestion":
+{ Args: { "p_id": string,"p_notes"?: string,"p_status": string }; Returns: undefined
                            },
 "admin_update_product_id":
 { Args: { "p_new_id": number,"p_old_id": number }; Returns: undefined
@@ -389,6 +452,9 @@ isOneToOne: false
 "is_valid_extra_images":
 { Args: { "p_paths": (string)[] }; Returns: boolean
                            },
+"mark_all_notifications_read":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
 "mask_review_profanity":
 { Args: { "p_text": string }; Returns: string
                            },
@@ -402,6 +468,9 @@ isOneToOne: false
                            },
 "require_admin":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"submit_customer_suggestion":
+{ Args: { "p_message": string,"p_topic": string }; Returns: string
                            },
 "submit_payment_proof":
 { Args: { "p_order_id": number,"p_proof_path": string,"p_reference": string }; Returns: undefined

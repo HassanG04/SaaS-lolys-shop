@@ -678,7 +678,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Verify:** `npm run test:unit`
 
 #### T-2.10: Customer notifications and suggestions
-`status: todo` `owner: agent` `needs: T-4.05, T-1.23` `size: L`
+`status: done` `owner: agent` `needs: T-4.05, T-1.23` `size: L`
 - **Do:** Implement owner request in `docs/spec/owner-experience-change.md`: My Orders menu, notifications for wishlist sales/order approvals/general sales, customer suggestions and admin demand view. Split database/UI work into additive slices before implementation.
 - **Done when:** Owner-scoped RLS, rate limits, bilingual UI, safe errors, retention documentation, database and UI tests pass; no fabricated notification data.
 - **Verify:** `npm run db:reset && npm run db:test && npm run verify && npm run test:e2e`

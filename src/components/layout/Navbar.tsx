@@ -7,6 +7,9 @@ import ThemeToggle from '../ui/ThemeToggle'
 import LanguageToggle from '../ui/LanguageToggle'
 const NavbarSearch = lazy(() => import('./NavbarSearch'))
 const NavbarQuickMenu = lazy(() => import('./NavbarQuickMenu'))
+const NotificationBell = lazy(
+  () => import('../../features/notifications/components/NotificationBell'),
+)
 
 const initials = (n?: string | null, e?: string | null) => (n || e || 'U').slice(0, 2).toUpperCase()
 
@@ -95,6 +98,12 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
             >
               {initials(profile?.full_name, user.email)}
             </Link>
+          )}
+
+          {user && (
+            <Suspense fallback={null}>
+              <NotificationBell />
+            </Suspense>
           )}
 
           {!auth?.loading && user && auth?.role === 'admin' && (
