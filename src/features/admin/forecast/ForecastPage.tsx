@@ -12,6 +12,7 @@ import {
 import { ForecastBadges } from './ForecastBadges'
 import { ForecastChart } from './ForecastChart'
 import { ReorderTable } from './ReorderTable'
+import { UpcomingOccasionsView } from './UpcomingOccasionsView'
 import { useForecastI18n } from './i18n'
 import type { SeriesType } from './types'
 
@@ -299,6 +300,9 @@ export default function ForecastPage() {
           categories={categories}
         />
       )}
+
+      {/* Upcoming Occasions & Reminders Section (T-9.14) */}
+      <UpcomingOccasionsView />
     </div>
   )
 }

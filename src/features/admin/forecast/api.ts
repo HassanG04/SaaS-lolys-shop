@@ -1,10 +1,12 @@
 import { supabase } from '@/lib/supabase'
 import type {
+  AdminOccasionReminder,
   ForecastCategoryOption,
   ForecastProductOption,
   ForecastResponse,
   ReorderItem,
   SeriesType,
+  UpcomingOccasion,
 } from './types'
 
 export async function getAdminForecasts(
@@ -82,4 +84,50 @@ export async function getForecastProducts(): Promise<ForecastProductOption[]> {
     name_ar: p.name_ar ?? '',
     category_id: p.category_id,
   }))
+}
+
+export async function getUpcomingOccasions(daysAhead: number = 120): Promise<UpcomingOccasion[]> {
+  const { data, error } = await supabase.rpc('admin_get_upcoming_occasions', {
+    p_days_ahead: daysAhead,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return (Array.isArray(data) ? data : []) as unknown as UpcomingOccasion[]
+}
+
+export async function getAdminOccasionReminders(): Promise<AdminOccasionReminder[]> {
+  const { data, error } = await supabase.rpc('admin_get_occasion_reminders')
+
+  if (error) {
+    throw error
+  }
+
+  return (Array.isArray(data) ? data : []) as unknown as AdminOccasionReminder[]
+}
+
+export async function generateAdminOccasionReminders(advanceDays?: number): Promise<number> {
+  const { data, error } = await supabase.rpc('admin_generate_occasion_reminders', {
+    p_advance_days: advanceDays ?? undefined,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return typeof data === 'number' ? data : 0
+}
+
+export async function dismissAdminOccasionReminder(reminderId: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('admin_dismiss_occasion_reminder', {
+    p_reminder_id: reminderId,
+  })
+
+  if (error) {
+    throw error
+  }
+
+  return Boolean(data)
 }

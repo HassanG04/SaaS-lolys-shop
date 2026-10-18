@@ -23,7 +23,21 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "audit_log": {
+            "admin_occasion_reminders": {
+                  Row: {
+                    "admin_id": string,"advance_days": number,"created_at": string,"event_date": string,"event_year": number,"id": string,"is_dismissed": boolean,"is_read": boolean,"message_ar": string,"message_en": string,"occasion_key": string,"title_ar": string,"title_en": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "admin_id": string,"advance_days": number,"created_at"?: string,"event_date": string,"event_year": number,"id"?: string,"is_dismissed"?: boolean,"is_read"?: boolean,"message_ar": string,"message_en": string,"occasion_key": string,"title_ar": string,"title_en": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "admin_id"?: string,"advance_days"?: number,"created_at"?: string,"event_date"?: string,"event_year"?: number,"id"?: string,"is_dismissed"?: boolean,"is_read"?: boolean,"message_ar"?: string,"message_en"?: string,"occasion_key"?: string,"title_ar"?: string,"title_en"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+
+                  ]
+                },"audit_log": {
                   Row: {
                     "action": string,"actor": string | null,"actor_role": string,"at": string,"entity": string,"entity_id": string,"id": number,"new": Json | null,"old": Json | null
                   }
@@ -385,14 +399,26 @@ isOneToOne: false
 "admin_delete_product":
 { Args: { "p_id": number }; Returns: undefined
                            },
+"admin_dismiss_occasion_reminder":
+{ Args: { "p_reminder_id": string }; Returns: boolean
+                           },
+"admin_generate_occasion_reminders":
+{ Args: { "p_advance_days"?: number }; Returns: number
+                           },
 "admin_get_analytics_insights":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
 "admin_get_forecasts":
 { Args: { "p_run_id"?: number,"p_series_id"?: number,"p_series_type"?: string }; Returns: Json
                            },
+"admin_get_occasion_reminders":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "admin_get_reorder_list":
 { Args: { "p_lead_time_days"?: number,"p_service_z"?: number }; Returns: Json
+                           },
+"admin_get_upcoming_occasions":
+{ Args: { "p_days_ahead"?: number }; Returns: Json
                            },
 "admin_get_wishlist_demand":
 { Args: Record<PropertyKey, never>; Returns: {

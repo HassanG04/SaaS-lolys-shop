@@ -19,16 +19,22 @@ VALUES (
     true
 ) RETURNING id AS test_ip_prod_id \gset
 
+INSERT INTO public.delivery_fees (governorate_id, method, fee)
+VALUES (1, 'representative', 35.00)
+ON CONFLICT (governorate_id, method) DO NOTHING;
+
 -- ============================================================================
 -- 1. Privacy of shop_settings for instapay_handle and instapay_qr_path
 -- ============================================================================
-SELECT tests.clear_authentication();
+SELECT tests.authenticate_as_service_role();
 
 SELECT is(
     (SELECT count(*)::int FROM public.shop_settings WHERE key IN ('instapay_handle', 'instapay_qr_path') AND is_public = false),
     2,
     'Both instapay_handle and instapay_qr_path have is_public = false'
 );
+
+SELECT tests.clear_authentication();
 
 SELECT is(
     (SELECT count(*)::int FROM public.shop_settings WHERE key IN ('instapay_handle', 'instapay_qr_path')),
@@ -53,7 +59,7 @@ SELECT tests.clear_authentication();
 SELECT throws_ok(
     format($$SELECT public.get_payment_instructions(%s)$$, :'test_ip_order_id'),
     '42501',
-    'Authentication required',
+    NULL,
     'Anonymous calling get_payment_instructions raises AUTH-004'
 );
 

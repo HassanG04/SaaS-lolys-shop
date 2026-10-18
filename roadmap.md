@@ -1228,7 +1228,7 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 ---
 
 #### T-9.14: Upcoming occasion reminders for admins
-`status: todo` `owner: agent` `needs: T-9.03, T-2.10` `size: L`
+`status: done` `owner: agent` `needs: T-9.03, T-2.10` `size: L`
 - **Do:** Expose the existing calendar through an AAL2-only API, show upcoming events in Forecast, and add deduplicated in-app admin reminders with configurable advance notice and read/dismiss state. See `docs/spec/store-controls-and-auth-abuse.md`.
 - **Done when:** Cairo date boundaries, year rollover, uncertain/reviewed holiday dates, no sales history, duplicate generation and unauthorized access tested. Reminders never invent uplift, change prices automatically or activate production forecasting.
 - **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run analytics:test && npm run verify && npm run test:e2e`
@@ -1627,4 +1627,6 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-18 | T-3.10c | Codex | Added atomic bilingual content contract with admin AAL2, bounded values/references, public/private separation, audit evidence and revision conflict detection. Local reset, 560 DB assertions, generated types/check, 796 app + 203 tooling tests and all 12 verify gates passed on rerun. UI editor remains separate T-3.10/T-5.15. | pending |
 
 | 2026-10-18 | T-5.15 | Anti-Gravity | Implemented complete bilingual footer and policy editor: integrated ContentEditor into Admin Settings tabs (`content` tab) with direct launcher from operational limits & policies; updated Footer to dynamically reflect custom branding wordmark, tagline, copyright, custom policy navigation ordering (`footer_order`), and verified contact channels (`tel:`, WhatsApp, Instagram, TikTok) with safe URL sanitization; verified dynamic policy routes (Terms, Privacy, Returns, Shipping, Contact) rendering custom title and body with automatic plain-text HTML escaping and seamless fallback to audited static content when custom text is absent. Verified with 17 LegalPages tests, 7 ContentEditor tests, 24 settings admin tests, 25 pgTAP permissions assertions, all 12 verify gates passing (1,050 app + 203 tooling tests, initial JS bundle 199,970 / 200,000 gzip bytes). | pending |
+| 2026-10-18 | T-9.14 | Anti-Gravity | Implemented upcoming occasion reminders for admins: exposed Cairo retail occasions through AAL2 RPC admin_get_upcoming_occasions with Dar al-Ifta uncertainty notes and product links; implemented configurable advance notice (default 14 days in shop_settings) and deduplicated reminder creation via admin_generate_occasion_reminders; isolated reminders per admin in admin_occasion_reminders with read/dismiss lifecycle via admin_get_occasion_reminders and admin_dismiss_occasion_reminder; mounted UpcomingOccasionsView in ForecastPage with bilingual cards, status badges, and planning disclosure; verified with 24 pgTAP assertions in 24_occasion_reminders.test.sql (647 total db tests), 7 vitest unit tests in forecast.test.tsx (855 total app tests), 80 analytics tests, and all 12 verify gates passing (bundle 199,977 / 200,000 gzip bytes). | pending |
+
 

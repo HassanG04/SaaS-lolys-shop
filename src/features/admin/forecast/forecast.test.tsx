@@ -4,13 +4,21 @@ import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 import { LanguageProvider } from '@/i18n/LanguageProvider'
+import { MemoryRouter } from 'react-router-dom'
 import { ForecastBadges } from './ForecastBadges'
 import { ForecastChart } from './ForecastChart'
 import { ReorderTable } from './ReorderTable'
+import { UpcomingOccasionsView } from './UpcomingOccasionsView'
 import ForecastPage from './ForecastPage'
 import * as api from './api'
 import { supabase } from '@/lib/supabase'
-import type { ForecastPoint, HistoryPoint, ReorderItem } from './types'
+import type {
+  AdminOccasionReminder,
+  ForecastPoint,
+  HistoryPoint,
+  ReorderItem,
+  UpcomingOccasion,
+} from './types'
 
 // Mock Supabase client
 vi.mock('@/lib/supabase', () => ({
@@ -35,15 +43,21 @@ function renderWithProviders(ui: ReactNode) {
   })
 
   return render(
-    <LanguageProvider>
-      <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
-    </LanguageProvider>,
+    <MemoryRouter>
+      <LanguageProvider>
+        <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+      </LanguageProvider>
+    </MemoryRouter>,
   )
 }
 
 describe('T-9.10: Admin Forecast & Reorder Screens', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.spyOn(api, 'getUpcomingOccasions').mockResolvedValue([])
+    vi.spyOn(api, 'getAdminOccasionReminders').mockResolvedValue([])
+    vi.spyOn(api, 'dismissAdminOccasionReminder').mockResolvedValue(true)
+    vi.spyOn(api, 'generateAdminOccasionReminders').mockResolvedValue(0)
   })
 
   // ============================================================================
@@ -456,6 +470,157 @@ describe('T-9.10: Admin Forecast & Reorder Screens', () => {
 
       // KPI card
       expect(screen.getByText('القطع المتوقعة')).toBeInTheDocument()
+    })
+  })
+
+  // ============================================================================
+  // 5. Task T-9.14: Upcoming Occasions & Admin Reminders
+  // ============================================================================
+  describe('T-9.14: Upcoming Occasions & Admin Reminders', () => {
+    const mockOccasions: UpcomingOccasion[] = [
+      {
+        occasion_key: 'ramadan',
+        name_ar: 'شهر رمضان المبارك',
+        name_en: 'Holy Month of Ramadan',
+        start_date: '2027-02-08',
+        end_date: '2027-03-09',
+        days_until: 112,
+        is_ongoing: false,
+        is_uncertain: true,
+        uncertainty_note_ar: 'تخضع للرؤية الشرعية لدار الإفتاء المصرية',
+        uncertainty_note_en: 'Subject to official moon sighting by Dar al-Ifta',
+        action_url: '/admin/products',
+      },
+      {
+        occasion_key: 'valentines',
+        name_ar: 'عيد الحب',
+        name_en: "Valentine's Day",
+        start_date: '2027-02-14',
+        end_date: '2027-02-14',
+        days_until: 118,
+        is_ongoing: false,
+        is_uncertain: false,
+        uncertainty_note_ar: null,
+        uncertainty_note_en: null,
+        action_url: '/admin/products',
+      },
+    ]
+
+    const mockReminders: AdminOccasionReminder[] = [
+      {
+        id: 'reminder-uuid-1',
+        admin_id: 'admin-uuid-1',
+        occasion_key: 'valentines',
+        event_year: 2027,
+        event_date: '2027-02-14',
+        title_ar: 'تنبيه عيد الحب',
+        title_en: "Valentine's Day Alert",
+        message_ar: 'اقتراب موعد عيد الحب - راجع المخزون والعروض.',
+        message_en: "Valentine's Day is approaching - review inventory and offers.",
+        advance_days: 14,
+        is_read: false,
+        is_dismissed: false,
+        created_at: '2027-01-31T10:00:00Z',
+        days_until: 14,
+      },
+    ]
+
+    it('renders upcoming occasions list with localized titles, Cairo dates, and review links', async () => {
+      vi.spyOn(api, 'getUpcomingOccasions').mockResolvedValue(mockOccasions)
+      vi.spyOn(api, 'getAdminOccasionReminders').mockResolvedValue([])
+
+      renderWithProviders(<UpcomingOccasionsView />)
+
+      expect(await screen.findByText('شهر رمضان المبارك')).toBeInTheDocument()
+      expect(screen.getByText('عيد الحب')).toBeInTheDocument()
+
+      const reviewButtons = screen.getAllByRole('link', { name: 'مراجعة المنتجات والعروض' })
+      expect(reviewButtons.length).toBe(2)
+      expect(reviewButtons[0]).toHaveAttribute('href', '/admin/products')
+    })
+
+    it('displays honest Dar al-Ifta uncertainty indicator on Hijri moon-sighting occasions', async () => {
+      vi.spyOn(api, 'getUpcomingOccasions').mockResolvedValue(mockOccasions)
+      vi.spyOn(api, 'getAdminOccasionReminders').mockResolvedValue([])
+
+      renderWithProviders(<UpcomingOccasionsView />)
+
+      expect(
+        await screen.findByText('تخضع للرؤية الشرعية لدار الإفتاء المصرية'),
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText('Subject to official moon sighting by Dar al-Ifta'),
+      ).not.toBeInTheDocument()
+    })
+
+    it('renders active admin reminders banner and calls dismiss API when dismissed', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(api, 'getUpcomingOccasions').mockResolvedValue([])
+      vi.spyOn(api, 'getAdminOccasionReminders').mockResolvedValue(mockReminders)
+      const dismissSpy = vi.spyOn(api, 'dismissAdminOccasionReminder').mockResolvedValue(true)
+
+      renderWithProviders(<UpcomingOccasionsView />)
+
+      expect(await screen.findByTestId('admin-reminders-banner')).toBeInTheDocument()
+      expect(screen.getByText('تنبيه عيد الحب')).toBeInTheDocument()
+      expect(screen.getByText('اقتراب موعد عيد الحب - راجع المخزون والعروض.')).toBeInTheDocument()
+
+      const dismissBtn = screen.getByTestId('dismiss-reminder-reminder-uuid-1')
+      await user.click(dismissBtn)
+
+      expect(dismissSpy).toHaveBeenCalledWith('reminder-uuid-1')
+    })
+
+    it('triggers reminder generation when clicking generate alerts button', async () => {
+      const user = userEvent.setup()
+      vi.spyOn(api, 'getUpcomingOccasions').mockResolvedValue([])
+      vi.spyOn(api, 'getAdminOccasionReminders').mockResolvedValue([])
+      const generateSpy = vi.spyOn(api, 'generateAdminOccasionReminders').mockResolvedValue(2)
+
+      renderWithProviders(<UpcomingOccasionsView />)
+
+      const generateBtn = screen.getByTestId('generate-reminders-button')
+      await user.click(generateBtn)
+
+      expect(generateSpy).toHaveBeenCalledWith(undefined)
+    })
+
+    it('updates time horizon query when selecting a different days-ahead filter', async () => {
+      const user = userEvent.setup()
+      const occasionsSpy = vi.spyOn(api, 'getUpcomingOccasions').mockResolvedValue(mockOccasions)
+
+      renderWithProviders(<UpcomingOccasionsView />)
+
+      const select = screen.getByTestId('occasions-days-select')
+      expect(select).toHaveValue('120')
+
+      await user.selectOptions(select, '365')
+      expect(occasionsSpy).toHaveBeenCalledWith(365)
+    })
+
+    it('renders empty states gracefully when no occasions or reminders exist', async () => {
+      vi.spyOn(api, 'getUpcomingOccasions').mockResolvedValue([])
+      vi.spyOn(api, 'getAdminOccasionReminders').mockResolvedValue([])
+
+      renderWithProviders(<UpcomingOccasionsView />)
+
+      expect(
+        await screen.findByText('لا توجد مناسبات قادمة خلال الفترة المحددة.'),
+      ).toBeInTheDocument()
+      expect(screen.queryByTestId('admin-reminders-banner')).not.toBeInTheDocument()
+    })
+
+    it('renders disclosure that occasion reminders assist manual planning without automated price changes', async () => {
+      vi.spyOn(api, 'getUpcomingOccasions').mockResolvedValue([])
+      vi.spyOn(api, 'getAdminOccasionReminders').mockResolvedValue([])
+
+      renderWithProviders(<UpcomingOccasionsView />)
+
+      expect(
+        await screen.findByText(
+          'تنبيه: المناسبات تهدف للتخطيط المسبق ولا تقوم بتغيير الأسعار أو فرض تنبؤات طلب آلية غير مثبتة.',
+        ),
+      ).toBeInTheDocument()
     })
   })
 })

@@ -81,8 +81,8 @@ SELECT is(
 SELECT tests.authenticate_as('admin_s22', 'aal2');
 SELECT is(
     (SELECT count(*)::bigint FROM public.shop_settings),
-    19::bigint,
-    'S22: Admin at aal2 can read all 19 settings including private'
+    20::bigint,
+    'S22: Admin at aal2 can read all 20 settings including private'
 );
 
 -- ============================================================================

@@ -90,3 +90,34 @@ export interface ForecastProductOption {
   name_ar: string
   category_id: number
 }
+
+export interface UpcomingOccasion {
+  occasion_key: string
+  name_ar: string
+  name_en: string
+  start_date: string
+  end_date: string
+  days_until: number
+  is_ongoing: boolean
+  is_uncertain: boolean
+  uncertainty_note_ar: string | null
+  uncertainty_note_en: string | null
+  action_url: string
+}
+
+export interface AdminOccasionReminder {
+  id: string
+  admin_id: string
+  occasion_key: string
+  event_year: number
+  event_date: string
+  title_ar: string
+  title_en: string
+  message_ar: string
+  message_en: string
+  advance_days: number
+  is_read: boolean
+  is_dismissed: boolean
+  created_at: string
+  days_until: number
+}

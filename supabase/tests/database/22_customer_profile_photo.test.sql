@@ -108,15 +108,18 @@ SELECT throws_ok(
   '42501', NULL, 'Customer 2 cannot upload into Customer 1 avatars folder'
 );
 
--- Customer 2 attempting to update Customer 1 storage object is denied
-SELECT throws_ok(
-  format($$UPDATE storage.objects SET metadata = '{"updated": true}'::jsonb
-            WHERE bucket_id = 'avatars' AND name = '%s/test.webp'$$,
-         tests.get_supabase_uid('photo_cust_1')),
-  '42501', NULL, 'Customer 2 cannot update Customer 1 avatar storage object'
+-- Customer 2 attempting to update Customer 1 storage object is denied (RLS hides row, metadata unchanged)
+UPDATE storage.objects SET metadata = '{"updated": true}'::jsonb
+ WHERE bucket_id = 'avatars' AND name = tests.get_supabase_uid('photo_cust_1') || '/test.webp';
+
+SELECT is(
+  (SELECT metadata->>'updated' FROM storage.objects WHERE bucket_id = 'avatars' AND name = tests.get_supabase_uid('photo_cust_1') || '/test.webp'),
+  NULL,
+  'Customer 2 cannot update Customer 1 avatar storage object'
 );
 
 -- Customer 2 attempting to delete Customer 1 storage object affects 0 rows
+SET storage.allow_delete_query = 'true';
 DELETE FROM storage.objects
  WHERE bucket_id = 'avatars' AND name = tests.get_supabase_uid('photo_cust_1') || '/test.webp';
 
@@ -128,6 +131,7 @@ SELECT is(
 
 -- Customer 1 can delete their own avatar object
 SELECT tests.authenticate_as('photo_cust_1');
+SET storage.allow_delete_query = 'true';
 
 DELETE FROM storage.objects
  WHERE bucket_id = 'avatars' AND name = tests.get_supabase_uid('photo_cust_1') || '/test.webp';

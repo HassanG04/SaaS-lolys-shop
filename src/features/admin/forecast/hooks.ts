@@ -1,16 +1,22 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  dismissAdminOccasionReminder,
+  generateAdminOccasionReminders,
   getAdminForecasts,
+  getAdminOccasionReminders,
   getAdminReorderList,
   getForecastCategories,
   getForecastProducts,
+  getUpcomingOccasions,
 } from './api'
 import type {
+  AdminOccasionReminder,
   ForecastCategoryOption,
   ForecastProductOption,
   ForecastResponse,
   ReorderItem,
   SeriesType,
+  UpcomingOccasion,
 } from './types'
 
 export function useAdminForecasts(
@@ -46,5 +52,41 @@ export function useForecastProducts() {
     queryKey: ['admin', 'forecast', 'products'],
     queryFn: getForecastProducts,
     staleTime: 10 * 60 * 1000,
+  })
+}
+
+export function useUpcomingOccasions(daysAhead: number = 120) {
+  return useQuery<UpcomingOccasion[], Error>({
+    queryKey: ['admin', 'occasions', daysAhead],
+    queryFn: () => getUpcomingOccasions(daysAhead),
+    staleTime: 10 * 60 * 1000,
+  })
+}
+
+export function useAdminOccasionReminders() {
+  return useQuery<AdminOccasionReminder[], Error>({
+    queryKey: ['admin', 'occasion-reminders'],
+    queryFn: getAdminOccasionReminders,
+    staleTime: 60 * 1000,
+  })
+}
+
+export function useDismissAdminOccasionReminder() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (reminderId: string) => dismissAdminOccasionReminder(reminderId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'occasion-reminders'] })
+    },
+  })
+}
+
+export function useGenerateAdminOccasionReminders() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (advanceDays?: number) => generateAdminOccasionReminders(advanceDays),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'occasion-reminders'] })
+    },
   })
 }
