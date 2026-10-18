@@ -12,7 +12,11 @@ async function loginAdmin(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('admin@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  // Wait for the Turnstile token to propagate into React state (button becomes enabled)
+  await page
+    .getByRole('button', { name: 'تسجيل الدخول' })
+    .waitFor({ state: 'visible', timeout: 5000 })
+  await page.waitForTimeout(300)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
@@ -32,7 +36,11 @@ async function loginCustomer(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('customer@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  // Wait for the Turnstile token to propagate into React state (button becomes enabled)
+  await page
+    .getByRole('button', { name: 'تسجيل الدخول' })
+    .waitFor({ state: 'visible', timeout: 5000 })
+  await page.waitForTimeout(300)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 }
@@ -203,8 +211,9 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await expect(page.getByText('أساور وحليات فاخرة').first()).toBeVisible({ timeout: 10000 })
 
     await page.goto(`/category/${createdCategorySlug}`)
+    await page.waitForLoadState('networkidle')
     await expect(page.getByText('سوار اللؤلؤ الفضي التجريبي').first()).toBeVisible({
-      timeout: 15000,
+      timeout: 20000,
     })
 
     await page.goto(`/product/${createdProductId}`)

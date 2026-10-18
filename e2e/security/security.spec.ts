@@ -136,7 +136,10 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
 
     // Known email
     await page.locator('#email-input').fill('customer@example.com')
-    await page.waitForTimeout(200)
+    await page
+      .getByRole('button', { name: 'إرسال رابط إعادة التعيين' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.waitForTimeout(300)
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,
@@ -148,7 +151,10 @@ test.describe.serial('Security End-to-End Test Suite (T-7.08)', () => {
     // Unknown email
     await page.goto('/reset-password')
     await page.locator('#email-input').fill('unknown-reset-target@example.com')
-    await page.waitForTimeout(200)
+    await page
+      .getByRole('button', { name: 'إرسال رابط إعادة التعيين' })
+      .waitFor({ state: 'visible', timeout: 5000 })
+    await page.waitForTimeout(300)
     await page.getByRole('button', { name: 'إرسال رابط إعادة التعيين' }).click()
     await expect(page.getByRole('heading', { name: 'تحقق من بريدك الإلكتروني' })).toBeVisible({
       timeout: 10000,
