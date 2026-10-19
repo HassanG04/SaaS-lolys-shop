@@ -20,7 +20,11 @@ const auth = (p: string, fn: () => Promise<{ default: ComponentType<unknown> }>)
 const admin = (p: string, fn: () => Promise<{ default: ComponentType<unknown> }>) =>
   r(p, fn, (c) => <RequireAdmin>{c}</RequireAdmin>)
 
-const HomePage = lazy(() => import('./pages/HomePage'))
+const loadHomePage = () =>
+  Promise.all([import('./pages/HomePage'), import('@/features/catalog')]).then(([m]) => m)
+const HomePage = lazy(loadHomePage)
+const loadCategoryPage = () =>
+  Promise.all([import('./pages/CategoryPage'), import('@/features/catalog')]).then(([m]) => m)
 const mfaEnroll = () => import('./pages/MfaEnrollPage')
 const mfaChallenge = () => import('./pages/MfaChallengePage')
 const KitPage = import.meta.env.DEV ? () => import('./dev/KitPage') : null
@@ -31,7 +35,7 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      r('category/:slug', () => import('./pages/CategoryPage')),
+      r('category/:slug', loadCategoryPage),
       r('product/:id', () => import('./pages/ProductPage')),
       r('cart', () => import('./pages/CartPage')),
       r('search', () => import('./pages/SearchPage')),

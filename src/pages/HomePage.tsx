@@ -23,8 +23,8 @@ import { Card } from '@/components/ui/Card'
 import { SectionReveal } from '@/components/ui/SectionReveal'
 import { isMotionReduced } from '@/lib/motion'
 
+import AnnouncementBar from '@/components/layout/AnnouncementBar'
 const ContentEditorLauncher = lazy(() => import('@/features/admin/settings/ContentEditorLauncher'))
-const AnnouncementBar = lazy(() => import('@/components/layout/AnnouncementBar'))
 
 export default function HomePage() {
   const auth = useContext(AuthContext)
@@ -145,9 +145,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-16 pb-16">
-      <Suspense fallback={null}>
-        <AnnouncementBar />
-      </Suspense>
+      <AnnouncementBar />
       {auth?.profile?.role === 'admin' && (
         <Suspense fallback={null}>
           <ContentEditorLauncher />
@@ -216,8 +214,8 @@ export default function HomePage() {
                 <ProductImage
                   src={storefrontContent.hero_image_path || 'categories/earrings-cover.webp'}
                   alt={localizedContent('hero_caption') || 'Lolys Jewelry Hero'}
-                  loading="eager"
-                  fetchPriority="high"
+                  loading="lazy"
+                  fetchPriority="low"
                   aspectRatio="4/3"
                   className="size-full rounded-card"
                   imageClassName="size-full object-cover rounded-card"

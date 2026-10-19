@@ -51,6 +51,8 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
           <div className="relative flex size-9 sm:size-12 items-center justify-center overflow-hidden rounded-pill border border-border bg-bg">
             <img
               src="/brand/logo.png"
+              loading="lazy"
+              fetchPriority="low"
               alt=""
               aria-hidden="true"
               className="size-full object-cover"

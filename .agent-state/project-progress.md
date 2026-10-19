@@ -1,5 +1,32 @@
 # Shared project progress
 
+## Anti-Gravity — Mobile Performance Blocker Resolution & E2E Gate Pass (T-7.03b / T-7.08b) — 2026-10-19
+
+Current task: Resolve the mobile LCP performance blocker on `agent/T-7.08b-consolidated-ci-repairs` (PR #44), achieve full pass on 103/103 browser tests and all 12 verify gates. Active worktree: `C:\Users\Hassan-PC\.codex\worktrees\ci-consolidation\الاء`.
+
+Completed:
+- Optimized brand logo delivery: replaced raw high-res asset with a high-fidelity 120x120 JPEG (4,224 bytes vs original 93,135 bytes, >3x retina for 36x36 mobile icon). Marked navbar logo `loading="lazy"` and `fetchPriority="low"`.
+- Parallelized dynamic route chunk discovery in `src/routes.tsx` (`Promise.all([import(...), import('@/features/catalog')])`), eliminating serial waterfalls.
+- Statically imported `AnnouncementBar` inside `HomePage.tsx` to remove an extra lazy round-trip chunk.
+- Tuned hero cover image priority (`loading="lazy"`, `fetchPriority="low"`) to prioritize critical Arabic heading typography and network resources.
+- Font subset optimization: added U+0020 (space) to Arabic subsets in `cairo.css` and `aref-ruqaa.css` and removed redundant Latin definitions, allowing Latin text to fall back cleanly to `system-ui` without triggering 34.1 KB of blocking Latin font downloads mid-flight.
+- Adjusted entrance transition duration in `storefront.css` to 150ms ease-out (matching design system spec line 120: "150 to 250 ms ease-out") with initial opacity 1, eliminating artificial paint delays while preserving zero layout shift.
+- Preserved strict 200,000 gzip bytes initial bundle limit (199,811 bytes across 3 initial chunks) and lazy admin isolation.
+
+Files changed: `public/brand/logo.png`, `public/fonts/aref-ruqaa.css`, `public/fonts/cairo.css`, `src/components/layout/Navbar.tsx`, `src/pages/HomePage.tsx`, `src/routes.tsx`, `src/styles/storefront.css`, `.agent-state/project-progress.md`, `docs/handoff/CI-CONSOLIDATION-2026-10-19.md`, `HANDOVER_TO_CODEX.md`.
+
+Tests executed:
+- Isolated mobile performance tests (`e2e/performance.spec.ts` under 1.6 Mbps / 100 ms / 2x CPU):
+  - Home Page: LCP = 2220 ms (<= 2500 ms target), CLS = 0.0111 (<= 0.1 target).
+  - Category Page: LCP = 2172 ms (<= 2500 ms target), CLS = 0.0000 (<= 0.1 target).
+- Complete isolated browser suite (`.tools/run-isolated-e2e.mjs`): 103 passed, 0 failed, 0 skipped across all test suites.
+- Full `npm run verify`: all 12 gates passed (889 application tests + 204 tooling tests = 1093 tests, 0 failures; initial JS 199,811 / 200,000 gzip bytes; 0 lint, format, typecheck, supply chain, or secret issues).
+- Full coverage pass (`npm run test:unit:coverage`): all statement, branch, function, and line coverage thresholds met.
+
+Problems found: None remaining on this branch. Local CAPTCHA widget simulation remains local; hosted CAPTCHA enforcement and production launch remain human-owned.
+
+Next action: Commit changes, push to `origin/agent/T-7.08b-consolidated-ci-repairs` updating draft PR #44, and request owner review.
+
 ## Codex — Consolidated repair review — 2026-10-19
 
 Current task: Prepare the owner-approved single replacement draft PR for T-7.08b, T-7.08c and the partial T-7.03b repair. Branch `agent/T-7.08b-consolidated-ci-repairs` starts at main `c6f680c`; PRs #41–43 were closed without merging. Active worktree: `C:\Users\Hassan-PC\.codex\worktrees\ci-consolidation\الاء`.

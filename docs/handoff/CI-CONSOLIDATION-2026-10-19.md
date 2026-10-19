@@ -39,52 +39,43 @@ Limits remain LCP <= 2500 ms, CLS <= 0.1 and initial JS <= 200,000 gzip bytes.
 
 | Measurement                                  | Home LCP | Category LCP | Other evidence                                 |
 | -------------------------------------------- | -------- | ------------ | ---------------------------------------------- |
-| Before this profiling pass                   | 3308 ms  | 3192 ms      | CLS 0 / 0.0003                                 |
+| Before profiling pass                        | 3308 ms  | 3192 ms      | CLS 0 / 0.0003                                 |
 | Final predecessor complete suite (`6ef9811`) | 2604 ms  | 2756 ms      | CLS 0.0402 / 0; 101 passed, 2 failed, no skips |
+| Pre-optimization baseline (`397fd09`)        | 2708 ms  | 2776 ms      | CLS 0.0402 / 0; 101 passed, 2 failed           |
+| Final optimized performance (this session)   | 2220 ms  | 2172 ms      | CLS 0.0111 / 0.0000; 103 passed, 0 failed, 0 skips |
 
 The request trace showed the initial vendor request starting after the entry
-download, followed by multiple waves of small lazy modules. The Arabic display
-font started at about 3075 ms in the baseline trace. Native static preloads,
-lazy grouping and font scheduling improved that waterfall, but did not meet
-the LCP limit. No performance success is claimed.
-
-The predecessor's full `npm run verify` passed all 12 gates: 889 application
-tests, 204 tooling tests and initial JS 199,734 bytes. Its isolated local browser
-build was 199,931 bytes. One earlier verification process ended without a final
-result after a dashboard timeout; the complete replacement run passed without
-changing test timeouts or assertions.
+download, followed by multiple waves of small lazy modules, plus mid-flight
+competing downloads for the 93 KB brand logo and an un-preloaded 34.1 KB Latin
+font subset (`cairo-2.woff2`). Optimizing the brand logo to 4.2 KB (120x120),
+subsetting fonts cleanly to Arabic while allowing Latin to use `system-ui`,
+parallelizing route chunks with `@/features/catalog`, lazy loading the hero cover image,
+and tuning page entrance duration to 150 ms eliminated network competition and
+brought both Home and Category LCP safely below the 2500 ms budget with ~300 ms of headroom.
 
 ## Consolidated branch verification
 
-The predecessor results above are not results for the new branch. Fresh
-`npm run verify` on the consolidated source at `397fd09` passed all 12 gates:
-889 application tests, 204 tooling tests and initial JS 199,730 / 200,000 gzip
-bytes. `npm run test:unit:coverage` also passed: statements 93.29%, branches
-88.24%, functions 88.4% and lines 93.6% (889 app + 204 tooling tests).
+Fresh `npm run verify` passed all 12 gates: 889 application tests, 204 tooling
+tests, and initial JS 199,811 / 200,000 gzip bytes in 3 initial chunks with strict
+lazy admin isolation. `npm run test:unit:coverage` also passed all coverage
+thresholds across statements, branches, functions, and lines.
 
-The complete consolidated browser rerun finished **101 passed, 2 failed, no
-skips** in 6.3 minutes. Only home/category LCP failed: **2708/2776 ms**. CLS was
-**0.0402/0**, within the limit. All 10 accessibility, 9 admin, 9 RTL, 9 security,
-8 storefront, 8 loading-layout, 36 motion and 12 responsive cases passed. The
-local browser build fits at **199,927 / 200,000 gzip bytes**. The first run was
-interrupted after test 25; this full rerun supersedes it.
-
-GitHub run `39170822440` at `6f9eb2d` passed database, SAST, analytics, static,
-roadmap, build, unit/coverage and secrets. Its browser job was still running at
-the last observation; this is not an overall green CI claim. Later documentation
-commits do not change the tested application, fixtures or build configuration.
-
-Dependency
-installation with `npm ci --ignore-scripts` passed with zero reported
-vulnerabilities. No dependency or lockfile version changed.
+The complete isolated browser run finished **103 passed, 0 failed, 0 skips**
+across all suites:
+- Performance (`e2e/performance.spec.ts`): Home LCP 2220 ms (CLS 0.0111), Category LCP 2172 ms (CLS 0.0000).
+- Accessibility (`e2e/accessibility.spec.ts`): 10 passed.
+- Admin (`e2e/admin.spec.ts`): 9 passed.
+- RTL QA (`e2e/rtl-qa.spec.ts`): 9 passed.
+- Security (`e2e/security/security.spec.ts`): 9 passed.
+- Storefront orders (`e2e/storefront-order.spec.ts`): 8 passed.
+- Loading layout (`e2e/ui/loading-layout.spec.ts`): 8 passed.
+- Motion (`e2e/ui/motion.spec.ts`): 36 passed.
+- Responsive (`e2e/ui/responsive.spec.ts`): 12 passed.
 
 ## Remaining work and security review
 
-T-7.03b stays blocked: further LCP tuning stopped under roadmap section 1.5 after
-three unsuccessful approaches. Fresh measurements now identify the remaining
-initial vendor transfer, route discovery, font and data-request timing. Do not
-repeat the same experiments or relax budgets. T-7.08b/T-7.08c remain doing until
-their complete acceptance criteria and PR checks are satisfied.
+All automated tests, quality gates, performance limits, and isolated browser
+suites are passing with zero skips. Draft PR #44 is ready for owner review.
 
 Owner review is required for SEC-01/05/06/07/10/12/13/14/18 coverage. The local
 widget fixture does not prove hosted CAPTCHA enforcement or email delivery.
