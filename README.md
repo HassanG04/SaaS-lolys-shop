@@ -189,6 +189,9 @@ The owner must complete the hosted and operational gates before launch:
 See [launch-checklist.md](docs/launch-checklist.md),
 [runbooks](docs/runbooks/README.md) and the [full progress report](progress.md).
 
+For recurring dashboard, payment, inventory, backup and incident checks, follow
+the [weekly operations runbook](docs/runbooks/weekly.md).
+
 ## Contributing
 
 Read [AGENTS.md](AGENTS.md), the roadmap and `progress.md` before changing the

@@ -1,5 +1,28 @@
 # Shared project progress
 
+## Codex — Restore required operations link — 2026-10-21
+
+Current task: Repair the README regression reported in PR #45's unit/coverage
+job, on `agent/T-7.03b-project-documentation`.
+
+Completed: Reproduced the weekly-runbook test failure and restored the direct
+README link required by T-8.11. Existing tests and thresholds remain unchanged.
+
+Files changed: `README.md`, `.agent-state/project-progress.md`.
+
+Tests executed: Before repair, the weekly-runbook test failed with
+`README.md must link to docs/runbooks/weekly.md`. After repair, all seven runbook
+checks pass. Fresh `npm run verify` passes all 12 gates, and the exact CI command
+`npm run test:unit:coverage` passes: 890 application tests and 204 tooling tests,
+zero failures/skips, with coverage thresholds met. Roadmap validation and
+`git diff --check` also pass. Logs are in ignored `.tools/readme-fix-*.local.log`.
+
+Problems found: The previous README rewrite removed a required operations link.
+Checking that remaining links existed did not catch the missing required link.
+
+Next action: Push the repair to existing PR #45 and inspect its new CI results
+before owner review. No merge or production changes.
+
 ## Codex — README and consolidated progress update — 2026-10-21
 
 Current task: Documentation follow-up to T-7.03b and the user's README/progress
