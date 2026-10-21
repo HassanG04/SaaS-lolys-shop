@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, waitForCaptcha, type Page } from './helpers/turnstile'
 import { generateTotp } from './helpers/totp'
 import { queryDb, getAdminTotpSecret } from './helpers/db'
 import { runAxe, filterSeriousAndCritical } from './helpers/axe'
@@ -77,11 +77,7 @@ async function loginCustomer(page: Page) {
   await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill('customer@example.com')
   await page.locator('#password-input').fill('Password123!')
-  // Wait for the Turnstile token to propagate into React state (button becomes enabled)
-  await page
-    .getByRole('button', { name: 'تسجيل الدخول' })
-    .waitFor({ state: 'visible', timeout: 5000 })
-  await page.waitForTimeout(500)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 }
@@ -92,11 +88,7 @@ async function loginAdmin(page: Page) {
   await page.waitForLoadState('networkidle')
   await page.locator('#email-input').fill('admin@example.com')
   await page.locator('#password-input').fill('Password123!')
-  // Wait for the Turnstile token to propagate into React state (button becomes enabled)
-  await page
-    .getByRole('button', { name: 'تسجيل الدخول' })
-    .waitFor({ state: 'visible', timeout: 5000 })
-  await page.waitForTimeout(500)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
@@ -182,7 +174,7 @@ test.describe.serial('Axe Accessibility Audit Suite (T-7.02)', () => {
     await page.goto('/checkout')
     await expect(page.locator('h1')).toContainText('بيانات التوصيل')
 
-    await page.locator('select:not(#footer-motion-select)').first().selectOption('1')
+    await page.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
     const addressInput = page
       .locator('input[placeholder*="اسم الشارع"], input[placeholder*="الشارع"]')
       .first()

@@ -23,8 +23,8 @@ import { Card } from '@/components/ui/Card'
 import { SectionReveal } from '@/components/ui/SectionReveal'
 import { isMotionReduced } from '@/lib/motion'
 
+import AnnouncementBar from '@/components/layout/AnnouncementBar'
 const ContentEditorLauncher = lazy(() => import('@/features/admin/settings/ContentEditorLauncher'))
-const AnnouncementBar = lazy(() => import('@/components/layout/AnnouncementBar'))
 
 export default function HomePage() {
   const auth = useContext(AuthContext)
@@ -145,9 +145,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-16 pb-16">
-      <Suspense fallback={null}>
-        <AnnouncementBar />
-      </Suspense>
+      <AnnouncementBar />
       {auth?.profile?.role === 'admin' && (
         <Suspense fallback={null}>
           <ContentEditorLauncher />

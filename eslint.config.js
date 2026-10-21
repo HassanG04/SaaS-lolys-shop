@@ -19,6 +19,10 @@ export default tseslint.config(
   },
   js.configs.recommended,
   {
+    files: ['e2e/fixtures/*.js'],
+    languageOptions: { globals: globals.browser },
+  },
+  {
     files: ['scripts/**/*.mjs', 'eslint.config.js'],
     languageOptions: { globals: globals.node },
   },

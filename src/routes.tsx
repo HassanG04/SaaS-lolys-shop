@@ -20,7 +20,18 @@ const auth = (p: string, fn: () => Promise<{ default: ComponentType<unknown> }>)
 const admin = (p: string, fn: () => Promise<{ default: ComponentType<unknown> }>) =>
   r(p, fn, (c) => <RequireAdmin>{c}</RequireAdmin>)
 
-const HomePage = lazy(() => import('./pages/HomePage'))
+// Warm the shared dependency in parallel, but return the route import directly.
+// An extra Promise.all barrier can reveal the footer first and delay the route.
+// The route import reports dependency failures through the existing error boundary.
+const loadHomePage = () => {
+  void import('@/features/catalog').catch(() => {})
+  return import('./pages/HomePage')
+}
+const HomePage = lazy(loadHomePage)
+const loadCategoryPage = () => {
+  void import('@/features/catalog').catch(() => {})
+  return import('./pages/CategoryPage')
+}
 const mfaEnroll = () => import('./pages/MfaEnrollPage')
 const mfaChallenge = () => import('./pages/MfaChallengePage')
 const KitPage = import.meta.env.DEV ? () => import('./dev/KitPage') : null
@@ -31,7 +42,7 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      r('category/:slug', () => import('./pages/CategoryPage')),
+      r('category/:slug', loadCategoryPage),
       r('product/:id', () => import('./pages/ProductPage')),
       r('cart', () => import('./pages/CartPage')),
       r('search', () => import('./pages/SearchPage')),

@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, waitForCaptcha, type Page } from './helpers/turnstile'
 import path from 'node:path'
 import { generateTotp } from './helpers/totp'
 import { queryDb, getAdminTotpSecret } from './helpers/db'
@@ -73,7 +73,7 @@ async function loginCustomer(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('customer@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 }
@@ -83,7 +83,7 @@ async function loginAdmin(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('admin@example.com')
   await page.locator('#password-input').fill('Password123!')
-  await page.waitForTimeout(200)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
@@ -183,7 +183,7 @@ test.describe.serial('RTL Visual QA and Screenshot Suite (T-7.01)', () => {
     await expect(page.locator('h1')).toContainText('بيانات التوصيل')
 
     // Select Cairo governorate
-    await page.locator('select').first().selectOption('1')
+    await page.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
 
     // Fill address
     const addressInput = page
@@ -224,7 +224,7 @@ test.describe.serial('RTL Visual QA and Screenshot Suite (T-7.01)', () => {
     await expect(page.getByRole('heading', { name: 'خطوات الدفع عبر إنستاباي' })).toBeVisible({
       timeout: 10000,
     })
-    await expect(page.getByAltText('رمز QR لإنستاباي')).toBeVisible()
+    await expect(page.getByRole('img', { name: 'رمز QR لإنستاباي' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'رفع إثبات التحويل' })).toBeVisible()
 
     // Verify LTR isolation on order number and reference code

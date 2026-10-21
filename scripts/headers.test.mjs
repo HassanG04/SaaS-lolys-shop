@@ -36,26 +36,12 @@ test('public/_headers contains required security headers', () => {
   )
 })
 
-test('public/_headers Content-Security-Policy hash matches index.html theme script', () => {
+test('public/_headers Content-Security-Policy hashes match every inline startup script', () => {
   assert.ok(fs.existsSync(headersPath), 'public/_headers must exist')
   assert.ok(fs.existsSync(indexPath), 'index.html must exist')
 
   const headersContent = fs.readFileSync(headersPath, 'utf8')
   const indexContent = fs.readFileSync(indexPath, 'utf8')
-
-  // Extract inline theme initialization script
-  const startTag = '<script id="theme-init">'
-  const endTag = '</script>'
-  const startIndex = indexContent.indexOf(startTag)
-  assert.ok(startIndex !== -1, 'index.html must contain <script id="theme-init">')
-  const scriptStart = startIndex + startTag.length
-  const endIndex = indexContent.indexOf(endTag, scriptStart)
-  assert.ok(endIndex !== -1, 'index.html must contain closing </script> for theme-init')
-  const scriptContent = indexContent.substring(scriptStart, endIndex)
-
-  // Compute sha256 hash
-  const computedHash =
-    'sha256-' + crypto.createHash('sha256').update(scriptContent, 'utf8').digest('base64')
 
   // Check CSP directive
   const cspMatch = headersContent.match(/Content-Security-Policy:\s*(.+)$/m)
@@ -69,24 +55,16 @@ test('public/_headers Content-Security-Policy hash matches index.html theme scri
     'CSP must allow Cloudflare Turnstile',
   )
   assert.ok(csp.includes('https://*.supabase.co'), 'CSP must allow Supabase domain')
-  assert.ok(
-    csp.includes(`'${computedHash}'`),
-    `CSP script-src must contain exact hash '${computedHash}' matching index.html theme-init script`,
+  const scriptPolicy = csp.match(/(?:^|;)\s*script-src\s+([^;]+)/)?.[1]
+  assert.ok(scriptPolicy, 'CSP must define script-src')
+  assert.ok(!scriptPolicy.includes("'unsafe-inline'"), 'Scripts require exact hashes')
+  const scripts = [...indexContent.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)].filter(
+    ([, attributes]) => !/\bsrc\s*=/.test(attributes),
   )
-
-  // Extract inline motion initialization script
-  const motionStartTag = '<script id="motion-init">'
-  const motionStartIndex = indexContent.indexOf(motionStartTag)
-  if (motionStartIndex !== -1) {
-    const motionScriptStart = motionStartIndex + motionStartTag.length
-    const motionEndIndex = indexContent.indexOf(endTag, motionScriptStart)
-    assert.ok(motionEndIndex !== -1, 'index.html must contain closing </script> for motion-init')
-    const motionScriptContent = indexContent.substring(motionScriptStart, motionEndIndex)
-    const computedMotionHash =
-      'sha256-' + crypto.createHash('sha256').update(motionScriptContent, 'utf8').digest('base64')
-    assert.ok(
-      csp.includes(`'${computedMotionHash}'`),
-      `CSP script-src must contain exact hash '${computedMotionHash}' matching index.html motion-init script`,
-    )
+  assert.ok(scripts.length >= 2, 'Theme and motion startup scripts must be present')
+  for (const [, attributes, body] of scripts) {
+    // HTML parsing normalizes CRLF before CSP hashes are calculated.
+    const hash = crypto.createHash('sha256').update(body.replace(/\r\n?/g, '\n')).digest('base64')
+    assert.ok(scriptPolicy.includes(`'sha256-${hash}'`), `Missing hash for ${attributes}`)
   }
 })

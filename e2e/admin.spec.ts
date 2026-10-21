@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, waitForCaptcha, type Page } from './helpers/turnstile'
 import path from 'node:path'
 import { generateTotp } from './helpers/totp'
 import { queryDb, getProductStock, getAdminTotpSecret, getSupabaseStatus } from './helpers/db'
@@ -13,11 +13,7 @@ async function loginAdmin(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('admin@example.com')
   await page.locator('#password-input').fill('Password123!')
-  // Wait for the Turnstile token to propagate into React state (button becomes enabled)
-  await page
-    .getByRole('button', { name: 'تسجيل الدخول' })
-    .waitFor({ state: 'visible', timeout: 5000 })
-  await page.waitForTimeout(300)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 
@@ -37,11 +33,7 @@ async function loginCustomer(page: Page) {
   await page.goto('/login')
   await page.locator('#email-input').fill('customer@example.com')
   await page.locator('#password-input').fill('Password123!')
-  // Wait for the Turnstile token to propagate into React state (button becomes enabled)
-  await page
-    .getByRole('button', { name: 'تسجيل الدخول' })
-    .waitFor({ state: 'visible', timeout: 5000 })
-  await page.waitForTimeout(300)
+  await waitForCaptcha(page)
   await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 })
 }
@@ -68,7 +60,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await page.goto('/login')
     await page.locator('#email-input').fill('admin@example.com')
     await page.locator('#password-input').fill('Password123!')
-    await page.waitForTimeout(200)
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
     await page.waitForTimeout(1000)
 
@@ -99,7 +91,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await page.goto('/login')
     await page.locator('#email-input').fill('admin@example.com')
     await page.locator('#password-input').fill('Password123!')
-    await page.waitForTimeout(200)
+    await waitForCaptcha(page)
     await page.getByRole('button', { name: 'تسجيل الدخول' }).click()
     await page.waitForTimeout(1000)
 
@@ -121,8 +113,10 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await expect(page.locator('h1')).toContainText('لوحة تحكم')
   })
 
-  test('2. Non-admin users are blocked from admin panel with AUTH-011', async ({ browser }) => {
-    const customerContext = await browser.newContext()
+  test('2. Non-admin users are blocked from admin panel with AUTH-011', async ({
+    newAuthContext,
+  }) => {
+    const customerContext = await newAuthContext()
     const customerPage = await customerContext.newPage()
 
     // Login normal customer
@@ -233,7 +227,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     // Open inline stock dialog
     const productRow = page.locator('tr', { hasText: 'سوار اللؤلؤ الفضي التجريبي' })
     await expect(productRow).toBeVisible()
-    await productRow.getByRole('button', { name: /مخزون/ }).first().click()
+    await productRow.getByRole('button', { name: /^تعديل مخزون / }).click()
 
     await expect(page.locator('#stock-new-quantity-input')).toBeVisible()
     await page.locator('#stock-new-quantity-input').fill('0')
@@ -251,7 +245,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
   test('5. Product archiving, restoration, and category deletion constraints', async ({
     page,
-    browser,
+    newAuthContext,
   }) => {
     await loginAdmin(page)
 
@@ -263,7 +257,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await expect(page.getByRole('button', { name: 'استعادة المنتج' })).toBeVisible()
 
     // Verify customer cannot see archived product on category storefront
-    const custContext = await browser.newContext()
+    const custContext = await newAuthContext()
     const custPage = await custContext.newPage()
     await custPage.goto(`/category/${createdCategorySlug}`)
     await expect(custPage.getByText('سوار اللؤلؤ الفضي التجريبي')).not.toBeVisible()
@@ -281,37 +275,39 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     const adminClient = createClient(status.API_URL, status.SERVICE_ROLE_KEY, {
       auth: { autoRefreshToken: false, persistSession: false },
     })
-    const { data: usersData } = await adminClient.auth.admin.listUsers()
+    const { data: usersData, error: usersError } = await adminClient.auth.admin.listUsers()
+    expect(usersError).toBeNull()
     const custUser = usersData?.users?.find((u) => u.email === 'customer@example.com')
-    if (custUser) {
-      const { data: ord } = await adminClient
-        .from('orders')
-        .insert({
-          user_id: custUser.id,
-          status: 'delivered',
-          subtotal: 250,
-          shipping_fee: 0,
-          total: 250,
-          delivery_method: 'representative',
-          payment_method: 'cod',
-          ship_name: 'Test Cust',
-          ship_phone: '01000000000',
-          ship_governorate: 'Cairo',
-          ship_city: 'Nasr City',
-          ship_address: 'Street 1',
-        })
-        .select('id')
-        .single()
-      if (ord) {
-        await adminClient.from('order_items').insert({
-          order_id: ord.id,
-          product_id: 1,
-          product_name: 'Pearl drop earrings',
-          quantity: 1,
-          unit_price: 250,
-        })
-      }
-    }
+    if (!custUser) throw new Error('Customer fixture missing')
+    const { data: ord, error: orderError } = await adminClient
+      .from('orders')
+      .insert({
+        user_id: custUser.id,
+        status: 'delivered',
+        subtotal: 250,
+        shipping_fee: 0,
+        total: 250,
+        delivery_method: 'representative',
+        payment_method: 'cod',
+        ship_name: 'Test Cust',
+        ship_phone: '01000000000',
+        ship_governorate: 'Cairo',
+        ship_city: 'Nasr City',
+        ship_address: 'Street 1',
+        ship_postal_code: '11511',
+      })
+      .select('id')
+      .single()
+    expect(orderError).toBeNull()
+    if (!ord) throw new Error('Order fixture insertion failed')
+    const { error: itemError } = await adminClient.from('order_items').insert({
+      order_id: ord.id,
+      product_id: 1,
+      product_name: 'Pearl drop earrings',
+      quantity: 1,
+      unit_price: 250,
+    })
+    expect(itemError).toBeNull()
 
     await page.goto('/admin/products/1')
     await page.getByRole('button', { name: 'حذف نهائي' }).click()
@@ -340,10 +336,10 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
   test('6. Order fulfillment lifecycle and tracking visible to customer', async ({
     page,
-    browser,
+    newAuthContext,
   }) => {
     // Step A: Customer places COD order for product 2
-    const customerContext = await browser.newContext()
+    const customerContext = await newAuthContext()
     const custPage = await customerContext.newPage()
     custPage.on('pageerror', (err) => console.log(`[CUST BROWSER ERROR] ${err.message}`))
     custPage.on('response', async (res) => {
@@ -360,7 +356,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
     await custPage.goto('/checkout')
     await expect(custPage.locator('h1')).toContainText('بيانات التوصيل')
-    await custPage.locator('select').first().selectOption('1')
+    await custPage.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
     const addressInput = custPage.locator('input[placeholder*="اسم الشارع"]').first()
     await expect(addressInput).toBeVisible()
     await addressInput.fill('شارع رمسيس عمارة 10')
@@ -413,10 +409,10 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
 
   test('7. InstaPay order approval, payment review, proof re-upload and shipping guard', async ({
     page,
-    browser,
+    newAuthContext,
   }) => {
     // Step A: Customer creates InstaPay order (awaiting approval)
-    const custContext = await browser.newContext()
+    const custContext = await newAuthContext()
     const custPage = await custContext.newPage()
     custPage.on('pageerror', (err) => console.log(`[CUST BROWSER ERROR] ${err.message}`))
     custPage.on('response', async (res) => {
@@ -432,7 +428,7 @@ test.describe.serial('Admin End-to-End Comprehensive Journey (T-5.12)', () => {
     await custPage.getByRole('button', { name: 'أضف إلى السلة', exact: true }).click()
     await custPage.goto('/checkout')
     await expect(custPage.locator('h1')).toContainText('بيانات التوصيل')
-    await custPage.locator('select').first().selectOption('1')
+    await custPage.getByRole('combobox', { name: 'المحافظة *', exact: true }).selectOption('1')
     const addressInput = custPage.locator('input[placeholder*="اسم الشارع"]').first()
     await expect(addressInput).toBeVisible()
     await addressInput.fill('شارع النصر')

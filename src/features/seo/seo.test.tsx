@@ -1,5 +1,5 @@
 import { render, screen, act } from '@testing-library/react'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { LanguageProvider, useLanguage } from '../../i18n/LanguageProvider'
@@ -7,10 +7,16 @@ import { ThemeProvider } from '../../components/ui/ThemeProvider'
 import { useSeo, formatDocumentTitle, BRAND_NAME } from './index'
 import { Layout } from '../../components/layout/Layout'
 
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: () => ({ select: () => ({ eq: async () => ({ data: [], error: null }) }) }),
+  },
+}))
+
 function renderWithProviders(ui: React.ReactElement) {
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: { retry: false },
+      queries: { retry: false, gcTime: 0 },
     },
   })
   return render(

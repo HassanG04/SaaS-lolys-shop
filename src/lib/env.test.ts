@@ -1,7 +1,15 @@
-import { describe, expect, it, beforeEach } from 'vitest'
+import { describe, expect, it, beforeEach, vi } from 'vitest'
 import { envSchema, formatEnvError, getEnv, resetEnvCacheForTesting, validateEnv } from './env'
 
 describe('env validation', () => {
+  it('keeps local setup guidance out of the production error', () => {
+    vi.stubEnv('PROD', true)
+    try {
+      expect(validateEnv({}).formattedMessage).toBe('Invalid application configuration.')
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
   beforeEach(() => {
     resetEnvCacheForTesting()
   })

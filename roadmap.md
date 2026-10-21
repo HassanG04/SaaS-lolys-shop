@@ -1065,6 +1065,24 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** the suite passes in CI.
 - **Verify:** `npm run test:e2e -- e2e/security`
 
+#### T-7.08b: CI authentication and verification regression repair
+`status: doing` `owner: agent` `needs: T-7.08` `size: M`
+- **Do:** Repair owner-reported formatting, SEO provider and checkout accessibility failures. Remove production webdriver CAPTCHA shortcuts, load the actual provider script, isolate widget simulation in Playwright, and restore the original performance limits. Preserve SEC-05/06/07/18 and real local Auth/DB requests.
+- **Done when:** Unit coverage, verify and the affected E2E suites pass with no skipped assertions or relaxed gates; PR CI evidence is recorded.
+- **Verify:** `npm run verify`; `npm run test:unit:coverage`; `npm run test:e2e`.
+
+#### T-7.08c: Repair current browser fixtures and startup CSP
+`status: doing` `owner: agent` `needs: T-7.08b` `size: M`
+- **Do:** Align browser fixtures with required postal codes, generated QR accessibility and named form controls. Authorize the exact motion startup script hash without broadening script execution; check every inline startup script.
+- **Done when:** Admin, storefront, RTL and security journeys pass with real local Auth/database requests; CSP audit visits authenticated admin screens; verify passes.
+- **Verify:** `npm run verify`, `npm run test:e2e -- e2e/admin.spec.ts e2e/storefront-order.spec.ts e2e/rtl-qa.spec.ts e2e/security/security.spec.ts`.
+
+#### T-7.03b: Restore mobile loading performance
+`status: doing` `owner: agent` `needs: T-7.03` `size: M`
+- **Do:** Repair the mobile loading waterfall and layout shifts exposed after restoring the original performance checks during T-7.08b. Keep navigation animations, brand typography, the 200 kB initial JS budget and existing LCP/CLS thresholds.
+- **Done when:** Home and category pass LCP <= 2500 ms and CLS <= 0.1 under the existing mobile throttle; accessibility and verify pass.
+- **Verify:** `npm run test:e2e -- e2e/performance.spec.ts`; `npm run verify`.
+
 #### T-7.09: Claude Security scans
 `status: todo` `owner: human` `needs: T-7.04, T-7.08` `size: M`
 - **Do:** In Claude Code, open the repository and run the Claude Security skill: **Scan codebase** at medium effort. Triage every finding into a GitHub issue (fix, accept with a reason, or false positive) and re-scan after fixes. From then on run **Scan changes** on every PR that touches a security-sensitive path. Keep the `CLAUDE-SECURITY-*/` report folders out of git and out of public repositories. The scan complements SAST, dependency scanning and review; it does not replace them.
@@ -1640,3 +1658,8 @@ What gets easier, what gets harder, what to watch.
 
 
 
+| 2026-10-18 | T-7.08b, T-7.08c | Codex | Restored real Turnstile loading and original performance limits, corrected stale postal/QR/form fixtures, and authorized exact motion startup hash. Full base verify and coverage passed (889 app + 203 tooling); accessibility 10/10, admin 9/9, RTL 9/9, storefront 8/8 and security 9/9 passed in isolated local runs. Follow-up verify and remote CI pending; mobile performance remains open T-7.03b. | #41; follow-up pending |
+| 2026-10-18 | T-7.08c | Codex | Follow-up verify passed all 12 gates: 889 app + 203 tooling tests, no skips; 199,717/200,000 gzip bytes. Security 9/9 passes with real HTTP CSP and authenticated admin pages. Combined browser/remote CI pending; task remains doing. | draft follow-up |
+| 2026-10-18 | T-7.03b | Codex | Paused LCP tuning after three distinct attempts under section 1.5. Native preloading: 2592/2824 ms and 201107 bytes; automatic chunks: 2628/2940 ms and 203621 bytes; combined entry/immediate first paint: 2508/2500 ms, home CLS 0.1029, invalid entry attribution and about 203 kB. Reverted the failed bundle/animation experiments; retain only viewport-height reservation and stronger measurement assertions for verification. Next investigation: reduce initial dependency payload and profile font/data changes before choosing another implementation. No thresholds relaxed. | pending |
+| 2026-10-19 | T-7.08b, T-7.08c, T-7.03b | Codex | Owner approved one replacement draft after PRs #41-43 closed. Consolidated on main c6f680c, preserving newer async fixtures and correcting required postal-code setup. Fresh verify passes (889 app + 204 tooling; 199730 gzip bytes). Predecessor complete browser run: 101 pass, 2 LCP failures (2604/2756 ms, CLS 0.0402/0); native initial preloads and lazy catalog grouping improve the measured waterfall without relaxing limits. Consolidated verify and coverage pass (889 app + 204 tooling); complete browser rerun 101 pass, 2 LCP failures (2708/2776 ms, CLS 0.0402/0), no skips. GitHub 39170822440 at 6f9eb2d passes eight non-browser jobs; browser job pending. T-7.03b remains blocked. | [#44](https://github.com/HassanG04/ecommerce-lolys-shop/pull/44) |
+| 2026-10-21 | T-7.03b | Codex | Deferred hidden desktop search and removed route promise barrier; restored Latin fonts, full-size sharing image and eager hero. Fresh verify/coverage pass (890 app + 204 tooling); full browser 106 pass, no failures/skips. LCP 2256/2220ms, CLS 0.0565/0, standard JS 199741 bytes. Limits/motion retained. c7f392c remote static formatting failure corrected locally. Follow-up CI pending; task doing. | [#44](https://github.com/HassanG04/ecommerce-lolys-shop/pull/44) |

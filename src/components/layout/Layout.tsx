@@ -46,7 +46,7 @@ export function Layout() {
         className={
           isAdminWorkspace
             ? 'flex-1 w-full min-w-0 focus:outline-none'
-            : 'flex-1 w-full max-w-(--container-layout) mx-auto px-4 sm:px-6 py-8 focus:outline-none'
+            : 'flex-1 min-h-[calc(100svh-5rem)] w-full max-w-(--container-layout) mx-auto px-4 sm:px-6 py-8 focus:outline-none'
         }
       >
         <Suspense
