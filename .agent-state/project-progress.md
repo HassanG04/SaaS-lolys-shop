@@ -10,6 +10,9 @@ Completed:
 - Restored Latin brand fonts, full-size sharing logo and eager hero images; kept the existing 4,224-byte header thumbnail as a separate asset and retained entrance motion.
 - Removed developer-only setup prose from production without changing validation. Added one unit and three browser regressions for fonts, image sizes and resize/search.
 - Corrected inherited formatting and CI claims: c7f392c run 39181671709 passed eight jobs but static failed formatting.
+- Created the root `progress.md` report consolidating phase status, implemented
+  tools, cloud architecture, forecasting limits, verification evidence and
+  owner launch actions.
 
 Files changed: Navbar, routes, HomePage image priority, env formatting/test, font styles/README, logo assets, e2e/ui/brand-loading.spec.ts, roadmap and handoffs. Full list: HANDOVER_TO_ANTI_GRAVITY.md. No dependency, schema, auth/session or payment changes in this follow-up.
 
