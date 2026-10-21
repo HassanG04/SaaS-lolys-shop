@@ -1,5 +1,35 @@
 # CI repair consolidation — 2026-10-19
 
+## Codex review — 2026-10-21 (supersedes predecessor conclusions)
+
+The final follow-up retains Arabic **and Latin** brand fonts and the full-size
+sharing logo. The header uses a separate 4,224-byte thumbnail; hero images
+load eagerly. Mobile defers hidden desktop search until its breakpoint matches.
+Home/category return route imports directly while warming the catalog in parallel,
+removing the extra promise barrier. No animations, thresholds or throttles removed.
+Developer-only configuration setup prose is excluded from production.
+
+Fresh verify passes all 12 gates (890 app + 204 tooling tests). Coverage passes:
+93.32% statements, 88.3% branches, 88.4% functions, 93.61% lines.
+First coverage attempt passed assertions but failed during worker RPC shutdown;
+the unchanged full rerun passed. No ignored errors or relaxed gates.
+
+Complete isolated browser suite: **106 passed, zero failures/skips**.
+Home/category LCP **2256/2220ms**, CLS **0.0565/0**, versus consolidated baseline
+2708/2776ms: improvements of 16.7%/20.0% under the same 1.6Mbps/100ms/2xCPU throttle.
+Standard initial JS: **199741/200000 gzip bytes**; loopback build 199936.
+Three new cases verify actual font faces, logo sizes and search after resizing.
+All eight Arabic/English, light/dark, 360px/1280px captures were reviewed;
+seed photo placeholders do not verify hosted photography. Temporary isolated
+database config and regenerated tracked QA images were restored.
+
+[Run 39181671709](https://github.com/HassanG04/ecommerce-lolys-shop/actions/runs/39181671709)
+at c7f392c passed eight jobs but **static failed formatting**, now fixed locally.
+Final exact-head CI is pending upload. T-7.03b remains doing until remote CI;
+T-7.08b/T-7.08c also require owner security review. No hosted launch sign-off.
+The historical measurements and removed-font implementation below describe the
+predecessor, not the reviewed final implementation.
+
 ## Review target and provenance
 
 The owner approved one replacement draft PR after PRs #41, #42 and #43 were
@@ -37,11 +67,11 @@ deployment, hosted database operation or dashboard change was performed.
 All measurements use the unchanged 1.6 Mbps / 100 ms / 2x CPU mobile test.
 Limits remain LCP <= 2500 ms, CLS <= 0.1 and initial JS <= 200,000 gzip bytes.
 
-| Measurement                                  | Home LCP | Category LCP | Other evidence                                 |
-| -------------------------------------------- | -------- | ------------ | ---------------------------------------------- |
-| Before profiling pass                        | 3308 ms  | 3192 ms      | CLS 0 / 0.0003                                 |
-| Final predecessor complete suite (`6ef9811`) | 2604 ms  | 2756 ms      | CLS 0.0402 / 0; 101 passed, 2 failed, no skips |
-| Pre-optimization baseline (`397fd09`)        | 2708 ms  | 2776 ms      | CLS 0.0402 / 0; 101 passed, 2 failed           |
+| Measurement                                  | Home LCP | Category LCP | Other evidence                                     |
+| -------------------------------------------- | -------- | ------------ | -------------------------------------------------- |
+| Before profiling pass                        | 3308 ms  | 3192 ms      | CLS 0 / 0.0003                                     |
+| Final predecessor complete suite (`6ef9811`) | 2604 ms  | 2756 ms      | CLS 0.0402 / 0; 101 passed, 2 failed, no skips     |
+| Pre-optimization baseline (`397fd09`)        | 2708 ms  | 2776 ms      | CLS 0.0402 / 0; 101 passed, 2 failed               |
 | Final optimized performance (this session)   | 2220 ms  | 2172 ms      | CLS 0.0111 / 0.0000; 103 passed, 0 failed, 0 skips |
 
 The request trace showed the initial vendor request starting after the entry
@@ -62,6 +92,7 @@ thresholds across statements, branches, functions, and lines.
 
 The complete isolated browser run finished **103 passed, 0 failed, 0 skips**
 across all suites:
+
 - Performance (`e2e/performance.spec.ts`): Home LCP 2220 ms (CLS 0.0111), Category LCP 2172 ms (CLS 0.0000).
 - Accessibility (`e2e/accessibility.spec.ts`): 10 passed.
 - Admin (`e2e/admin.spec.ts`): 9 passed.

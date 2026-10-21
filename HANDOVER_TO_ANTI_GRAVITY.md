@@ -3,13 +3,14 @@
 ## Current objective
 
 Finish review of the owner-approved single replacement draft PR for T-7.08b,
-T-7.08c and the partial T-7.03b repair. PRs #41–43 were closed without merging.
+T-7.08c and the completed local T-7.03b repair. PRs #41–43 were closed without merging.
 Do not resume from the primary checkout's older "all tasks completed" report.
 
 - Worktree: `C:\Users\Hassan-PC\.codex\worktrees\ci-consolidation\الاء`.
 - Branch: `agent/T-7.08b-consolidated-ci-repairs`.
 - Base: main `c6f680c5c19013d614c5258c5086f683e74ffa94`.
-- Source checkpoint: `397fd09`; subsequent documentation does not change code.
+- Reviewed predecessor: `c7f392c`; this follow-up restores typography/sharing quality.
+- Use git log for the follow-up SHA; exact-head CI is pending.
 - Replacement review: [draft PR #44](https://github.com/HassanG04/ecommerce-lolys-shop/pull/44).
 - Repository: `https://github.com/HassanG04/ecommerce-lolys-shop`, redirected from the owner-approved `SaaS-lolys-shop` URL.
 - No main merge, deployment, hosted database operation or dashboard change.
@@ -29,24 +30,25 @@ Do not resume from the primary checkout's older "all tasks completed" report.
 - Fresh consolidated verify passed all 12 gates: 889 application tests, 204
   tooling tests; initial JS 199,730 / 200,000 gzip bytes.
 
+- Mobile defers hidden desktop search until its breakpoint matches; resize is tested.
+- Direct route imports avoid an extra promise barrier while warming catalog in parallel.
+- Restored Latin fonts, full-size sharing logo and eager hero; separate 4224-byte header
+  thumbnail. Retained motion. Added three browser cases and one unit case.
+
 ## Remaining
 
-Consolidated coverage passed: statements 93.29%, branches 88.24%, functions
-88.4%, lines 93.6%, with 889 app + 204 tooling tests. The complete consolidated
-browser rerun finished 101 passed, 2 failed and no skips: only mobile LCP failed
-at 2708/2776 ms; CLS 0.0402/0 passed. The local browser bundle is 199,927 bytes.
-This complete rerun supersedes the interrupted run.
+Latest fresh verify passes all 12 gates: 890 app + 204 tooling tests.
+Coverage passes (93.32% statements, 88.3% branches, 88.4% functions, 93.61% lines).
+Complete isolated browser run: 106 passed, no failures/skips; mobile LCP 2256/2220ms,
+CLS 0.0565/0. Standard initial JS 199741 bytes; local browser build 199936.
+All eight language/theme/width loading captures reviewed. Local seed product-photo
+placeholders are not hosted photography verification.
 
-GitHub run `39170822440` at `6f9eb2d` passed all eight non-browser jobs; its browser
-job was still running at the last observation. Check exact remote head/results
-before making any CI claim. Documentation-only follow-up commits do not change
-the tested source.
-
-Keep T-7.03b blocked under roadmap section 1.5 after the unsuccessful approaches.
-Further LCP work requires a revised measured approach; do not repeat experiments
-or raise budgets. Keep T-7.08b/T-7.08c doing until their criteria and remote checks
-pass. Owner security review and human-owned launch tasks remain. Local widget
-simulation does not verify hosted CAPTCHA enforcement or email delivery.
+Previous c7f392c CI run 39181671709 failed static formatting, now fixed locally.
+Push this follow-up and check its exact-head CI; keep T-7.03b doing until then.
+T-7.08b/T-7.08c also need owner security review. Human-owned launch work remains.
+First coverage run hit worker RPC shutdown after passing assertions; unchanged
+full rerun passed. No errors ignored or thresholds relaxed.
 
 ## Current files
 
@@ -54,6 +56,8 @@ Files changed against main (temporary database config excluded):
 
 - `.agent-state/project-progress.md`
 - `.github/workflows/ci.yml`
+- `HANDOVER_TO_ANTI_GRAVITY.md`
+- `HANDOVER_TO_CODEX.md`
 - `docs/handoff/CI-CONSOLIDATION-2026-10-19.md`
 - `docs/handoff/CI-REPAIR-2026-10-18.md`
 - `e2e/accessibility.spec.ts`
@@ -65,10 +69,14 @@ Files changed against main (temporary database config excluded):
 - `e2e/rtl-qa.spec.ts`
 - `e2e/security/security.spec.ts`
 - `e2e/storefront-order.spec.ts`
+- `e2e/ui/brand-loading.spec.ts`
 - `e2e/ui/loading-layout.spec.ts`
 - `eslint.config.js`
-- `HANDOVER_TO_ANTI_GRAVITY.md`
 - `index.html`
+- `public/brand/logo-navbar.jpg`
+- `public/fonts/README.md`
+- `public/fonts/aref-ruqaa.css`
+- `public/fonts/cairo.css`
 - `roadmap.md`
 - `scripts/check-ui-build.mjs`
 - `scripts/check-ui-build.test.mjs`
@@ -76,21 +84,27 @@ Files changed against main (temporary database config excluded):
 - `scripts/initial-preload.test.mjs`
 - `scripts/initial-preload.ts`
 - `src/components/layout/Layout.tsx`
+- `src/components/layout/Navbar.tsx`
 - `src/features/admin/dashboard/dashboardUI.test.tsx`
-- `src/features/auth/auth.test.tsx`
 - `src/features/auth/Turnstile.test.tsx`
 - `src/features/auth/Turnstile.tsx`
+- `src/features/auth/auth.test.tsx`
 - `src/features/seo/seo.test.tsx`
 - `src/i18n/ar.json`
+- `src/lib/env.test.ts`
+- `src/lib/env.ts`
+- `src/pages/HomePage.tsx`
+- `src/routes.tsx`
+- `src/styles/storefront.css`
 - `vite.config.ts`
 
 ## Current error
 
 ```text
-Error: Mobile LCP still exceeds the loading budget.
-Expected: LCP <= 2500 ms; CLS <= 0.1; initial JS <= 200000 gzip bytes.
-Actual: Consolidated home/category 2708/2776 ms, CLS 0.0402/0, local E2E JS 199927 bytes.
-Possible cause: Remaining vendor transfer, lazy route discovery, font and data-request timing.
+Error: None locally; exact-head PR CI pending.
+Expected: LCP <=2500ms; CLS <=0.1; initial JS <=200000 gzip bytes.
+Actual: LCP 2256/2220ms, CLS 0.0565/0; local browser JS 199936 bytes; 106 tests pass.
+Possible remaining issue: platform differences require normal remote CI.
 ```
 
 See `docs/handoff/CI-CONSOLIDATION-2026-10-19.md` for evidence and earlier failed

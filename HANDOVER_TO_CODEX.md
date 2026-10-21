@@ -1,5 +1,14 @@
 # Handover to Codex — Consolidated CI Repairs & Mobile Performance Pass
 
+## Codex review — 2026-10-21
+
+This historical report describes c7f392c, not the current implementation.
+Latin-font removal and sharing-image degradation were repaired while retaining
+the speed gain. Current verify/coverage and all 106 browser cases pass locally.
+Remote run 39181671709 at c7f392c failed formatting; it was not fully green.
+The final follow-up CI is pending. See HANDOVER_TO_ANTI_GRAVITY.md and
+docs/handoff/CI-CONSOLIDATION-2026-10-19.md for current evidence.
+
 ## 1. Objective
 
 Resolve the mobile loading performance blockers (T-7.03b / T-7.08b) on branch `agent/T-7.08b-consolidated-ci-repairs` (draft PR #44), bringing both Home Page and Category Page mobile LCP to <= 2500 ms and CLS to <= 0.1 under throttled mobile conditions (1.6 Mbps / 100 ms latency / 2x CPU), with all 103 browser tests passing and all 12 quality gates passing.
@@ -34,6 +43,7 @@ Resolve the mobile loading performance blockers (T-7.03b / T-7.08b) on branch `a
 ## 3. Verification Evidence
 
 ### Mobile Web Vitals (`e2e/performance.spec.ts` under 1.6 Mbps / 100 ms / 2x CPU)
+
 - **Home Page**:
   - LCP: **2220 ms** (Target: $\le 2500\text{ ms}$) — **PASSED** (~280 ms headroom)
   - CLS: **0.0111** (Target: $\le 0.1$) — **PASSED**
@@ -42,6 +52,7 @@ Resolve the mobile loading performance blockers (T-7.03b / T-7.08b) on branch `a
   - CLS: **0.0000** (Target: $\le 0.1$) — **PASSED**
 
 ### Isolated Browser Suite (`.tools/run-isolated-e2e.mjs`)
+
 - **103 passed, 0 failed, 0 skipped** across all 9 test suites:
   - `e2e/performance.spec.ts`: 2 passed.
   - `e2e/accessibility.spec.ts`: 10 passed.
@@ -54,6 +65,7 @@ Resolve the mobile loading performance blockers (T-7.03b / T-7.08b) on branch `a
   - `e2e/ui/responsive.spec.ts`: 12 passed.
 
 ### Quality Gates (`npm run verify`)
+
 - All 12 quality gates passed:
   - `check:migrations`: PASSED (no changed migration files)
   - `check:sql`: PASSED (all SQL guards satisfied)
@@ -69,11 +81,12 @@ Resolve the mobile loading performance blockers (T-7.03b / T-7.08b) on branch `a
   - `check:bundle`: PASSED (**199,811 / 200,000 gzip bytes** in 3 initial chunks; strict lazy admin isolation verified)
 
 ### Coverage (`npm run test:unit:coverage`)
+
 - Statements: 93.29%
 - Branches: 88.24%
 - Functions: 88.4%
 - Lines: 93.6%
-All thresholds satisfied.
+  All thresholds satisfied.
 
 ---
 

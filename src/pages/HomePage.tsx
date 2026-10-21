@@ -214,8 +214,8 @@ export default function HomePage() {
                 <ProductImage
                   src={storefrontContent.hero_image_path || 'categories/earrings-cover.webp'}
                   alt={localizedContent('hero_caption') || 'Lolys Jewelry Hero'}
-                  loading="lazy"
-                  fetchPriority="low"
+                  loading="eager"
+                  fetchPriority="high"
                   aspectRatio="4/3"
                   className="size-full rounded-card"
                   imageClassName="size-full object-cover rounded-card"

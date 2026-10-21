@@ -21,6 +21,7 @@ export interface EnvValidationFailure {
 export type EnvValidationResult = EnvValidationSuccess | EnvValidationFailure
 
 export function formatEnvError(errors: string[]): string {
+  if (import.meta.env.PROD) return 'Invalid application configuration.'
   return [
     'Missing or invalid environment configuration:',
     ...errors.map((err) => `  - ${err}`),

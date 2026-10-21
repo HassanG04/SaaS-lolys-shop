@@ -19,3 +19,10 @@ Keep these license files with the assets when redistributing them.
 No fonts are fetched from Google by the application at runtime. Tests validate
 the WOFF2 signatures and the local stylesheet paths. The original downloader
 is checkpointed with Anti-Gravity's handover; it is not part of the build.
+
+## Mobile delivery
+
+Keep Arabic and Latin faces available in both families. The Arabic ranges include
+U+0020, while the Latin ranges exclude it, so a space alone does not request the
+Latin file. Actual Latin letters and Western digits still load their proper font;
+do not replace them with system fonts to improve a performance measurement.

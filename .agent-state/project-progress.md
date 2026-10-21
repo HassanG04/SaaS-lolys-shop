@@ -1,10 +1,32 @@
 # Shared project progress
 
+## Codex — Mobile performance review — 2026-10-21
+
+Current task: T-7.03b on existing draft PR #44, branch agent/T-7.08b-consolidated-ci-repairs. Local gates pass; exact-head CI and owner review remain.
+
+Completed:
+
+- Deferred desktop-only search on phones with tested resize behavior. Home/category return their imports directly while warming the catalog in parallel.
+- Restored Latin brand fonts, full-size sharing logo and eager hero images; kept the existing 4,224-byte header thumbnail as a separate asset and retained entrance motion.
+- Removed developer-only setup prose from production without changing validation. Added one unit and three browser regressions for fonts, image sizes and resize/search.
+- Corrected inherited formatting and CI claims: c7f392c run 39181671709 passed eight jobs but static failed formatting.
+
+Files changed: Navbar, routes, HomePage image priority, env formatting/test, font styles/README, logo assets, e2e/ui/brand-loading.spec.ts, roadmap and handoffs. Full list: HANDOVER_TO_ANTI_GRAVITY.md. No dependency, schema, auth/session or payment changes in this follow-up.
+
+Tests executed: Fresh verify passes all 12 gates (890 application + 204 tooling tests); coverage passes. Complete browser run: 106 passed, zero failures/skips. Home/category LCP 2256/2220ms; CLS 0.0565/0 under the unchanged mobile throttle. Standard initial JS 199741/200000 gzip bytes; loopback build 199936. All eight Arabic/English, light/dark, 360px/1280px loading captures reviewed.
+
+Problems found: Prior optimization removed Latin faces and overwrote the sharing image; repaired. Remaining route delay traced and fixed. First coverage attempt passed assertions but hit a Vitest worker RPC shutdown error; unchanged full rerun passed. JS remains close to its fixed limit. Exact-head remote CI pending; local seed photo placeholders do not verify hosted photography or launch readiness.
+
+Next action: Push this follow-up to PR #44, inspect exact-head CI, then owner review. Security tasks remain doing until required review. No merge, deployment or hosted settings changes.
+
+Historical entries below are superseded by this reviewed result where they differ.
+
 ## Anti-Gravity — Mobile Performance Blocker Resolution & E2E Gate Pass (T-7.03b / T-7.08b) — 2026-10-19
 
 Current task: Resolve the mobile LCP performance blocker on `agent/T-7.08b-consolidated-ci-repairs` (PR #44), achieve full pass on 103/103 browser tests and all 12 verify gates. Active worktree: `C:\Users\Hassan-PC\.codex\worktrees\ci-consolidation\الاء`.
 
 Completed:
+
 - Optimized brand logo delivery: replaced raw high-res asset with a high-fidelity 120x120 JPEG (4,224 bytes vs original 93,135 bytes, >3x retina for 36x36 mobile icon). Marked navbar logo `loading="lazy"` and `fetchPriority="low"`.
 - Parallelized dynamic route chunk discovery in `src/routes.tsx` (`Promise.all([import(...), import('@/features/catalog')])`), eliminating serial waterfalls.
 - Statically imported `AnnouncementBar` inside `HomePage.tsx` to remove an extra lazy round-trip chunk.
@@ -16,6 +38,7 @@ Completed:
 Files changed: `public/brand/logo.png`, `public/fonts/aref-ruqaa.css`, `public/fonts/cairo.css`, `src/components/layout/Navbar.tsx`, `src/pages/HomePage.tsx`, `src/routes.tsx`, `src/styles/storefront.css`, `.agent-state/project-progress.md`, `docs/handoff/CI-CONSOLIDATION-2026-10-19.md`, `HANDOVER_TO_CODEX.md`.
 
 Tests executed:
+
 - Isolated mobile performance tests (`e2e/performance.spec.ts` under 1.6 Mbps / 100 ms / 2x CPU):
   - Home Page: LCP = 2220 ms (<= 2500 ms target), CLS = 0.0111 (<= 0.1 target).
   - Category Page: LCP = 2172 ms (<= 2500 ms target), CLS = 0.0000 (<= 0.1 target).

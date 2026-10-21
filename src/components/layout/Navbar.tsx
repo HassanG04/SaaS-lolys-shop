@@ -5,7 +5,15 @@ import { useCart } from '../../features/cart'
 import { AuthContext } from '../../features/auth/AuthProvider'
 import ThemeToggle from '../ui/ThemeToggle'
 import LanguageToggle from '../ui/LanguageToggle'
-const NavbarSearch = lazy(() => import('./NavbarSearch'))
+// Match the search form's md:flex breakpoint. Do not fetch or resolve a hidden
+// desktop-only suspense boundary while the mobile page is loading.
+const NavbarSearch = lazy(() => {
+  const screen = window.matchMedia('(min-width: 768px)')
+  if (screen.matches) return import('./NavbarSearch')
+  return new Promise<typeof import('./NavbarSearch')>((resolve) => {
+    screen.addEventListener('change', () => resolve(import('./NavbarSearch')), { once: true })
+  })
+})
 const NavbarQuickMenu = lazy(() => import('./NavbarQuickMenu'))
 const NotificationBell = lazy(
   () => import('../../features/notifications/components/NotificationBell'),
@@ -50,8 +58,9 @@ export function Navbar({ cartCount }: { cartCount?: number } = {}) {
         >
           <div className="relative flex size-9 sm:size-12 items-center justify-center overflow-hidden rounded-pill border border-border bg-bg">
             <img
-              src="/brand/logo.png"
-              loading="lazy"
+              src="/brand/logo-navbar.jpg"
+              width={120}
+              height={120}
               fetchPriority="low"
               alt=""
               aria-hidden="true"
