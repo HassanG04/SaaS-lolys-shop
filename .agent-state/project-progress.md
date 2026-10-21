@@ -1,5 +1,58 @@
 # Shared project progress
 
+## Codex — Restore required operations link — 2026-10-21
+
+Current task: Repair the README regression reported in PR #45's unit/coverage
+job, on `agent/T-7.03b-project-documentation`.
+
+Completed: Reproduced the weekly-runbook test failure and restored the direct
+README link required by T-8.11. Existing tests and thresholds remain unchanged.
+
+Files changed: `README.md`, `.agent-state/project-progress.md`.
+
+Tests executed: Before repair, the weekly-runbook test failed with
+`README.md must link to docs/runbooks/weekly.md`. After repair, all seven runbook
+checks pass. Fresh `npm run verify` passes all 12 gates, and the exact CI command
+`npm run test:unit:coverage` passes: 890 application tests and 204 tooling tests,
+zero failures/skips, with coverage thresholds met. Roadmap validation and
+`git diff --check` also pass. Logs are in ignored `.tools/readme-fix-*.local.log`.
+
+Problems found: The previous README rewrite removed a required operations link.
+Checking that remaining links existed did not catch the missing required link.
+
+Next action: Push the repair to existing PR #45 and inspect its new CI results
+before owner review. No merge or production changes.
+
+## Codex — README and consolidated progress update — 2026-10-21
+
+Current task: Documentation follow-up to T-7.03b and the user's README/progress
+requests, on `agent/T-7.03b-project-documentation` from main `13d9b86`.
+
+Completed: Replaced the obsolete foundation-preview README with implemented
+features, stack, cloud architecture, local setup, dated verification evidence
+and launch requirements. Added the consolidated `progress.md` report with phase
+counts and forecasting limits. GitHub confirms PR #44 merged at `13d9b86` on
+2026-10-21; its implementation head is `51cad50`. Forecast activation is separate
+from shop launch. The older analytics review requires reconciliation with repairs.
+
+Files changed: `README.md`, `progress.md`, `.agent-state/project-progress.md`.
+
+Tests executed: Repository-wide `format:check`, roadmap validation (152 tasks),
+20 local documentation link/asset checks, `git diff --check` and `check:secrets`
+passed. Previous implementation evidence is recorded in `progress.md`; the full
+application/database suites were not rerun for this documentation-only change.
+
+Problems found: README described only a foundation preview. The earlier progress
+report incorrectly called merged PR #44 a draft. Roadmap labels for T-7.08b,
+T-7.08c and T-7.03b still say doing; no owner task or launch status was changed.
+
+Next action: Owner review of the separate documentation PR, followed by
+reconciling the merged repair task statuses and completing the hosted launch
+checklist. No application, migration or production changes in this follow-up.
+
+The dated entries below describe earlier work; this entry supersedes their PR
+status and pending-CI notes. Implementation run 39600738034 passed all nine jobs.
+
 ## Codex — Mobile performance review — 2026-10-21
 
 Current task: T-7.03b on existing draft PR #44, branch agent/T-7.08b-consolidated-ci-repairs. Local gates pass; exact-head CI and owner review remain.
