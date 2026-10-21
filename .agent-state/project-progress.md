@@ -1,5 +1,35 @@
 # Shared project progress
 
+## Codex — Owner-requested branch and PR cleanup — 2026-10-21
+
+Current task: Repository cleanup on `agent/T-8.11-branch-cleanup`, starting from
+main `e7b7d53` after owner merge of PR #45.
+
+Completed: Verified merged PR history, backed up 54 exact branch tips to remote
+tags, removed 26 obsolete remote branches and 28 unused local refs, and closed
+incompatible ESLint 10 PR #53 under ADR-0001. Preserved seven dependency PRs,
+the unmerged cozy-storefront branch, all checked-out branches and dirty worktrees.
+
+Files changed: `.agent-state/project-progress.md` and
+`docs/handoff/BRANCH-CLEANUP-2026-10-21.md` (full recovery manifest).
+
+Tests executed: Read-only Git/GitHub inventory and merged-head ancestry checks;
+all 54 backup tags verified against exact original SHAs; atomic remote deletion
+used exact-tip leases; remote branches and remaining open PRs re-listed after
+cleanup. Changed Markdown formatting, roadmap validation (152 tasks), all seven
+weekly-runbook tests, manifest/link checks and whitespace checks pass. The prior
+README repair CI run 39618940662 completed successfully. No application or
+dependency changes, or fresh application/database run in this cleanup session.
+
+Problems found: Squash-merged branches still looked unmerged by ancestry alone.
+Three old worktrees contain uncommitted edits and remain untouched. PRs #51/#52
+have incompatible Vitest/coverage version pairs and need one coordinated update;
+PRs #46–50 have green reported checks but still require review.
+
+Next action: Review the cleanup record, reconcile the three merged repair task
+labels, review retained dependency PRs, and finish the recorded owner launch
+gates. No main push, PR merge, deployment or hosted setting change performed.
+
 ## Codex — Restore required operations link — 2026-10-21
 
 Current task: Repair the README regression reported in PR #45's unit/coverage
