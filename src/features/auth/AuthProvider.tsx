@@ -1,5 +1,14 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
 import type { Session, User } from '@supabase/supabase-js'
+import type { AppError } from '../../lib/errors'
 import { queryClient } from '../../lib/queryClient'
 import { supabase } from '../../lib/supabase'
 import { fetchProfileApi, fetchAalApi, fetchFactorsApi, signOutApi } from './session.api'
@@ -28,6 +37,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [profileError, setProfileError] = useState<AppError | null>(null)
+  const profileRequest = useRef(0)
   const [role, setRole] = useState<UserRole>('customer')
   const [aal, setAal] = useState<AalLevel>('aal1')
   const [factors, setFactors] = useState<MfaFactor[]>([])
@@ -35,7 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loadingFactors, setLoadingFactors] = useState(true)
 
   const loadUserData = useCallback(async (activeUser: User | null) => {
+    profileRequest.current += 1
+    const request = profileRequest.current
     if (!activeUser) {
+      setProfileError(null)
       setProfile(null)
       setRole('customer')
       setAal('aal1')
@@ -45,17 +59,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setLoadingFactors(true)
-    const [userProfile, currentAal, currentFactors] = await Promise.all([
-      fetchProfileApi(activeUser.id),
-      fetchAalApi(),
-      fetchFactorsApi(),
-    ])
-
-    setProfile(userProfile)
-    setRole(userProfile?.role || 'customer')
-    setAal(currentAal)
-    setFactors(currentFactors)
-    setLoadingFactors(false)
+    try {
+      const [userProfile, currentAal, currentFactors] = await Promise.all([
+        fetchProfileApi(activeUser.id),
+        fetchAalApi(),
+        fetchFactorsApi(),
+      ])
+      if (!userProfile) throw new Error('Profile unavailable')
+      if (request !== profileRequest.current) return
+      setProfileError(null)
+      setProfile(userProfile)
+      setRole(userProfile.role)
+      setAal(currentAal)
+      setFactors(currentFactors)
+    } catch (error) {
+      const { toAppError } = await import('../../lib/errors')
+      if (request !== profileRequest.current) return
+      setProfile(null)
+      setRole('customer')
+      setAal('aal1')
+      setFactors([])
+      setProfileError(toAppError(error))
+    } finally {
+      if (request === profileRequest.current) setLoadingFactors(false)
+    }
   }, [])
 
   const refreshProfile = useCallback(async () => {
@@ -105,6 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, newSession) => {
       if (!isMounted) return
+      profileRequest.current += 1
       setSession(newSession)
       setUser(newSession?.user ?? null)
       // Auth notifications run inside the SDK lock. Fetching Auth data here and
@@ -120,6 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       isMounted = false
+      profileRequest.current += 1
       clearTimeout(authRefreshTimer)
       subscription.unsubscribe()
     }
@@ -166,12 +195,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signOutApi(options)
       setSession(null)
       setUser(null)
-      setProfile(null)
-      setRole('customer')
-      setAal('aal1')
-      setFactors([])
+      await loadUserData(null)
     },
-    [],
+    [loadUserData],
   )
 
   const updatePassword = useCallback(
@@ -245,6 +271,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     session,
     profile,
+    profileError,
     role,
     aal,
     factors,

@@ -97,7 +97,7 @@ select action, entity, entity_id, "old", "new", actor, actor_role, at
 
 ### Step 5: Refresh session and step up to MFA (aal2)
 
-1. The promoted user must sign out and sign back in on the web application to refresh JWT claims and client profile state.
+1. Reload the web application to fetch the updated `public.profiles` row. The application reads the business role from that row, not from a custom JWT role claim. Signing out and back in also refreshes it, but requires a new MFA challenge.
 2. Under Lolys' admin security architecture (T-1.15), all administrative endpoints and RLS mutations require `aal2` (MFA step-up).
 3. The user must navigate to `/admin` or `/account/security`. If no verified authenticator exists, select **Set up authenticator**, scan the QR or enter the manual key in a trusted authenticator app, then enter its current six-digit code. Restarting setup replaces only unfinished Lolys factors; verified factors are preserved.
 4. Verify the TOTP challenge code (`/admin/mfa/challenge`).
@@ -123,4 +123,4 @@ returning id, role;
 - **Error: 0 rows updated**: The email address was not found or case mismatch occurred. Use Diagnostic 2 with `lower(email)` to verify the exact account and retrieve its UUID.
 - **Error: ADM-001 / Permission denied**: The trigger `protect_profile_role` prevented the change because `current_user` is not the database owner, or `session_user` differs. Ensure you are running as the superuser/owner (`postgres`) in the SQL editor.
 - **Admin sees 403 or redirects to login**: The account is at `aal1` instead of `aal2`. Admin routes strictly require multi-factor authentication. Enroll and verify a TOTP device.
-- **Client displays old customer role**: The browser has a cached profile. Sign out and sign in again to fetch the updated profile row.
+- **Client displays old customer role**: Reload to fetch the updated profile row. If loading fails, use the retry action and check the hosted schema; an absent optional photo column previously caused the entire profile query to fail silently. See the [2026-10-26 hosted profile diagnosis](../handoff/SUPABASE-PROFILE-REPAIR-2026-10-26.md). Confirm the dashboard project matches the deployed site's project before promoting again. A schema-cache reload cannot add missing columns.

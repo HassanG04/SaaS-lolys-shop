@@ -41,6 +41,7 @@ function mount(ui: ReactNode, lang: Language, role: 'guest' | 'customer' | 'admi
       role === 'guest' ? null : ({ id: 'fixture-user', email: 'fixture@example.invalid' } as User),
     session: null,
     profile: null,
+    profileError: null,
     role: role === 'guest' ? 'customer' : role,
     aal: 'aal2',
     factors: [],

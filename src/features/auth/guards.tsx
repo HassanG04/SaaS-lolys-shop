@@ -1,14 +1,15 @@
 import type { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { PearlLoader } from '../../components/ui/PearlLoader'
+import { ErrorPanel } from '../../components/ui/ErrorPanel'
 import { AuthAlert } from './AuthAlert'
 import { useAuth } from './AuthProvider'
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth()
+  const { user, loading, loadingFactors, profileError, refreshProfile } = useAuth()
   const location = useLocation()
 
-  if (loading) {
+  if (loading || (profileError && loadingFactors)) {
     return (
       <div
         role="status"
@@ -25,11 +26,16 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     return <Navigate to={`/login?redirect=${redirectTarget}`} replace />
   }
 
+  if (profileError) {
+    return <ErrorPanel error={profileError} onRetry={() => void refreshProfile()} />
+  }
+
   return <>{children}</>
 }
 
 export function RequireAdmin({ children }: { children: ReactNode }) {
-  const { user, role, aal, factors, loading, loadingFactors } = useAuth()
+  const { user, role, aal, factors, loading, loadingFactors, profileError, refreshProfile } =
+    useAuth()
   const location = useLocation()
 
   if (loading || loadingFactors) {
@@ -47,6 +53,10 @@ export function RequireAdmin({ children }: { children: ReactNode }) {
   if (!user) {
     const redirectTarget = encodeURIComponent(location.pathname + location.search)
     return <Navigate to={`/login?redirect=${redirectTarget}`} replace />
+  }
+
+  if (profileError) {
+    return <ErrorPanel error={profileError} onRetry={() => void refreshProfile()} />
   }
 
   if (role !== 'admin') {

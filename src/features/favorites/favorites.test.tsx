@@ -223,6 +223,7 @@ describe('Favorites feature', () => {
       return {
         user: { id: 'user-123', email: 'user@example.com' } as unknown as AuthContextValue['user'],
         profile: null,
+        profileError: null,
         session: null,
         role: 'customer',
         aal: 'aal1',
