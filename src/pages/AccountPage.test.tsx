@@ -53,6 +53,7 @@ function renderWithProviders(authOverrides: Partial<AuthContextValue> = {}) {
     session: null,
     user: { id: 'user-abc', email: 'yasmin@example.com' } as unknown as AuthContextValue['user'],
     profile: mockProfile,
+    profileError: null,
     role: 'customer',
     aal: 'aal1',
     factors: [],

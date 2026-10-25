@@ -20,6 +20,7 @@ function renderRegisterPage(options?: {
     session: null,
     user: null,
     profile: null,
+    profileError: null,
     role: 'customer',
     aal: 'aal1',
     factors: [],

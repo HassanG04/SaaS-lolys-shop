@@ -135,6 +135,7 @@ function renderCheckoutPage(options?: {
             email_confirmed_at: '2026-10-10T00:00:00Z',
           } as unknown as AuthContextValue['user']),
     profile: options?.profile !== undefined ? options.profile : mockProfile,
+    profileError: null,
     role: 'customer',
     aal: 'aal1',
     factors: [],

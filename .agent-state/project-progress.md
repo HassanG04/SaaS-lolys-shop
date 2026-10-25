@@ -1,5 +1,39 @@
 # Shared project progress
 
+## Codex — Hosted profile/admin-role repair — 2026-10-26
+
+Current task: T-2.06c on `agent/T-2.06c-profile-connection-repair`, based on
+`origin/main` e7b7d53 in the ci-consolidation worktree. Owner requested completion
+and merge after verification. Anti-Gravity's primary-checkout commit 89df316 is
+preserved; it is not the verification baseline for this repair.
+
+Completed: Live zero-row queries confirmed that lolys-shop.pages.dev connects
+to project wcdkrgrceczeuttnijwf but the deployed full profile read fails with
+42703 because profiles.avatar_url is missing. Added narrowly scoped optional
+photo compatibility, safe retry panels, database-role validation and stale
+profile response protection. Documented the existing required migration and
+owner diagnostics; no hosted mutations.
+
+Files changed: AuthProvider, guards, session/profile API, auth types, two new
+regression suites, five existing auth-context fixtures, first-admin runbook,
+roadmap, this file and docs/handoff/SUPABASE-PROFILE-REPAIR-2026-10-26.md.
+
+Tests executed: All 12 verify gates pass: 908 application and 204 tooling tests,
+zero failures/skips; initial JS 199864/200000 gzip bytes. All 28 targeted admin,
+security and accessibility browser tests pass against isolated local Supabase
+after starting Docker and resetting only that test stack. Final touched files
+lint clean; roadmap validates 153 tasks. Read-only live probes fetched no account
+rows or secret keys. Exact-head CI/merge status is recorded on the repair PR.
+
+Problems found: Missing hosted migration breaks the full profile query; the old
+loader silently mapped failure to customer. A broad fallback also drops saved
+address fields and conceals unrelated errors. No authenticated live account
+verification has been performed.
+
+Next action: Complete full gates and isolated browser checks, prepare the repair
+PR, inspect CI and merge only after required checks succeed. Owner must reconcile
+hosted migration history and confirm the signed-in admin flow.
+
 ## Codex — Restore required operations link — 2026-10-21
 
 Current task: Repair the README regression reported in PR #45's unit/coverage

@@ -1,4 +1,5 @@
 import type { Session, User } from '@supabase/supabase-js'
+import type { AppError } from '../../lib/errors'
 
 export type UserRole = 'customer' | 'admin'
 export type AalLevel = 'aal1' | 'aal2'
@@ -95,6 +96,7 @@ export interface AuthContextValue {
   user: User | null
   session: Session | null
   profile: UserProfile | null
+  profileError: AppError | null
   role: UserRole
   aal: AalLevel
   factors: MfaFactor[]

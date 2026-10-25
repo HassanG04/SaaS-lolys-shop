@@ -27,21 +27,7 @@ export async function signOutApi(options?: {
 export async function fetchProfileApi(userId: string): Promise<UserProfile | null> {
   const delegate = apiDelegate?.fetchProfileApi
   if (isMocked(delegate) && delegate) return delegate(userId)
-  try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select(
-        'id,role,full_name,phone,alt_phone,governorate_id,city,district,address,postal_code,floor,apartment,landmark,email,avatar_url',
-      )
-      .eq('id', userId)
-      .maybeSingle()
-
-    return error || !data
-      ? null
-      : ({ ...data, role: (data.role as 'admin' | 'customer') || 'customer' } as UserProfile)
-  } catch {
-    return null
-  }
+  return (await import('./profile.api')).fetchProfileApi(userId)
 }
 
 export async function fetchAalApi(): Promise<AalLevel> {
