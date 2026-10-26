@@ -66,6 +66,20 @@ Before triggering a migration run if a project has paused:
 
 ## 4. Release Order and Rollback Policy
 
+### Existing database without migration history
+
+If querying `supabase_migrations.schema_migrations` returns `42P01` while shop
+tables already exist, stop before triggering either database deployment workflow.
+The existing schema must be reconciled with the repository first. Do not create
+an empty history table or mark all migration versions applied to make deployment
+continue: those actions do not install missing tables, permissions or functions.
+
+Run the read-only [hosted schema audit](hosted-schema-audit.sql) and compare its
+result with a fully migrated local reference. See the
+[2026-10-26 inventory and recovery sequence](../handoff/HOSTED-SCHEMA-INVENTORY-2026-10-26.md).
+Take a backup and rehearse the reviewed recovery before changing hosted schema
+or migration history. Ordinary deployment resumes after that reconciliation.
+
 Per Section 3.4 of `roadmap.md`:
 
 1. **DB change:** Delivered in an isolated PR with additive migration and pgTAP tests.

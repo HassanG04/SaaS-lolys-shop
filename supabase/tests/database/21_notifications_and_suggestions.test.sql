@@ -10,10 +10,10 @@ UPDATE public.profiles SET role = 'admin' WHERE id = tests.get_supabase_uid('not
 -- 1. Anonymous Access Restrictions
 SELECT tests.clear_authentication();
 
-SELECT is(
-  (SELECT count(*)::integer FROM public.customer_notifications),
-  0,
-  'Anonymous sees no customer notifications'
+SELECT throws_ok(
+  $$SELECT * FROM public.customer_notifications$$,
+  '42501', NULL,
+  'Anonymous cannot read the private notification table'
 );
 
 SELECT throws_ok(

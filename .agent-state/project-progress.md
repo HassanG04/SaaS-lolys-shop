@@ -1,5 +1,52 @@
 # Shared project progress
 
+## Codex — Hosted migration-history reconciliation — 2026-10-26
+
+Current task: T-2.06c follow-up on `agent/T-2.06c-hosted-schema-audit`, based on
+merged main `2e298af`. PR #56 remains a draft; no hosted write or main merge was
+performed.
+
+Completed: Compared the full owner-supplied cloud audit with local main 2e298af.
+All 21 analytics relations, 39 existing policies, 45 indexes and 16 triggers
+match. The missing feature schema, avatar support, legacy postal guards and
+permission drift are now covered by a guarded owner-run repair. The supplied
+`place_order` matches the current checkout function after CRLF/comment/whitespace
+normalization. The supplied `get_payment_instructions` had an admin-only bypass
+and pre-approval response that violate the payment-flow specification; the repair
+reinstalls the reviewed owner-only implementation.
+
+Files changed this follow-up: docs/handoff/HOSTED-SCHEMA-INVENTORY-2026-10-26.md,
+docs/runbooks/hosted-repair-2026-10-26.md,
+docs/runbooks/hosted-repair-2026-10-26.sql,
+docs/runbooks/hosted-repair-preflight.sql,
+scripts/build-hosted-repair.mjs, scripts/build-hosted-repair.test.mjs,
+supabase/migrations/20261026100000_explicit_api_schema_permissions.sql,
+supabase/tests/database/21_notifications_and_suggestions.test.sql,
+supabase/tests/database/26_explicit_api_schema_permissions.test.sql,
+roadmap.md and this progress file.
+
+Tests executed: final `npm run verify` passed all gates with 908 application
+tests and 206 tooling tests. An earlier cold 80-worker startup timed out one
+dashboard test; the final full run and isolated dashboard rerun both passed.
+Migration, SQL, token, supply-chain, i18n, lint, formatting, typecheck, secrets
+and roadmap checks pass. The repair generator tests pass 2/2. A partial hosted-schema
+recovery rehearsal and a fresh 35-migration schema each pass all 681 pgTAP
+assertions; rollback, commit-preservation and second-application guards pass.
+Supabase CLI type generation structurally matches the tracked
+`src/types/database.types.ts` after removing CLI status text and whitespace.
+
+Problems found: Hosted migration history is absent, so the repair deliberately
+does not fabricate `supabase_migrations` records. The cloud must be backed up,
+rehearsed with the generated file's final `ROLLBACK`, then explicitly committed
+by the owner and re-audited. Existing merchant settings are preserved; no QR or
+payment recipient is changed unless the approved empty value is supplied.
+
+Next action: Owner reviews and runs
+`docs/runbooks/hosted-repair-2026-10-26.sql` in the target Supabase SQL Editor,
+then returns the post-repair audit. Keep T-2.06c doing until hosted acceptance,
+migration-history reconciliation and the signed-in admin/payment flow are
+verified. Do not rerun the combined bootstrap or mark all versions applied.
+
 ## Codex — Hosted profile/admin-role repair — 2026-10-26
 
 Current task: T-2.06c on `agent/T-2.06c-profile-connection-repair`, based on
