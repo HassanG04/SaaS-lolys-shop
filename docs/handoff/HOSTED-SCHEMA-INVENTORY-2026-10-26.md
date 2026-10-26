@@ -71,6 +71,14 @@ the already matched 38 functions or repeating the full table inventory.
 
 ## Initial read-only export
 
+**Final follow-up received:** checkout matches current behavior after removing
+comments/whitespace. The payment-instructions function contains an undocumented
+role-only admin bypass and incompatible pre-approval response. Effective CREATE
+on `public` is confirmed for both browser roles. A guarded, locally rehearsed
+repair is now available in the [owner recovery runbook](../runbooks/hosted-repair-2026-10-26.md).
+The earlier request for these two definitions is satisfied; no further source
+export is needed before the owner rehearsal. Migration history remains separate.
+
 Use [hosted-schema-audit.sql](../runbooks/hosted-schema-audit.sql) in the SQL Editor
 of the same project (`wcdkrgrceczeuttnijwf`). Run the whole file and export/copy
 the `schema_audit` result as JSON or CSV. It is one row, avoiding the editor's

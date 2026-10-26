@@ -3,38 +3,50 @@
 ## Codex — Hosted migration-history reconciliation — 2026-10-26
 
 Current task: T-2.06c follow-up on `agent/T-2.06c-hosted-schema-audit`, based on
-merged main `2e298af`. PR #55 is confirmed merged; its implementation is preserved.
+merged main `2e298af`. PR #56 remains a draft; no hosted write or main merge was
+performed.
 
 Completed: Compared the full owner-supplied cloud audit with local main 2e298af.
 All 21 analytics relations, 39 existing policies, 45 indexes and 16 triggers
-match. Missing three public tables, avatar support, content-editor API/settings,
-notifications, suggestions, occasion reminders and legacy postal guards. Matched
-36 of 40 existing function definitions after converting stored source to CRLF;
-two match older migration definitions. Only v2 place_order and
-get_payment_instructions remain unresolved. Prepared a targeted read-only export
-of those two definitions and effective schema/sequence permissions.
+match. The missing feature schema, avatar support, legacy postal guards and
+permission drift are now covered by a guarded owner-run repair. The supplied
+`place_order` matches the current checkout function after CRLF/comment/whitespace
+normalization. The supplied `get_payment_instructions` had an admin-only bypass
+and pre-approval response that violate the payment-flow specification; the repair
+reinstalls the reviewed owner-only implementation.
 
-Files changed this follow-up: docs/runbooks/hosted-function-audit.sql,
-docs/handoff/HOSTED-SCHEMA-INVENTORY-2026-10-26.md, roadmap.md, this progress file.
+Files changed this follow-up: docs/handoff/HOSTED-SCHEMA-INVENTORY-2026-10-26.md,
+docs/runbooks/hosted-repair-2026-10-26.md,
+docs/runbooks/hosted-repair-2026-10-26.sql,
+docs/runbooks/hosted-repair-preflight.sql,
+scripts/build-hosted-repair.mjs, scripts/build-hosted-repair.test.mjs,
+supabase/migrations/20261026100000_explicit_api_schema_permissions.sql,
+supabase/tests/database/21_notifications_and_suggestions.test.sql,
+supabase/tests/database/26_explicit_api_schema_permissions.test.sql,
+roadmap.md and this progress file.
 
-Tests executed: Targeted export passes read-only tests on the full local reference
-(exactly two definitions) and a disposable partial database (zero/one function).
-A deliberately raising fixture proves the query exports source without invoking
-the function; fixture removed. Automated structural and historical-body hash
-comparison completed. No application or migration code changed; no hosted writes.
-Repository-wide formatting, secrets, roadmap (153 tasks), migration integrity,
-SQL guards and staged diff checks passed. Full application suites were not rerun
-for this documentation/read-only-query change.
+Tests executed: `npm run test:unit` passed with 908 application tests and 206
+tooling tests. The application verify gates passed through the unit-test stage;
+the first full run had one dashboard test timeout under the 80-worker cold
+startup, and the isolated dashboard rerun passed all 12 tests. Migration, SQL,
+token, supply-chain, i18n, lint, formatting, typecheck, secrets and roadmap
+checks pass. The repair generator tests pass 2/2. A partial hosted-schema
+recovery rehearsal and a fresh 35-migration schema each pass all 681 pgTAP
+assertions; rollback, commit-preservation and second-application guards pass.
+Supabase CLI type generation structurally matches the tracked
+`src/types/database.types.ts` after removing CLI status text and whitespace.
 
-Problems found: Migration history is absent; state is partial, not a proven
-migration prefix. Hosted public-schema CREATE grants are broader, while sequence
-grants are narrower; some local defaults are overly broad too. Do not copy all
-reference grants. Legacy postal checks can block unrelated old-row updates.
+Problems found: Hosted migration history is absent, so the repair deliberately
+does not fabricate `supabase_migrations` records. The cloud must be backed up,
+rehearsed with the generated file's final `ROLLBACK`, then explicitly committed
+by the owner and re-audited. Existing merchant settings are preserved; no QR or
+payment recipient is changed unless the approved empty value is supplied.
 
-Next action: Owner returns function_audit from hosted-function-audit.sql. Compare
-the two money-flow definitions, then rehearse a precise owner-run repair with
-least-privilege grants and verified history. Do not rerun the combined bootstrap
-or mark all versions applied. T-2.06c stays doing; PR #56 remains draft.
+Next action: Owner reviews and runs
+`docs/runbooks/hosted-repair-2026-10-26.sql` in the target Supabase SQL Editor,
+then returns the post-repair audit. Keep T-2.06c doing until hosted acceptance,
+migration-history reconciliation and the signed-in admin/payment flow are
+verified. Do not rerun the combined bootstrap or mark all versions applied.
 
 ## Codex — Hosted profile/admin-role repair — 2026-10-26
 
