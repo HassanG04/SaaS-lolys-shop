@@ -5,34 +5,36 @@
 Current task: T-2.06c follow-up on `agent/T-2.06c-hosted-schema-audit`, based on
 merged main `2e298af`. PR #55 is confirmed merged; its implementation is preserved.
 
-Completed: Compared the owner's 13-table cloud inventory with the fully migrated
-local reference (16 public tables). Missing: profiles.avatar_url,
-customer_notifications, customer_suggestions and admin_occasion_reminders.
-Both postal-code columns exist. The other supplied column lists/types match.
-All reported RLS flags are enabled, but function/policy/grant equivalence remains
-unknown. Owner reports missing CLI migration-history table (42P01). Prepared one
-read-only metadata export and a documented reconciliation sequence; no history
-repair or production deployment command is authorized by this inventory alone.
+Completed: Compared the full owner-supplied cloud audit with local main 2e298af.
+All 21 analytics relations, 39 existing policies, 45 indexes and 16 triggers
+match. Missing three public tables, avatar support, content-editor API/settings,
+notifications, suggestions, occasion reminders and legacy postal guards. Matched
+36 of 40 existing function definitions after converting stored source to CRLF;
+two match older migration definitions. Only v2 place_order and
+get_payment_instructions remain unresolved. Prepared a targeted read-only export
+of those two definitions and effective schema/sequence permissions.
 
-Files changed: docs/runbooks/hosted-schema-audit.sql, docs/runbooks/deploy-db.md,
+Files changed this follow-up: docs/runbooks/hosted-function-audit.sql,
 docs/handoff/HOSTED-SCHEMA-INVENTORY-2026-10-26.md, roadmap.md, this progress file.
 
-Tests executed: Audit SELECT runs successfully in read-only transactions against
-the full local schema and a disposable partial schema without history/analytics.
-The full report has 13 sections, including 57 functions and 49 policies. Automated
-comparison confirms the three absent tables and sole profile-column difference.
-Formatting, roadmap validation (153 tasks), SQL/migration integrity, secret
-scanning and diff checks pass. Full application suites were not rerun for this
-metadata-only runbook; no application or migration code changed.
+Tests executed: Targeted export passes read-only tests on the full local reference
+(exactly two definitions) and a disposable partial database (zero/one function).
+A deliberately raising fixture proves the query exports source without invoking
+the function; fixture removed. Automated structural and historical-body hash
+comparison completed. No application or migration code changed; no hosted writes.
+Repository-wide formatting, secrets, roadmap (153 tasks), migration integrity,
+SQL guards and staged diff checks passed. Full application suites were not rerun
+for this documentation/read-only-query change.
 
-Problems found: Hosted schema has no recorded CLI migration history. Table/column
-presence cannot prove earlier migrations ran or security controls are equivalent.
-The initial inventory excludes analytics, stored settings, routines and policies.
+Problems found: Migration history is absent; state is partial, not a proven
+migration prefix. Hosted public-schema CREATE grants are broader, while sequence
+grants are narrower; some local defaults are overly broad too. Do not copy all
+reference grants. Legacy postal checks can block unrelated old-row updates.
 
-Next action: Owner runs the provided read-only audit in the same Supabase SQL
-Editor and returns the result. Compare definitions before preparing a tested
-reconciliation and a specific owner-run history/deployment sequence. Keep T-2.06c
-doing; no hosted changes or launch claim.
+Next action: Owner returns function_audit from hosted-function-audit.sql. Compare
+the two money-flow definitions, then rehearse a precise owner-run repair with
+least-privilege grants and verified history. Do not rerun the combined bootstrap
+or mark all versions applied. T-2.06c stays doing; PR #56 remains draft.
 
 ## Codex — Hosted profile/admin-role repair — 2026-10-26
 

@@ -35,7 +35,41 @@ public-only inventory does not prove analytics is missing. The homepage editor
 and payment settings also cannot be assessed from column names: several related
 migrations change functions and setting rows without creating a new table.
 
-## Next evidence: one read-only export
+## Detailed export comparison (received)
+
+The owner supplied the full JSON audit. Both servers report PostgreSQL 17.11.
+Analytics exists: all 21 analytics relations match the audited metadata. Across
+both schemas, 45 indexes, 39 policies, 16 triggers and 116 constraints match;
+this is structural evidence, not a live transaction/security test.
+
+| Area                  | Confirmed difference / implication                                                                                                                                                                                                                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Missing features      | Three tables, 17 functions, 10 policies, seven triggers, 22 constraints and eight indexes are absent. These include notifications, suggestions, avatars and occasion reminders.                                                                                                                                           |
+| Content editor        | `storefront_content` and `admin_update_storefront_content` are absent; the new homepage editor cannot save through its intended API.                                                                                                                                                                                      |
+| Avatars               | `avatars` bucket, `profiles.avatar_url`, path constraints and four storage policies are absent. Existing product/proof bucket configurations match.                                                                                                                                                                       |
+| Postal codes          | Both columns exist. Hosted order postal code is nullable, with the historical NOT VALID checks still present and both replacement guards absent. This can block updates of legacy rows; do not fabricate postal codes or blanket-apply NOT NULL.                                                                          |
+| Functions             | 36 of 40 match current definitions after converting only their stored source bodies to CRLF. `admin_anonymize_customer` matches 20261014170000; `admin_update_setting` matches 20261014023000. The four comparison roles' EXECUTE results differ only for anon on v2 `place_order` and `require_admin` (denied remotely). |
+| Unknown definitions   | V2 `place_order` and `get_payment_instructions` match neither current nor historical migration bodies under the tested LF/CRLF variants. Their signatures, owner, definer flags and search paths match. Inspect source before replacement.                                                                                |
+| Permissions           | Hosted public-schema ACL grants CREATE to anon/authenticated. Public sequences lack the local API grants. Most table ACL differences are absent service-role grants; some local defaults grant more than the intended least privilege. Do not copy all local grants to production.                                        |
+| History/configuration | CLI history and default privilege entries are absent. `occasion_reminder_advance_days` is absent. Private `instapay_link` exists, but the older settings function does not support it; key presence does not prove its migration ran. Setting values were deliberately not exported.                                      |
+
+Candidate existing migrations to reconcile, in dependency order: 20261018090000
+(legacy postal guards), 20261018100000 (content), 20261018140000
+(notifications/suggestions), 20261018160000 (avatars), 20261018170000
+(recipient), 20261018180000 (occasions), 20261018200000 (themed QR). This is
+**not an executable deployment list**: earlier changes are partial, two money-flow
+functions remain unresolved, and permissions need an explicit least-privilege plan.
+Do not rerun `setup_remote_supabase.sql`; its bootstrap also overwrites delivery
+and payment settings and does not establish migration history.
+
+Next: run [hosted-function-audit.sql](../runbooks/hosted-function-audit.sql) and
+return its single `function_audit` result. It reads only the two unresolved
+function definitions plus effective schema/sequence permissions; it invokes
+neither function and reads no customer or setting rows. Review function source
+before sharing if custom private literals have been added. This avoids exporting
+the already matched 38 functions or repeating the full table inventory.
+
+## Initial read-only export
 
 Use [hosted-schema-audit.sql](../runbooks/hosted-schema-audit.sql) in the SQL Editor
 of the same project (`wcdkrgrceczeuttnijwf`). Run the whole file and export/copy
@@ -56,8 +90,8 @@ migrations applied. This report deliberately supplies no history-repair command.
 
 ## Recovery sequence after comparison
 
-1. Compare the hosted export with the local reference and inspect differences
-   in admin-role protection, MFA, order/payment functions, constraints and RLS.
+1. Resolve the two remaining function definitions and effective permissions.
+   Current MFA/role-protection function fingerprints match after CRLF handling.
 2. Establish a reviewed description of the existing schema. Do not assume all
    migrations before a timestamp ran merely because some recent columns exist.
 3. Have the owner take a backup and rehearse the proposed reconciliation on an
@@ -87,3 +121,8 @@ existence of the migration-history table or the analytics schema.
 
 No application code, dependency or migration changed. No hosted write occurred.
 The task remains doing until the cloud schema and owner acceptance are verified.
+
+The targeted function audit also passed in read-only transactions against the
+full reference (two definitions) and a disposable partial database (zero/one).
+A deliberately raising fixture function was exported without being invoked;
+the fixture database was removed. No shared stack was reset.
