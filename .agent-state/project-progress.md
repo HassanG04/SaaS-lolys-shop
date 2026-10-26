@@ -25,12 +25,11 @@ supabase/tests/database/21_notifications_and_suggestions.test.sql,
 supabase/tests/database/26_explicit_api_schema_permissions.test.sql,
 roadmap.md and this progress file.
 
-Tests executed: `npm run test:unit` passed with 908 application tests and 206
-tooling tests. The application verify gates passed through the unit-test stage;
-the first full run had one dashboard test timeout under the 80-worker cold
-startup, and the isolated dashboard rerun passed all 12 tests. Migration, SQL,
-token, supply-chain, i18n, lint, formatting, typecheck, secrets and roadmap
-checks pass. The repair generator tests pass 2/2. A partial hosted-schema
+Tests executed: final `npm run verify` passed all gates with 908 application
+tests and 206 tooling tests. An earlier cold 80-worker startup timed out one
+dashboard test; the final full run and isolated dashboard rerun both passed.
+Migration, SQL, token, supply-chain, i18n, lint, formatting, typecheck, secrets
+and roadmap checks pass. The repair generator tests pass 2/2. A partial hosted-schema
 recovery rehearsal and a fresh 35-migration schema each pass all 681 pgTAP
 assertions; rollback, commit-preservation and second-application guards pass.
 Supabase CLI type generation structurally matches the tracked
