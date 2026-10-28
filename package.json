@@ -41,7 +41,7 @@
     "db:types:check": "node scripts/local-db.mjs check-types"
   },
   "dependencies": {
-    "react": "19.3.0",
+    "react": "19.3.1",
     "react-dom": "19.3.0",
     "@supabase/supabase-js": "2.117.3",
     "@tanstack/react-query": "5.104.1",
