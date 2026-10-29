@@ -109,7 +109,7 @@ describe('Email recovery destination', () => {
   it('shows a safe failure without a false success when the session expired', async () => {
     network.updateUser.mockResolvedValue({
       data: { user: null },
-      error: new AuthApiError('private backend detail', 401),
+      error: new AuthApiError('private backend detail', 401, 'session_expired'),
     })
     show()
     await fill('New-Secret-81!')

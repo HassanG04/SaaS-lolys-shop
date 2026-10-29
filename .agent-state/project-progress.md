@@ -1,3 +1,17 @@
+## Codex — T-2.04b — 2026-10-29
+
+Current task: T-2.04b; review branch agent/T-2.04b-password-recovery.
+
+Completed: Added the new-password form after Supabase resolves a recovery session. Keeps neutral requests, expiry handling and server authorization.
+
+Files changed: ResetPasswordPage, recovery tests, password-recovery.spec.ts, roadmap, hosted feature report, shared state.
+
+Tests executed: Combined implementation passes all 12 verify gates (924 application and 204 tooling tests), local db:reset/db:test (680 assertions), regenerated db:types, 80 analytics tests, and 2 real local recovery-link browser cases (Arabic/English). Earlier full-run dashboard timeout passed in isolation and the final full run. No remote CI or production test is claimed.
+
+Problems found: Hosted schema has seven confirmed gaps; see docs/handoff/HOSTED-FEATURE-STATUS-2026-10-29.md. Cloudflare and verification mail work; owner already confirmed the repaired homepage editor.
+
+Next action: Owner reviews and deploys recovery PR, then tests a fresh hosted email link. Continue T-9.15a export contract.
+
 # Shared project progress
 
 ## Codex — Hosted profile/admin-role repair — 2026-10-26
