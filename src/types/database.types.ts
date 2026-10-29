@@ -408,6 +408,9 @@ isOneToOne: false
 "admin_get_analytics_insights":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"admin_get_forecast_export":
+{ Args: { "p_export"?: boolean }; Returns: Json
+                           },
 "admin_get_forecasts":
 { Args: { "p_run_id"?: number,"p_series_id"?: number,"p_series_type"?: string }; Returns: Json
                            },

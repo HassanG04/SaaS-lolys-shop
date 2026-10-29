@@ -1269,6 +1269,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Cairo date boundaries, year rollover, uncertain/reviewed holiday dates, no sales history, duplicate generation and unauthorized access tested. Reminders never invent uplift, change prices automatically or activate production forecasting.
 - **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run analytics:test && npm run verify && npm run test:e2e`
 
+#### T-9.15a: Gated forecast dataset contract
+`status: done` `owner: agent` `needs: T-9.01, T-9.10` `size: M`
+- **Do:** Add the AAL2-only aggregate CSV dataset RPC, regenerated types and validated client API. Use the 56-day/30-valid-order gate and privacy rules in docs/spec/forecast-export-change.md. Split the user interface into T-9.15b to keep review size bounded.
+- **Done when:** Permissions, readiness boundaries, valid-order filtering, weighted prices, zero-sale days and identifier exclusion pass pgTAP; generated types and safe response validation are available for the UI.
+- **Verify:** npm run db:reset, db:test, db:types and verify.
+
 ## Appendix A: Task format and the roadmap tool
 
 Task block (the tool ignores fenced code blocks, so this example is not a task):
@@ -1678,3 +1684,5 @@ What gets easier, what gets harder, what to watch.
 
 | 2026-10-26 | T-2.06c | Codex | Owner requested hosted connection review and authorized merge after verification. Live zero-row probe confirms 42703 missing profiles.avatar_url. Narrow photo compatibility preserves database role/address; other failures show safe retry; stale profile responses cannot restore privileges. All 12 local verify gates pass (908 app, 204 tooling), 28 targeted admin/security/accessibility browser tests pass, bundle 199864 bytes. Migration and hosted account acceptance remain owner actions; task stays doing. | pending |
 | 2026-10-29 | T-2.04b | Codex | Repaired email recovery destination; 9 unit cases and 2 real local Auth link journeys verify new password, old password rejection and replay denial. Combined verify passes; owner hosted deployment/retest pending. SEC-01/05/06 preserved. | pending |
+
+| 2026-10-29 | T-9.15a | Codex | Added gated aggregate export: 17 new pgTAP assertions (680 total), generated public types, bounded file and completed UTC days. Current wishlist/catalog snapshots explicitly documented as unsuitable historical features. Combined verify passed. | pending |

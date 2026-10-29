@@ -1,6 +1,9 @@
+import { z } from 'zod'
+import { toAppError } from '@/lib/errors'
 import { supabase } from '@/lib/supabase'
 import type {
   AdminOccasionReminder,
+  ForecastExportReadiness,
   ForecastCategoryOption,
   ForecastProductOption,
   ForecastResponse,
@@ -8,6 +11,57 @@ import type {
   SeriesType,
   UpcomingOccasion,
 } from './types'
+
+export async function getAdminForecastExport(exportRows = false): Promise<ForecastExportReadiness> {
+  const { data, error } = await supabase.rpc('admin_get_forecast_export', {
+    p_export: exportRows,
+  })
+  if (error) throw toAppError(error)
+  const row = z.object({
+    sale_date: z.string(),
+    product_id: z.number(),
+    product_name: z.string(),
+    product_name_ar: z.string().nullable(),
+    category_id: z.number(),
+    category_name: z.string(),
+    category_name_ar: z.string().nullable(),
+    units_sold: z.number(),
+    revenue_egp: z.number(),
+    valid_orders: z.number(),
+    exported_at: z.string(),
+    average_paid_unit_price: z.number().nullable(),
+    current_list_price: z.number(),
+    current_discount_percent: z.number(),
+    current_stock: z.number(),
+    wishlists_at_export: z.number(),
+    closing_stock: z.number().nullable(),
+    stockout_flag: z.boolean().nullable(),
+    ramadan: z.boolean().nullable(),
+    eid_fitr: z.boolean().nullable(),
+    eid_adha: z.boolean().nullable(),
+    mothers_day: z.boolean().nullable(),
+    valentines: z.boolean().nullable(),
+    black_friday: z.boolean().nullable(),
+    back_to_school: z.boolean().nullable(),
+  })
+  try {
+    return z
+      .object({
+        ready: z.boolean(),
+        first_sale_date: z.string().nullable(),
+        valid_orders: z.number().nonnegative(),
+        days_since_first_sale: z.number().nonnegative(),
+        minimum_days: z.literal(56),
+        minimum_orders: z.literal(30),
+        row_count: z.number().int().nonnegative(),
+        rows: z.array(row),
+      })
+      .refine((value) => value.row_count === value.rows.length)
+      .parse(data)
+  } catch (error) {
+    throw toAppError(error)
+  }
+}
 
 export async function getAdminForecasts(
   seriesType: SeriesType = 'shop',
