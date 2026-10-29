@@ -1,16 +1,16 @@
 ## Codex — T-9.15b — 2026-10-29
 
-Current task: T-9.15b; review branch agent/T-9.15b-forecast-csv-ui.
+Current task: T-9.15b complete locally; review branch agent/T-9.15b-forecast-csv-ui. Draft review order: [recovery #62](https://github.com/HassanG04/ecommerce-lolys-shop/pull/62), [dataset contract #63](https://github.com/HassanG04/ecommerce-lolys-shop/pull/63), then [download interface #64](https://github.com/HassanG04/ecommerce-lolys-shop/pull/64). Each later PR targets the preceding branch; after merging a parent, retarget the next PR to main and recheck CI. No agent merge or production deployment.
 
 Completed: Completed the Arabic/English forecast download interface, disabled until the server gate passes. Export checks permissions again and reports setup failures safely.
 
 Files changed: ForecastExportCard and seven tests, ForecastPage/hooks/i18n, roadmap and shared state.
 
-Tests executed: Combined implementation passes all 12 verify gates (924 application and 204 tooling tests), local db:reset/db:test (680 assertions), regenerated db:types, 80 analytics tests, and 2 real local recovery-link browser cases (Arabic/English). Earlier full-run dashboard timeout passed in isolation and the final full run. No remote CI or production test is claimed.
+Tests executed: Combined implementation passes all 12 verify gates (924 application and 204 tooling tests), local db:reset/db:test (680 assertions), regenerated db:types, 80 analytics tests, and 2 real local recovery-link browser cases (Arabic/English). The final CI coverage command also passes: 924 application/204 tooling tests, 93.32% statements, 89.49% branches, 88.40% functions and 93.61% lines. Roadmap check validates 156 tasks; staged-file secret scan, formatting and whitespace checks pass. Earlier full-run dashboard timeout passed in isolation and the final full run. Remote CI has started; no remote success or production acceptance is claimed.
 
 Problems found: Hosted schema has seven confirmed gaps; see docs/handoff/HOSTED-FEATURE-STATUS-2026-10-29.md. Cloudflare and verification mail work; owner already confirmed the repaired homepage editor.
 
-Next action: Review stack in order: recovery, export contract, export interface. Owner deploys Cloudflare code and reviewed Supabase changes, then confirms hosted recovery and export state. Existing seven hosted gaps still need reconciliation; T-9.13 remains human-owned.
+Next action: Check CI on #62–64 and have the owner review the stack in order. Owner deploys Cloudflare code and reviewed Supabase changes, then confirms a fresh hosted recovery link and export state. Existing seven hosted gaps still need reconciliation against a fresh complete schema audit, preserving real orders and RLS; the older combined cloud repair must not be replayed. T-9.13 remains human-owned. The primary checkout and unrelated editor PR #61 are preserved.
 
 ## Codex — T-9.15a — 2026-10-29
 
