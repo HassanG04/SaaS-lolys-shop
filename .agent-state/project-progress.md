@@ -1,5 +1,3 @@
-## Codex — T-2.04b — 2026-10-29
-
 Current task: T-2.04b; review branch agent/T-2.04b-password-recovery, draft PR #62. Completing CI environment repairs discovered during review, then carrying them into dependent draft PRs #63 and #64.
 
 Completed: Added the new-password form after Supabase resolves a recovery session. Keeps neutral requests, expiry handling and server authorization.

@@ -3,6 +3,7 @@ import {
   dismissAdminOccasionReminder,
   generateAdminOccasionReminders,
   getAdminForecasts,
+  getAdminForecastExport,
   getAdminOccasionReminders,
   getAdminReorderList,
   getForecastCategories,
@@ -29,6 +30,19 @@ export function useAdminForecasts(
     queryFn: () => getAdminForecasts(seriesType, seriesId, runId),
     staleTime: 5 * 60 * 1000,
   })
+}
+
+export function useAdminForecastExport() {
+  return useQuery({
+    queryKey: ['admin', 'forecast-export-readiness'],
+    queryFn: () => getAdminForecastExport(false),
+    staleTime: 60 * 1000,
+    refetchInterval: 60 * 1000,
+  })
+}
+
+export function useDownloadAdminForecastExport() {
+  return useMutation({ mutationFn: () => getAdminForecastExport(true) })
 }
 
 export function useAdminReorderList(leadTimeDays: number = 7, serviceZ: number = 1.28) {

@@ -1275,6 +1275,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Permissions, readiness boundaries, valid-order filtering, weighted prices, zero-sale days and identifier exclusion pass pgTAP; generated types and safe response validation are available for the UI.
 - **Verify:** npm run db:reset, db:test, db:types and verify.
 
+#### T-9.15b: Bilingual forecast CSV download
+`status: done` `owner: agent` `needs: T-9.15a` `size: M`
+- **Do:** Add the Forecast screen's disabled/progress/ready download control using the database contract. Recheck readiness regularly and at download, use formula-safe CSV and existing mapped errors, and explain current-snapshot limitations in both languages.
+- **Done when:** Seven UI/API tests cover bilingual disabled state, actual CSV content, formula protection, missing setup, changed permission/readiness and malformed results. Full verify passes.
+- **Verify:** npm run verify.
+
 ## Appendix A: Task format and the roadmap tool
 
 Task block (the tool ignores fenced code blocks, so this example is not a task):
@@ -1683,4 +1689,3 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-21 | T-7.03b | Codex | Deferred hidden desktop search and removed route promise barrier; restored Latin fonts, full-size sharing image and eager hero. Fresh verify/coverage pass (890 app + 204 tooling); full browser 106 pass, no failures/skips. LCP 2256/2220ms, CLS 0.0565/0, standard JS 199741 bytes. Limits/motion retained. c7f392c remote static formatting failure corrected locally. Follow-up CI pending; task doing. | [#44](https://github.com/HassanG04/ecommerce-lolys-shop/pull/44) |
 
 | 2026-10-26 | T-2.06c | Codex | Owner requested hosted connection review and authorized merge after verification. Live zero-row probe confirms 42703 missing profiles.avatar_url. Narrow photo compatibility preserves database role/address; other failures show safe retry; stale profile responses cannot restore privileges. All 12 local verify gates pass (908 app, 204 tooling), 28 targeted admin/security/accessibility browser tests pass, bundle 199864 bytes. Migration and hosted account acceptance remain owner actions; task stays doing. | pending |
-| 2026-10-29 | T-2.04b | Codex | Repaired email recovery destination; 9 unit cases and 2 real local Auth link journeys verify new password, old password rejection and replay denial. Combined verify passes; owner hosted deployment/retest pending. SEC-01/05/06 preserved. | pending |
