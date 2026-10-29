@@ -23,3 +23,11 @@ Cloudflare deploys frontend assets; it does not install database migrations. The
 Password recovery is a separate frontend defect: the existing destination only requested another email. T-2.04b supplies the password-entry step after Supabase resolves an authenticated recovery session. The owner must retest a fresh email link after deploying that repair. Verification email establishes access to an inbox; bot controls remain CAPTCHA and rate limits.
 
 T-9.15a/b adds a separate `admin_get_forecast_export(boolean)` migration and download UI. That new function will also need owner deployment before the button can evaluate hosted readiness. Forecasting code already exists; production activation remains T-9.13 after real-data gates and backtesting. No hosted forecast readiness or price-model accuracy is asserted by the existence check.
+
+Owner SQL follow-up: [hosted-features-2026-10-29.md](../runbooks/hosted-features-2026-10-29.md)
+provides a dedicated APPLY file for this missing-feature snapshot, including the
+CSV RPC. It checks known MFA/settings functions and current feature absence at
+execution time, preserves the repaired editor and existing checkout, and refuses
+unrecognized/partial installations. This replaces the older combined recovery
+for this specific state. The owner must still apply it and return the check;
+local rehearsal is not hosted installation evidence.

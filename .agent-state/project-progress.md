@@ -1,3 +1,17 @@
+## Codex — Hosted missing-feature installer — 2026-10-29
+
+Current task: T-2.06c on agent/T-2.06c-hosted-feature-installer, based on main 5457fc9. Owner requested the SQL for the confirmed missing hosted features after the editor was repaired.
+
+Completed: Prepared a guarded, atomic owner-run APPLY file for profile photos, notifications/suggestions, wishlist demand, occasion reminders, postal guards and the CSV RPC. Preserves existing checkout/payment/editor/MFA definitions and settings; no production changes. New tables retain RLS and explicit grants. Existing migration files are unchanged.
+
+Files changed: docs/runbooks/hosted-features-APPLY.sql, hosted-features-CHECK.sql, hosted-features-2026-10-29.md, hosted-features/ fragments and CSV regression fixture; scripts/build-hosted-features.mjs and tests; scripts/rehearse-hosted-features.mjs; roadmap and shared state.
+
+Tests executed: Disposable schema-only rehearsal passes 172 affected database assertions and eight preservation/rollback/refusal scenarios. Existing records, editor content and payment settings survive; legacy missing postal codes do not block shipping. All 12 verify gates pass (917 application tests, 208 tooling tests; zero failures/skips; bundle 199863/200000 gzip bytes). Roadmap validates 154 tasks. No hosted application or new remote CI success is claimed.
+
+Problems found: Replaying the old combined repair would overwrite the repaired editor and older settings functions would lose InstaPay link support. This installer selects the final function versions and refuses unknown/partial installations. Historical missing postal codes require genuine owner-provided data before a global NOT NULL conversion; the installer never invents them.
+
+Next action: Owner reviews the draft repair PR, runs the complete docs/runbooks/hosted-features-APPLY.sql as postgres, and returns its feature_check JSON (all eleven values true expected). Runtime guards refuse unrecognized/partially installed setups. No agent production execution, merge or deployment. Task stays doing until hosted acceptance.
+
 ## Codex — T-2.04b — 2026-10-29
 
 Current task: T-2.04b; review branch agent/T-2.04b-password-recovery, draft PR #62. Completing CI environment repairs discovered during review, then carrying them into dependent draft PRs #63 and #64.
