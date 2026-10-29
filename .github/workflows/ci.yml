@@ -17,6 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - name: Reserve local database ports before network downloads
+        shell: bash
+        run: |
+          reserved="$(sysctl -n net.ipv4.ip_local_reserved_ports)"
+          sudo sysctl -w "net.ipv4.ip_local_reserved_ports=${reserved:+$reserved,}56320-56329"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -78,12 +83,30 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
-      - name: Install Semgrep
-        run: pip install semgrep==1.108.0
+      - name: Prepare the same pinned scanner used by Static analysis
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull semgrep/semgrep:1.179.0@sha256:cab19964e6c93019934252a9cd591d9b27df1e5b5d1734b26f4069ae51c295f8
+          wrapper="$RUNNER_TEMP/lolys-semgrep"
+          cat > "$wrapper" <<'SCANNER'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          mounts=(--mount "type=bind,source=$PWD,target=$PWD,readonly")
+          if [[ "$PWD" != "$GITHUB_WORKSPACE" ]]; then
+            mounts+=(--mount "type=bind,source=$GITHUB_WORKSPACE,target=$GITHUB_WORKSPACE,readonly")
+          fi
+          exec docker run --rm "${mounts[@]}" --workdir "$PWD" \
+            --env SEMGREP_SEND_METRICS=off --env SEMGREP_ENABLE_VERSION_CHECK=0 \
+            --entrypoint semgrep \
+            semgrep/semgrep:1.179.0@sha256:cab19964e6c93019934252a9cd591d9b27df1e5b5d1734b26f4069ae51c295f8 "$@"
+          SCANNER
+          chmod +x "$wrapper"
+          echo "SEMGREP_BIN=$wrapper" >> "$GITHUB_ENV"
       - name: Verify Semgrep project rules against planted violations
         run: node --test scripts/semgrep.test.mjs
       - name: Run Semgrep SAST scan
-        run: semgrep scan --config p/typescript --config p/react --config .semgrep/ --error --severity ERROR src
+        run: '"$SEMGREP_BIN" scan --config p/typescript --config p/react --config .semgrep/ --error --severity ERROR src'
 
   static:
     runs-on: ubuntu-latest
@@ -162,6 +185,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
+      - name: Reserve local database ports before network downloads
+        shell: bash
+        run: |
+          reserved="$(sysctl -n net.ipv4.ip_local_reserved_ports)"
+          sudo sysctl -w "net.ipv4.ip_local_reserved_ports=${reserved:+$reserved,}56320-56329"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false

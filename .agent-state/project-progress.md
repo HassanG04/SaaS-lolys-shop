@@ -28,7 +28,7 @@ Next action: Owner reviews database slice; apply only after reconciling hosted s
 
 ## Codex — T-2.04b — 2026-10-29
 
-Current task: T-2.04b; review branch agent/T-2.04b-password-recovery.
+Current task: T-2.04b; review branch agent/T-2.04b-password-recovery, draft PR #62. Completing CI environment repairs discovered during review, then carrying them into dependent draft PRs #63 and #64.
 
 Completed: Added the new-password form after Supabase resolves a recovery session. Keeps neutral requests, expiry handling and server authorization.
 
@@ -36,9 +36,9 @@ Files changed: ResetPasswordPage, recovery tests, password-recovery.spec.ts, roa
 
 Tests executed: Combined implementation passes all 12 verify gates (924 application and 204 tooling tests), local db:reset/db:test (680 assertions), regenerated db:types, 80 analytics tests, and 2 real local recovery-link browser cases (Arabic/English). Earlier full-run dashboard timeout passed in isolation and the final full run. No remote CI or production test is claimed.
 
-Problems found: Hosted schema has seven confirmed gaps; see docs/handoff/HOSTED-FEATURE-STATUS-2026-10-29.md. Cloudflare and verification mail work; owner already confirmed the repaired homepage editor.
+Problems found: Hosted schema has seven confirmed gaps; see docs/handoff/HOSTED-FEATURE-STATUS-2026-10-29.md. Cloudflare and verification mail work; owner already confirmed the repaired homepage editor. Remote CI also exposed a legacy scanner/Python 3.14 crash and a database port collision before browser tests. See docs/handoff/RECOVERY-FORECAST-CI-2026-10-29.md; existing tests and thresholds remain intact.
 
-Next action: Owner reviews and deploys recovery PR, then tests a fresh hosted email link. Continue T-9.15a export contract.
+Next action: Confirm the updated CI runner checks pass on #62–64 before owner approval. Owner reviews and deploys the recovery PR, then tests a fresh hosted email link. The export contract/interface are complete locally on the dependent branches.
 
 # Shared project progress
 
