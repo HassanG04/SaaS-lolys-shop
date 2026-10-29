@@ -1,3 +1,31 @@
+## Codex — Hosted missing-feature installer — 2026-10-29
+
+## Codex — Finale project record — 2026-10-29
+
+Current task: Documentation-only completion record on agent/T-2.06c-hosted-feature-installer.
+
+Completed: Created `Finale.md` with the delivered product capabilities, cloud architecture, Supabase/PostgreSQL and SQL work, frontend tools, security controls, analytics/data collection and forecasting boundary, project workflow, verification evidence, launch context and a portfolio gallery using tracked QA screenshots.
+
+Files changed: `Finale.md`, `.agent-state/project-progress.md`.
+
+Tests executed: Prettier formatting check, roadmap validation and secret scan are pending for this documentation change; no application code changed.
+
+Problems found: Existing progress documents contain older dated snapshots, so Finale labels current hosted feature evidence separately and does not claim that a screenshot is a live production measurement.
+
+Next action: Review the generated Finale document and use the linked gallery images for portfolio posts. Keep production forecasting manual until the documented data gates and owner activation review are complete.
+
+Current task: T-2.06c on agent/T-2.06c-hosted-feature-installer, based on main 5457fc9. Owner requested the SQL for the confirmed missing hosted features after the editor was repaired.
+
+Completed: Prepared the guarded, atomic owner-run APPLY file in draft PR #67. Owner has now returned all eleven feature_check values true: avatar_url, rls_enabled, suggestions, forecast_csv, notifications, editor_present, wishlist_demand, occasion_reminders, order_postal_guard, profile_postal_guard and payment_proofs_private. This records owner-confirmed hosted installation; no production changes were executed by the agent. Existing migration files are unchanged.
+
+Files changed: docs/runbooks/hosted-features-APPLY.sql, hosted-features-CHECK.sql, hosted-features-2026-10-29.md, hosted-features/ fragments and CSV regression fixture; scripts/build-hosted-features.mjs and tests; scripts/rehearse-hosted-features.mjs; roadmap and shared state.
+
+Tests executed: Implementation verification passed 172 local database assertions, eight preservation/rollback/refusal scenarios and all 12 verify gates (917 application tests, 208 tooling tests; zero failures/skips; bundle 199863/200000 gzip bytes). Owner's subsequent hosted feature check passes all eleven flags. This session changes evidence documentation only; fresh formatting and roadmap checks apply. No authenticated production feature journeys or new remote CI success are inferred from the SQL result.
+
+Problems found: Replaying the old combined repair would overwrite the repaired editor and older settings functions would lose InstaPay link support. This installer selects the final function versions and refuses unknown/partial installations. Historical missing postal codes require genuine owner-provided data before a global NOT NULL conversion; the installer never invents them.
+
+Next action: Do not rerun APPLY: the reported hosted objects are installed. Confirm the deployed website can save a profile photo, submit/read a suggestion, display notifications/admin reminders and read CSV readiness. Retest a fresh password-recovery link after the frontend repair deployment. PR #67 remains for owner review; no agent merge or deployment. T-2.06c stays doing until remaining hosted account/feature acceptance is recorded.
+
 ## Codex — T-2.04b — 2026-10-29
 
 Current task: T-2.04b; review branch agent/T-2.04b-password-recovery, draft PR #62. Completing CI environment repairs discovered during review, then carrying them into dependent draft PRs #63 and #64.
