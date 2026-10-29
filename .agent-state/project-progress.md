@@ -1,5 +1,44 @@
 # Shared project progress
 
+## Codex — Homepage editor recovery and launch status — 2026-10-29
+
+Current task: T-3.10f on `agent/T-3.10f-hosted-content-editor`, from main
+`2e298af`. Owner confirms live homepage editing, bilingual publishing and reload
+persistence now work. Preserve draft database-recovery PR #56 and primary checkout.
+
+Completed: Owner diagnostic proved missing content row/save RPC, with RLS and
+read policies intact. Added bilingual setup guidance, homepage retry and retained
+drafts. Prepared an atomic, guarded repair from the unchanged content migration.
+Owner rehearsed successfully, then applied the dedicated APPLY file and returned
+`content_rows:1, settings_rls:true, save_function_exists:true`. Owner confirmed
+all three live editor acceptance checks. Real purchases/admin handoff recorded.
+
+Files changed: content.api.ts, content.test.ts, ContentEditor.tsx,
+ContentEditor.test.tsx, settings.test.tsx, src/i18n/contentEditor.ts,
+docs/runbooks/storefront-editor-check.sql, storefront-editor-recovery.md,
+storefront-editor-repair.sql, storefront-editor-APPLY.sql, runbooks/README.md,
+scripts/storefront-editor-repair.test.mjs, progress.md, roadmap.md and this file.
+
+Tests executed: All 12 verify gates pass (914 app, 206 tooling), followed by all
+207 tooling tests after the explicit APPLY artifact was added. Initial JS
+199872/200000 gzip bytes. Nineteen focused editor tests; eight mocked Chromium
+cases across languages/themes and 360/1280px. Local disposable schema-only clone:
+rehearsal/apply, unchanged synthetic records, MFA/RLS/audit/replay guards and all
+25 content pgTAP assertions pass. Owner live publish/reload acceptance confirmed.
+
+Problems found: First SQL wrapper failed on temporary-table lifetime (42P01).
+Owner's follow-up audit showed no partial install and RLS still enabled. Replaced
+it with an atomic DO/in-memory snapshot. A later successful rehearsal still left
+setup absent, so provided a no-edit APPLY file with explicit metadata receipt;
+that application succeeded. Two stale test fixtures were corrected; one cold
+chart import timeout passed unchanged in full reruns. No gates weakened.
+
+Next action: Owner reviews the verified repair branch/PR; no agent merge/deploy.
+T-3.10f is complete. T-2.06c still needs a fresh full cloud audit: do not replay
+PR #56's old combined repair after this narrow installation. Last SMTP evidence
+is Gmail 535; abuse controls, security scan, recovery and final launch checklist
+still need acceptance. No new database role was introduced.
+
 ## Codex — Hosted profile/admin-role repair — 2026-10-26
 
 Current task: T-2.06c on `agent/T-2.06c-profile-connection-repair`, based on

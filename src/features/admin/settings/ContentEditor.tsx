@@ -15,11 +15,27 @@ import {
   type StorefrontContent,
 } from '@/features/settings/content'
 import {
+  ContentSetupError,
   getContentSnapshot,
   saveContentSnapshot,
   uploadHeroImage,
   type ContentSnapshot,
 } from './content.api'
+
+function ContentError({ error, onRetry }: { error: unknown; onRetry?: () => void }) {
+  const { lang } = useLanguage()
+  const missingSetup = error instanceof ContentSetupError
+  return (
+    <div className="space-y-3">
+      <ErrorPanel
+        title={missingSetup ? editorCopy[lang].setupTitle : undefined}
+        error={error}
+        onRetry={onRetry}
+      />
+      {missingSetup && <p className="text-small text-text-muted">{editorCopy[lang].setupHelp}</p>}
+    </div>
+  )
+}
 
 export const CONTENT_QUERY_KEY = ['settings', 'content-editor'] as const
 type Section = 'hero' | 'about' | 'footer' | 'policies'
@@ -53,7 +69,11 @@ export default function ContentEditor() {
     column = lang === 'ar' ? 0 : 1
   const client = useQueryClient(),
     photoInput = useRef<HTMLInputElement>(null)
-  const query = useQuery({ queryKey: CONTENT_QUERY_KEY, queryFn: getContentSnapshot })
+  const query = useQuery({
+    queryKey: CONTENT_QUERY_KEY,
+    queryFn: getContentSnapshot,
+    retry: (count, error) => !(error instanceof ContentSetupError) && count < 3,
+  })
   const [draft, setDraft] = useState<ContentSnapshot | null>(null)
   const [section, setSection] = useState<Section>('hero')
   const [search, setSearch] = useState('')
@@ -124,7 +144,7 @@ export default function ContentEditor() {
   }
   if (query.error)
     return (
-      <ErrorPanel
+      <ContentError
         error={query.error}
         onRetry={() => {
           void query.refetch()
@@ -159,7 +179,7 @@ export default function ContentEditor() {
           </Button>
         ))}
       </div>
-      {error != null && <ErrorPanel error={error} />}
+      {error != null && <ContentError error={error} />}
       {conflict && (
         <p role="alert" className="text-danger">
           {c.conflict}

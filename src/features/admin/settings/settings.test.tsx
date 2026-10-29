@@ -379,7 +379,7 @@ describe('T-5.09: Admin Settings UI and step-up authorization', () => {
           eq: vi.fn().mockImplementation((_col: string, val: string) => {
             if (val === 'storefront_content') {
               return {
-                single: vi.fn().mockResolvedValue({
+                maybeSingle: vi.fn().mockResolvedValue({
                   data: {
                     value: storefrontValue,
                     updated_at: '2026-10-18T00:00:00Z',

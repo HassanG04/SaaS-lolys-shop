@@ -56,6 +56,9 @@ export const editorCopy = {
     order: 'ترتيب روابط التذييل',
     preview: 'معاينة النص',
     loading: 'جارٍ تحميل المحتوى',
+    setupTitle: 'تعديل المتجر غير متاح بعد',
+    setupHelp:
+      'تعذّر الوصول إلى إعدادات محرر المتجر. تواصل مع المسؤول التقني لإكمال الإعداد، ثم أعد المحاولة هنا. لا تحتاج إلى فتح لوحة التحكم، ولم يتم نشر أي تغييرات.',
   },
   en: {
     title: 'Edit store content',
@@ -86,5 +89,8 @@ export const editorCopy = {
     order: 'Footer link order',
     preview: 'Text preview',
     loading: 'Loading content',
+    setupTitle: 'Store editing is not available yet',
+    setupHelp:
+      'The store editor setup is unavailable. Ask your technical support to complete it, then retry here. You do not need to open the dashboard, and no changes have been published.',
   },
 }
