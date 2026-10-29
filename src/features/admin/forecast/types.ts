@@ -64,6 +64,45 @@ export interface ForecastResponse {
   history: HistoryPoint[]
 }
 
+export interface ForecastExportReadiness {
+  ready: boolean
+  first_sale_date: string | null
+  valid_orders: number
+  days_since_first_sale: number
+  minimum_days: number
+  minimum_orders: number
+  row_count: number
+  rows: ForecastExportRow[]
+}
+
+export interface ForecastExportRow {
+  sale_date: string
+  product_id: number
+  product_name: string
+  product_name_ar: string | null
+  category_id: number
+  category_name: string
+  category_name_ar: string | null
+  units_sold: number
+  revenue_egp: number
+  valid_orders: number
+  exported_at: string
+  average_paid_unit_price: number | null
+  current_list_price: number
+  current_discount_percent: number
+  current_stock: number
+  wishlists_at_export: number
+  closing_stock: number | null
+  stockout_flag: boolean | null
+  ramadan: boolean | null
+  eid_fitr: boolean | null
+  eid_adha: boolean | null
+  mothers_day: boolean | null
+  valentines: boolean | null
+  black_friday: boolean | null
+  back_to_school: boolean | null
+}
+
 export interface ReorderItem {
   product_id: number
   name: string

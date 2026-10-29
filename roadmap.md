@@ -1269,6 +1269,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Cairo date boundaries, year rollover, uncertain/reviewed holiday dates, no sales history, duplicate generation and unauthorized access tested. Reminders never invent uplift, change prices automatically or activate production forecasting.
 - **Verify:** `npm run db:reset && npm run db:test && npm run db:types && npm run analytics:test && npm run verify && npm run test:e2e`
 
+#### T-9.15a: Gated forecast dataset contract
+`status: done` `owner: agent` `needs: T-9.01, T-9.10` `size: M`
+- **Do:** Add the AAL2-only aggregate CSV dataset RPC, regenerated types and validated client API. Use the 56-day/30-valid-order gate and privacy rules in docs/spec/forecast-export-change.md. Split the user interface into T-9.15b to keep review size bounded.
+- **Done when:** Permissions, readiness boundaries, valid-order filtering, weighted prices, zero-sale days and identifier exclusion pass pgTAP; generated types and safe response validation are available for the UI.
+- **Verify:** npm run db:reset, db:test, db:types and verify.
+
 ## Appendix A: Task format and the roadmap tool
 
 Task block (the tool ignores fenced code blocks, so this example is not a task):
