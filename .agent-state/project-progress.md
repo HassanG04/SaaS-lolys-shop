@@ -1,17 +1,3 @@
-## Codex — T-9.15a — 2026-10-29
-
-Current task: T-9.15a; review branch agent/T-9.15a-forecast-csv.
-
-Completed: Validated the database-authorized dataset and client contract. No price automation or production forecast activation.
-
-Files changed: New export migration and pgTAP suite; forecast API/types; generated database types; export spec and roadmap.
-
-Tests executed: Combined implementation passes all 12 verify gates (924 application and 204 tooling tests), local db:reset/db:test (680 assertions), regenerated db:types, 80 analytics tests, and 2 real local recovery-link browser cases (Arabic/English). Earlier full-run dashboard timeout passed in isolation and the final full run. No remote CI or production test is claimed.
-
-Problems found: Hosted schema has seven confirmed gaps; see docs/handoff/HOSTED-FEATURE-STATUS-2026-10-29.md. Cloudflare and verification mail work; owner already confirmed the repaired homepage editor.
-
-Next action: Owner reviews database slice; apply only after reconciling hosted schema prerequisites. Continue T-9.15b download interface.
-
 ## Codex — T-2.04b — 2026-10-29
 
 Current task: T-2.04b; review branch agent/T-2.04b-password-recovery, draft PR #62. Completing CI environment repairs discovered during review, then carrying them into dependent draft PRs #63 and #64.
