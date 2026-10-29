@@ -37,7 +37,7 @@ function runSemgrepOnCode(code, filename = 'sample.tsx') {
     const result = spawnSync(
       semgrepBin,
       ['scan', '--config', rulesFile, '--json', '--error', '--severity', 'ERROR', dir],
-      { encoding: 'utf8', timeout: 30_000 },
+      { cwd: dir, encoding: 'utf8', timeout: 30_000 },
     )
 
     let parsed = null
