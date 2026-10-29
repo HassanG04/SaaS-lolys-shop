@@ -8,9 +8,11 @@ import { useCaptcha } from '../features/auth/useCaptcha'
 import type { AuthErrorCode } from '../features/auth/types'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { Button } from '@/components/ui/Button'
+import { PasswordField } from '@/components/ui/PasswordField'
+import { PearlLoader } from '@/components/ui/PearlLoader'
 
 export default function ResetPasswordPage() {
-  const { resetPassword } = useAuth()
+  const { resetPassword, session, loading } = useAuth()
   const { t } = useLanguage()
   const location = useLocation()
 
@@ -68,6 +70,11 @@ export default function ResetPasswordPage() {
       setIsSubmitting(false)
     }
   }
+
+  // Supabase consumes recovery links before resolving the session. Waiting here
+  // prevents a valid link from displaying the email-request form again.
+  if (loading) return <PearlLoader loading />
+  if (session && !urlStatusMessage) return <RecoveryPasswordForm />
 
   return (
     <div className="mx-auto max-w-md space-y-6">
@@ -169,5 +176,81 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+function RecoveryPasswordForm() {
+  const { updatePassword } = useAuth()
+  const { t } = useLanguage()
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<AuthErrorCode | null>(null)
+  async function submit(event: FormEvent) {
+    event.preventDefault()
+    setError(null)
+    if (password !== confirm) {
+      setError('AUTH-013')
+      return
+    }
+    setBusy(true)
+    try {
+      const result = await updatePassword(password)
+      if (!result.success) {
+        setError(result.code ?? 'AUTH-001')
+        return
+      }
+      setPassword('')
+      setConfirm('')
+      setSaved(true)
+    } catch {
+      setError('AUTH-001')
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <section className="auth-panel mx-auto max-w-md space-y-5 rounded-card border border-border bg-surface p-6 sm:p-8">
+      <h1 className="text-h2 font-accent font-bold text-brand">{t.account.changePasswordTitle}</h1>
+      {saved ? (
+        <p role="status">{t.account.passwordSuccess}</p>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            void submit(e)
+          }}
+          className="space-y-4"
+        >
+          {error && <AuthAlert code={error} />}
+          <PasswordField
+            label={t.account.newPasswordLabel}
+            hint={t.account.passwordMinChars}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
+            disabled={busy}
+            allowGenerate
+            onGenerate={(value) => {
+              setPassword(value)
+              setConfirm(value)
+            }}
+          />
+          <PasswordField
+            label={t.account.confirmNewPasswordLabel}
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            autoComplete="new-password"
+            disabled={busy}
+          />
+          <Button type="submit" disabled={busy} className="w-full">
+            {busy ? t.account.saving : t.account.updatePasswordAction}
+          </Button>
+        </form>
+      )}
+      <Link to="/account/security" className="text-brand hover:underline">
+        {t.account.securityTitle}
+      </Link>
+    </section>
   )
 }

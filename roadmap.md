@@ -641,6 +641,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** unit tests prove the same message and the same number of requests for "wrong password" and "unknown email"; the reset message is identical for known and unknown emails; sign-up with an existing email shows AUTH-010.
 - **Verify:** `npm run test:unit` and manual check against `db:start`
 
+#### T-2.04b: Complete password recovery after the email link
+`status: doing` `owner: agent` `needs: T-2.04` `size: M`
+- **Do:** Fix the owner-reported reset loop by waiting for Supabase session initialization, then showing a new-password/confirmation form on the existing reset route. Retain expired-link handling, neutral request responses, server authorization, strength validation and MFA controls (SEC-01/05/06).
+- **Done when:** Valid recovery session can set a new password; invalid/reused links do not restart a silent loop; anonymous requests remain neutral; both languages and full verification pass. Record owner-confirmed verification-email delivery separately from recovery acceptance.
+- **Verify:** Unit tests, real local recovery-link browser test and npm run verify.
+
 #### T-2.05: Data and feedback plumbing
 `status: done` `owner: agent` `needs: T-2.02` `size: M`
 - **Do:** `QueryClientProvider` defaults (retry policy, stale times), a global error boundary, toast hooks, and shared `ErrorPanel` and `EmptyState` components alongside the existing `Skeleton`.
