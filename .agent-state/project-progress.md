@@ -2,15 +2,15 @@
 
 Current task: T-2.06c on agent/T-2.06c-hosted-feature-installer, based on main 5457fc9. Owner requested the SQL for the confirmed missing hosted features after the editor was repaired.
 
-Completed: Prepared a guarded, atomic owner-run APPLY file for profile photos, notifications/suggestions, wishlist demand, occasion reminders, postal guards and the CSV RPC. Preserves existing checkout/payment/editor/MFA definitions and settings; no production changes. New tables retain RLS and explicit grants. Existing migration files are unchanged.
+Completed: Prepared the guarded, atomic owner-run APPLY file in draft PR #67. Owner has now returned all eleven feature_check values true: avatar_url, rls_enabled, suggestions, forecast_csv, notifications, editor_present, wishlist_demand, occasion_reminders, order_postal_guard, profile_postal_guard and payment_proofs_private. This records owner-confirmed hosted installation; no production changes were executed by the agent. Existing migration files are unchanged.
 
 Files changed: docs/runbooks/hosted-features-APPLY.sql, hosted-features-CHECK.sql, hosted-features-2026-10-29.md, hosted-features/ fragments and CSV regression fixture; scripts/build-hosted-features.mjs and tests; scripts/rehearse-hosted-features.mjs; roadmap and shared state.
 
-Tests executed: Disposable schema-only rehearsal passes 172 affected database assertions and eight preservation/rollback/refusal scenarios. Existing records, editor content and payment settings survive; legacy missing postal codes do not block shipping. All 12 verify gates pass (917 application tests, 208 tooling tests; zero failures/skips; bundle 199863/200000 gzip bytes). Roadmap validates 154 tasks. No hosted application or new remote CI success is claimed.
+Tests executed: Implementation verification passed 172 local database assertions, eight preservation/rollback/refusal scenarios and all 12 verify gates (917 application tests, 208 tooling tests; zero failures/skips; bundle 199863/200000 gzip bytes). Owner's subsequent hosted feature check passes all eleven flags. This session changes evidence documentation only; fresh formatting and roadmap checks apply. No authenticated production feature journeys or new remote CI success are inferred from the SQL result.
 
 Problems found: Replaying the old combined repair would overwrite the repaired editor and older settings functions would lose InstaPay link support. This installer selects the final function versions and refuses unknown/partial installations. Historical missing postal codes require genuine owner-provided data before a global NOT NULL conversion; the installer never invents them.
 
-Next action: Owner reviews the draft repair PR, runs the complete docs/runbooks/hosted-features-APPLY.sql as postgres, and returns its feature_check JSON (all eleven values true expected). Runtime guards refuse unrecognized/partially installed setups. No agent production execution, merge or deployment. Task stays doing until hosted acceptance.
+Next action: Do not rerun APPLY: the reported hosted objects are installed. Confirm the deployed website can save a profile photo, submit/read a suggestion, display notifications/admin reminders and read CSV readiness. Retest a fresh password-recovery link after the frontend repair deployment. PR #67 remains for owner review; no agent merge or deployment. T-2.06c stays doing until remaining hosted account/feature acceptance is recorded.
 
 ## Codex — T-2.04b — 2026-10-29
 

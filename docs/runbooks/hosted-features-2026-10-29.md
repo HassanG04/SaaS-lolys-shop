@@ -69,7 +69,15 @@ editor and CSV behavior. Actual results are recorded in shared project progress.
 
 Verified locally on 2026-10-29: 172 database assertions, eight safety/preservation
 scenarios and all twelve `npm run verify` gates (917 application tests and 208
-tooling tests). No failures or skipped tests. No hosted application is claimed.
+tooling tests). No failures or skipped tests.
+
+Owner confirmation, 2026-10-29: the post-installation `feature_check` returned all
+eleven values `true`, including RLS on the checked tables, both postal triggers,
+the CSV RPC, editor presence and private payment proofs. The owner performed the
+hosted application; the agent did not. **Do not run APPLY again on this shop.**
+Use CHECK for later read-only inspection. This confirms the listed database
+objects and flags; authenticated website journeys and forecast data readiness
+still need their own verification.
 
 The installer is tailored to the supplied diagnostic and known repository
 definitions. Its runtime guards supplement that older snapshot; they are not a
