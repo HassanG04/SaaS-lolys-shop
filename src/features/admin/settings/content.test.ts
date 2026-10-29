@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { supabase } from '@/lib/supabase'
 import { readStorefrontContent } from '@/features/settings/content'
-import { getContentSnapshot, saveContentSnapshot, uploadHeroImage } from './content.api'
+import {
+  ContentSetupError,
+  getContentSnapshot,
+  saveContentSnapshot,
+  uploadHeroImage,
+} from './content.api'
 
 vi.mock('@/lib/supabase', () => ({
   supabase: { from: vi.fn(), rpc: vi.fn(), storage: { from: vi.fn() } },
@@ -24,16 +29,37 @@ describe('persistent storefront content', () => {
     ).toEqual({ category_ids: [1], footer_order: ['terms'] })
   })
   it('reads persisted content and its revision together', async () => {
-    const single = vi.fn().mockResolvedValue({
+    const maybeSingle = vi.fn().mockResolvedValue({
       data: { value: snapshot.content, updated_at: snapshot.revision },
       error: null,
     })
-    const eq = vi.fn().mockReturnValue({ single })
+    const eq = vi.fn().mockReturnValue({ maybeSingle })
     vi.mocked(supabase.from).mockReturnValue({
       select: vi.fn().mockReturnValue({ eq }),
     } as unknown as ReturnType<typeof supabase.from>)
     expect(await getContentSnapshot()).toEqual(snapshot)
     expect(eq).toHaveBeenCalledWith('key', 'storefront_content')
+  })
+  it('does not fabricate content or a revision when the hosted setting is absent', async () => {
+    const chain = {
+      select: () => chain,
+      eq: () => chain,
+      maybeSingle: vi
+        .fn<() => Promise<{ data: null; error: unknown }>>()
+        .mockResolvedValue({ data: null, error: null }),
+    }
+    vi.mocked(supabase.from).mockReturnValue(chain as unknown as ReturnType<typeof supabase.from>)
+    await expect(getContentSnapshot()).rejects.toBeInstanceOf(ContentSetupError)
+    expect(supabase.rpc).not.toHaveBeenCalled()
+    chain.maybeSingle.mockResolvedValue({ data: null, error: { code: '42501', hint: 'ADM-002' } })
+    await expect(getContentSnapshot()).rejects.toMatchObject({ code: 'ADM-002' })
+  })
+  it('distinguishes an unavailable save function from a revision conflict', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValue({
+      data: null,
+      error: { code: 'PGRST202' },
+    } as unknown as Awaited<ReturnType<typeof supabase.rpc>>)
+    await expect(saveContentSnapshot(snapshot)).rejects.toBeInstanceOf(ContentSetupError)
   })
   it('sends the revision and coherent translations in one RPC', async () => {
     vi.mocked(supabase.rpc).mockResolvedValue({

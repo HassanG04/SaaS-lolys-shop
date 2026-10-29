@@ -7,6 +7,10 @@ import { contentLabels, editorCopy } from '@/i18n/contentEditor'
 import { CONTENT_FIELDS } from '@/features/settings/content'
 import { supabase } from '@/lib/supabase'
 import ContentEditor from './ContentEditor'
+import ContentEditorLauncher from './ContentEditorLauncher'
+import { AuthContext } from '@/features/auth/AuthProvider'
+import type { AuthContextValue } from '@/features/auth/types'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 
 vi.mock('@/lib/supabase', () => {
   const supabase = {
@@ -47,7 +51,7 @@ describe('content editor', () => {
         select: () => chain,
         eq: () => chain,
         order: () => chain,
-        single: () => Promise.resolve(result),
+        maybeSingle: () => Promise.resolve(result),
         then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve),
       }
       return chain
@@ -91,6 +95,79 @@ describe('content editor', () => {
     await screen.findByText(editorCopy.en.conflict)
     expect(input).toHaveValue('Title pending')
     expect(screen.getByText('Unsaved changes')).toBeInTheDocument()
+  })
+
+  it.each(['ar', 'en'] as const)(
+    'explains missing setup in %s and recovers on retry',
+    async (lang) => {
+      const chain = {
+        select: () => chain,
+        eq: () => chain,
+        maybeSingle: () => Promise.resolve({ data: null, error: null }),
+      }
+      vi.mocked(supabase.from).mockReturnValueOnce(
+        chain as unknown as ReturnType<typeof supabase.from>,
+      )
+      const user = userEvent.setup()
+      mount(lang)
+      expect(await screen.findByText(editorCopy[lang].setupTitle)).toBeInTheDocument()
+      expect(screen.getByText(editorCopy[lang].setupHelp)).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: editorCopy[lang].save })).not.toBeInTheDocument()
+      expect(supabase.rpc).not.toHaveBeenCalled()
+      await user.click(
+        screen.getByRole('button', { name: lang === 'en' ? 'Retry' : 'إعادة المحاولة' }),
+      )
+      expect(
+        await screen.findByLabelText(
+          `${contentLabels.hero_title[lang === 'ar' ? 0 : 1]} (English)`,
+        ),
+      ).toBeInTheDocument()
+    },
+  )
+
+  it('retains unsaved edits when the hosted publishing function is missing', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValue({
+      data: null,
+      error: { code: 'PGRST202' },
+    } as unknown as Awaited<ReturnType<typeof supabase.rpc>>)
+    const user = userEvent.setup()
+    mount()
+    const input = await screen.findByLabelText('Hero title (English)')
+    await user.type(input, ' draft')
+    await user.click(screen.getByRole('button', { name: 'Publish changes' }))
+    expect(await screen.findByText(editorCopy.en.setupTitle)).toBeInTheDocument()
+    expect(input).toHaveValue('Title draft')
+    expect(screen.queryByText('Content published')).not.toBeInTheDocument()
+  })
+
+  it('opens and publishes through the homepage mouse control without navigating', async () => {
+    function Location() {
+      return <output aria-label="Current page">{useLocation().pathname}</output>
+    }
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } })
+    const user = userEvent.setup()
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <QueryClientProvider client={client}>
+          <LanguageProvider initialLanguage="en">
+            <AuthContext.Provider value={{ profile: { role: 'admin' } } as AuthContextValue}>
+              <ContentEditorLauncher />
+              <Location />
+            </AuthContext.Provider>
+          </LanguageProvider>
+        </QueryClientProvider>
+      </MemoryRouter>,
+    )
+    const toggle = screen.getByRole('button', { name: 'Edit store content' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    await user.click(toggle)
+    await user.type(await screen.findByLabelText('Hero title (English)'), ' on homepage')
+    await user.click(screen.getByRole('button', { name: 'Publish changes' }))
+    await screen.findByText('Content published')
+    expect(screen.getByLabelText('Current page')).toHaveTextContent('/')
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    await user.click(toggle)
+    expect(screen.queryByLabelText('Hero title (English)')).not.toBeInTheDocument()
   })
   it('requires both translations and uses Arabic controls in Arabic', async () => {
     const user = userEvent.setup()

@@ -8,13 +8,23 @@ export interface ContentSnapshot {
   revision: string
 }
 
+/** Missing hosted setup is not an empty document or a successful save. */
+export class ContentSetupError extends AppError {
+  constructor() {
+    super('SYS-001')
+    Object.setPrototypeOf(this, ContentSetupError.prototype)
+    this.name = 'ContentSetupError'
+  }
+}
+
 export async function getContentSnapshot(): Promise<ContentSnapshot> {
   const { data, error } = await supabase
     .from('shop_settings')
     .select('value, updated_at')
     .eq('key', 'storefront_content')
-    .single()
+    .maybeSingle()
   if (error) throw toAppError(error)
+  if (!data) throw new ContentSetupError()
   return { content: readStorefrontContent(data.value), revision: data.updated_at }
 }
 
@@ -24,6 +34,7 @@ export async function saveContentSnapshot(snapshot: ContentSnapshot): Promise<st
     p_content: snapshot.content,
     p_expected_updated_at: snapshot.revision,
   })
+  if (error?.code === 'PGRST202') throw new ContentSetupError()
   if (error) throw toAppError(error)
   return data
 }
