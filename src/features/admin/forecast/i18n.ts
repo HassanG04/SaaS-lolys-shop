@@ -40,7 +40,6 @@ export const forecastI18n = {
     leadTimeLabel: 'فترة التوريد (أيام):',
     serviceZLabel: 'مستوى الخدمة (z):',
     daysUnit: 'يوم',
-    exportCsv: 'تصدير CSV',
     noReorderItems: 'لا توجد منتجات بحاجة لإعادة الطلب حالياً.',
     noRiskItems: 'لا توجد منتجات معرّضة لخطر النفاد القريب.',
     noDeadStockItems: 'لا يوجد مخزون راكد مسجل.',
@@ -66,6 +65,16 @@ export const forecastI18n = {
     days365: 'سنة كاملة',
     occasionsNote:
       'تنبيه: المناسبات تهدف للتخطيط المسبق ولا تقوم بتغيير الأسعار أو فرض تنبؤات طلب آلية غير مثبتة.',
+    exportTitle: 'بيانات التوقعات والتحليل',
+    exportCaveat:
+      'آخر سنتين من الأيام المكتملة. المفضلة والأسعار الحالية لقطة وقت التصدير؛ لا تثبت أثر الخصومات السابقة. التنزيل لا يضمن دقة التوقعات ولا يغيّر الأسعار.',
+    exportDescription: 'نزّل بيانات مجمعة للمبيعات والمفضلة والمخزون لاختبار نماذج الطلب مستقبلاً.',
+    exportCsv: 'تنزيل ملف CSV',
+    exporting: 'جارٍ التجهيز…',
+    exportLocked: 'يتاح التنزيل بعد 56 يوماً و30 طلباً صحيحاً.',
+    exportReady: 'البيانات جاهزة للتنزيل.',
+    exportProgress: '{days} من {minimumDays} يوماً · {orders} من {minimumOrders} طلباً',
+    exportError: 'تعذر تجهيز ملف البيانات. حاول مرة أخرى.',
   },
   en: {
     title: 'Demand Forecast & Reordering',
@@ -109,7 +118,6 @@ export const forecastI18n = {
     leadTimeLabel: 'Lead time (days):',
     serviceZLabel: 'Service level (z):',
     daysUnit: 'days',
-    exportCsv: 'Export CSV',
     noReorderItems: 'No products currently require replenishment.',
     noRiskItems: 'No products at imminent risk of stockout.',
     noDeadStockItems: 'No dead stock identified.',
@@ -137,6 +145,17 @@ export const forecastI18n = {
     days365: 'Full year',
     occasionsNote:
       'Note: Occasion reminders assist manual planning without automated price changes or synthetic uplift.',
+    exportTitle: 'Forecast analysis dataset',
+    exportCaveat:
+      'Up to two years of completed days. Wishlist and current catalog values are snapshots at export, not historical promotion evidence. Download readiness does not guarantee forecast accuracy or change prices.',
+    exportDescription:
+      'Download aggregate sales, wishlist and stock data for future demand-model evaluation.',
+    exportCsv: 'Download CSV file',
+    exporting: 'Preparing…',
+    exportLocked: 'Available after 56 days and 30 valid orders.',
+    exportReady: 'The dataset is ready to download.',
+    exportProgress: '{days} of {minimumDays} days · {orders} of {minimumOrders} orders',
+    exportError: 'The dataset could not be prepared. Try again.',
   },
 }
 

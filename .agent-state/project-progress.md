@@ -1,3 +1,17 @@
+## Codex — T-9.15b — 2026-10-29
+
+Current task: T-9.15b; review branch agent/T-9.15b-forecast-csv-ui.
+
+Completed: Completed the Arabic/English forecast download interface, disabled until the server gate passes. Export checks permissions again and reports setup failures safely.
+
+Files changed: ForecastExportCard and seven tests, ForecastPage/hooks/i18n, roadmap and shared state.
+
+Tests executed: Combined implementation passes all 12 verify gates (924 application and 204 tooling tests), local db:reset/db:test (680 assertions), regenerated db:types, 80 analytics tests, and 2 real local recovery-link browser cases (Arabic/English). Earlier full-run dashboard timeout passed in isolation and the final full run. No remote CI or production test is claimed.
+
+Problems found: Hosted schema has seven confirmed gaps; see docs/handoff/HOSTED-FEATURE-STATUS-2026-10-29.md. Cloudflare and verification mail work; owner already confirmed the repaired homepage editor.
+
+Next action: Review stack in order: recovery, export contract, export interface. Owner deploys Cloudflare code and reviewed Supabase changes, then confirms hosted recovery and export state. Existing seven hosted gaps still need reconciliation; T-9.13 remains human-owned.
+
 ## Codex — T-9.15a — 2026-10-29
 
 Current task: T-9.15a; review branch agent/T-9.15a-forecast-csv.

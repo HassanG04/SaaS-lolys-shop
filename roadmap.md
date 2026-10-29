@@ -1275,6 +1275,12 @@ Task format and the tool that reads it are defined in Appendix A. Status values:
 - **Done when:** Permissions, readiness boundaries, valid-order filtering, weighted prices, zero-sale days and identifier exclusion pass pgTAP; generated types and safe response validation are available for the UI.
 - **Verify:** npm run db:reset, db:test, db:types and verify.
 
+#### T-9.15b: Bilingual forecast CSV download
+`status: done` `owner: agent` `needs: T-9.15a` `size: M`
+- **Do:** Add the Forecast screen's disabled/progress/ready download control using the database contract. Recheck readiness regularly and at download, use formula-safe CSV and existing mapped errors, and explain current-snapshot limitations in both languages.
+- **Done when:** Seven UI/API tests cover bilingual disabled state, actual CSV content, formula protection, missing setup, changed permission/readiness and malformed results. Full verify passes.
+- **Verify:** npm run verify.
+
 ## Appendix A: Task format and the roadmap tool
 
 Task block (the tool ignores fenced code blocks, so this example is not a task):
@@ -1686,3 +1692,5 @@ What gets easier, what gets harder, what to watch.
 | 2026-10-29 | T-2.04b | Codex | Repaired email recovery destination; 9 unit cases and 2 real local Auth link journeys verify new password, old password rejection and replay denial. Combined verify passes; owner hosted deployment/retest pending. SEC-01/05/06 preserved. | pending |
 
 | 2026-10-29 | T-9.15a | Codex | Added gated aggregate export: 17 new pgTAP assertions (680 total), generated public types, bounded file and completed UTC days. Current wishlist/catalog snapshots explicitly documented as unsuitable historical features. Combined verify passed. | pending |
+
+| 2026-10-29 | T-9.15b | Codex | Added bilingual download/progress states, periodic readiness refresh, safe errors and formula-neutralized file. Seven real-API-boundary component tests pass; final verify 924 application/204 tooling tests, bundle within budget. No hosted deployment. | pending |

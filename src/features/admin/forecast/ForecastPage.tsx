@@ -13,6 +13,7 @@ import { ForecastBadges } from './ForecastBadges'
 import { ForecastChart } from './ForecastChart'
 import { ReorderTable } from './ReorderTable'
 import { UpcomingOccasionsView } from './UpcomingOccasionsView'
+import { ForecastExportCard } from './ForecastExportCard'
 import { useForecastI18n } from './i18n'
 import type { SeriesType } from './types'
 
@@ -115,6 +116,8 @@ export default function ForecastPage() {
           </div>
         )}
       </div>
+
+      <ForecastExportCard />
 
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
