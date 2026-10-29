@@ -1,5 +1,19 @@
 ## Codex — Hosted missing-feature installer — 2026-10-29
 
+## Codex — Finale project record — 2026-10-29
+
+Current task: Documentation-only completion record on agent/T-2.06c-hosted-feature-installer.
+
+Completed: Created `Finale.md` with the delivered product capabilities, cloud architecture, Supabase/PostgreSQL and SQL work, frontend tools, security controls, analytics/data collection and forecasting boundary, project workflow, verification evidence, launch context and a portfolio gallery using tracked QA screenshots.
+
+Files changed: `Finale.md`, `.agent-state/project-progress.md`.
+
+Tests executed: Prettier formatting check, roadmap validation and secret scan are pending for this documentation change; no application code changed.
+
+Problems found: Existing progress documents contain older dated snapshots, so Finale labels current hosted feature evidence separately and does not claim that a screenshot is a live production measurement.
+
+Next action: Review the generated Finale document and use the linked gallery images for portfolio posts. Keep production forecasting manual until the documented data gates and owner activation review are complete.
+
 Current task: T-2.06c on agent/T-2.06c-hosted-feature-installer, based on main 5457fc9. Owner requested the SQL for the confirmed missing hosted features after the editor was repaired.
 
 Completed: Prepared the guarded, atomic owner-run APPLY file in draft PR #67. Owner has now returned all eleven feature_check values true: avatar_url, rls_enabled, suggestions, forecast_csv, notifications, editor_present, wishlist_demand, occasion_reminders, order_postal_guard, profile_postal_guard and payment_proofs_private. This records owner-confirmed hosted installation; no production changes were executed by the agent. Existing migration files are unchanged.
